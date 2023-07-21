@@ -1,0 +1,4 @@
+[stable]
+https://github.com/neovim/neovim/releases/download/stable/nvim-win64.zip
+[nightly]
+https://github.com/neovim/neovim/releases/download/nightly/nvim-win64.zip
