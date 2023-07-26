@@ -1,0 +1,789 @@
+" $MYVIMRC --- NeoVim ---
+" Autor: André Alexandre Aguiar
+" Email: andrealexandreaguiar@gmail.com
+
+" Dependences:
+" ripgrep,
+" fd,
+" traces.vim,
+" [dadbod, obsession, surround, comment, capslock, eunuch, fugitive] tpope,
+" emmet-vim,
+" vim-cool,
+" vim-dirvish,
+" undotree,
+" vim-highlightedyank,
+" vim-sxhkdrc,
+" telescope.nvim [plenary.nvim],
+" nvim-treesitter [playground],
+" nvim-colorizer,
+" nvim-lspconfig,
+" harpoon (The Primeagen),
+" jdtls-nvim,
+" denols
+
+" TODO: Learn how to use vimdiff/diffing a file, learn :args and how to modify :args list, learn how to use :ls and :buffer, configure telescope!, learn lua!
+" WARNING: Custom plugins in $VIMRUNTIME . '/plugin'
+
+" System variables cofiguration for thumbdriver (Portable NVIM)
+if has('win32')
+	" let $HOME=$VIMRUNTIME[0:2].'nvim-portable-win' " Alterar $HOME para o diretório que foi encontrado no USB
+	" let $XDG_CONFIG_HOME=USB_PATH.'config\' " ~/AppData/Local/nvim
+	" let $XDG_DATA_HOME=USB_PATH.'config\' " ~/AppData/Local/nvim-data
+	" let $XDG_STATE_HOME=$XDG_DATA_HOME
+	" let $NVIM_LOG_FILE=stdpath('data').'\log' " Não funciona. Necessário setar como variável de ambiente
+	" Verificar se variáveis não estão no PATH
+	let DEPENDENCIAS=$HOME.'\nvim\deps'
+	if $PATH !~ '\<git\>'
+		let $PATH.=';'.DEPENDENCIAS.'\git\bin' " Acrescentar executáveis
+	endif
+	if $PATH !~ 'curl'
+		let $PATH.=';'.DEPENDENCIAS.'\curl\bin'
+	endif
+	if $PATH !~ 'rust'
+		let $PATH.=';'.DEPENDENCIAS.'\rust\bin'
+	endif
+	if $PATH !~ 'win64devkit'
+		let $PATH.=';'.DEPENDENCIAS.'\win64devkit\bin'
+	endif
+	if $PATH !~ 'node'
+		let $PATH.=';'.DEPENDENCIAS.'\node'
+		" Skip node verification (Windows 7 error)
+		if $NODE_SKIP_PLATFORM_CHECK != 1 
+			let $NODE_SKIP_PLATFORM_CHECK=1
+		endif
+	endif
+	if $PATH !~ '\<fd\>'
+		let $PATH.=';'.DEPENDENCIAS.'\fd'
+	endif
+	if $PATH !~ 'ripgrep'
+		let $PATH.=';'.DEPENDENCIAS.'\ripgrep'
+	endif
+	if $PATH !~ 'lsp-servers'
+		let $PATH.=';'.DEPENDENCIAS.'\lsp-servers'
+	endif
+	if $PATH !~ 'python'
+		let PYTHON_DIR=DEPENDENCIAS.'\python-win7'
+		let $PATH.=';'.PYTHON_DIR
+		let $PATH.=';'.PYTHON_DIR.'\Scripts'
+		" Set python executable
+		" let g:python_host_prog = ''
+		let g:python3_host_prog=PYTHON_DIR.'\python.exe'
+		unlet PYTHON_DIR
+	endif
+	unlet DEPENDENCIAS
+endif
+
+" Autoinstalação do gerenciador de plugins Vim-Plug
+" Dependência: curl
+let VIM_PLUG_DIR=stdpath('data').'\site'
+if empty(glob(VIM_PLUG_DIR.'\autoload\plug.vim'))
+  silent execute '!curl -fLo '.VIM_PLUG_DIR.'\autoload\plug.vim --create-dirs  https://raw.githubusercontent.com/junegunn/vim-plug/master/plug.vim'
+  autocmd VimEnter * PlugInstall --sync | source $MYVIMRC
+endif
+unlet VIM_PLUG_DIR
+
+" --- Vim Plug Configurations ---
+call plug#begin(stdpath('config') . '\plugged')
+" Tim Pope
+" Plug 'https://github.com/tpope/vim-capslock.git'
+" Fork from vim-capslock
+Plug 'https://github.com/Andrikin/vim-capslock'
+Plug 'https://github.com/tpope/vim-commentary.git'
+Plug 'https://github.com/tpope/vim-dadbod.git'
+Plug 'https://github.com/tpope/vim-eunuch.git'
+Plug 'https://github.com/tpope/vim-fugitive.git'
+Plug 'https://github.com/tpope/vim-obsession.git'
+Plug 'https://github.com/tpope/vim-surround.git'
+" Dracula theme
+Plug 'https://github.com/Mofiqul/dracula.nvim.git'
+" Vim Cool
+Plug 'https://github.com/romainl/vim-cool.git'
+" Dirvirsh
+Plug 'https://github.com/justinmk/vim-dirvish.git'
+" Emmet
+Plug 'https://github.com/mattn/emmet-vim.git'
+" Harpoon - The Primeagen
+Plug 'https://github.com/ThePrimeagen/harpoon.git'
+" Lightline
+Plug 'https://github.com/itchyny/lightline.vim.git'
+" Nvim-Colorizer
+Plug 'https://github.com/norcalli/nvim-colorizer.lua.git'
+" Nvim Lspconfig
+Plug 'https://github.com/neovim/nvim-lspconfig.git'
+" Traces.vim
+Plug 'https://github.com/markonm/traces.vim.git'
+" Nvim-ts-context-commentstring
+Plug 'https://github.com/JoosepAlviste/nvim-ts-context-commentstring.git'
+" Undotree
+Plug 'https://github.com/mbbill/undotree.git'
+" Nim-cmp
+Plug 'https://github.com/hrsh7th/nvim-cmp.git'
+	Plug 'https://github.com/hrsh7th/cmp-nvim-lsp.git'
+	Plug 'https://github.com/hrsh7th/cmp-buffer.git'
+	Plug 'https://github.com/hrsh7th/cmp-path.git'
+	Plug 'https://github.com/hrsh7th/cmp-cmdline.git'
+" Telescope
+Plug 'https://github.com/nvim-telescope/telescope.nvim.git'
+	Plug 'https://github.com/nvim-lua/plenary.nvim.git'
+" Treesitter
+Plug 'https://github.com/nvim-treesitter/nvim-treesitter.git'
+	Plug 'https://github.com/nvim-treesitter/playground.git'
+call plug#end()
+" --- Vim Plug Configurations ---
+
+" INFO: plugin -> verify $RUNTIMEPATH/ftplugin for files
+" INFO: indent -> verify $RUNTIMEPATH/indent for files
+" filetype indent plugin on " automatically set by vim-plug
+" syntax enable " automatically set by vim-plug
+
+colorscheme dracula
+
+" Search recursively
+set path+=**
+
+" Indicadores - números nas linhas
+set rnu 
+set nu
+
+" Tamanho da indentação
+set tabstop=4
+set shiftwidth=4
+set softtabstop=4
+
+" Configurações para search
+set incsearch
+set ignorecase
+set smartcase
+set hlsearch
+
+" Configurações gerais
+set noautochdir
+set scrolloff=999
+set lazyredraw
+set backspace=indent,eol,start
+set splitbelow
+set splitright
+set helpheight=15
+" Problems that can occur in vim session can be avoid using this configuration
+set sessionoptions-=options
+set encoding=utf-8
+set autoread
+set tabpagemax=50
+set wildmenu
+set completeopt=menu,menuone,noselect
+let &g:shell='cmd.exe'
+"let &g:shellpipe='2>&1 | tee'
+set complete-=t
+set title
+set hidden
+set mouse=nvi
+let &undodir=stdpath('config').'\undotree'
+set undofile
+set noswapfile
+" set linebreak
+" set wrapmargin=5
+let &g:textwidth=0
+let mapleader = ' '
+
+" Statusline
+set laststatus=3
+set showtabline=1 
+set noshowmode 
+
+" Winbar
+let &g:winbar='%#LightlineLeft_active_0#%{LightlineFilename()}%#LightlineLeft_active_0_1#'
+
+" st (simple terminal - suckless) tem um problema com o cursor. Ele não muda de acordo com as cores da fonte que ele está sobre. Dessa forma, com o patch de Jules Maselbas (https://git.suckless.org/st/commit/5535c1f04c665c05faff2a65d5558246b7748d49.html), é possível obter o cursor com a cor do texto (truecolor)
+set termguicolors
+
+" NeoVim configurations
+set guicursor=i-n-v-c:block
+set guifont=SauceCodePro\ NFM
+set inccommand=
+let &g:fillchars='vert:|,fold:*,foldclose:+,diff:-'
+
+" Using ripgrep ([cf]open; [cf]do {cmd} | update)
+if executable('rg')
+	let &g:grepprg='rg --vimgrep --smart-case --follow'
+else
+	let &g:grepprg='grep -R'
+endif
+
+" --- lightline ---
+" Only possible with SauceCodePro Nerd Font
+let g:lightline = {
+			\ 'colorscheme': 'darcula',
+			\ 'separator': { 'left': '', 'right': '' },
+			\ 'subseparator': { 'left': '', 'right': '' },
+			\ 'tabline': {
+			\	'left': [['tabs']],
+			\ },
+			\ 'active': {
+			\	'left': [
+			\		['mode', 'paste'],
+			\		['readonly', 'filename'],
+			\		['gitbranch'],
+			\		],
+			\	},
+			\ 'component': {
+			\	'close': '',
+			\	'lineinfo': '%l/%L%<',
+			\	},
+			\ 'component_function': {
+			\	'mode': 'LightlineMode',
+			\	'readonly': 'LightlineReadonly',
+			\	'filename': 'LightlineFilename',
+			\	'gitbranch': 'LightlineStatusline',
+			\	},
+			\ 'tab': {
+			\	'active': ['filename', 'modified'],
+			\	'inactive': ['filename', 'modified'],
+			\	},
+			\ }
+
+" --- Emmet ---
+let g:user_emmet_install_global = 0
+" let g:user_emmet_leader_key = '<m-space>'
+
+" --- Traces ---
+let g:traces_num_range_preview = 0
+
+" --- UndoTree ---
+let g:undotree_WindowLayout = 2
+let g:undotree_ShortIndicators = 1
+let g:undotree_SetFocusWhenToggle = 1
+let g:undotree_DiffpanelHeight = 5
+
+" --- Netrw ---
+" Disable Netrw
+let g:loaded_netrwPlugin = 1
+
+" --- Key maps ---
+
+" CTRL-U in insert mode deletes a lot. Use CTRL-G u to first break undo,
+" so that you can undo CTRL-U after inserting a line break.
+" Revert with ":iunmap <C-U>". -> from defaults.vim
+inoremap <c-u> <c-g>u<c-u>
+inoremap <c-w> <c-g>u<c-w>
+nnoremap <backspace> X
+nnoremap <c-h> X
+nnoremap ' `
+" Fix & command. Redo :substitute command
+nnoremap & <cmd>&&<cr>
+xnoremap & <cmd>&&<cr>
+" Yank to end of sreen line. Make default in Neovim 0.6.0
+" g$ cursor after last character, g_ cursor at last character
+" nnoremap Y yg_
+" Disable <c-z> (:stop)
+nnoremap <c-z> <nop>
+" Join lines in a better way - From a video of ThePrimeagen
+nnoremap J mzJ`z
+" Undo better - inserting breaking points, thanks to ThePrimeagen
+inoremap , ,<c-g>u
+inoremap . .<c-g>u
+inoremap ( (<c-g>u
+inoremap [ [<c-g>u
+inoremap { {<c-g>u
+inoremap ! !<c-g>u
+inoremap ? ?<c-g>u
+
+" Using gk and gj (screen cursor up/down)
+" nnoremap <expr> k v:count == 0 ? 'gk' : 'k'
+" nnoremap <expr> j v:count == 0 ? 'gj' : 'j'
+" Adding jumps to jumplist - The Primeagen gold apple with gk and gj (screen cursor up/down)
+nnoremap <expr> k v:count == 0 ? (v:count > 1 ? 'm`' . v:count : '') . 'gk' : (v:count > 1 ? 'm`' . v:count : '') . 'k'
+nnoremap <expr> j v:count == 0 ? (v:count > 1 ? 'm`' . v:count : '') . 'gj' : (v:count > 1 ? 'm`' . v:count : '') . 'j'
+
+" Moving lines up and down - The Primeagen knowledge word
+" inoremap <c-j> <c-o>:m.+1<cr> " utilizo muito <c-j> para newlines, seria inviável trocar para essa funcionalidade
+" inoremap <c-k> <c-o>:m.-2<cr>
+" nnoremap <leader>k <cmd>m.-2<cr>
+" nnoremap <leader>j <cmd>m.+1<cr>
+vnoremap K :m'<-2<cr>gv
+vnoremap J :m'>+1<cr>gv
+
+" Copy and paste from clipboard (* -> selection register/+ -> primary register)
+nnoremap gP "+P
+nnoremap gp "+p
+vnoremap gy "+y
+nnoremap gy "+y
+nnoremap gY "+Y
+
+" Vim-capslock in command line
+cmap <silent> <expr> <c-l> <SID>capslock_redraw()
+
+" --- Mapleader Commands ---
+
+" open $MYVIMRC
+nnoremap <silent> <leader>r <cmd>e $MYVIMRC<cr>
+
+" --- Quickfix window ---
+" NeoVim excells about terminal jobs
+nnoremap <silent> <leader>m <cmd>make %:S<cr>
+" Toggle quickfix window
+nnoremap <silent> <expr> <leader>c <SID>toggle_list('c')
+nnoremap <silent> <expr> <leader>l <SID>toggle_list('l')
+nnoremap <silent> <expr> <leader>q <SID>quit_list()
+
+" Undotree plugin
+nnoremap <silent> <leader>u <cmd>UndotreeToggle<cr>
+
+" Terminal
+nnoremap <silent> <expr> <leader>t <SID>toggle_terminal()
+
+" Fugitive maps
+nnoremap <leader>g <cmd>Git<cr>
+
+" --- Telescope ---
+nnoremap <silent> <leader>b <cmd>Telescope buffers<cr>
+" nnoremap <silent> <leader>o <cmd>Telescope find_files<cr>
+
+" The Primeagen Harpoon
+nnoremap <silent> <leader>a <cmd>lua require('harpoon.mark').add_file()<cr>
+nnoremap <silent> <leader>h <cmd>lua require('harpoon.ui').toggle_quick_menu()<cr>
+nnoremap <silent> <leader>1 <cmd>lua require('harpoon.ui').nav_file(1)<cr>
+nnoremap <silent> <leader>2 <cmd>lua require('harpoon.ui').nav_file(2)<cr>
+nnoremap <silent> <leader>3 <cmd>lua require('harpoon.ui').nav_file(3)<cr>
+nnoremap <silent> <leader>4 <cmd>lua require('harpoon.ui').nav_file(4)<cr>
+
+" --- Builtin LSP commands ---
+" Only available in git projects (git init)
+nnoremap <silent> K <cmd>lua vim.lsp.buf.hover()<cr>
+nnoremap <silent> gr <cmd>lua vim.lsp.buf.references()<cr>
+nnoremap <silent> gd <cmd>lua vim.lsp.buf.definition()<cr>
+nnoremap <silent> gD <cmd>lua vim.lsp.buf.declaration()<cr>
+nnoremap <silent> <c-k> <cmd>lua vim.lsp.buf.signature_help()<cr>
+" Lida com erros LSP
+nnoremap <silent> ]d <cmd>lua vim.diagnostic.goto_next()<cr>
+nnoremap <silent> [d <cmd>lua vim.diagnostic.goto_prev()<cr>
+nnoremap <leader>e <cmd>lua vim.diagnostic.open_float()<cr>
+" Renomeia variável pelo projeto inteiro
+nnoremap <leader>s <cmd>lua vim.lsp.buf.rename()<cr>
+
+" --- Command's ---
+
+" Dirvish modes
+command! -nargs=? -complete=dir Sirvish belowright split | silent Dirvish <args>
+command! -nargs=? -complete=dir Virvish leftabove vsplit | silent Dirvish <args>
+command! -nargs=? -complete=dir Tirvish tabedit | silent Dirvish <args>
+
+" Command binary to hex
+command! HexEditor %!xxd
+
+" --- Abbreviations ---
+
+" --- Plug's ---
+
+" --- Functions ---
+"
+" HACK: Way to get :redraws after CapsLockToggle
+function! s:capslock_redraw() abort
+	let cmd = "\<plug>CapsLockToggle\<c-r>="
+	let exec_redraw = "execute('redraws')"
+	if CapsLockStatusline() is ''
+		let exec_redraw = toupper(exec_redraw)
+	endif
+	return cmd . exec_redraw . "\<cr>"
+endfunction
+
+function! s:quit_list() abort
+	let qf = s:qf_stats()
+	let tf = s:t_stats()
+	let cmd = ''
+	if qf[0]
+		let cmd = qf[1] ? ":lclose\<cr>" : ":cclose\<cr>"
+	elseif tf[0]
+		let cmd = join([':', tf[1], " windo normal ZQ\<cr>"], '')
+	endif
+	return cmd
+endfunction
+
+function! s:move_in_list(move) abort
+	let qf = s:qf_stats()
+	let cmd = ":" . v:count1
+	let go_back_to_qf = ":call win_gotoid(" . qf[2] . ")\<cr>"
+	if a:move == 'l'
+		let cmd .= qf[1] ? "lnewer\<cr>" : "cnewer\<cr>"
+	elseif a:move == 'h'
+		let cmd .= qf[1] ? "lolder\<cr>" : "colder\<cr>"
+	elseif a:move == 'j'
+		let cmd .= (qf[1] ? "lnext\<bar>" : "cnext\<bar>") . go_back_to_qf
+	elseif a:move == 'k'
+		let cmd .= (qf[1] ? "lprevious\<bar>" : "cprevious\<bar>") . go_back_to_qf
+	endif
+	return cmd
+endfunction
+
+function! s:toggle_list(type) abort
+	let qf = s:qf_stats()
+	let cmd = ''
+	if a:type == 'c'
+		if qf[0]
+			let cmd = qf[1] ? ":lclose\<bar>:copen\<cr>" : ":cclose\<cr>"
+		else
+			let cmd = ":copen\<cr>"
+		endif
+	elseif a:type == 'l'
+		if qf[0]
+			let cmd = qf[1] ? ":lclose\<cr>" : ":cclose\<bar>:lopen\<cr>"
+		else
+			let cmd = ":lopen\<cr>"
+		endif
+	endif
+	return cmd
+endfunction
+
+" Toggle :terminal. Use 'i' to enter Terminal Mode. 'ctrl-\ctrl-n' to exit
+function! s:toggle_terminal() abort
+	let stats = s:t_stats()
+	if stats[0]
+		return join([':', stats[1], " windo normal ZQ\<cr>"], '')
+	endif
+	return ":15split +terminal\<cr>"
+endfunction
+
+function! s:t_stats() abort
+	for window in gettabinfo(tabpagenr())[0].windows
+		if getwininfo(window)[0].terminal
+			return [1, win_id2win(window)]
+		endif
+	endfor
+	return [0, 0]
+endfunction
+
+" INFO: It don't look for situations when there is two quickfix windows open, but I think that it handles those situations
+function! s:qf_stats() abort
+	for window in gettabinfo(tabpagenr())[0].windows
+		if getwininfo(window)[0].quickfix
+			return [1, getwininfo(window)[0].loclist, window]
+		endif
+	endfor
+	" is_qf_on, is_qf_loc, win_id
+	return [0, 0, 0]
+endfunction
+
+function! s:set_qf_win_height() abort
+	let stats = s:qf_stats()
+	let lnum = stats[0] ? len(stats[1] ? getloclist(0) : getqflist()) : 0
+	execute "resize " min([10, max([1, lnum])])
+endfunction
+
+function! s:g_bar_search(...) abort
+	return system(join([&grepprg, shellescape(expand(join(a:000, ' '))), shellescape(expand("%"))], ' '))
+endfunction
+
+" Run C, Java code
+" TODO: Make it better
+function! s:run_code() abort
+	let file = shellescape(expand("%:e"))
+	if file ==? "java"
+		execute join(['!java ', shellescape(expand("%:t:r"))])
+	elseif file ==? "c"
+		execute join(['!tcc -run ', shellescape(expand("%:t"))])
+	endif
+endfunction
+
+ " --- Lightline Funcions --- 
+ function! LightlineMode() abort
+ 	return lightline#mode() . ' ' . CapsLockStatusline()
+ endfunction
+
+function! LightlineReadonly() abort
+	return &readonly ? '' : ''
+endfunction
+
+function! LightlineFilename() abort
+	let filename = expand("%:t") !=# '' ? expand("%:t") : '[No Name]'
+	let modified = &modified ? ' +' : ''
+	return filename . modified 
+endfunction
+
+function! LightlineStatusline() abort
+	let branch = FugitiveHead()
+	if branch != ''
+		return ' [' . FugitiveHead() . ']'
+	else
+		return ''
+	endif
+endfunction
+
+" function! LightlineGutentag() abort
+" 	return gutentags#statusline('[', ']')
+" endfunction
+
+" --- Autocommands ---
+" for map's use <buffer>, for set's use setlocal
+
+augroup goosebumps
+	autocmd!
+augroup END
+
+" Atalhos para arquivos específicos
+" autocmd goosebumps FileType java,c nnoremap <buffer> <m-k> <SID>run_code()<cr>
+
+" Quickfix maps
+autocmd goosebumps FileType qf nnoremap <expr> <silent> <buffer> l <SID>move_in_list('l')
+autocmd goosebumps FileType qf nnoremap <expr> <silent> <buffer> h <SID>move_in_list('h')
+autocmd goosebumps FileType qf nnoremap <expr> <silent> <buffer> j <SID>move_in_list('j')
+autocmd goosebumps FileType qf nnoremap <expr> <silent> <buffer> k <SID>move_in_list('k')
+autocmd goosebumps FileType qf nnoremap <expr> <silent> <buffer> gq <SID>quit_list()
+
+" Command for compile LaTeX (need script)
+autocmd goosebumps FileType tex command! LatexCompile !clatex %
+
+" Terminal maps
+autocmd goosebumps TermOpen * nnoremap <expr> <silent> <buffer> gq <SID>quit_list()
+autocmd goosebumps TermOpen * setlocal scrolloff=0
+
+autocmd goosebumps FileType * setlocal textwidth=0
+
+" Match pair for $MYVIMRC
+autocmd goosebumps FileType html,vim setlocal mps+=<:>
+
+" Comentary.vim
+autocmd goosebumps FileType sh,bash setlocal commentstring=#\ %s
+autocmd goosebumps FileType c setlocal commentstring=/*\ %s\ */
+autocmd goosebumps FileType java setlocal commentstring=//\ %s
+autocmd goosebumps FileType vim setlocal commentstring=\"\ %s
+autocmd goosebumps FileType json setlocal commentstring=/*\ %s\ */
+
+" When enter/exit Insert Mode, change line background color
+autocmd goosebumps InsertEnter * setlocal cursorline
+autocmd goosebumps InsertLeave * setlocal nocursorline
+" TEST: Highligh the 80th column only on INSERT MODE
+" autocmd goosebumps InsertEnter * setlocal colorcolumn=80 
+" autocmd goosebumps InsertEnter * hi ColorColumn ctermbg=NONE guibg=NONE
+" autocmd goosebumps InsertLeave * setlocal colorcolumn& 
+" autocmd goosebumps InsertLeave * hi ColorColumn ctermbg=1 guibg=#232526
+
+" Enable Emmet plugin just for html, css files
+autocmd goosebumps FileType html,css EmmetInstall
+
+" Setlocal :compiler to use with :make and quickfix commands
+autocmd goosebumps FileType python compiler python3
+autocmd goosebumps FileType java compiler java
+autocmd goosebumps FileType css compiler csslint
+
+" Open quickfix window automaticaly
+autocmd goosebumps QuickFixCmdPost [^l]* ++nested cwindow
+autocmd goosebumps QuickFixCmdPost l* ++nested lwindow
+autocmd goosebumps FileType qf call <SID>set_qf_win_height()
+
+" Remove map 'K' from :Man plugin
+autocmd goosebumps FileType man nnoremap <buffer> K <c-u>
+
+" Fast quit in vim help files
+autocmd goosebumps FileType help nnoremap <buffer> <silent> gq :helpclose<cr>
+
+" Highlight yanked text - NeoVim 0.5.0 nightly
+autocmd goosebumps TextYankPost * silent! lua vim.highlight.on_yank{higroup="IncSearch", timeout=300}
+
+" Disable nvim-cmp in COMMAND MODE
+" autocmd goosebumps CmdlineLeave * lua require('cmp').setup({enabled = true})
+autocmd goosebumps CmdlineEnter * lua require('cmp').setup({enabled = false})
+
+" --- Lua Configurations ---
+
+""Vim lsp configuration
+" lua require("vim.lsp.health").check()
+
+"  Lsp Configurarion
+lua << EOF
+vim.diagnostic.config(
+	{
+		virtual_text = {
+			format = function(diagnostic)
+				if diagnostic.severity == vim.diagnostic.severity.ERROR then
+					return 'Seu burro!'
+				end
+				return diagnostic.message
+			end
+		}
+	}
+)
+EOF
+
+"" Java Lsp configuration is in /nvim/ftplugin/java.lua
+
+"" Python Lsp
+lua require('lspconfig').pyright.setup{}
+
+"" VimScript Lsp
+"lua require('lspconfig').vimls.setup{}
+
+" HTML Lsp
+" INSTALL: npm i -g vscode-langservers-extracted
+" lua require('lspconfig').html.setup{}
+
+"" Javascript/Typescript Lsp
+lua require('lspconfig').denols.setup{}
+
+"" Rust Lsp
+"lua require('lspconfig').rust_analyzer.setup{}
+
+"" Bash Lsp
+"lua require('lspconfig').bashls.setup{}
+
+" Nvim Colorizer
+lua require('colorizer').setup(nil, { css = true })
+
+" Treesitter configuration
+lua << EOF
+require('nvim-treesitter.install').compilers = {'clang', 'gcc', 'zig', 'cc'}
+require('nvim-treesitter.configs').setup{
+	highlight = {
+		enable = true,
+		additional_vim_regex_highlighting = true,
+	},
+	indent = {
+		enable = true
+	},
+	-- ensure_installed = { -- linguagens para web development
+	-- 	'css', 'html', 'javascript',
+	-- 	'lua', 'python', 'scss',
+	-- 	'typescript', 'vim', 'vue', 'java', 
+	-- },
+	context_commentstring = {
+		enable = true,
+	},
+}
+EOF
+
+" Telescope configuration
+lua << EOF
+local actions = require('telescope.actions')
+require('telescope').setup{
+	-- Playground configuration, extracted from github https://github.com/nvim-treesitter/playground
+	playground = {
+		enable = true,
+		disable = {},
+		updatetime = 25, -- Debounced time for highlighting nodes in the playground from source code
+		persist_queries = false, -- Whether the query persists across vim sessions
+		keybindings = {
+			toggle_query_editor = 'o',
+			toggle_hl_groups = 'i',
+			toggle_injected_languages = 't',
+			toggle_anonymous_nodes = 'a',
+			toggle_language_display = 'I',
+			focus_language = 'f',
+			unfocus_language = 'F',
+			update = 'R',
+			goto_node = '<cr>',
+			show_help = '?',
+		},
+	},
+	pickers = {
+		buffers = {
+			previewer = false,
+			mappings = {
+				i = {
+					["<c-d>"] = actions.delete_buffer,
+				},
+				n = {
+					["<c-d>"] = actions.delete_buffer,
+				},
+			},
+		},
+		find_files = {
+			previewer = false,
+		},
+		file_browser = {
+			previewer = false,
+		},
+	},
+	defaults = {
+		layout_config = { 
+			width = 0.5, 
+			height = 0.70,
+		},
+		path_display = { 
+			tail = true,
+		},
+		mappings = {
+			i = {
+				["<NL>"] = actions.select_default + actions.center,
+				["<esc>"] = actions.close,
+				["<c-u>"] = {"<c-u>", type = "command"},
+			},
+			n = {
+				["<NL>"] = actions.select_default + actions.center,
+			},
+		},
+	}
+}
+EOF
+
+" Nvim-cmp configuration
+lua <<EOF
+  -- Set up nvim-cmp.
+  local cmp = require('cmp')
+  cmp.setup({
+    snippet = {
+      -- REQUIRED - you must specify a snippet engine
+      expand = function(args)
+        -- vim.fn["vsnip#anonymous"](args.body) -- For `vsnip` users.
+        -- require('luasnip').lsp_expand(args.body) -- For `luasnip` users.
+        -- require('snippy').expand_snippet(args.body) -- For `snippy` users.
+        -- vim.fn["UltiSnips#Anon"](args.body) -- For `ultisnips` users.
+      end,
+    },
+    window = {
+      -- completion = cmp.config.window.bordered(),
+      -- documentation = cmp.config.window.bordered(),
+    },
+    mapping = cmp.mapping.preset.insert({
+      ['<C-b>'] = cmp.mapping.scroll_docs(-4),
+      ['<C-f>'] = cmp.mapping.scroll_docs(4),
+      ['<C-Space>'] = cmp.mapping.complete(),
+      ['<C-e>'] = cmp.mapping.abort(),
+      ['<CR>'] = cmp.mapping.confirm({ select = false }), -- Accept currently selected item. Set `select` to `false` to only confirm explicitly selected items.
+    }),
+    sources = cmp.config.sources({
+      { name = 'nvim_lsp' },
+      -- { name = 'vsnip' }, -- For vsnip users.
+      -- { name = 'luasnip' }, -- For luasnip users.
+      -- { name = 'ultisnips' }, -- For ultisnips users.
+      -- { name = 'snippy' }, -- For snippy users.
+    }, {
+      { name = 'buffer' },
+    })
+  })
+  -- Set configuration for specific filetype.
+  cmp.setup.filetype('gitcommit', {
+    sources = cmp.config.sources({
+      { name = 'cmp_git' }, -- You can specify the `cmp_git` source if you were installed it.
+    }, {
+      { name = 'buffer' },
+    })
+  })
+  -- Use buffer source for `/` and `?` (if you enabled `native_menu`, this won't work anymore).
+  cmp.setup.cmdline({ '/', '?' }, {
+    mapping = cmp.mapping.preset.cmdline(),
+    sources = {
+      { name = 'buffer' }
+    }
+  })
+  -- Use cmdline & path source for ':' (if you enabled `native_menu`, this won't work anymore).
+  cmp.setup.cmdline(':', {
+    mapping = cmp.mapping.preset.cmdline(),
+    sources = cmp.config.sources({
+      { name = 'path' }
+    }, {
+      { name = 'cmdline' }
+    })
+  })
+  -- Set up lspconfig.
+  local capabilities = require('cmp_nvim_lsp').default_capabilities()
+  -- Replace <YOUR_LSP_SERVER> with each lsp server you've enabled.
+  -- require('lspconfig')['<YOUR_LSP_SERVER>'].setup {
+  require('lspconfig')['pyright'].setup {
+    capabilities = capabilities
+  }
+  require('lspconfig')['rust_analyzer'].setup {
+    capabilities = capabilities
+  }
+  require('lspconfig')['denols'].setup {
+    capabilities = capabilities
+  }
+EOF
+

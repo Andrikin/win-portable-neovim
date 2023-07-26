@@ -1,13 +1,12 @@
-# Permitir
-!nvim/config/init.lua
-!nvim/config/lua
-!nvim/config/init.vim.bkp
-!nvim/config/nvim-data/site/plugin/*.vim
-!nvim/share/nvim/sysinit.vim
+nvim/
+# !nvim/config/nvim/init.lua
+# !nvim/config/nvim/lua
+# !nvim/config/nvim/init.vim.bkp
+# !nvim/config/nvim-data/site/plugin/awesome-pairing.vim
+# !nvim/config/nvim-data/site/plugin/awesome-substitute.vim
+# !nvim/share/nvim/sysinit.vim
 
-# Excluir
 *.exe
 *.zip
 desktop.ini
-nvim/*
 
