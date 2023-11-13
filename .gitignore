@@ -1,10 +1,32 @@
-nvim/
+# nvim/
 # !nvim/config/nvim/init.lua
 # !nvim/config/nvim/lua
 # !nvim/config/nvim/init.vim.bkp
 # !nvim/config/nvim-data/site/plugin/awesome-pairing.vim
 # !nvim/config/nvim-data/site/plugin/awesome-substitute.vim
 # !nvim/share/nvim/sysinit.vim
+
+nvim/bin/
+nvim/config/nvim-data/harpoon.json
+nvim/config/nvim-data/shada/
+nvim/config/nvim-data/site/autoload/
+nvim/config/nvim-data/tree-sitter-css/
+nvim/config/nvim-data/tree-sitter-html/
+nvim/config/nvim-data/tree-sitter-java/
+nvim/config/nvim-data/tree-sitter-lua/
+nvim/config/nvim-data/tree-sitter-python/
+nvim/config/nvim-data/tree-sitter-scss/
+nvim/config/nvim-data/tree-sitter-vim/
+nvim/config/nvim-data/tree-sitter-vue/
+nvim/config/nvim/plugged/
+nvim/deps/
+nvim/lib/
+nvim/share/applications/
+nvim/share/icons/
+nvim/share/locale/
+nvim/share/man/
+nvim/share/nvim-qt/
+nvim/share/nvim/runtime/
 
 *.exe
 *.zip
