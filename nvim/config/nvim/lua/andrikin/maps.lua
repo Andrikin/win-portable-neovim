@@ -95,7 +95,15 @@ vim.keymap.set(
 	'n',
 	'<leader>r',
 	function()
-		vim.cmd.e('$MYVIMRC')
+		if vim.g.loaded_dirvish == 1 then -- plugin ativo
+			vim.cmd.Dirvish(
+				vim.fn.fnamemodify(vim.env.MYVIMRC, ':h') .. '/lua/andrikin'
+			)
+		else
+			vim.cmd.edit(
+				vim.fn.fnamemodify(vim.env.MYVIMRC, ':h') .. '/lua/andrikin/init.lua'
+			)
+		end
 	end
 )
 
