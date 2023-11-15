@@ -222,11 +222,11 @@ local lsp_maps = {
 		map = vim.lsp.buf.signature_help,
 	},
 	{
-		key = ']d',
+		key = ']e',
 		map = vim.diagnostic.goto_next,
 	},
 	{
-		key = '[d',
+		key = '[e',
 		map = vim.diagnostic.goto_prev,
 	}
 }
