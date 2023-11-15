@@ -1,2 +1,6 @@
 [safe]
 	directory = '*'
+	directory = D:/nvim-portable-win
+[user]
+	email = contasecretaalternativa@gmail.com
+	name = Andrikin
