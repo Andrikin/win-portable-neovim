@@ -53,7 +53,7 @@ require('nvim-treesitter.configs').setup{
 		'css', 'html', 'javascript',
 		'lua', 'python',
 		'vim', 'java',
-		'tex',
+		'latex',
 	},
 	context_commentstring = {
 		enable = true,
