@@ -49,16 +49,18 @@ require('nvim-treesitter.configs').setup{
 	indent = {
 		enable = true
 	},
-	-- ensure_installed = { -- linguagens para web development
-	-- 	'css', 'html', 'javascript',
-	-- 	'lua', 'python', 'scss',
-	-- 	'typescript', 'vim', 'vue', 'java', 
-	-- },
+	ensure_installed = { -- linguagens para web development
+		'css', 'html', 'javascript',
+		'lua', 'python',
+		'vim', 'java',
+		'tex',
+	},
 	context_commentstring = {
 		enable = true,
 	},
 }
 
+local ts_tema = 'dropdown'
 local telescope_actions = require('telescope.actions')
 require('telescope').setup{
 	-- Playground configuration, extracted from github https://github.com/nvim-treesitter/playground
@@ -83,6 +85,7 @@ require('telescope').setup{
 	pickers = {
 		buffers = {
 			previewer = false,
+			theme = ts_tema,
 			mappings = {
 				i = {
 					["<c-d>"] = telescope_actions.delete_buffer,
@@ -94,17 +97,19 @@ require('telescope').setup{
 		},
 		find_files = {
 			previewer = false,
+			theme = ts_tema,
 		},
 		file_browser = {
 			previewer = false,
+			theme = ts_tema,
 		},
 	},
 	defaults = {
-		layout_config = { 
-			width = 0.5, 
+		layout_config = {
+			width = 0.5,
 			height = 0.70,
 		},
-		path_display = { 
+		path_display = {
 			tail = true,
 		},
 		mappings = {
@@ -198,7 +203,7 @@ vim.diagnostic.config(
 		virtual_text = {
 			format = function(diagnostic)
 				if diagnostic.severity == vim.diagnostic.severity.ERROR then
-					return 'Seu burro!'
+					return 'Erro!'
 				end
 				return diagnostic.message
 			end
