@@ -1,4 +1,4 @@
--- Como resolver caso não exista o diretório '\nvim\deps'?
+-- Como resolver a situação onde não exista o diretório '\nvim\deps'?
 -- TODO: Como verificar diretórios e automatizar a adição de novas dependências?
 local function set_dep(dependencia)
 	if not string.find(vim.env.PATH, dependencia) then
@@ -8,33 +8,59 @@ local function set_dep(dependencia)
 end
 
 local NVIM_DEPS = {
-	git = function() set_dep([[\git\bin]]) end,
-	curl = function() set_dep([[\curl\bin]]) end,
-	win64devkit = function() set_dep([[\win64devkit\bin]]) end,
-	node = function()
-		set_dep([[\node]])
-		-- Somente para Windows 7
-		if vim.env.NODE_SKIP_PLATFORM_CHECK ~= 1 then
-			vim.env.NODE_SKIP_PLATFORM_CHECK = 1
-		end
-	end,
-	fd = function() set_dep([[\fd]]) end,
-	ripgrep = function() set_dep([[\ripgrep]]) end,
-	rust = function() set_dep([[\rust\bin]]) end,
-	python = function()
-		local PYTHON = [[\python-win7]]
-		set_dep(PYTHON)
-		set_dep(PYTHON .. [[\Scripts]])
-	end,
+	{
+		config = set_dep,
+		args = [[\git\bin]]
+	},
+	{
+		config = set_dep,
+		args = [[\curl\bin]]
+	},
+	{
+		config = set_dep,
+		args = [[\win64devkit\bin]]
+	},
+	{
+		config = set_dep,
+		args = [[\fd]]
+	},
+	{
+		config = set_dep,
+		args = [[\ripgrep]]
+	},
+	{
+		config = set_dep,
+		args = [[\rust\bin]]
+	},
+	{
+		config = function()
+			set_dep([[\node]])
+			-- Somente para Windows 7
+			if vim.env.NODE_SKIP_PLATFORM_CHECK ~= 1 then
+				vim.env.NODE_SKIP_PLATFORM_CHECK = 1
+			end
+		end,
+	},
+	{
+		config = function()
+			local PYTHON = [[\python-win7]]
+			set_dep(PYTHON)
+			set_dep(PYTHON .. [[\Scripts]])
+			-- Python 
+			vim.g.python3_host_prog = PYTHON
+		end,
+	},
 	-- Adicionar os binários dos lsp's aqui
-	lspservers = function()
-		local LSP = [[\lsp-servers]]
-		set_dep(LSP .. [[\javascript]])
-		set_dep(LSP .. [[\lua\bin]])
-	end
+	{
+		config = function()
+			local LSP = [[\lsp-servers]]
+			set_dep(LSP .. [[\javascript]])
+			set_dep(LSP .. [[\lua\bin]])
+		end,
+	}
 }
 
-for _,d in pairs(NVIM_DEPS) do
-	d()
+for _, dep in ipairs(NVIM_DEPS) do
+	dep.config(dep.args)
 end
 

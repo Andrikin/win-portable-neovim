@@ -67,9 +67,6 @@ vim.opt.guifont=[[SauceCodePro NFM]]
 vim.opt.inccommand=''
 vim.opt.fillchars=[[vert:|,fold:*,foldclose:+,diff:-]]
 
--- Python 
-vim.g.python3_host_prog = PYTHON
-
 -- Using ripgrep ([cf]open; [cf]do {cmd} | update)
 if vim.fn.executable('rg') then
 	vim.g.grepprg=[[rg --vimgrep --smart-case --follow]]
