@@ -104,7 +104,7 @@ Ouvidoria.listagem = function()
 			end,
 			{
 				path = vim.fn.fnamemodify(vim.env.HOME, ':h') .. '/projetos',
-				limit = 5,
+				limit = math.huge,
 				type = 'file'
 			}
 		)
