@@ -1,6 +1,6 @@
 -- Como resolver a situação onde não exista o diretório '\nvim\deps'?
 -- TODO: Como verificar diretórios e automatizar a adição de novas dependências?
-local function set_dep(dependencia)
+local function set_binary_folder(dependencia)
 	if not string.find(vim.env.PATH, dependencia) then
 		local NVIM = vim.env.HOME .. [[\nvim\deps]]
 		vim.env.PATH = vim.env.PATH .. ';' .. NVIM .. dependencia
@@ -9,32 +9,32 @@ end
 
 local NVIM_DEPS = {
 	{
-		config = set_dep,
+		config = set_binary_folder,
 		args = [[\git\bin]]
 	},
 	{
-		config = set_dep,
+		config = set_binary_folder,
 		args = [[\curl\bin]]
 	},
 	{
-		config = set_dep,
+		config = set_binary_folder,
 		args = [[\win64devkit\bin]]
 	},
 	{
-		config = set_dep,
+		config = set_binary_folder,
 		args = [[\fd]]
 	},
 	{
-		config = set_dep,
+		config = set_binary_folder,
 		args = [[\ripgrep]]
 	},
 	{
-		config = set_dep,
+		config = set_binary_folder,
 		args = [[\rust\bin]]
 	},
 	{
 		config = function()
-			set_dep([[\node]])
+			set_binary_folder([[\node]])
 			-- Somente para Windows 7
 			if vim.env.NODE_SKIP_PLATFORM_CHECK ~= 1 then
 				vim.env.NODE_SKIP_PLATFORM_CHECK = 1
@@ -44,18 +44,26 @@ local NVIM_DEPS = {
 	{
 		config = function()
 			local PYTHON = [[\python-win7]]
-			set_dep(PYTHON)
-			set_dep(PYTHON .. [[\Scripts]])
+			set_binary_folder(PYTHON)
+			set_binary_folder(PYTHON .. [[\Scripts]])
 			-- Python 
-			vim.g.python3_host_prog = PYTHON
+			vim.g.python3_host_prog = vim.env.HOME .. '\\nvim\\deps\\' .. PYTHON
 		end,
 	},
 	-- Adicionar os binários dos lsp's aqui
 	{
 		config = function()
 			local LSP = [[\lsp-servers]]
-			set_dep(LSP .. [[\javascript]])
-			set_dep(LSP .. [[\lua\bin]])
+			set_binary_folder(LSP .. [[\javascript]])
+			set_binary_folder(LSP .. [[\lua\bin]])
+		end,
+	},
+	{
+		config = function() -- latex
+			local latex = vim.fn.fnamemodify(vim.env.HOME, ':h') .. '\\miktex\\program\\texmfs\\install\\miktex\\bin\\x64'
+			if not string.find(vim.env.PATH, latex) then
+				vim.env.PATH = vim.env.PATH .. ';' .. latex
+			end
 		end,
 	}
 }
