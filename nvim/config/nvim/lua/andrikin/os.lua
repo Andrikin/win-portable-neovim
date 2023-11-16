@@ -1,5 +1,8 @@
 -- Como resolver a situação onde não exista o diretório '\nvim\deps'?
 -- TODO: Como verificar diretórios e automatizar a adição de novas dependências?
+-- refac: utilizar vim.fs.find para setar os diretórios dos executáveis
+-- refac: vim.loop.os_uname para obter informação do sistema
+
 local function set_binary_folder(dependencia)
 	if not string.find(vim.env.PATH, dependencia) then
 		local NVIM = vim.env.HOME .. [[\nvim\deps]]
@@ -47,7 +50,7 @@ local NVIM_DEPS = {
 			set_binary_folder(PYTHON) -- python.exe
 			set_binary_folder(PYTHON .. [[\Scripts]]) -- pip.exe
 			-- Python 
-			vim.g.python3_host_prog = vim.env.HOME .. '\\nvim\\deps\\' .. PYTHON
+			vim.g.python3_host_prog = vim.env.HOME .. '\\nvim\\deps\\' .. PYTHON .. '\\python.exe'
 		end,
 	},
 	-- Adicionar os binários dos lsp's aqui
@@ -56,6 +59,7 @@ local NVIM_DEPS = {
 			local LSP = [[\lsp-servers]]
 			set_binary_folder(LSP .. [[\javascript]])
 			set_binary_folder(LSP .. [[\lua\bin]])
+			set_binary_folder(LSP .. [[\rust]])
 		end,
 	},
 	{
