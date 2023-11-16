@@ -60,7 +60,7 @@ require('nvim-treesitter.configs').setup{
 	},
 }
 
-local ts_tema = 'dropdown'
+local telescope_tema = 'dropdown'
 local telescope_actions = require('telescope.actions')
 require('telescope').setup{
 	-- Playground configuration, extracted from github https://github.com/nvim-treesitter/playground
@@ -85,23 +85,20 @@ require('telescope').setup{
 	pickers = {
 		buffers = {
 			previewer = false,
-			theme = ts_tema,
+			theme = telescope_tema,
 			mappings = {
-				i = {
-					["<c-d>"] = telescope_actions.delete_buffer,
-				},
 				n = {
-					["<c-d>"] = telescope_actions.delete_buffer,
+					["dd"] = telescope_actions.delete_buffer,
 				},
 			},
 		},
 		find_files = {
 			previewer = false,
-			theme = ts_tema,
+			theme = telescope_tema,
 		},
 		file_browser = {
 			previewer = false,
-			theme = ts_tema,
+			theme = telescope_tema,
 		},
 	},
 	defaults = {
@@ -115,7 +112,7 @@ require('telescope').setup{
 		mappings = {
 			i = {
 				["<NL>"] = telescope_actions.select_default + telescope_actions.center,
-				["<esc>"] = telescope_actions.close,
+				-- ["<esc>"] = telescope_actions.close,
 				["<c-u>"] = {"<c-u>", type = "command"},
 			},
 			n = {
