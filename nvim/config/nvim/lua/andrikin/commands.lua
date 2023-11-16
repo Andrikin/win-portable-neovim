@@ -36,7 +36,7 @@ Latex.clear = function(arquivo)
 end
 Latex.init = function() -- setando diretoria de modelos latex
 	vim.env.TEXINPUTS = vim.fs.find(
-		'prefeitura',
+		'ouvidoria-latex-modelos',
 		{
 			path = vim.fn.fnamemodify(vim.env.HOME, ':h'),
 			limit = 5,
@@ -51,6 +51,7 @@ Latex.compile = function(opts)
 	end
 	if vim.o.modified then -- salvar arquivo que está modificado.
 		vim.cmd.write()
+		vim.cmd.redraw({bang = true})
 	end
 	local arquivo = vim.fn.expand('%:t')
 	local comando = {}
