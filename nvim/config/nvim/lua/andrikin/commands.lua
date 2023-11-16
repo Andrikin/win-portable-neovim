@@ -5,11 +5,11 @@
 -- config: setar qual programa irá abrir o pdf (chrome como padrão?)
 -- config: verificar a existência de TEXINPUTS antes de setá-lo
 -- plugin: unificar objeto Latex com Ouvidoria
--- plugin: identificar em qual sistema o nvim está executando
+-- plugin: identificar em qual sistema o nvim está executando!!!
 -- config: vim.loop.os_uname para obter informação do sistema
 local Latex = {}
-Latex.OUTPUT_FOLDER = vim.loop.os_homedir() .. '\\Downloads'
-Latex.AUX_FOLDER = Latex.OUTPUT_FOLDER
+Latex.OUTPUT_FOLDER = vim.loop.os_homedir() .. '\\Downloads' -- windows
+Latex.AUX_FOLDER = vim.env.TEMP -- windows
 -- WIP: Como verificar em qual sistema o nvim está executando
 Latex.PDF_READER = 'C:\\Program Files\\Google\\Chrome\\Application\\chrome.exe' -- windows 10
 Latex.ft = function()
