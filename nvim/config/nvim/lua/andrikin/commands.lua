@@ -50,9 +50,9 @@ Latex.compile = function(opts)
 		cmd.write()
 	end
 	local arquivo = fn.expand('%:t')
-	local cmd = {}
+	local comando = {}
 	if fn.has('linux') then
-		cmd = {
+		comando = {
 			'pdflatex',
 			'-file-line-error',
 			'-interaction=nonstopmode',
@@ -60,7 +60,7 @@ Latex.compile = function(opts)
 			arquivo
 		}
 	else -- para sistemas que não são linux, verificar a opção '-aux-directory'
-		cmd = {
+		comando = {
 			'pdflatex',
 			'-file-line-error',
 			'-interaction=nonstopmode',
@@ -70,9 +70,9 @@ Latex.compile = function(opts)
 		}
 	end
 	vim.notify('1º compilação!')
-	fn.system(cmd)
+	fn.system(comando)
 	vim.notify('2º compilação!')
-	fn.system(cmd)
+	fn.system(comando)
 	vim.notify('Pdf compilado!')
 	arquivo = string.match(arquivo, '(.*)%..*$') -- remover extenção do arquivo
 	fn.jobstart(
