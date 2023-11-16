@@ -77,6 +77,12 @@ local plugins = {
 	},
 	-- Nvim Lspconfig,
 	'https://github.com/neovim/nvim-lspconfig.git',
+	{
+		'https://github.com/mfussenegger/nvim-jdtls.git',
+		lazy = true,
+		-- config = function()
+		-- end,
+	},
 	-- Traces.vim,
 	'https://github.com/markonm/traces.vim.git',
 	-- Nvim-ts-context-commentstring,
