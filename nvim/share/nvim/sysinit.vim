@@ -8,7 +8,7 @@ lua << EOF
 	local env = vim.env
 
 	if fn.has('win32') then
-		env.HOME = string.sub(env.VIMRUNTIME, 1, 3) .. [[nvim-portable-win]]
+		env.HOME = string.match(env.VIMRUNTIME, '^(.*nvim.portable.win).*$')
 		env.XDG_CONFIG_HOME = env.HOME .. [[\nvim\config]]
 		env.XDG_DATA_HOME = env.XDG_CONFIG_HOME
 		env.XDG_STATE_HOME = env.XDG_DATA_HOME
