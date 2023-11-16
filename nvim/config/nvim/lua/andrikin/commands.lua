@@ -39,7 +39,6 @@ Latex.init = function() -- setando diretoria de modelos latex
 		'ouvidoria-latex-modelos',
 		{
 			path = vim.fn.fnamemodify(vim.env.HOME, ':h'),
-			limit = 5,
 			type = 'directory',
 		}
 	)[1]
@@ -91,7 +90,7 @@ Latex.init()
 
 local Ouvidoria = {}
 Ouvidoria.TEX = '.tex'
-Ouvidoria.CI_FOLDER = vim.fn.fnamemodify(vim.env.TEXINPUTS, ':h')
+Ouvidoria.CI_FOLDER = vim.env.TEXINPUTS
 Ouvidoria.OUTPUT_FOLDER = Latex.OUTPUT_FOLDER
 Ouvidoria.listagem = function()
 	return vim.tbl_map(
