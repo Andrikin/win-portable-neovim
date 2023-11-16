@@ -43,9 +43,9 @@ local NVIM_DEPS = {
 	},
 	{
 		config = function()
-			local PYTHON = [[\python-win7]]
-			set_binary_folder(PYTHON)
-			set_binary_folder(PYTHON .. [[\Scripts]])
+			local PYTHON = [[\python\python3.8.9]] -- windows 7, 3.12 windows 10+
+			set_binary_folder(PYTHON) -- python.exe
+			set_binary_folder(PYTHON .. [[\Scripts]]) -- pip.exe
 			-- Python 
 			vim.g.python3_host_prog = vim.env.HOME .. '\\nvim\\deps\\' .. PYTHON
 		end,
