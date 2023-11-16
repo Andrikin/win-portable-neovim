@@ -4,9 +4,11 @@
 -- TODO: Sempre instalar os arquivos binários dos executáveis
 local lsp = require('lspconfig')
 -- Python LSP
-lsp.pyright.setup({})
+lsp.pyright.setup({}) -- pip install pyright | npm -g install pyright
+-- Emmet LSP
+lsp.emmet_ls.setup({}) -- npm install -g emmet-ls
 -- HTML LSP
-lsp.html.setup({})
+lsp.html.setup({}) -- npm i -g vscode-langservers-extracted
 -- Javascript LSP
 lsp.denols.setup({})
 -- Lua LSP
@@ -35,8 +37,9 @@ lsp.lua_ls.setup(
 		},
 	}
 )
+-- Rust LSP
+lsp.rust_analyzer.setup({})
 -- lsp.vimls.setup({})
--- lsp.rust_analyzer.setup({})
 
 require('colorizer').setup(nil, { css = true })
 
