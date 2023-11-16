@@ -1,14 +1,16 @@
 [safe]
 	directory = '*'
-	directory = D:/nvim-portable-win
-	directory = D:/nvim-portable-win/nvim/config/nvim-data/tree-sitter-css
-	directory = D:/nvim-portable-win/nvim/config/nvim-data/tree-sitter-html
-	directory = D:/nvim-portable-win/nvim/config/nvim-data/tree-sitter-lua
-	directory = D:/nvim-portable-win/nvim/config/nvim-data/tree-sitter-java
-	directory = D:/nvim-portable-win/nvim/config/nvim-data/tree-sitter-vim
-	directory = D:/nvim-portable-win/nvim/config/nvim-data/tree-sitter-javascript
-	directory = D:/nvim-portable-win/nvim/config/nvim-data/tree-sitter-python
-	directory = D:/nvim-portable-win/nvim/config/nvim-data/tree-sitter-latex
+	directory = F:/nvim/nvim-portable-win
+	directory = F:/nvim/nvim-portable-win/nvim/config/nvim-data/tree-sitter-css
+	directory = F:/nvim/nvim-portable-win/nvim/config/nvim-data/tree-sitter-html
+	directory = F:/nvim/nvim-portable-win/nvim/config/nvim-data/tree-sitter-lua
+	directory = F:/nvim/nvim-portable-win/nvim/config/nvim-data/tree-sitter-java
+	directory = F:/nvim/nvim-portable-win/nvim/config/nvim-data/tree-sitter-vim
+	directory = F:/nvim/nvim-portable-win/nvim/config/nvim-data/tree-sitter-javascript
+	directory = F:/nvim/nvim-portable-win/nvim/config/nvim-data/tree-sitter-python
+	directory = F:/nvim/nvim-portable-win/nvim/config/nvim-data/tree-sitter-latex
 [user]
 	email = contasecretaalternativa@gmail.com
 	name = Andrikin
+[credential "helperselector"]
+	selected = manager
