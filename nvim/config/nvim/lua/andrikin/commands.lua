@@ -8,7 +8,7 @@
 -- plugin: identificar em qual sistema o nvim está executando!!!
 -- config: vim.loop.os_uname para obter informação do sistema
 local Latex = {}
-Latex.OUTPUT_FOLDER = vim.loop.os_homedir() .. '\\Downloads' -- windows
+Latex.OUTPUT_FOLDER = vim.fs.find('Downloads', {path = vim.loop.os_homedir(), type = 'directory'})[1] -- windows
 Latex.AUX_FOLDER = vim.env.TEMP -- windows
 -- WIP: Como verificar em qual sistema o nvim está executando
 Latex.PDF_READER = vim.fs.find('sumatra.exe', {type = 'file', path = vim.env.HOME})[1]
