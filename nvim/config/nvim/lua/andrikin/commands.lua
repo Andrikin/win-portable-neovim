@@ -11,7 +11,7 @@ local Latex = {}
 Latex.OUTPUT_FOLDER = vim.loop.os_homedir() .. '\\Downloads' -- windows
 Latex.AUX_FOLDER = vim.env.TEMP -- windows
 -- WIP: Como verificar em qual sistema o nvim está executando
-Latex.PDF_READER = 'C:\\Program Files\\Google\\Chrome\\Application\\chrome.exe' -- windows 10
+Latex.PDF_READER = vim.fs.find('sumatra.exe', {type = 'file', path = vim.env.HOME})[1]
 Latex.ft = function()
 	return vim.o.ft ~= 'tex'
 end
@@ -132,8 +132,10 @@ Ouvidoria.nova_comunicacao = function(opts)
 			return
 		end
 	end
-	vim.fn.setreg('#', alternativo) -- setando arquivo alternativo
-	vim.cmd.bdelete(tipo)
+	if not alternativo == '' then
+		vim.fn.setreg('#', alternativo) -- setando arquivo alternativo
+	end
+	vim.cmd.bdelete(tipo .. Ouvidoria.TEX)
 end
 Ouvidoria.complete = function(args, cmd, pos)
 	return vim.tbl_filter(
