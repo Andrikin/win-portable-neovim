@@ -64,7 +64,7 @@ local NVIM_DEPS = {
 	},
 	{
 		config = function() -- latex
-			local latex = vim.fn.fnamemodify(vim.env.HOME, ':h') .. '\\miktex\\program\\texmfs\\install\\miktex\\bin\\x64'
+			local latex = vim.fs.find('x64', {path = vim.env.HOME, type = 'directory'})[1]
 			if not string.find(vim.env.PATH, latex) then
 				vim.env.PATH = vim.env.PATH .. ';' .. latex
 			end
