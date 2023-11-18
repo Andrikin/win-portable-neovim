@@ -9,6 +9,7 @@
 	directory = F:/nvim/nvim-portable-win/nvim/config/nvim-data/tree-sitter-javascript
 	directory = F:/nvim/nvim-portable-win/nvim/config/nvim-data/tree-sitter-python
 	directory = F:/nvim/nvim-portable-win/nvim/config/nvim-data/tree-sitter-latex
+	directory = D:/nvim/nvim-portable-win
 [user]
 	email = contasecretaalternativa@gmail.com
 	name = Andrikin

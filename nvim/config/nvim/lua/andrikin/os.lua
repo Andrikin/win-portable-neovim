@@ -36,6 +36,10 @@ local NVIM_DEPS = {
 		args = [[\rust\bin]]
 	},
 	{
+		config = set_binary_folder,
+		args = [[\nexusfont]]
+	},
+	{
 		config = function()
 			set_binary_folder([[\node]])
 			-- Somente para Windows 7
@@ -75,4 +79,7 @@ local NVIM_DEPS = {
 for _, dep in ipairs(NVIM_DEPS) do
 	dep.config(dep.args)
 end
+
+-- Inicialização do NexusFont para uso da fonte SauceNerdPro
+vim.fn.jobstart('nexusfont.exe')
 
