@@ -113,6 +113,7 @@ Ouvidoria.nova_comunicacao = function(opts)
 	local tipo = opts.fargs[1] or 'modelo-basico'
 	local arquivo = opts.fargs[2] or 'ci-modelo'
 	local alternativo = vim.fn.expand('%')
+	local NONAME = vim.api.nvim_buf_get_name(vim.fn.bufnr('%')) == ''
 	vim.cmd.edit(Ouvidoria.CI_FOLDER .. '/' .. tipo .. Ouvidoria.TEX)
 	local ok, retorno = pcall(
 		vim.cmd.saveas,
@@ -132,9 +133,10 @@ Ouvidoria.nova_comunicacao = function(opts)
 			return
 		end
 	end
-	if not alternativo == '' then
-		vim.fn.setreg('#', alternativo) -- setando arquivo alternativo
+	if NONAME then
+		alternativo = Ouvidoria.OUTPUT_FOLDER .. '/' .. arquivo .. Ouvidoria.TEX
 	end
+	vim.fn.setreg('#', alternativo) -- setando arquivo alternativo
 	vim.cmd.bdelete(tipo .. Ouvidoria.TEX)
 end
 Ouvidoria.complete = function(args, cmd, pos)
