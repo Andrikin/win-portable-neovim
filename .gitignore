@@ -30,6 +30,7 @@ nvim/share/nvim/runtime/
 nvim/config/nvim-data/lazy/
 nvim/config/nvim/lazy-lock.json
 nvim/config/nvim-data/telescope_history
+.ssh/
 
 *.exe
 *.zip
