@@ -31,8 +31,10 @@ nvim/config/nvim-data/lazy/
 nvim/config/nvim/lazy-lock.json
 nvim/config/nvim-data/telescope_history
 .ssh/
+.bash_history
 
 *.exe
 *.zip
 desktop.ini
 
+/.bash_history
