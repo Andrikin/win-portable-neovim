@@ -17,6 +17,10 @@ local NVIM_DEPS = {
 	},
 	{
 		config = set_binary_folder,
+		args = '/git/cmd'
+	},
+	{
+		config = set_binary_folder,
 		args = '/curl/bin'
 	},
 	{
