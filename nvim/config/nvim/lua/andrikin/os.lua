@@ -85,5 +85,15 @@ for _, dep in ipairs(NVIM_DEPS) do
 end
 
 -- Inicialização do NexusFont para uso da fonte SauceNerdPro
-vim.fn.jobstart('nexusfont.exe')
+vim.fn.system(
+	{
+		'powershell',
+		'-command',
+		'"get-process -name nexusfont"'
+	}
+)
+local nexusfont = vim.v.shell_error == 0
+if not nexusfont then
+	vim.fn.jobstart('nexusfont.exe', { detach = true })
+end
 
