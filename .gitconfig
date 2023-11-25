@@ -1,5 +1,41 @@
+[safe]
+	directory = '*'
+	directory = F:/nvim/nvim-portable-win
+	directory = F:/nvim/nvim-portable-win/nvim/config/nvim-data/tree-sitter-css
+	directory = F:/nvim/nvim-portable-win/nvim/config/nvim-data/tree-sitter-html
+	directory = F:/nvim/nvim-portable-win/nvim/config/nvim-data/tree-sitter-lua
+	directory = F:/nvim/nvim-portable-win/nvim/config/nvim-data/tree-sitter-java
+	directory = F:/nvim/nvim-portable-win/nvim/config/nvim-data/tree-sitter-vim
+	directory = F:/nvim/nvim-portable-win/nvim/config/nvim-data/tree-sitter-javascript
+	directory = F:/nvim/nvim-portable-win/nvim/config/nvim-data/tree-sitter-python
+	directory = F:/nvim/nvim-portable-win/nvim/config/nvim-data/tree-sitter-latex
+	directory = D:/nvim/nvim-portable-win
+	directory = D:/nvim/nvim-portable-win/nvim/config/nvim-data/tree-sitter-css
+	directory = D:/nvim/nvim-portable-win/nvim/config/nvim-data/tree-sitter-html
+	directory = D:/nvim/nvim-portable-win/nvim/config/nvim-data/tree-sitter-lua
+	directory = D:/nvim/nvim-portable-win/nvim/config/nvim-data/tree-sitter-java
+	directory = D:/nvim/nvim-portable-win/nvim/config/nvim-data/tree-sitter-vim
+	directory = D:/nvim/nvim-portable-win/nvim/config/nvim-data/tree-sitter-javascript
+	directory = D:/nvim/nvim-portable-win/nvim/config/nvim-data/tree-sitter-python
+	directory = D:/nvim/nvim-portable-win/nvim/config/nvim-data/tree-sitter-latex
+	directory = E:/nvim/nvim-portable-win
+	directory = E:/nvim/nvim-portable-win/nvim/config/nvim-data/tree-sitter-css
+	directory = E:/nvim/nvim-portable-win/nvim/config/nvim-data/tree-sitter-html
+	directory = E:/nvim/nvim-portable-win/nvim/config/nvim-data/tree-sitter-lua
+	directory = E:/nvim/nvim-portable-win/nvim/config/nvim-data/tree-sitter-java
+	directory = E:/nvim/nvim-portable-win/nvim/config/nvim-data/tree-sitter-vim
+	directory = E:/nvim/nvim-portable-win/nvim/config/nvim-data/tree-sitter-javascript
+	directory = E:/nvim/nvim-portable-win/nvim/config/nvim-data/tree-sitter-python
+	directory = E:/nvim/nvim-portable-win/nvim/config/nvim-data/tree-sitter-latex
+	directory = G:/nvim/nvim-portable-win
+	directory = G:/nvim/nvim-portable-win/nvim/config/nvim-data/tree-sitter-css
+	directory = G:/nvim/nvim-portable-win/nvim/config/nvim-data/tree-sitter-html
+	directory = G:/nvim/nvim-portable-win/nvim/config/nvim-data/tree-sitter-lua
+	directory = G:/nvim/nvim-portable-win/nvim/config/nvim-data/tree-sitter-java
+	directory = G:/nvim/nvim-portable-win/nvim/config/nvim-data/tree-sitter-vim
+	directory = G:/nvim/nvim-portable-win/nvim/config/nvim-data/tree-sitter-javascript
+	directory = G:/nvim/nvim-portable-win/nvim/config/nvim-data/tree-sitter-python
+	directory = G:/nvim/nvim-portable-win/nvim/config/nvim-data/tree-sitter-latex
 [user]
-	name = Andrikin
 	email = contasecretaalternativa@gmail.com
-[credential "helperselector"]
-	selected = manager
+	name = Andrikin
