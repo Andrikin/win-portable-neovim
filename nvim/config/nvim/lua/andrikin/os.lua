@@ -3,6 +3,8 @@
 -- refac: utilizar vim.fs.find para setar os diretórios dos executáveis
 -- refac: vim.loop.os_uname para obter informação do sistema
 
+local win7 = string.match(vim.loop.os_uname()['version'], 'Windows 7')
+
 local function set_binary_folder(dependencia)
 	if not string.find(vim.env.PATH, dependencia) then
 		local NVIM = vim.env.HOME .. '/nvim/deps'
@@ -47,7 +49,7 @@ local NVIM_DEPS = {
 		config = function()
 			set_binary_folder('/node')
 			-- Somente para Windows 7
-			if vim.env.NODE_SKIP_PLATFORM_CHECK ~= 1 then
+			if win7 and vim.env.NODE_SKIP_PLATFORM_CHECK ~= 1 then
 				vim.env.NODE_SKIP_PLATFORM_CHECK = 1
 			end
 		end,
@@ -85,13 +87,26 @@ for _, dep in ipairs(NVIM_DEPS) do
 end
 
 -- Inicialização do NexusFont para uso da fonte SauceNerdPro
-vim.fn.system(
-	{
+local query = {}
+if not win7 then
+	query = {
 		'powershell',
 		'-command',
 		'"get-process -name nexusfont"'
 	}
-)
+else
+	query = {
+		'tasklist',
+		'/fo',
+		'list',
+		'/fi',
+		'"STATUS eq running"',
+		'|',
+		'find',
+		'"nexusfont.exe"'
+	}
+end
+vim.fn.system(query)
 local nexusfont = vim.v.shell_error == 0
 if not nexusfont then
 	vim.fn.jobstart('nexusfont.exe', { detach = true })
