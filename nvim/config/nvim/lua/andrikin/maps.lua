@@ -86,7 +86,7 @@ vim.keymap.set('n', 'gy', '"+y')
 vim.keymap.set('n', 'gY', '"+Y')
 
 -- Fix c-] (nvim-qt)
-vim.keymap.set('n', [[<c-\>]], '<c-]>')
+vim.keymap.set('n', '<c-\\>', '<c-]>')
 
 -- --- Mapleader Commands ---
 
