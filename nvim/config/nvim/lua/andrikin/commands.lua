@@ -7,6 +7,10 @@
 -- plugin: unificar objeto Latex com Ouvidoria
 -- plugin: identificar em qual sistema o nvim está executando!!!
 -- config: vim.loop.os_uname para obter informação do sistema
+local ouvidoria_notify = function(msg)
+	vim.notify(msg)
+	vim.cmd.redraw({bang = true})
+end
 local Latex = {}
 Latex.OUTPUT_FOLDER = vim.fs.find('Downloads', {path = vim.loop.os_homedir(), type = 'directory'})[1] -- windows
 Latex.AUX_FOLDER = vim.env.TEMP -- windows
@@ -72,11 +76,11 @@ Latex.compile = function(opts)
 			arquivo
 		}
 	end
-	vim.notify('1º compilação!')
+	ouvidoria_notify('1º compilação!')
 	vim.fn.system(comando)
-	vim.notify('2º compilação!')
+	ouvidoria_notify('2º compilação!')
 	vim.fn.system(comando)
-	vim.notify('Pdf compilado!')
+	ouvidoria_notify('Pdf compilado!')
 	arquivo = string.match(arquivo, '(.*)%..*$') -- remover extenção do arquivo
 	vim.fn.jobstart(
 		{
