@@ -87,15 +87,7 @@ for _, dep in ipairs(NVIM_DEPS) do
 end
 
 -- Inicialização do NexusFont para uso da fonte SauceNerdPro
-local query = {}
-if not win7 then
-	query = {
-		'powershell',
-		'-command',
-		'"get-process -name nexusfont"'
-	}
-else
-	query = {
+local query = {
 		'tasklist',
 		'/fo',
 		'list',
@@ -105,7 +97,6 @@ else
 		'find',
 		'"nexusfont.exe"'
 	}
-end
 vim.fn.system(query)
 local nexusfont = vim.v.shell_error == 0
 if not nexusfont then
