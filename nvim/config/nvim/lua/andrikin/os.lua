@@ -86,8 +86,27 @@ for _, dep in ipairs(NVIM_DEPS) do
 	dep.config(dep.args)
 end
 
+-- TODO: Verificar se está no sistema Windows
 -- Inicialização do NexusFont para uso da fonte SauceNerdPro
-local query = {
+local check_font_reg = {
+	'reg',
+	'query',
+	'"HKLM\\SOFTWARE\\Microsoft\\Windows NT\\CurrentVersion\\Fonts"',
+	'/s',
+	'|',
+	'find',
+	'"SauceCodePro"'
+}
+vim.fn.system(check_font_reg)
+local has_font_reg = vim.v.shell_error == 0
+local has_font_local = vim.fn.glob(
+	'C:/Users/' .. vim.env.USERNAME .. '/AppData/Local/Microsoft/Windows/Fonts/SauceCodePro*',
+	false,
+	true
+)
+local has_font = has_font_reg or (#has_font_local > 0)
+if not has_font then
+	local query = {
 		'tasklist',
 		'/fo',
 		'list',
@@ -97,9 +116,9 @@ local query = {
 		'find',
 		'"nexusfont.exe"'
 	}
-vim.fn.system(query)
-local nexusfont = vim.v.shell_error == 0
-if not nexusfont then
-	vim.fn.jobstart('nexusfont.exe', { detach = true })
+	vim.fn.system(query)
+	local has_nexusfont = vim.v.shell_error == 0
+	if not has_nexusfont then
+		vim.fn.jobstart('nexusfont.exe', { detach = true })
+	end
 end
-
