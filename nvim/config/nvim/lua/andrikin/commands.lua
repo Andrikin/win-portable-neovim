@@ -178,3 +178,11 @@ vim.api.nvim_create_user_command(
 	}
 )
 
+vim.api.nvim_create_user_command(
+	'Projetos',
+	function()
+		vim.cmd.Dirvish('../../../projetos')
+	end,
+	{}
+)
+
