@@ -87,6 +87,7 @@ for _, dep in ipairs(NVIM_DEPS) do
 end
 
 -- TODO: Verificar se está no sistema Windows
+-- wip: passar código para plugin da Ouvidoria
 -- Inicialização do NexusFont para uso da fonte SauceNerdPro
 local check_font_reg = {
 	'reg',
@@ -97,8 +98,7 @@ local check_font_reg = {
 	'find',
 	'"SauceCodePro"'
 }
-vim.fn.system(check_font_reg)
-local has_font_reg = vim.v.shell_error == 0
+local has_font_reg = vim.fn.system(check_font_reg) ~= ''
 local has_font_local = vim.fn.glob(
 	'C:/Users/' .. vim.env.USERNAME .. '/AppData/Local/Microsoft/Windows/Fonts/SauceCodePro*',
 	false,
