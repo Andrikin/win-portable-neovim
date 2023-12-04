@@ -1,4 +1,7 @@
 local lazypath = vim.fn.stdpath("data") .. "/lazy/lazy.nvim"
+-- Inicializando caminho para git
+local GIT = vim.env.HOME .. '/nvim/deps/git/bin'
+vim.env.PATH = vim.env.PATH .. ';' .. GIT
 if not vim.loop.fs_stat(lazypath) then
   vim.fn.system({
     "git",
