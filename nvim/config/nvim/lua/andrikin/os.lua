@@ -63,7 +63,7 @@ local NVIM_DEPS = {
 			set_binary_folder(PYTHON) -- python.exe
 			set_binary_folder(PYTHON_SCRIPTS) -- pip.exe
 			-- Python 
-			vim.g.python3_host_prog = NVIM / Path:new(PYTHON) .. '/python.exe'
+			vim.g.python3_host_prog = NVIM / Path:new(PYTHON) .. '\\python.exe'
 		end,
 	},
 	-- Adicionar os binários dos lsp's aqui
