@@ -7,10 +7,16 @@
 -- plugin: unificar objeto Latex com Ouvidoria
 -- plugin: identificar em qual sistema o nvim está executando!!!
 -- config: vim.loop.os_uname para obter informação do sistema
+local Path = vim.F.npcall(require, 'plenary.path')
+if not Path then
+	error('Não foi encontrado plugin Plenary. Verificar instalação do plugin')
+end
+
 local ouvidoria_notify = function(msg)
 	vim.notify(msg)
 	vim.cmd.redraw({bang = true})
 end
+
 local Latex = {}
 Latex.OUTPUT_FOLDER = vim.fs.find('Downloads', {path = vim.loop.os_homedir(), type = 'directory'})[1] -- windows
 Latex.AUX_FOLDER = vim.env.TEMP -- windows
@@ -181,7 +187,17 @@ vim.api.nvim_create_user_command(
 vim.api.nvim_create_user_command(
 	'Projetos',
 	function()
-		vim.cmd.Dirvish('../../../projetos')
+		local projetos = Path:new(
+			{
+				'C:',
+				'Users',
+				vim.env.USERNAME,
+				'Documents'
+			}
+		)
+		vim.cmd.Dirvish(
+			vim.fs.find('projetos', {path = projetos.filename, type = 'directory'})
+		)
 	end,
 	{}
 )
