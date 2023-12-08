@@ -7,6 +7,7 @@
 -- plugin: unificar objeto Latex com Ouvidoria
 -- plugin: identificar em qual sistema o nvim está executando!!!
 -- config: vim.loop.os_uname para obter informação do sistema
+
 local Path = vim.F.npcall(require, 'plenary.path')
 if not Path then
 	error('Não foi encontrado plugin Plenary. Verificar instalação do plugin')
@@ -20,7 +21,6 @@ end
 local Latex = {}
 Latex.OUTPUT_FOLDER = vim.fs.find('Downloads', {path = vim.loop.os_homedir(), type = 'directory'})[1] -- windows
 Latex.AUX_FOLDER = vim.env.TEMP -- windows
--- WIP: Como verificar em qual sistema o nvim está executando
 Latex.PDF_READER = vim.fs.find('sumatra.exe', {type = 'file', path = vim.env.HOME})[1]
 Latex.ft = function()
 	return vim.o.ft ~= 'tex'
@@ -52,6 +52,12 @@ Latex.init = function() -- setando diretoria de modelos latex
 			type = 'directory',
 		}
 	)[1]
+end
+Latex.remover_extencao = function(nome)
+	if string.match('%.%a+$', nome) then
+		nome = string.match(nome, '(.*)%..*$')
+	end
+	return nome
 end
 Latex.compile = function(opts)
 	if Latex.ft() then
@@ -87,7 +93,7 @@ Latex.compile = function(opts)
 	ouvidoria_notify('2º compilação!')
 	vim.fn.system(comando)
 	ouvidoria_notify('Pdf compilado!')
-	arquivo = string.match(arquivo, '(.*)%..*$') -- remover extenção do arquivo
+	arquivo = Latex.remover_extencao(arquivo)
 	vim.fn.jobstart(
 		{
 			Latex.PDF_READER,
