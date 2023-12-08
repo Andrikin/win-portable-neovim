@@ -54,7 +54,7 @@ Latex.init = function() -- setando diretoria de modelos latex
 	)[1]
 end
 Latex.remover_extencao = function(nome)
-	if string.match('%.%a+$', nome) then
+	if string.match(nome, '%.%a+$') then
 		nome = string.match(nome, '(.*)%..*$')
 	end
 	return nome
