@@ -17,9 +17,7 @@ vim.keymap.set(
 	{'n', 'x'},
 	'&',
 	function()
-		pcall(
-			vim.cmd('&&')
-		)
+		vim.cmd('&&')
 	end
 )
 -- Yank to end of sreen line. Make default in Neovim 0.6.0
@@ -87,6 +85,10 @@ vim.keymap.set('n', 'gY', '"+Y')
 
 -- Fix c-] (nvim-qt)
 vim.keymap.set('n', '<c-\\>', '<c-]>')
+
+-- Bracket maps
+vim.keymap.set('n', ']b', vim.cmd.bnext, {desc = 'Next buffer'})
+vim.keymap.set('n', '[b', vim.cmd.bprevious, {desc = 'Previous buffer'})
 
 -- --- Mapleader Commands ---
 
@@ -220,27 +222,35 @@ local lsp_maps = {
 	{
 		key = '<c-k>',
 		map = vim.lsp.buf.signature_help,
-	},
-	{
-		key = ']e',
-		map = vim.diagnostic.goto_next,
-	},
-	{
-		key = '[e',
-		map = vim.diagnostic.goto_prev,
 	}
 }
 for _,m in ipairs(lsp_maps) do
 	lsp(m)
 end
+
 vim.keymap.set(
 	'n',
 	'<leader>e',
 	vim.diagnostic.open_float
 )
+
 vim.keymap.set(
 	'n',
 	'<leader>s',
 	vim.lsp.buf.rename
 )
+
+local diag_goto = function(next, severity)
+	local go = next and vim.diagnostic.goto_next or vim.diagnostic.goto_prev
+	severity = severity and vim.diagnostic.severity[severity] or nil
+	return function()
+		go({ severity = severity })
+	end
+end
+vim.keymap.set("n", "]d", diag_goto(true), { desc = "Next Diagnostic" })
+vim.keymap.set("n", "[d", diag_goto(false), { desc = "Prev Diagnostic" })
+vim.keymap.set("n", "]e", diag_goto(true, "ERROR"), { desc = "Next Error" })
+vim.keymap.set("n", "[e", diag_goto(false, "ERROR"), { desc = "Prev Error" })
+vim.keymap.set("n", "]w", diag_goto(true, "WARN"), { desc = "Next Warning" })
+vim.keymap.set("n", "[w", diag_goto(false, "WARN"), { desc = "Prev Warning" })
 
