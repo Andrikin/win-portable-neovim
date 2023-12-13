@@ -3,7 +3,7 @@
 -- config: setar arquivos auxiliares para pasta temp, conforme sistema
 -- config: setar diretório onde se encontra as configurações latex
 -- config: setar qual programa irá abrir o pdf (chrome como padrão?)
--- config: verificar a existência de TEXINPUTS antes de setá-lo
+-- config: verificar a existência de TEXTINPUTS antes de setá-lo
 -- plugin: unificar objeto Latex com Ouvidoria
 -- plugin: identificar em qual sistema o nvim está executando!!!
 -- config: vim.loop.os_uname para obter informação do sistema
@@ -45,7 +45,7 @@ Latex.clear = function(arquivo)
 	end
 end
 Latex.init = function() -- setando diretoria de modelos latex
-	vim.env.TEXINPUTS = vim.fs.find(
+	vim.env.TEXTINPUTS = vim.fs.find(
 		'ouvidoria-latex-modelos',
 		{
 			path = vim.fn.fnamemodify(vim.env.HOME, ':h'),
@@ -106,7 +106,7 @@ Latex.init()
 
 local Ouvidoria = {}
 Ouvidoria.TEX = '.tex'
-Ouvidoria.CI_FOLDER = vim.env.TEXINPUTS
+Ouvidoria.CI_FOLDER = vim.env.TEXTINPUTS
 Ouvidoria.OUTPUT_FOLDER = Latex.OUTPUT_FOLDER
 Ouvidoria.listagem = function()
 	return vim.tbl_map(
