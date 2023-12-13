@@ -59,7 +59,7 @@ Latex.remover_extencao = function(nome)
 	end
 	return nome
 end
-Latex.compile = function(opts)
+Latex.compile = function()
 	if Latex.ft() then
 		vim.notify('Comando executável somente para arquivos .tex!')
 		return
@@ -155,7 +155,7 @@ Ouvidoria.nova_comunicacao = function(opts)
 	vim.fn.setreg('#', alternativo) -- setando arquivo alternativo
 	vim.cmd.bdelete(tipo .. Ouvidoria.TEX)
 end
-Ouvidoria.complete = function(args, cmd, pos)
+Ouvidoria.complete = function(args)
 	return vim.tbl_filter(
 		function(ci)
 			return string.match(ci, args)
