@@ -60,8 +60,11 @@ vim.opt.termguicolors=true
 
 -- NeoVim configurations
 vim.opt.guicursor='i-n-v-c:block'
-vim.opt.guifont='SauceCodePro NFM'
-vim.opt.inccommand=''
+vim.opt.guifont='SauceCodePro NFM:h11'
+if vim.g.nvy then
+	vim.opt.guifont='SauceCodePro Nerd Font Mono:h11'
+end
+vim.opt.inccommand='' -- conflict with traces.vim
 vim.opt.fillchars='vert:|,fold:*,foldclose:+,diff:-'
 
 -- Using ripgrep ([cf]open; [cf]do {cmd} | update)

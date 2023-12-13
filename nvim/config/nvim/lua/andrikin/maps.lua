@@ -4,8 +4,11 @@
 local harpoon_add = require('harpoon.mark')
 local harpoon_ui = require('harpoon.ui')
 
--- Fix c-] (nvim-qt)
-vim.keymap.set('n', '<c-\\>', '<c-]>')
+if not vim.g.nvy then
+	-- Fix ^\ (nvim-qt/windows 7)
+	vim.notify('Configurando mapeamento para jump definitions')
+	vim.keymap.set('n', '<c-\\>', '<c-]>')
+end
 
 -- CTRL-U in insert mode deletes a lot. Use CTRL-G u to first break undo,
 -- so that you can undo CTRL-U after inserting a line break.
