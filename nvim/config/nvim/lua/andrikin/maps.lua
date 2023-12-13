@@ -4,6 +4,9 @@
 local harpoon_add = require('harpoon.mark')
 local harpoon_ui = require('harpoon.ui')
 
+-- Fix c-] (nvim-qt)
+vim.keymap.set('n', '<c-\\>', '<c-]>')
+
 -- CTRL-U in insert mode deletes a lot. Use CTRL-G u to first break undo,
 -- so that you can undo CTRL-U after inserting a line break.
 -- Revert with ":iunmap <C-U>". -> from defaults.vim
@@ -79,12 +82,8 @@ vim.keymap.set('v', 'J', ":m'>+1<cr>gv")
 -- Copy and paste from clipboard (* -> selection register/+ -> primary register)
 vim.keymap.set('n', 'gP', '"+P')
 vim.keymap.set('n', 'gp', '"+p')
-vim.keymap.set('v', 'gy', '"+y')
-vim.keymap.set('n', 'gy', '"+y')
+vim.keymap.set({'n', 'v'}, 'gy', '"+y')
 vim.keymap.set('n', 'gY', '"+Y')
-
--- Fix c-] (nvim-qt)
-vim.keymap.set('n', '<c-\\>', '<c-]>')
 
 -- Bracket maps
 vim.keymap.set('n', ']b', vim.cmd.bnext, {desc = 'Next buffer'})
