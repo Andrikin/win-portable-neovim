@@ -1,7 +1,3 @@
--- TODO: Como verificar diretórios e automatizar a adição de novas dependências?
--- refac: resolver a situação onde não exista o diretório '/nvim/deps'?
--- refac: utilizar vim.fs.find para setar os diretórios dos executáveis
-
 local Path = vim.F.npcall(require, 'plenary.path')
 if not Path then
 	error('Init: Não foi encontrado o plugin Plenary!')
@@ -9,7 +5,10 @@ end
 
 local win7 = string.match(vim.loop.os_uname()['version'], 'Windows 7')
 
-local NVIM = Path:new(vim.env.HOME) / Path:new({'nvim', 'deps'})
+local NVIM = Path:new({vim.env.HOME, 'nvim', 'deps' })
+if vim.fn.isdirectory(NVIM.filename) == 0 then -- bootstrap para diretório de dependências
+	vim.fn.mkdir(NVIM.filename, 'p', 0700)
+end
 local function set_binary_folder(dependencia)
 	dependencia = Path:new(dependencia)
 	if not string.find(vim.env.PATH, dependencia.filename) then
