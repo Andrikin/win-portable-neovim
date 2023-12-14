@@ -155,17 +155,17 @@ cmp.setup({
 		-- { name = 'luasnip' }, -- For luasnip users.
 		-- { name = 'ultisnips' }, -- For ultisnips users.
 		-- { name = 'snippy' }, -- For snippy users.
-	}, {
+		}, {
 			{ name = 'buffer' },
-		})
+	})
 })
 -- Set configuration for specific filetype.
 cmp.setup.filetype('gitcommit', {
 	sources = cmp.config.sources({
 		{ name = 'cmp_git' }, -- You can specify the `cmp_git` source if you were installed it.
-	}, {
+		}, {
 			{ name = 'buffer' },
-		})
+	})
 })
 -- Use buffer source for `/` and `?` (if you enabled `native_menu`, this won't work anymore).
 cmp.setup.cmdline({ '/', '?' }, {
@@ -179,9 +179,9 @@ cmp.setup.cmdline(':', {
 	mapping = cmp.mapping.preset.cmdline(),
 	sources = cmp.config.sources({
 		{ name = 'path' }
-	}, {
+		}, {
 			{ name = 'cmdline' }
-		})
+	})
 })
 -- Set up lspconfig.
 local cmp_capabilities = require('cmp_nvim_lsp').default_capabilities()
