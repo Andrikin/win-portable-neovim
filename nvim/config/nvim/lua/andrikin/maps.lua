@@ -117,8 +117,8 @@ vim.keymap.set(
 -- nnoremap <silent> <expr> <leader>c <SID>toggle_list('c')
 -- nnoremap <silent> <expr> <leader>l <SID>toggle_list('l')
 -- nnoremap <silent> <expr> <leader>q <SID>quit_list()
--- -- Terminal
--- nnoremap <silent> <expr> <leader>t <SID>toggle_terminal()
+
+-- Terminal Toggle
 vim.keymap.set(
 	'n',
 	'<leader>t',
