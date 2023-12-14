@@ -53,8 +53,15 @@ require('nvim-treesitter.configs').setup{
 		enable = true
 	},
 	ensure_installed = { -- linguagens para web development
-		'css', 'html', 'javascript',
-		'lua', 'python',
+		'css', 'html', 'javascript', 'vue',
+		'diff',
+		'git_config', 'git_rebase', 'gitattributes', 'gitcommit', 'gitignore',
+		'jsdoc', 'json', 'json5',
+		'lua', 'luadoc', 'luap', 'luau',
+		'markdown', 'markdown_inline',
+		'regex',
+		'xml',
+		'python',
 		'vim', 'java',
 		'latex',
 	},
