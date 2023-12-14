@@ -123,11 +123,6 @@ vim.keymap.set(
 	'n',
 	'<leader>t',
 	function()
-		local has_windows = vim.fn.has('win32')
-		if has_windows and vim.fn.has('terminal') then
-			vim.notify('Feature não disponível para esta versão de Windows. Somente para Windows 10+.')
-			return
-		end
 		local on = false
 		local term_win = 0
 		for _, win in ipairs(vim.fn.gettabinfo(vim.fn.tabpagenr())[1].windows) do
@@ -138,9 +133,16 @@ vim.keymap.set(
 			end
 		end
 		if on then
-			vim.cmd(term_win .. ' windo normal ZQ')
+			vim.cmd.windo({args = {'normal', 'ZQ'}, range = {term_win}})
 		else
-			vim.cmd('15split +terminal')
+			vim.cmd.split({range = {15}})
+			local ok, resultado = pcall(vim.cmd.terminal)
+			if not ok then
+				if resultado and vim.fn.has('win32') and resultado:match('E903') then
+					vim.notify('Não foi possível abrir o terminal. Esta feature não está disponível para a sua versão de Windows, somente para Windows 10+.')
+					vim.cmd.normal('ZQ')
+				end
+			end
 		end
 	end
 )
