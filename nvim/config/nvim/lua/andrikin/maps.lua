@@ -112,8 +112,6 @@ vim.keymap.set(
 )
 
 -- --- Quickfix window ---
--- NeoVim excells about terminal jobs
--- nnoremap <silent> <leader>m <cmd>make %:S<cr>
 -- TODO: Reescrever estas funções
 -- Toggle quickfix window
 -- nnoremap <silent> <expr> <leader>c <SID>toggle_list('c')
@@ -121,16 +119,31 @@ vim.keymap.set(
 -- nnoremap <silent> <expr> <leader>q <SID>quit_list()
 -- -- Terminal
 -- nnoremap <silent> <expr> <leader>t <SID>toggle_terminal()
--- vim.keymap.set(
--- 	'n',
--- 	'<leader>t',
--- 	function()
--- 	end,
--- 	{
--- 		silent = true,
--- 		expr = true,
--- 	}
--- )
+vim.keymap.set(
+	'n',
+	'<leader>t',
+	function()
+		local has_windows = vim.fn.has('win32')
+		if has_windows and vim.fn.has('terminal') then
+			vim.notify('Feature não disponível para esta versão de Windows. Somente para Windows 10+.')
+			return
+		end
+		local on = false
+		local term_win = 0
+		for _, win in ipairs(vim.fn.gettabinfo(vim.fn.tabpagenr())[1].windows) do
+			if vim.fn.getwininfo(win)[1].terminal == 1 then
+				on = true
+				term_win = vim.fn.win_id2win(win)
+				break
+			end
+		end
+		if on then
+			vim.cmd(term_win .. ' windo normal ZQ')
+		else
+			vim.cmd('15split +terminal')
+		end
+	end
+)
 
 -- Undotree plugin
 vim.keymap.set(
