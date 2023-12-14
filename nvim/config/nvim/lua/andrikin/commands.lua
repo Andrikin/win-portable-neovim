@@ -3,7 +3,7 @@
 -- config: setar arquivos auxiliares para pasta temp, conforme sistema
 -- config: setar diretório onde se encontra as configurações latex
 -- config: setar qual programa irá abrir o pdf (chrome como padrão?)
--- config: verificar a existência de TEXTINPUTS antes de setá-lo
+-- config: verificar a existência de TEXINPUTS antes de setá-lo
 -- plugin: unificar objeto Latex com Ouvidoria
 -- plugin: identificar em qual sistema o nvim está executando!!!
 -- config: vim.loop.os_uname para obter informação do sistema
@@ -19,9 +19,9 @@ local ouvidoria_notify = function(msg)
 end
 
 local Latex = {}
-Latex.OUTPUT_FOLDER = vim.fs.find('Downloads', {path = vim.loop.os_homedir(), type = 'directory'})[1] -- windows
+Latex.OUTPUT_FOLDER = vim.fs.find('Downloads', {path = vim.loop.os_homedir(), type = 'directory'})[1] -- windows 
 Latex.AUX_FOLDER = vim.env.TEMP -- windows
-Latex.PDF_READER = vim.fs.find('sumatra.exe', {type = 'file', path = vim.env.HOME})[1]
+Latex.PDF_READER = 'sumatra.exe'
 Latex.ft = function()
 	return vim.o.ft ~= 'tex'
 end
@@ -33,7 +33,7 @@ Latex.clear = function(arquivo)
 	end
 	local auxiliares = vim.tbl_filter(
 		function(auxiliar)
-			return string.match(auxiliar, 'aux$') or string.match(auxiliar, 'out$') or string.match(auxiliar, 'log$')
+			return auxiliar:match('aux$') or auxiliar:match('out$') or auxiliar:match('log$')
 		end,
 		vim.fn.glob(Latex.OUTPUT_FOLDER .. '/' .. arquivo .. '.*', false, true)
 	)
@@ -45,19 +45,13 @@ Latex.clear = function(arquivo)
 	end
 end
 Latex.init = function() -- setando diretoria de modelos latex
-	vim.env.TEXTINPUTS = vim.fs.find(
+	vim.env.TEXINPUTS = vim.fs.find(
 		'ouvidoria-latex-modelos',
 		{
 			path = vim.fn.fnamemodify(vim.env.HOME, ':h'),
 			type = 'directory',
 		}
 	)[1]
-end
-Latex.remover_extencao = function(nome)
-	if string.match(nome, '%.%a+$') then
-		nome = string.match(nome, '(.*)%..*$')
-	end
-	return nome
 end
 Latex.compile = function()
 	if Latex.ft() then
@@ -93,7 +87,7 @@ Latex.compile = function()
 	ouvidoria_notify('2º compilação!')
 	vim.fn.system(comando)
 	ouvidoria_notify('Pdf compilado!')
-	arquivo = Latex.remover_extencao(arquivo)
+	arquivo =  arquivo:match('(.*)%..*$') or arquivo
 	vim.fn.jobstart(
 		{
 			Latex.PDF_READER,
@@ -106,12 +100,12 @@ Latex.init()
 
 local Ouvidoria = {}
 Ouvidoria.TEX = '.tex'
-Ouvidoria.CI_FOLDER = vim.env.TEXTINPUTS
+Ouvidoria.CI_FOLDER = vim.env.TEXINPUTS
 Ouvidoria.OUTPUT_FOLDER = Latex.OUTPUT_FOLDER
 Ouvidoria.listagem = function()
 	return vim.tbl_map(
 		function(diretorio)
-			return string.match(diretorio, "[a-zA-Z-]*.tex$")
+			return diretorio:match("[a-zA-Z-]*.tex$")
 		end,
 		vim.fs.find(
 			function(name, path)
@@ -136,7 +130,7 @@ Ouvidoria.nova_comunicacao = function(opts)
 		Ouvidoria.OUTPUT_FOLDER .. '/' .. arquivo .. Ouvidoria.TEX
 	)
 	while not ok do
-		if string.match(retorno, 'E13:') then
+		if retorno:match('E13:') then
 			arquivo = vim.fn.input(
 				'Arquivo com este nome já existe. Digite outro nome para arquivo: '
 			)
@@ -145,7 +139,7 @@ Ouvidoria.nova_comunicacao = function(opts)
 				Ouvidoria.OUTPUT_FOLDER .. '/' .. arquivo .. Ouvidoria.TEX
 			)
 		else
-			vim.notify('Erro encontrado! Abortando comando.')
+			vim.notify('Erro encontrado! Abortando comando Pdflatex.')
 			return
 		end
 	end
@@ -158,11 +152,11 @@ end
 Ouvidoria.complete = function(args)
 	return vim.tbl_filter(
 		function(ci)
-			return string.match(ci, args)
+			return ci:match(args)
 		end,
 		vim.tbl_map(
 			function(ci)
-				return string.match(ci, '(.*).tex$')
+				return ci:match('(.*).tex$')
 			end,
 			Ouvidoria.listagem()
 		)
@@ -195,9 +189,7 @@ vim.api.nvim_create_user_command(
 	function()
 		local projetos = Path:new(
 			{
-				'C:',
-				'Users',
-				vim.env.USERNAME,
+				vim.loop.os_homedir(),
 				'Documents'
 			}
 		)
