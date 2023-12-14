@@ -47,6 +47,10 @@ local NVIM_DEPS = {
 		args = {'nexusfont'}
 	},
 	{
+		config = set_binary_folder,
+		args = {'sumatra'}
+	},
+	{
 		config = function()
 			set_binary_folder({'node'})
 			-- Somente para Windows 7
