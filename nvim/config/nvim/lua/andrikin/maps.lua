@@ -6,7 +6,7 @@ local harpoon_ui = require('harpoon.ui')
 
 if not vim.g.nvy then
 	-- Fix ^\ (nvim-qt/windows 7)
-	vim.notify('Configurando mapeamento para jump definitions')
+	vim.notify('Mapeamento do comando <c-]>: Jump to the definition of the keyword under the cursor.')
 	vim.keymap.set('n', '<c-\\>', '<c-]>')
 end
 
