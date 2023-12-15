@@ -84,3 +84,14 @@ autocmd(
 	}
 )
 
+-- Redimensionar janelas do Fugitive
+autocmd(
+	'FileType',
+	{
+		group = AndrikinGroup,
+		pattern = 'fugitive',
+		callback = function()
+			vim.cmd.resize(15)
+		end,
+	}
+)
