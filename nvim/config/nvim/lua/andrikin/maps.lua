@@ -4,7 +4,7 @@
 local harpoon_add = require('harpoon.mark')
 local harpoon_ui = require('harpoon.ui')
 
-if not vim.g.nvy then
+if not vim.g.nvy or not vim.g.neovide then
 	-- Fix ^\ (nvim-qt/windows 7)
 	vim.notify('Mapeamento do comando <c-]>: Jump to the definition of the keyword under the cursor.')
 	vim.keymap.set('n', '<c-\\>', '<c-]>')

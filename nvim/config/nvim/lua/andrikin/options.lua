@@ -67,7 +67,7 @@ vim.opt.termguicolors = true
 -- NeoVim configurations
 vim.opt.guicursor = 'i-n-v-c:block'
 vim.opt.guifont = 'SauceCodePro NFM:h11'
-if vim.g.nvy then
+if vim.g.nvy or vim.g.neovide then
 	vim.opt.guifont = 'SauceCodePro Nerd Font Mono:h11'
 end
 vim.opt.inccommand = '' -- conflict with traces.vim
