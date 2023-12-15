@@ -98,3 +98,12 @@ vim.g.undotree_DiffpanelHeight = 10
 -- Disable Netrw
 vim.g.loaded_netrwPlugin = 1
 
+-- Neovide
+-- Mais lightweight possível
+if vim.g.neovide then
+	vim.g.neovide_cursor_animation_length = 0
+	vim.g.neovide_cursor_antialiasing = false
+	vim.g.neovide_cursor_animate_in_insert_mode = false
+	vim.g.neovide_cursor_animate_command_line = false
+	vim.g.neovide_cursor_vfx_mode = ""
+end
