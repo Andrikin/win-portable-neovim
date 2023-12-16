@@ -1,14 +1,6 @@
 [safe]
 	directory = '*'
-	directory = F:/nvim/nvim-portable-win
-	directory = F:/nvim/nvim-portable-win/nvim/config/nvim-data/tree-sitter-css
-	directory = F:/nvim/nvim-portable-win/nvim/config/nvim-data/tree-sitter-html
-	directory = F:/nvim/nvim-portable-win/nvim/config/nvim-data/tree-sitter-lua
-	directory = F:/nvim/nvim-portable-win/nvim/config/nvim-data/tree-sitter-java
-	directory = F:/nvim/nvim-portable-win/nvim/config/nvim-data/tree-sitter-vim
-	directory = F:/nvim/nvim-portable-win/nvim/config/nvim-data/tree-sitter-javascript
-	directory = F:/nvim/nvim-portable-win/nvim/config/nvim-data/tree-sitter-python
-	directory = F:/nvim/nvim-portable-win/nvim/config/nvim-data/tree-sitter-latex
+
 	directory = D:/nvim/nvim-portable-win
 	directory = D:/nvim/nvim-portable-win/nvim/config/nvim-data/tree-sitter-css
 	directory = D:/nvim/nvim-portable-win/nvim/config/nvim-data/tree-sitter-html
@@ -18,7 +10,10 @@
 	directory = D:/nvim/nvim-portable-win/nvim/config/nvim-data/tree-sitter-javascript
 	directory = D:/nvim/nvim-portable-win/nvim/config/nvim-data/tree-sitter-python
 	directory = D:/nvim/nvim-portable-win/nvim/config/nvim-data/tree-sitter-latex
+	directory = D:/nvim/projetos/ouvidoria-latex-modelos
+
 	directory = E:/nvim/nvim-portable-win
+	directory = E:/nvim/nvim-portable-win/**
 	directory = E:/nvim/nvim-portable-win/nvim/config/nvim-data/tree-sitter-css
 	directory = E:/nvim/nvim-portable-win/nvim/config/nvim-data/tree-sitter-html
 	directory = E:/nvim/nvim-portable-win/nvim/config/nvim-data/tree-sitter-lua
@@ -27,6 +22,19 @@
 	directory = E:/nvim/nvim-portable-win/nvim/config/nvim-data/tree-sitter-javascript
 	directory = E:/nvim/nvim-portable-win/nvim/config/nvim-data/tree-sitter-python
 	directory = E:/nvim/nvim-portable-win/nvim/config/nvim-data/tree-sitter-latex
+	directory = E:/nvim/projetos/ouvidoria-latex-modelos
+
+	directory = F:/nvim/nvim-portable-win
+	directory = F:/nvim/nvim-portable-win/nvim/config/nvim-data/tree-sitter-css
+	directory = F:/nvim/nvim-portable-win/nvim/config/nvim-data/tree-sitter-html
+	directory = F:/nvim/nvim-portable-win/nvim/config/nvim-data/tree-sitter-lua
+	directory = F:/nvim/nvim-portable-win/nvim/config/nvim-data/tree-sitter-java
+	directory = F:/nvim/nvim-portable-win/nvim/config/nvim-data/tree-sitter-vim
+	directory = F:/nvim/nvim-portable-win/nvim/config/nvim-data/tree-sitter-javascript
+	directory = F:/nvim/nvim-portable-win/nvim/config/nvim-data/tree-sitter-python
+	directory = F:/nvim/nvim-portable-win/nvim/config/nvim-data/tree-sitter-latex
+	directory = F:/nvim/projetos/ouvidoria-latex-modelos
+
 	directory = G:/nvim/nvim-portable-win
 	directory = G:/nvim/nvim-portable-win/nvim/config/nvim-data/tree-sitter-css
 	directory = G:/nvim/nvim-portable-win/nvim/config/nvim-data/tree-sitter-html
@@ -36,6 +44,41 @@
 	directory = G:/nvim/nvim-portable-win/nvim/config/nvim-data/tree-sitter-javascript
 	directory = G:/nvim/nvim-portable-win/nvim/config/nvim-data/tree-sitter-python
 	directory = G:/nvim/nvim-portable-win/nvim/config/nvim-data/tree-sitter-latex
+	directory = G:/nvim/projetos/ouvidoria-latex-modelos
+
+	directory = H:/nvim/nvim-portable-win
+	directory = H:/nvim/nvim-portable-win/nvim/config/nvim-data/tree-sitter-css
+	directory = H:/nvim/nvim-portable-win/nvim/config/nvim-data/tree-sitter-html
+	directory = H:/nvim/nvim-portable-win/nvim/config/nvim-data/tree-sitter-lua
+	directory = H:/nvim/nvim-portable-win/nvim/config/nvim-data/tree-sitter-java
+	directory = H:/nvim/nvim-portable-win/nvim/config/nvim-data/tree-sitter-vim
+	directory = H:/nvim/nvim-portable-win/nvim/config/nvim-data/tree-sitter-javascript
+	directory = H:/nvim/nvim-portable-win/nvim/config/nvim-data/tree-sitter-python
+	directory = H:/nvim/nvim-portable-win/nvim/config/nvim-data/tree-sitter-latex
+	directory = H:/nvim/projetos/ouvidoria-latex-modelos
+
+	directory = I:/nvim/nvim-portable-win
+	directory = I:/nvim/nvim-portable-win/nvim/config/nvim-data/tree-sitter-css
+	directory = I:/nvim/nvim-portable-win/nvim/config/nvim-data/tree-sitter-html
+	directory = I:/nvim/nvim-portable-win/nvim/config/nvim-data/tree-sitter-lua
+	directory = I:/nvim/nvim-portable-win/nvim/config/nvim-data/tree-sitter-java
+	directory = I:/nvim/nvim-portable-win/nvim/config/nvim-data/tree-sitter-vim
+	directory = I:/nvim/nvim-portable-win/nvim/config/nvim-data/tree-sitter-javascript
+	directory = I:/nvim/nvim-portable-win/nvim/config/nvim-data/tree-sitter-python
+	directory = I:/nvim/nvim-portable-win/nvim/config/nvim-data/tree-sitter-latex
+	directory = I:/nvim/projetos/ouvidoria-latex-modelos
+
+	directory = J:/nvim/nvim-portable-win
+	directory = J:/nvim/nvim-portable-win/nvim/config/nvim-data/tree-sitter-css
+	directory = J:/nvim/nvim-portable-win/nvim/config/nvim-data/tree-sitter-html
+	directory = J:/nvim/nvim-portable-win/nvim/config/nvim-data/tree-sitter-lua
+	directory = J:/nvim/nvim-portable-win/nvim/config/nvim-data/tree-sitter-java
+	directory = J:/nvim/nvim-portable-win/nvim/config/nvim-data/tree-sitter-vim
+	directory = J:/nvim/nvim-portable-win/nvim/config/nvim-data/tree-sitter-javascript
+	directory = J:/nvim/nvim-portable-win/nvim/config/nvim-data/tree-sitter-python
+	directory = J:/nvim/nvim-portable-win/nvim/config/nvim-data/tree-sitter-latex
+	directory = J:/nvim/projetos/ouvidoria-latex-modelos
+	
 [user]
 	email = contasecretaalternativa@gmail.com
 	name = Andrikin
