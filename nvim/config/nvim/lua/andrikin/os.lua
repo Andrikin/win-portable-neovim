@@ -200,12 +200,15 @@ SauceCodePro.instalar = function(self)
 	self:download()
 	self:extrair()
 	self:registrar()
+	if self:fonte_intalada_regedit() then
+		notify('Fonte SauceCodePro instalada com sucesso. Reinicie o nvim para carregar a fonte.')
+	end
 end
 
 local has_curl = vim.fn.executable('curl') == 1
 if has_curl then
 	SauceCodePro:instalar()
 else
-	notify('Não foi possível instalar a fonte SauceCodePro neste computador.')
+	notify('Não foi possível instalar a fonte SauceCodePro neste computador. Instale curl para continuar.')
 end
 
