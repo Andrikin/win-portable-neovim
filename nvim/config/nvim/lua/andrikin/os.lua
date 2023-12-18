@@ -1,4 +1,29 @@
 -- TODO: Verificar se existe as dependências e, caso contrário, realizar o download com o curl.
+--
+-- INFO: Lista de links para download das dependências:
+-- curl: https://curl.se/windows/latest.cgi?p=win64-mingw.zip
+-- w64devkit-compiler: https://github.com/skeeto/w64devkit/releases/download/v1.21.0/w64devkit-1.21.0.zip
+-- git: https://github.com/git-for-windows/git/releases/download/v2.43.0.windows.1/Git-2.43.0-64-bit.tar.bz2 -- Full Version
+-- git: https://github.com/git-for-windows/git/releases/download/v2.43.0.windows.1/MinGit-2.43.0-64-bit.zip
+-- fd: https://github.com/sharkdp/fd/releases/download/v8.7.1/fd-v8.7.1-x86_64-pc-windows-gnu.zip
+-- ripgrep: https://github.com/BurntSushi/ripgrep/releases/download/14.0.3/ripgrep-14.0.3-i686-pc-windows-msvc.zip
+-- sumatra: https://www.sumatrapdfreader.org/dl/rel/3.5.2/SumatraPDF-3.5.2-64.zip
+-- node: https://nodejs.org/dist/v20.10.0/node-v20.10.0-win-x64.zip
+-- HOW PORTABLE PYTHON: https://chrisapproved.com/blog/portable-python-for-windows.html
+-- python 3.8.9 (Windows 7): https://www.python.org/ftp/python/3.8.9/python-3.8.9-embed-amd64.zip
+-- python 3.12.1: https://www.python.org/ftp/python/3.12.1/python-3.12.1-embed-amd64.zip
+-- pip installer: https://bootstrap.pypa.io/get-pip.py
+-- rust: TODO
+-- miktex: TODO
+--
+-- LSPs:
+-- emmet: npm install -g emmet-ls
+-- javascript: TODO
+-- java: TODO
+-- lua: TODO
+-- python: pip install pyright | npm -g install pyright
+-- rust: TODO
+
 local notify = function(msg)
 	vim.notify(msg)
 	vim.cmd.redraw({bang = true})
@@ -22,7 +47,66 @@ local function set_binary_folder(dependencia)
 	end
 end
 
-local NVIM_DEPS = {
+local Curl = {}
+
+Curl.DEPENDENCIAS = Path:new({vim.env.HOME, 'nvim', 'deps' })
+
+Curl.new = function(self, obj)
+	obj = obj or {}
+	setmetatable(obj, self)
+	self.__index = self
+	if not self:exist() then
+		error('Não foi encontrado curl no sistema. Verificar e realizar a instalação do curl neste computador!\nLink para download: https://curl.se/windows/latest.cgi?p=win64-mingw.zip')
+	end
+	return obj
+end
+
+Curl.exist = function()
+	return vim.fn.executable('curl') == 1
+end
+
+Curl.download = function(self, link, diretorio)
+	link = link or self.link
+	diretorio = diretorio or self.DEPENDENCIAS
+	if not link or link == '' then
+		notify('lua config: os.lua: Curl: Link não encontrado.')
+		return
+	end
+	vim.fn.system({
+		'curl',
+		'--fail',
+		'--location',
+		'--silent',
+		'--output',
+		diretorio,
+		link
+	})
+end
+
+Curl.extrair = function(self, arquivo, diretorio)
+	local extencao = arquivo:match('tar') or arquivo:match('.*%.(.*)$')
+	local extrator = {}
+	diretorio = diretorio or self.DEPENDENCIAS
+	if extencao == 'zip' then
+		extrator = {
+			cmd = 'unzip',
+			output = '-d'
+		}
+	elseif extencao == 'tar' then
+		extrator = {
+			cmd = 'tar',
+			output = '-C'
+		}
+	end
+	vim.fn.system({
+		extrator.cmd,
+		arquivo,
+		extrator.output,
+		diretorio
+	})
+end
+
+local DEPENDENCIAS = {
 	{
 		config = set_binary_folder,
 		args = {'git', 'cmd'}
@@ -92,7 +176,7 @@ local NVIM_DEPS = {
 	}
 }
 
-for _, dep in ipairs(NVIM_DEPS) do
+for _, dep in ipairs(DEPENDENCIAS) do
 	dep.config(dep.args)
 end
 
