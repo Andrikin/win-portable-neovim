@@ -74,7 +74,7 @@ vim.opt.inccommand = '' -- conflict with traces.vim
 vim.opt.fillchars = 'vert:|,fold:*,foldclose:+,diff:-'
 
 -- Using ripgrep ([cf]open; [cf]do {cmd} | update)
-if vim.fn.executable('rg') then
+if vim.fn.executable('rg') == 1 then
 	vim.g.grepprg = 'rg --vimgrep --smart-case --follow'
 else
 	vim.g.grepprg = 'grep -R'
