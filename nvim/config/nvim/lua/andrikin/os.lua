@@ -13,17 +13,16 @@
 -- python 3.8.9 (Windows 7): https://www.python.org/ftp/python/3.8.9/python-3.8.9-embed-amd64.zip
 -- python 3.12.1: https://www.python.org/ftp/python/3.12.1/python-3.12.1-embed-amd64.zip
 -- pip installer: https://bootstrap.pypa.io/get-pip.py
+-- TexLive: (2021) http://linorg.usp.br/CTAN/systems/win32/w32tex/TLW64/tl-win64.zip
+-- TexLive: (Windows 7) https://ftp.math.utah.edu/pub/tex/historic/systems/texlive/2017/texlive-20170524-bin.tar.xz
 -- rust: TODO
--- miktex: TODO (Windows 7)
--- TexLive: TODO (?) http://linorg.usp.br/CTAN/systems/win32/w32tex/TLW64/tl-win64.zip
--- TexLive: (Windows?) https://ftp.math.utah.edu/pub/tex/historic/systems/texlive/2017/texlive-20170524-bin.tar.xz
 --
 -- LSPs:
 -- emmet: npm install -g emmet-ls
--- javascript: TODO
--- java: TODO
--- lua: TODO
+-- javascript: (deno 1.27.0) https://github.com/denoland/deno/releases/download/v1.27.0/deno-x86_64-pc-windows-msvc.zip
+-- lua: https://github.com/LuaLS/lua-language-server/releases/download/3.7.3/lua-language-server-3.7.3-win32-x64.zip
 -- python: pip install pyright | npm -g install pyright
+-- java: TODO
 -- rust: TODO
 
 local notify = function(msg)
@@ -49,14 +48,45 @@ local function set_binary_folder(dependencia)
 	end
 end
 
+local Diretorio = {}
+
+Diretorio.__index = Diretorio
+
+Diretorio.new = function(self, diretorio)
+	if type(diretorio) ~= 'string' then
+		error('Diretorio: new: Elemento precisa ser do tipo "string".')
+	end
+	local obj = {}
+	setmetatable(obj, self)
+	self.dir = diretorio
+	return obj
+end
+
+Diretorio.__div = function(self, other)
+	if getmetatable(self) ~= Diretorio or getmetatable(other) ~= Diretorio then
+		return string.gsub(self.dir .. other.dir, '/', '\\')
+	else
+		error('Diretorio: div: Elementos precisam ser do tipo "string".')
+	end
+end
+
+Diretorio.__concat = function(self, other)
+	if getmetatable(self) ~= Diretorio then
+		error('Diretorio: concat: Objeto não é do tipo Diretorio.')
+	end
+	if type(other) ~= 'string' then
+		error('Diretorio: concat: Segundo argumento precisa ser do tipo "string".')
+	end
+	return string.gsub(self.dir .. other, '/', '\\')
+end
+
 local Curl = {}
 
-Curl.DEPENDENCIAS = Path:new({vim.env.HOME, 'nvim', 'deps' })
+Curl.__index = Curl
 
 Curl.new = function(self, obj)
 	obj = obj or {}
 	setmetatable(obj, self)
-	self.__index = self
 	if not self:exist() then
 		error('Não foi encontrado curl no sistema. Verificar e realizar a instalação do curl neste computador!\nLink para download: https://curl.se/windows/latest.cgi?p=win64-mingw.zip')
 	end
@@ -67,11 +97,13 @@ Curl.exist = function()
 	return vim.fn.executable('curl') == 1
 end
 
-Curl.download = function(self, link, diretorio)
-	link = link or self.link
-	diretorio = diretorio or self.DEPENDENCIAS
+Curl.download = function(link, diretorio)
 	if not link or link == '' then
-		notify('lua config: os.lua: Curl: Link não encontrado.')
+		notify('lua config: os.lua: Curl: Link não encontrado ou nulo.')
+		return
+	end
+	if not diretorio or diretorio == '' then
+		notify('lua config: os.lua: Curl: Diretório não encontrado ou nulo.')
 		return
 	end
 	vim.fn.system({
@@ -85,10 +117,18 @@ Curl.download = function(self, link, diretorio)
 	})
 end
 
-Curl.extrair = function(self, arquivo, diretorio)
-	local extencao = arquivo:match('tar') or arquivo:match('.*%.(.*)$')
+Curl.extrair = function(arquivo, diretorio)
+	if not arquivo or arquivo == '' then
+		notify('lua config: os.lua: Curl: Arquivo não encontrado ou nulo.')
+		return
+	end
+	if not diretorio or diretorio == '' then
+		notify('lua config: os.lua: Curl: Diretório não encontrado ou nulo.')
+		return
+	end
+	local extencao = arquivo:match('%.(tar)%..*$') or arquivo:match('%.(.*)$')
+	local nome = vim.fn.fnamemodify(arquivo, ':t')
 	local extrator = {}
-	diretorio = diretorio or self.DEPENDENCIAS
 	if extencao == 'zip' then
 		extrator = {
 			cmd = 'unzip',
@@ -96,16 +136,81 @@ Curl.extrair = function(self, arquivo, diretorio)
 		}
 	elseif extencao == 'tar' then
 		extrator = {
-			cmd = 'tar',
+			cmd = {'tar', '-xf'},
 			output = '-C'
 		}
 	end
 	vim.fn.system({
-		extrator.cmd,
+		type(extrator.cmd) == 'table' and unpack(extrator.cmd) or extrator.cmd,
 		arquivo,
 		extrator.output,
 		diretorio
 	})
+end
+
+local Opt = {}
+
+Opt.__index = Opt
+
+Opt.OPT = vim.env.HOME .. '/nvim/opt' -- Path:new({vim.env.HOME, 'nvim', 'opt' })
+
+Opt.PROGRAMAS = {
+	{
+		nome = 'w64devkit',
+		link = 'https://github.com/skeeto/w64devkit/releases/download/v1.21.0/w64devkit-1.21.0.zip',
+	},{
+		nome = 'git',
+		link = 'https://github.com/git-for-windows/git/releases/download/v2.43.0.windows.1/MinGit-2.43.0-64-bit.zip',
+	},{
+		nome = 'fd',
+		link = 'https://github.com/sharkdp/fd/releases/download/v8.7.1/fd-v8.7.1-x86_64-pc-windows-gnu.zip',
+	},{
+		nome = 'ripgrep',
+		link = 'https://github.com/BurntSushi/ripgrep/releases/download/14.0.3/ripgrep-14.0.3-i686-pc-windows-msvc.zip',
+	},{
+		nome = 'sumatra',
+		link = 'https://www.sumatrapdfreader.org/dl/rel/3.5.2/SumatraPDF-3.5.2-64.zip',
+	},{
+		nome = 'node',
+		link = 'https://nodejs.org/dist/v20.10.0/node-v20.10.0-win-x64.zip',
+	},{
+		nome = 'python',
+		link = 'https://www.python.org/ftp/python/3.8.9/python-3.8.9-embed-amd64.zip',
+	},{
+		nome = 'TexLive',
+		link = 'http://linorg.usp.br/CTAN/systems/win32/w32tex/TLW64/tl-win64.zip',
+	},{
+		nome = 'deno',
+		link = 'https://github.com/denoland/deno/releases/download/v1.27.0/deno-x86_64-pc-windows-msvc.zip',
+	},{
+		nome = 'lua_ls',
+		link = 'https://github.com/LuaLS/lua-language-server/releases/download/3.7.3/lua-language-server-3.7.3-win32-x64.zip',
+	},
+}
+
+Opt.bootstrap = function(self)
+	-- Criar diretório, setar configurações, etc
+	if vim.fn.isdirectory(self.OPT.filename) == 0 then
+		vim.fn.mkdir(self.OPT.filename, 'p', 0700)
+	end
+end
+
+Opt.new = function(self, obj)
+	obj = obj or {}
+	setmetatable(obj, self)
+	self:bootstrap()
+	self.curl = Curl:new()
+	return obj
+end
+
+Opt.registrar_runtime = function(self, programa)
+end
+
+Opt.init = function(self)
+	for _, programa in ipairs(self.PROGRAMAS) do
+		self.curl.download(programa.link, self.OPT.filename)
+		-- self.curl.extrair()
+	end
 end
 
 local DEPENDENCIAS = {
