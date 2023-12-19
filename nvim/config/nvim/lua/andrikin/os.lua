@@ -52,32 +52,45 @@ local Diretorio = {}
 
 Diretorio.__index = Diretorio
 
+Diretorio.separador = '\\'
+
+Diretorio.sanitize = function(str)
+	return string.gsub(str, '/', '\\')
+end
+
+Diretorio.suffix = function(str)
+	return (str:match('^[/\\]') or str == '') and str or Diretorio.separador .. str
+end
+
 Diretorio.new = function(self, diretorio)
 	if type(diretorio) ~= 'string' then
 		error('Diretorio: new: Elemento precisa ser do tipo "string".')
 	end
 	local obj = {}
 	setmetatable(obj, self)
-	self.dir = diretorio
+	self.dir = self.sanitize(diretorio)
 	return obj
 end
 
 Diretorio.__div = function(self, other)
 	if getmetatable(self) ~= Diretorio or getmetatable(other) ~= Diretorio then
-		return string.gsub(self.dir .. other.dir, '/', '\\')
-	else
 		error('Diretorio: div: Elementos precisam ser do tipo "string".')
 	end
+	return self.sanitize(self.dir .. Diretorio.suffix(other.dir))
 end
 
-Diretorio.__concat = function(self, other)
+Diretorio.__concat = function(self, str)
 	if getmetatable(self) ~= Diretorio then
 		error('Diretorio: concat: Objeto não é do tipo Diretorio.')
 	end
-	if type(other) ~= 'string' then
-		error('Diretorio: concat: Segundo argumento precisa ser do tipo "string".')
+	if type(str) ~= 'string' then
+		error('Diretorio: concat: Argumento precisa ser do tipo "string".')
 	end
-	return string.gsub(self.dir .. other, '/', '\\')
+	return self.sanitize(self.dir .. Diretorio.suffix(str))
+end
+
+Diretorio.__tostring = function(self)
+	return self.dir
 end
 
 local Curl = {}
@@ -97,7 +110,12 @@ Curl.exist = function()
 	return vim.fn.executable('curl') == 1
 end
 
+-- @param link string
+-- @param diretorio Diretorio
 Curl.download = function(link, diretorio)
+	if getmetatable(diretorio) == Diretorio then
+		diretorio = tostring(diretorio)
+	end
 	if not link or link == '' then
 		notify('lua config: os.lua: Curl: Link não encontrado ou nulo.')
 		return
@@ -117,83 +135,102 @@ Curl.download = function(link, diretorio)
 	})
 end
 
-Curl.extrair = function(arquivo, diretorio)
+-- TODO: Verificar extração concluída com sucesso
+-- @param arquivo string
+-- @param pasta string
+-- @param diretorio Diretorio
+Curl.extrair = function(arquivo, pasta, diretorio)
 	if not arquivo or arquivo == '' then
 		notify('lua config: os.lua: Curl: Arquivo não encontrado ou nulo.')
 		return
-	end
-	if not diretorio or diretorio == '' then
-		notify('lua config: os.lua: Curl: Diretório não encontrado ou nulo.')
+	elseif not diretorio or getmetatable(diretorio) ~= Diretorio then
+		notify('lua config: os.lua: Curl: Objeto Diretorio não encontrado ou nulo.')
+		return
+	elseif not pasta or pasta == '' then
+		notify('lua config: os.lua: Curl: Nome para diretório de extração não encontrado ou nulo.')
 		return
 	end
 	local extencao = arquivo:match('%.(tar)%..*$') or arquivo:match('%.(.*)$')
-	local nome = vim.fn.fnamemodify(arquivo, ':t')
 	local extrator = {}
 	if extencao == 'zip' then
 		extrator = {
 			cmd = 'unzip',
-			output = '-d'
+			diretorio = '-d'
 		}
 	elseif extencao == 'tar' then
 		extrator = {
 			cmd = {'tar', '-xf'},
-			output = '-C'
+			diretorio = '-C'
 		}
+	end
+	-- criar diretório para extrair arquivo
+	if vim.fn.isdirectory(pasta) == 0 then
+		vim.fn.mkdir(pasta, 'p', 0700)
 	end
 	vim.fn.system({
 		type(extrator.cmd) == 'table' and unpack(extrator.cmd) or extrator.cmd,
-		arquivo,
-		extrator.output,
-		diretorio
+		diretorio .. arquivo,
+		extrator.diretorio,
+		pasta
 	})
 end
+
+local PROGRAMAS = {
+	{
+		nome = 'w64devkit',
+		link = 'https://github.com/skeeto/w64devkit/releases/download/v1.21.0/w64devkit-1.21.0.zip',
+		cmd = 'gcc.exe'
+	},{
+		nome = 'git',
+		link = 'https://github.com/git-for-windows/git/releases/download/v2.43.0.windows.1/MinGit-2.43.0-64-bit.zip',
+		cmd = 'git.exe'
+	},{
+		nome = 'fd',
+		link = 'https://github.com/sharkdp/fd/releases/download/v8.7.1/fd-v8.7.1-x86_64-pc-windows-gnu.zip',
+		cmd = 'fd.exe'
+	},{
+		nome = 'ripgrep',
+		link = 'https://github.com/BurntSushi/ripgrep/releases/download/14.0.3/ripgrep-14.0.3-i686-pc-windows-msvc.zip',
+		cmd = 'rg.exe'
+	},{
+		nome = 'sumatra',
+		link = 'https://www.sumatrapdfreader.org/dl/rel/3.5.2/SumatraPDF-3.5.2-64.zip',
+		cmd = 'sumatra.exe'
+	},{
+		nome = 'node',
+		link = 'https://nodejs.org/dist/v20.10.0/node-v20.10.0-win-x64.zip',
+		cmd = 'node.exe',
+		config = function()
+		end
+	},{
+		nome = 'python',
+		link = 'https://www.python.org/ftp/python/3.8.9/python-3.8.9-embed-amd64.zip',
+		cmd = 'python.exe',
+		config = function()
+			-- configurações extras
+		end
+	},{
+		nome = 'latex',
+		link = 'http://linorg.usp.br/CTAN/systems/win32/w32tex/TLW64/tl-win64.zip',
+		cmd = 'pdflatex.exe',
+		config = function()
+		end
+	},{
+		nome = 'deno',
+		link = 'https://github.com/denoland/deno/releases/download/v1.27.0/deno-x86_64-pc-windows-msvc.zip',
+		cmd = 'deno.exe'
+	},{
+		nome = 'lua',
+		link = 'https://github.com/LuaLS/lua-language-server/releases/download/3.7.3/lua-language-server-3.7.3-win32-x64.zip',
+		cmd = '.exe'
+	},
+}
 
 local Opt = {}
 
 Opt.__index = Opt
 
-Opt.OPT = vim.env.HOME .. '/nvim/opt' -- Path:new({vim.env.HOME, 'nvim', 'opt' })
-
-Opt.PROGRAMAS = {
-	{
-		nome = 'w64devkit',
-		link = 'https://github.com/skeeto/w64devkit/releases/download/v1.21.0/w64devkit-1.21.0.zip',
-	},{
-		nome = 'git',
-		link = 'https://github.com/git-for-windows/git/releases/download/v2.43.0.windows.1/MinGit-2.43.0-64-bit.zip',
-	},{
-		nome = 'fd',
-		link = 'https://github.com/sharkdp/fd/releases/download/v8.7.1/fd-v8.7.1-x86_64-pc-windows-gnu.zip',
-	},{
-		nome = 'ripgrep',
-		link = 'https://github.com/BurntSushi/ripgrep/releases/download/14.0.3/ripgrep-14.0.3-i686-pc-windows-msvc.zip',
-	},{
-		nome = 'sumatra',
-		link = 'https://www.sumatrapdfreader.org/dl/rel/3.5.2/SumatraPDF-3.5.2-64.zip',
-	},{
-		nome = 'node',
-		link = 'https://nodejs.org/dist/v20.10.0/node-v20.10.0-win-x64.zip',
-	},{
-		nome = 'python',
-		link = 'https://www.python.org/ftp/python/3.8.9/python-3.8.9-embed-amd64.zip',
-	},{
-		nome = 'TexLive',
-		link = 'http://linorg.usp.br/CTAN/systems/win32/w32tex/TLW64/tl-win64.zip',
-	},{
-		nome = 'deno',
-		link = 'https://github.com/denoland/deno/releases/download/v1.27.0/deno-x86_64-pc-windows-msvc.zip',
-	},{
-		nome = 'lua_ls',
-		link = 'https://github.com/LuaLS/lua-language-server/releases/download/3.7.3/lua-language-server-3.7.3-win32-x64.zip',
-	},
-}
-
-Opt.bootstrap = function(self)
-	-- Criar diretório, setar configurações, etc
-	if vim.fn.isdirectory(self.OPT.filename) == 0 then
-		vim.fn.mkdir(self.OPT.filename, 'p', 0700)
-	end
-end
+Opt.DIRETORIO = Diretorio:new(vim.env.HOME .. '/nvim/opt')
 
 Opt.new = function(self, obj)
 	obj = obj or {}
@@ -203,15 +240,46 @@ Opt.new = function(self, obj)
 	return obj
 end
 
-Opt.registrar_runtime = function(self, programa)
+Opt.bootstrap = function(self)
+	-- Criar diretório, setar configurações, etc
+	if vim.fn.isdirectory(tostring(self.DIRETORIO)) == 0 then
+		vim.fn.mkdir(tostring(self.DIRETORIO), 'p', 0700)
+	end
+end
+
+Opt.config = function(self, opt)
+	self.PROGRAMAS = opt
+end
+
+Opt.registrar_path = function(self, programa)
+	-- verificar se programa já está no PATH
+	if not vim.env.PATH:match(programa.nome) then
+		local busca = self.DIRETORIO .. programa.nome
+		local diretorio = vim.fs.find(programa.cmd, {path = busca, type = 'file'})[1]
+		-- adicionar ao PATH
+		if diretorio ~= '' then
+			vim.env.PATH = vim.env.PATH .. ';' .. vim.fn.fnamemodify(diretorio, ':h')
+		else
+			notify(string.format('Opt: registrar_path: Executável de programa não encontrado %s', programa.nome))
+		end
+	end
+	if programa.config and vim.env.PATH:match(programa.nome) then
+		programa.config()
+	end
 end
 
 Opt.init = function(self)
 	for _, programa in ipairs(self.PROGRAMAS) do
-		self.curl.download(programa.link, self.OPT.filename)
-		-- self.curl.extrair()
+		local arquivo = vim.fn.fnamemodify(programa.link, ':t')
+		self.curl.download(programa.link, self.DIRETORIO)
+		self.curl.extrair(arquivo, programa.nome, self.DIRETORIO)
+		self:registrar_path(programa)
 	end
 end
+
+local dependencias = Opt:new()
+dependencias.config(PROGRAMAS)
+-- dependencias.init()
 
 local DEPENDENCIAS = {
 	{
