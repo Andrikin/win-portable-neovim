@@ -14,7 +14,9 @@
 -- python 3.12.1: https://www.python.org/ftp/python/3.12.1/python-3.12.1-embed-amd64.zip
 -- pip installer: https://bootstrap.pypa.io/get-pip.py
 -- rust: TODO
--- miktex: TODO
+-- miktex: TODO (Windows 7)
+-- TexLive: TODO (?) http://linorg.usp.br/CTAN/systems/win32/w32tex/TLW64/tl-win64.zip
+-- TexLive: (Windows?) https://ftp.math.utah.edu/pub/tex/historic/systems/texlive/2017/texlive-20170524-bin.tar.xz
 --
 -- LSPs:
 -- emmet: npm install -g emmet-ls
