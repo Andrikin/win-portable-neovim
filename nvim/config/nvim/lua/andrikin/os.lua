@@ -1,10 +1,9 @@
--- TODO: Verificar se existe as dependências e, caso contrário, realizar o download com o curl.
---
 -- INFO: Lista de links para download das dependências:
 -- curl: https://curl.se/windows/latest.cgi?p=win64-mingw.zip
+-- unzip: http://linorg.usp.br/CTAN/systems/win32/w32tex/unzip.exe
 -- w64devkit-compiler: https://github.com/skeeto/w64devkit/releases/download/v1.21.0/w64devkit-1.21.0.zip
 -- git: https://github.com/git-for-windows/git/releases/download/v2.43.0.windows.1/Git-2.43.0-64-bit.tar.bz2 -- Full Version
--- git: https://github.com/git-for-windows/git/releases/download/v2.43.0.windows.1/MinGit-2.43.0-64-bit.zip
+-- git: https://github.com/git-for-windows/git/releases/download/v2.43.0.windows.1/MinGit-2.43.0-64-bit.zip -- Minimal Version
 -- fd: https://github.com/sharkdp/fd/releases/download/v8.7.1/fd-v8.7.1-x86_64-pc-windows-gnu.zip
 -- ripgrep: https://github.com/BurntSushi/ripgrep/releases/download/14.0.3/ripgrep-14.0.3-i686-pc-windows-msvc.zip
 -- sumatra: https://www.sumatrapdfreader.org/dl/rel/3.5.2/SumatraPDF-3.5.2-64.zip
@@ -14,7 +13,7 @@
 -- python 3.12.1: https://www.python.org/ftp/python/3.12.1/python-3.12.1-embed-amd64.zip
 -- pip installer: https://bootstrap.pypa.io/get-pip.py
 -- TexLive: (2021) http://linorg.usp.br/CTAN/systems/win32/w32tex/TLW64/tl-win64.zip
--- TexLive: (Windows 7) https://ftp.math.utah.edu/pub/tex/historic/systems/texlive/2017/texlive-20170524-bin.tar.xz
+-- TexLive: (Windows 7 2017) https://ftp.math.utah.edu/pub/tex/historic/systems/texlive/2017/texlive-20170524-bin.tar.xz
 -- rust: TODO
 --
 -- LSPs:
@@ -24,6 +23,9 @@
 -- python: pip install pyright | npm -g install pyright
 -- java: TODO
 -- rust: TODO
+--
+-- TODO: Como realizar o download do curl, quando não tem ele no sistema?
+-- TODO: Utilizar multithreads para realizar os downloads
 
 local notify = function(msg)
 	vim.notify(msg)
@@ -97,13 +99,32 @@ local Curl = {}
 
 Curl.__index = Curl
 
+Curl.UNZIP = 'http://linorg.usp.br/CTAN/systems/win32/w32tex/unzip.exe'
+
 Curl.new = function(self, obj)
 	obj = obj or {}
 	setmetatable(obj, self)
 	if not self:exist() then
 		error('Não foi encontrado curl no sistema. Verificar e realizar a instalação do curl neste computador!\nLink para download: https://curl.se/windows/latest.cgi?p=win64-mingw.zip')
 	end
+	self:bootstrap()
 	return obj
+end
+
+-- TODO: Unificar o diretório OPT em uma única variável
+Curl.bootstrap = function(self)
+	-- Realizar o download das ferramentas unzip
+	-- e adicioná-las ao PATH
+	if vim.fn.executable('unzip') == 1 then
+		return
+	end
+	local opt = Diretorio:new(vim.env.HOME .. '/nvim/opt')
+	self.download(self.UNZIP, opt)
+	local unzip = vim.fs.find('unzip.exe', {path = opt.dir, type = 'file'})[1]
+	if unzip == '' then
+		error('Curl: bootstrap: Não foi possível encontrar o executável unzip.exe.')
+	end
+	vim.env.PATH = vim.env.PATH .. ';' .. opt.dir
 end
 
 Curl.exist = function()
@@ -113,8 +134,11 @@ end
 -- @param link string
 -- @param diretorio Diretorio
 Curl.download = function(link, diretorio)
+	local arquivo = vim.fn.fnamemodify(link, ':t')
 	if getmetatable(diretorio) == Diretorio then
-		diretorio = tostring(diretorio)
+		diretorio = tostring(diretorio .. arquivo)
+	else
+		error('Curl: download: Argumento deve ser do tipo Diretorio.')
 	end
 	if not link or link == '' then
 		notify('lua config: os.lua: Curl: Link não encontrado ou nulo.')
@@ -133,46 +157,49 @@ Curl.download = function(link, diretorio)
 		diretorio,
 		link
 	})
+	notify(string.format('Curl: download: Arquivo %s baixado!', arquivo))
 end
 
+-- VERIFICAR: Windows 10 build 17063 or later is bundled with tar.exe which is capable of working with ZIP files 
 -- TODO: Verificar extração concluída com sucesso
 -- @param arquivo string
 -- @param pasta string
 -- @param diretorio Diretorio
 Curl.extrair = function(arquivo, pasta, diretorio)
 	if not arquivo or arquivo == '' then
-		notify('lua config: os.lua: Curl: Arquivo não encontrado ou nulo.')
-		return
-	elseif not diretorio or getmetatable(diretorio) ~= Diretorio then
-		notify('lua config: os.lua: Curl: Objeto Diretorio não encontrado ou nulo.')
-		return
-	elseif not pasta or pasta == '' then
-		notify('lua config: os.lua: Curl: Nome para diretório de extração não encontrado ou nulo.')
+		notify('Curl: extrair: Arquivo não encontrado ou nulo.')
 		return
 	end
-	local extencao = arquivo:match('%.(tar)%..*$') or arquivo:match('%.(.*)$')
-	local extrator = {}
-	if extencao == 'zip' then
-		extrator = {
-			cmd = 'unzip',
-			diretorio = '-d'
-		}
-	elseif extencao == 'tar' then
-		extrator = {
-			cmd = {'tar', '-xf'},
-			diretorio = '-C'
-		}
+	if not pasta or pasta == '' then
+		notify('Curl: extrair: Nome para diretório de extração não encontrado ou nulo.')
+		return
 	end
+	if not diretorio or getmetatable(diretorio) ~= Diretorio then
+		error('Curl: extrair: Objeto Diretorio não encontrado ou nulo.')
+		return
+	end
+	local extencao = arquivo:match('%.(tar)%.[a-z]*$') or arquivo:match('%.([a-z]*)$')
+	pasta = diretorio .. pasta
 	-- criar diretório para extrair arquivo
 	if vim.fn.isdirectory(pasta) == 0 then
 		vim.fn.mkdir(pasta, 'p', 0700)
 	end
-	vim.fn.system({
-		type(extrator.cmd) == 'table' and unpack(extrator.cmd) or extrator.cmd,
-		diretorio .. arquivo,
-		extrator.diretorio,
-		pasta
-	})
+	if extencao == 'zip' then
+		vim.fn.system({
+			'unzip',
+			diretorio .. arquivo,
+			'-d',
+			pasta
+		})
+	elseif extencao == 'tar' then
+		vim.fn.system({
+			'tar',
+			'-xf',
+			diretorio .. arquivo,
+			'-C',
+			pasta
+		})
+	end
 end
 
 local PROGRAMAS = {
@@ -201,20 +228,24 @@ local PROGRAMAS = {
 		link = 'https://nodejs.org/dist/v20.10.0/node-v20.10.0-win-x64.zip',
 		cmd = 'node.exe',
 		config = function()
+			-- configurações extras
+			if win7 and vim.env.NODE_SKIP_PLATFORM_CHECK ~= 1 then
+				vim.env.NODE_SKIP_PLATFORM_CHECK = 1
+			end
 		end
 	},{
 		nome = 'python',
 		link = 'https://www.python.org/ftp/python/3.8.9/python-3.8.9-embed-amd64.zip',
-		cmd = 'python.exe',
+		cmd = {'python.exe', 'pip.exe'},
 		config = function()
-			-- configurações extras
+			-- TODO: Na primeira instalação, baixar get-pip.py e modificar o arquivo python38._pth
+			-- descomentando a linha 4
+			vim.g.python3_host_prog = vim.fs.find('python.exe', {path = vim.env.HOME, type = 'file'})
 		end
 	},{
 		nome = 'latex',
 		link = 'http://linorg.usp.br/CTAN/systems/win32/w32tex/TLW64/tl-win64.zip',
 		cmd = 'pdflatex.exe',
-		config = function()
-		end
 	},{
 		nome = 'deno',
 		link = 'https://github.com/denoland/deno/releases/download/v1.27.0/deno-x86_64-pc-windows-msvc.zip',
@@ -222,7 +253,7 @@ local PROGRAMAS = {
 	},{
 		nome = 'lua',
 		link = 'https://github.com/LuaLS/lua-language-server/releases/download/3.7.3/lua-language-server-3.7.3-win32-x64.zip',
-		cmd = '.exe'
+		cmd = 'lua-language-server.exe'
 	},
 }
 
@@ -251,109 +282,127 @@ Opt.config = function(self, opt)
 	self.PROGRAMAS = opt
 end
 
+-- @param programa table
 Opt.registrar_path = function(self, programa)
 	-- verificar se programa já está no PATH
-	if not vim.env.PATH:match(programa.nome) then
-		local busca = self.DIRETORIO .. programa.nome
-		local diretorio = vim.fs.find(programa.cmd, {path = busca, type = 'file'})[1]
-		-- adicionar ao PATH
-		if diretorio ~= '' then
-			vim.env.PATH = vim.env.PATH .. ';' .. vim.fn.fnamemodify(diretorio, ':h')
-		else
-			notify(string.format('Opt: registrar_path: Executável de programa não encontrado %s', programa.nome))
-		end
+	if vim.env.PATH:match(programa.nome) then
+		notify(string.format('Opt: registrar_path: Programa %s já registrado no sistema!', programa.nome))
+		return
 	end
-	if programa.config and vim.env.PATH:match(programa.nome) then
-		programa.config()
+	local busca = self.DIRETORIO .. programa.nome
+	local limite = vim.tbl_islist(programa.cmd) and #programa.cmd or 1
+	local diretorios = vim.fs.find(programa.cmd, {path = busca, type = 'file', limit = limite})
+	-- adicionar ao PATH
+	if #diretorios == 0 then
+		notify(string.format('Opt: registrar_path: Executável de programa não encontrado %s', programa.nome))
+		return
+	end
+	for _, dir in ipairs(diretorios) do
+		vim.env.PATH = vim.env.PATH .. ';' .. vim.fn.fnamemodify(dir, ':h')
+	end
+	if vim.env.PATH:match(programa.nome) then
+		notify(string.format('Opt: registrar_path: Programa %s registrado no PATH do sistema.', programa.nome))
+		if programa.config then -- caso tenha configuração, executá-la
+			programa.config()
+		end
 	end
 end
 
 Opt.init = function(self)
 	for _, programa in ipairs(self.PROGRAMAS) do
 		local arquivo = vim.fn.fnamemodify(programa.link, ':t')
-		self.curl.download(programa.link, self.DIRETORIO)
-		self.curl.extrair(arquivo, programa.nome, self.DIRETORIO)
+		if not vim.loop.fs_stat(self.DIRETORIO .. arquivo) then
+			self.curl.download(programa.link, self.DIRETORIO)
+		else
+			notify(string.format('Opt: init: Arquivo %s já existe. Abortando download.', arquivo))
+		end
+		if #vim.fn.glob(Diretorio:new(self.DIRETORIO .. programa.nome) .. '*', false, true) == 0 then
+			self.curl.extrair(arquivo, programa.nome, self.DIRETORIO)
+		else
+			notify(string.format('Opt: init: Arquivo %s já extraído.'))
+			return
+		end
 		self:registrar_path(programa)
 	end
 end
 
 local dependencias = Opt:new()
-dependencias.config(PROGRAMAS)
--- dependencias.init()
+dependencias:config(PROGRAMAS)
+dependencias:init()
 
-local DEPENDENCIAS = {
-	{
-		config = set_binary_folder,
-		args = {'git', 'cmd'}
-	},
-	{
-		config = set_binary_folder,
-		args = {'curl', 'bin'}
-	},
-	{
-		config = set_binary_folder,
-		args = {'win64devkit', 'bin'}
-	},
-	{
-		config = set_binary_folder,
-		args = {'fd'}
-	},
-	{
-		config = set_binary_folder,
-		args = {'ripgrep'}
-	},
-	{
-		config = set_binary_folder,
-		args = {'rust', 'bin'}
-	},
-	{
-		config = set_binary_folder,
-		args = {'nexusfont'}
-	},
-	{
-		config = set_binary_folder,
-		args = {'sumatra'}
-	},
-	{
-		config = function()
-			set_binary_folder({'node'})
-			-- Somente para Windows 7
-			if win7 and vim.env.NODE_SKIP_PLATFORM_CHECK ~= 1 then
-				vim.env.NODE_SKIP_PLATFORM_CHECK = 1
-			end
-		end,
-	},
-	{
-		config = function()
-			local PYTHON = {'python', 'python3.8.9'} -- windows 7, 3.12 windows 10+
-			local PYTHON_SCRIPTS = {PYTHON[1], PYTHON[2], 'Scripts'}
-			set_binary_folder(PYTHON) -- python.exe
-			set_binary_folder(PYTHON_SCRIPTS) -- pip.exe
-			-- Python 
-			vim.g.python3_host_prog = NVIM / Path:new(PYTHON) .. '\\python.exe'
-		end,
-	},
-	-- Adicionar os binários dos lsp's aqui
-	{
-		config = function() -- Configuração de LSP servers
-			set_binary_folder({'lsp-servers', 'javascript'})
-			set_binary_folder({'lsp-servers', 'lua', 'bin'})
-			set_binary_folder({'lsp-servers', 'rust'})
-		end,
-	},
-	{
-		config = function() -- latex
-			local latex = vim.fs.find('x64', {path = vim.env.HOME, type = 'directory'})[1]
-			if not string.find(vim.env.PATH, latex) then
-				vim.env.PATH = vim.env.PATH .. ';' .. latex
-			end
-		end,
-	}
-}
+-- local DEPENDENCIAS = {
+-- 	{
+-- 		config = set_binary_folder,
+-- 		args = {'git', 'cmd'}
+-- 	},
+-- 	{
+-- 		config = set_binary_folder,
+-- 		args = {'curl', 'bin'}
+-- 	},
+-- 	{
+-- 		config = set_binary_folder,
+-- 		args = {'win64devkit', 'bin'}
+-- 	},
+-- 	{
+-- 		config = set_binary_folder,
+-- 		args = {'fd'}
+-- 	},
+-- 	{
+-- 		config = set_binary_folder,
+-- 		args = {'ripgrep'}
+-- 	},
+-- 	{
+-- 		config = set_binary_folder,
+-- 		args = {'rust', 'bin'}
+-- 	},
+-- 	{
+-- 		config = set_binary_folder,
+-- 		args = {'nexusfont'}
+-- 	},
+-- 	{
+-- 		config = set_binary_folder,
+-- 		args = {'sumatra'}
+-- 	},
+-- 	{
+-- 		config = function()
+-- 			set_binary_folder({'node'})
+-- 			-- Somente para Windows 7
+-- 			if win7 and vim.env.NODE_SKIP_PLATFORM_CHECK ~= 1 then
+-- 				vim.env.NODE_SKIP_PLATFORM_CHECK = 1
+-- 			end
+-- 		end,
+-- 	},
+-- 	{
+-- 		config = function()
+-- 			local PYTHON = {'python', 'python3.8.9'} -- windows 7, 3.12 windows 10+
+-- 			local PYTHON_SCRIPTS = {PYTHON[1], PYTHON[2], 'Scripts'}
+-- 			set_binary_folder(PYTHON) -- python.exe
+-- 			set_binary_folder(PYTHON_SCRIPTS) -- pip.exe
+-- 			-- Python 
+-- 			vim.g.python3_host_prog = NVIM / Path:new(PYTHON) .. '\\python.exe'
+-- 		end,
+-- 	},
+-- 	-- Adicionar os binários dos lsp's aqui
+-- 	{
+-- 		config = function() -- Configuração de LSP servers
+-- 			set_binary_folder({'lsp-servers', 'javascript'})
+-- 			set_binary_folder({'lsp-servers', 'lua', 'bin'})
+-- 			set_binary_folder({'lsp-servers', 'rust'})
+-- 		end,
+-- 	},
+-- 	{
+-- 		config = function() -- latex
+-- 			local latex = vim.fs.find('x64', {path = vim.env.HOME, type = 'directory'})[1]
+-- 			if not string.find(vim.env.PATH, latex) then
+-- 				vim.env.PATH = vim.env.PATH .. ';' .. latex
+-- 			end
+-- 		end,
+-- 	}
+-- }
 
-for _, dep in ipairs(DEPENDENCIAS) do
-	dep.config(dep.args)
-end
+-- for _, dep in ipairs(DEPENDENCIAS) do
+-- 	dep.config(dep.args)
+-- end
 
 -- Instalação da fonte SauceCodePro no computador
 local SauceCodePro = {}
