@@ -56,14 +56,6 @@ Diretorio.__index = Diretorio
 
 Diretorio.separador = '\\'
 
-Diretorio.sanitize = function(str)
-	return string.gsub(str, '/', '\\')
-end
-
-Diretorio.suffix = function(str)
-	return (str:match('^[/\\]') or str == '') and str or Diretorio.separador .. str
-end
-
 Diretorio.new = function(self, diretorio)
 	if type(diretorio) ~= 'string' then
 		error('Diretorio: new: Elemento precisa ser do tipo "string".')
@@ -74,19 +66,27 @@ Diretorio.new = function(self, diretorio)
 	return obj
 end
 
+Diretorio.sanitize = function(str)
+	return string.gsub(str, '/', '\\')
+end
+
+Diretorio.suffix = function(str)
+	return (str:match('^[/\\]') or str == '') and str or Diretorio.separador .. str
+end
+
 Diretorio.__div = function(self, other)
 	if getmetatable(self) ~= Diretorio or getmetatable(other) ~= Diretorio then
-		error('Diretorio: div: Elementos precisam ser do tipo "string".')
+		error('Diretorio: __div: Elementos precisam ser do tipo "string".')
 	end
 	return self.sanitize(self.dir .. Diretorio.suffix(other.dir))
 end
 
 Diretorio.__concat = function(self, str)
 	if getmetatable(self) ~= Diretorio then
-		error('Diretorio: concat: Objeto não é do tipo Diretorio.')
+		error('Diretorio: __concat: Objeto não é do tipo Diretorio.')
 	end
 	if type(str) ~= 'string' then
-		error('Diretorio: concat: Argumento precisa ser do tipo "string".')
+		error('Diretorio: __concat: Argumento precisa ser do tipo "string".')
 	end
 	return self.sanitize(self.dir .. Diretorio.suffix(str))
 end
@@ -94,6 +94,8 @@ end
 Diretorio.__tostring = function(self)
 	return self.dir
 end
+
+local OPT = Diretorio:new(vim.env.HOME .. '/nvim/opt')
 
 local Curl = {}
 
@@ -116,9 +118,10 @@ Curl.bootstrap = function(self)
 	-- Realizar o download das ferramentas unzip
 	-- e adicioná-las ao PATH
 	if vim.fn.executable('unzip') == 1 then
+		notify('Curl: bootstrap: Sistema já possui Unzip.')
 		return
 	end
-	local opt = Diretorio:new(vim.env.HOME .. '/nvim/opt')
+	local opt = OPT
 	self.download(self.UNZIP, opt)
 	local unzip = vim.fs.find('unzip.exe', {path = opt.dir, type = 'file'})[1]
 	if unzip == '' then
@@ -138,7 +141,7 @@ Curl.download = function(link, diretorio)
 	if getmetatable(diretorio) == Diretorio then
 		diretorio = tostring(diretorio .. arquivo)
 	else
-		error('Curl: download: Argumento deve ser do tipo Diretorio.')
+		error('Curl: download: Argumento deve ser do tipo "Diretorio".')
 	end
 	if not link or link == '' then
 		notify('lua config: os.lua: Curl: Link não encontrado ou nulo.')
@@ -157,15 +160,19 @@ Curl.download = function(link, diretorio)
 		diretorio,
 		link
 	})
-	notify(string.format('Curl: download: Arquivo %s baixado!', arquivo))
+	if vim.v.shell_error > 0 then
+		notify(string.format('Curl: download: Não foi possível realizar o download do arquivo %s!', arquivo))
+	elseif vim.v.shell_error == 0 then
+		notify(string.format('Curl: download: Arquivo %s baixado!', arquivo))
+	end
 end
 
 -- VERIFICAR: Windows 10 build 17063 or later is bundled with tar.exe which is capable of working with ZIP files 
 -- TODO: Verificar extração concluída com sucesso
 -- @param arquivo string
 -- @param pasta string
--- @param diretorio Diretorio
-Curl.extrair = function(arquivo, pasta, diretorio)
+-- @param opt Diretorio
+Curl.extrair = function(arquivo, pasta, opt)
 	if not arquivo or arquivo == '' then
 		notify('Curl: extrair: Arquivo não encontrado ou nulo.')
 		return
@@ -174,20 +181,16 @@ Curl.extrair = function(arquivo, pasta, diretorio)
 		notify('Curl: extrair: Nome para diretório de extração não encontrado ou nulo.')
 		return
 	end
-	if not diretorio or getmetatable(diretorio) ~= Diretorio then
+	if not opt or getmetatable(opt) ~= Diretorio then
 		error('Curl: extrair: Objeto Diretorio não encontrado ou nulo.')
 		return
 	end
 	local extencao = arquivo:match('%.(tar)%.[a-z]*$') or arquivo:match('%.([a-z]*)$')
-	pasta = diretorio .. pasta
-	-- criar diretório para extrair arquivo
-	if vim.fn.isdirectory(pasta) == 0 then
-		vim.fn.mkdir(pasta, 'p', 0700)
-	end
+	pasta = opt .. pasta
 	if extencao == 'zip' then
 		vim.fn.system({
 			'unzip',
-			diretorio .. arquivo,
+			opt .. arquivo,
 			'-d',
 			pasta
 		})
@@ -195,10 +198,15 @@ Curl.extrair = function(arquivo, pasta, diretorio)
 		vim.fn.system({
 			'tar',
 			'-xf',
-			diretorio .. arquivo,
+			opt .. arquivo,
 			'-C',
 			pasta
 		})
+	end
+	if vim.v.shell_error > 0 then
+		notify(string.format('Curl: extrair: Erro encontrado! Não foi possível extrair o arquivo %s', arquivo))
+	elseif vim.v.shell_error == 0 then
+		notify(string.format('Curl: extrair: Arquivo %s extraído com sucesso!', arquivo))
 	end
 end
 
@@ -261,7 +269,7 @@ local Opt = {}
 
 Opt.__index = Opt
 
-Opt.DIRETORIO = Diretorio:new(vim.env.HOME .. '/nvim/opt')
+Opt.DIRETORIO = OPT
 
 Opt.new = function(self, obj)
 	obj = obj or {}
@@ -311,15 +319,20 @@ end
 Opt.init = function(self)
 	for _, programa in ipairs(self.PROGRAMAS) do
 		local arquivo = vim.fn.fnamemodify(programa.link, ':t')
+		local diretorio = self.DIRETORIO .. programa.nome
 		if not vim.loop.fs_stat(self.DIRETORIO .. arquivo) then
 			self.curl.download(programa.link, self.DIRETORIO)
 		else
 			notify(string.format('Opt: init: Arquivo %s já existe. Abortando download.', arquivo))
 		end
-		if #vim.fn.glob(Diretorio:new(self.DIRETORIO .. programa.nome) .. '*', false, true) == 0 then
+		if #vim.fn.glob(diretorio .. '\\*', false, true) == 0 then
+			-- criar diretório para extrair arquivo
+			if vim.fn.isdirectory(diretorio) == 0 then
+				vim.fn.mkdir(diretorio, 'p', 0700)
+			end
 			self.curl.extrair(arquivo, programa.nome, self.DIRETORIO)
 		else
-			notify(string.format('Opt: init: Arquivo %s já extraído.'))
+			notify(string.format('Opt: init: Arquivo %s já extraído.', arquivo))
 			return
 		end
 		self:registrar_path(programa)
@@ -513,10 +526,10 @@ SauceCodePro.instalar = function(self)
 	end
 end
 
-local has_curl = vim.fn.executable('curl') == 1
-if has_curl then
-	SauceCodePro:instalar()
-else
-	notify('Não foi possível instalar a fonte SauceCodePro neste computador. Instale curl para continuar.')
-end
+-- local has_curl = vim.fn.executable('curl') == 1
+-- if has_curl then
+-- 	SauceCodePro:instalar()
+-- else
+-- 	notify('Não foi possível instalar a fonte SauceCodePro neste computador. Instale curl para continuar.')
+-- end
 
