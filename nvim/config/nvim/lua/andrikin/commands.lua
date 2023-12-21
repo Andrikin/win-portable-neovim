@@ -13,7 +13,7 @@ if not Path then
 	error('Não foi encontrado plugin Plenary. Verificar instalação do plugin')
 end
 
-local ouvidoria_notify = function(msg)
+local notify = function(msg)
 	vim.notify(msg)
 	vim.cmd.redraw({bang = true})
 end
@@ -21,7 +21,7 @@ end
 local Latex = {}
 Latex.OUTPUT_FOLDER = vim.fs.find('Downloads', {path = vim.loop.os_homedir(), type = 'directory'})[1] -- windows 
 Latex.AUX_FOLDER = vim.env.TEMP -- windows
-Latex.PDF_READER = 'sumatra.exe'
+Latex.PDF_READER = 'SumatraPDF-3.5.2-64.exe'
 Latex.ft = function()
 	return vim.o.ft ~= 'tex'
 end
@@ -82,18 +82,21 @@ Latex.compile = function()
 			arquivo
 		}
 	end
-	ouvidoria_notify('1º compilação!')
+	notify('1º compilação!')
 	vim.fn.system(comando)
-	ouvidoria_notify('2º compilação!')
+	notify('2º compilação!')
 	vim.fn.system(comando)
-	ouvidoria_notify('Pdf compilado!')
+	notify('Pdf compilado!')
 	arquivo =  arquivo:match('(.*)%..*$') or arquivo
-	vim.fn.jobstart(
-		{
+	local pdf = Latex.OUTPUT_FOLDER .. '/' .. arquivo .. '.pdf'
+	if vim.loop.fs_stat(pdf) then
+		vim.fn.jobstart({
 			Latex.PDF_READER,
-			Latex.OUTPUT_FOLDER .. '/' .. arquivo .. '.pdf'
-		}
-	)
+			pdf
+		})
+	else
+		notify('Latex: Não foi encontrado arquivo .pdf!')
+	end
 	Latex.clear(arquivo)
 end
 Latex.init()
