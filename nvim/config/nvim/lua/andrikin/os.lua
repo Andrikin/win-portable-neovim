@@ -56,14 +56,14 @@ Diretorio.__index = Diretorio
 
 Diretorio.separador = '\\'
 
-Diretorio.new = function(self, diretorio)
-	if type(diretorio) ~= 'string' then
+Diretorio.new = function(self, path)
+	if type(path) ~= 'string' then
 		error('Diretorio: new: Elemento precisa ser do tipo "string".')
 	end
-	local obj = {}
-	setmetatable(obj, self)
-	self.dir = self.sanitize(diretorio)
-	return obj
+	local diretorio = {}
+	setmetatable(diretorio, self)
+	diretorio.dir = self.sanitize(path)
+	return diretorio
 end
 
 Diretorio.sanitize = function(str)
@@ -325,7 +325,7 @@ Opt.init = function(self)
 		else
 			notify(string.format('Opt: init: Arquivo %s já existe. Abortando download.', arquivo))
 		end
-		if #vim.fn.glob(diretorio .. '\\*', false, true) == 0 then
+		if #vim.fn.glob(Diretorio:new(diretorio) .. '*', false, true) == 0 then
 			-- criar diretório para extrair arquivo
 			if vim.fn.isdirectory(diretorio) == 0 then
 				vim.fn.mkdir(diretorio, 'p', 0700)
