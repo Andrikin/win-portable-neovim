@@ -15,40 +15,24 @@
 -- TexLive: (2021) http://linorg.usp.br/CTAN/systems/win32/w32tex/TLW64/tl-win64.zip
 -- TexLive: (Windows 7 2017) https://ftp.math.utah.edu/pub/tex/historic/systems/texlive/2017/texlive-20170524-bin.tar.xz
 -- rust: TODO
---
+
 -- LSPs:
--- emmet: npm install -g emmet-ls
--- javascript: (deno 1.27.0) https://github.com/denoland/deno/releases/download/v1.27.0/deno-x86_64-pc-windows-msvc.zip
+-- javascript: (deno 1.27.0 Windows 7) https://github.com/denoland/deno/releases/download/v1.27.0/deno-x86_64-pc-windows-msvc.zip
 -- lua: https://github.com/LuaLS/lua-language-server/releases/download/3.7.3/lua-language-server-3.7.3-win32-x64.zip
+-- emmet: npm install -g emmet-ls
 -- python: pip install pyright | npm -g install pyright
 -- java: TODO
 -- rust: TODO
---
--- TODO: Como realizar o download do curl, quando não tem ele no sistema?
--- TODO: Utilizar multithreads para realizar os downloads
+
+-- WIP: Como realizar o download do curl, quando não tem ele no sistema?
+-- WIP: Utilizar multithreads para realizar os downloads
 
 local notify = function(msg)
 	vim.notify(msg)
 	vim.cmd.redraw({bang = true})
 end
-local Path = vim.F.npcall(require, 'plenary.path')
-if not Path then
-	error('Init: Não foi encontrado o plugin Plenary!')
-end
 
 local win7 = string.match(vim.loop.os_uname()['version'], 'Windows 7')
-
-local NVIM = Path:new({vim.env.HOME, 'nvim', 'deps' })
-if vim.fn.isdirectory(NVIM.filename) == 0 then -- bootstrap para diretório de dependências
-	vim.fn.mkdir(NVIM.filename, 'p', 0700)
-end
-local function set_binary_folder(dependencia)
-	dependencia = Path:new(dependencia)
-	if not string.find(vim.env.PATH, dependencia.filename) then
-		local dir = NVIM / dependencia
-		vim.env.PATH = vim.env.PATH .. ';' .. dir.filename
-	end
-end
 
 local Diretorio = {}
 
@@ -113,21 +97,23 @@ Curl.new = function(self, obj)
 	return obj
 end
 
--- TODO: Unificar o diretório OPT em uma única variável
+-- FATO: Windows 10 build 17063 or later is bundled with tar.exe which is capable of working with ZIP files 
 Curl.bootstrap = function(self)
 	-- Realizar o download das ferramentas unzip
 	-- e adicioná-las ao PATH
+	if win7 and vim.fn.executable('tar') then
+		notify('Curl: bootstrap: Sistema não possui tar.exe! Realizar a instalação do programa.')
+	end
 	if vim.fn.executable('unzip') == 1 then
 		notify('Curl: bootstrap: Sistema já possui Unzip.')
 		return
 	end
-	local opt = OPT
-	self.download(self.UNZIP, opt)
-	local unzip = vim.fs.find('unzip.exe', {path = opt.dir, type = 'file'})[1]
+	self.download(self.UNZIP, OPT)
+	local unzip = vim.fs.find('unzip.exe', {path = OPT.dir, type = 'file'})[1]
 	if unzip == '' then
 		error('Curl: bootstrap: Não foi possível encontrar o executável unzip.exe.')
 	end
-	vim.env.PATH = vim.env.PATH .. ';' .. opt.dir
+	vim.env.PATH = vim.env.PATH .. ';' .. OPT.dir
 end
 
 Curl.exist = function()
@@ -167,8 +153,6 @@ Curl.download = function(link, diretorio)
 	end
 end
 
--- VERIFICAR: Windows 10 build 17063 or later is bundled with tar.exe which is capable of working with ZIP files 
--- TODO: Verificar extração concluída com sucesso
 -- @param arquivo string
 -- @param pasta string
 -- @param opt Diretorio
@@ -269,13 +253,12 @@ local Opt = {}
 
 Opt.__index = Opt
 
-Opt.DIRETORIO = OPT
-
 Opt.new = function(self, obj)
 	obj = obj or {}
 	setmetatable(obj, self)
-	self:bootstrap()
-	self.curl = Curl:new()
+	obj:bootstrap()
+	obj.curl = Curl:new()
+	obj.DIRETORIO = OPT
 	return obj
 end
 
@@ -286,18 +269,18 @@ Opt.bootstrap = function(self)
 	end
 end
 
-Opt.config = function(self, opt)
-	self.PROGRAMAS = opt
+Opt.config = function(self, cfg)
+	self.PROGRAMAS = cfg
 end
 
 -- @param programa table
 Opt.registrar_path = function(self, programa)
 	-- verificar se programa já está no PATH
-	if vim.env.PATH:match(programa.nome) then
+	local busca = self.DIRETORIO .. programa.nome
+	if vim.env.PATH:match(busca:gsub('\\', '.')) then
 		notify(string.format('Opt: registrar_path: Programa %s já registrado no sistema!', programa.nome))
 		return
 	end
-	local busca = self.DIRETORIO .. programa.nome
 	local limite = vim.tbl_islist(programa.cmd) and #programa.cmd or 1
 	local diretorios = vim.fs.find(programa.cmd, {path = busca, type = 'file', limit = limite})
 	-- adicionar ao PATH
@@ -308,7 +291,7 @@ Opt.registrar_path = function(self, programa)
 	for _, dir in ipairs(diretorios) do
 		vim.env.PATH = vim.env.PATH .. ';' .. vim.fn.fnamemodify(dir, ':h')
 	end
-	if vim.env.PATH:match(programa.nome) then
+	if vim.env.PATH:match(busca:gsub('\\', '.')) then
 		notify(string.format('Opt: registrar_path: Programa %s registrado no PATH do sistema.', programa.nome))
 		if programa.config then -- caso tenha configuração, executá-la
 			programa.config()
@@ -339,84 +322,15 @@ Opt.init = function(self)
 	end
 end
 
-local dependencias = Opt:new()
-dependencias:config(PROGRAMAS)
-dependencias:init()
+Opt.setup = function(self, cfg)
+	self:config(cfg)
+	self:init()
+end
 
--- local DEPENDENCIAS = {
--- 	{
--- 		config = set_binary_folder,
--- 		args = {'git', 'cmd'}
--- 	},
--- 	{
--- 		config = set_binary_folder,
--- 		args = {'curl', 'bin'}
--- 	},
--- 	{
--- 		config = set_binary_folder,
--- 		args = {'win64devkit', 'bin'}
--- 	},
--- 	{
--- 		config = set_binary_folder,
--- 		args = {'fd'}
--- 	},
--- 	{
--- 		config = set_binary_folder,
--- 		args = {'ripgrep'}
--- 	},
--- 	{
--- 		config = set_binary_folder,
--- 		args = {'rust', 'bin'}
--- 	},
--- 	{
--- 		config = set_binary_folder,
--- 		args = {'nexusfont'}
--- 	},
--- 	{
--- 		config = set_binary_folder,
--- 		args = {'sumatra'}
--- 	},
--- 	{
--- 		config = function()
--- 			set_binary_folder({'node'})
--- 			-- Somente para Windows 7
--- 			if win7 and vim.env.NODE_SKIP_PLATFORM_CHECK ~= 1 then
--- 				vim.env.NODE_SKIP_PLATFORM_CHECK = 1
--- 			end
--- 		end,
--- 	},
--- 	{
--- 		config = function()
--- 			local PYTHON = {'python', 'python3.8.9'} -- windows 7, 3.12 windows 10+
--- 			local PYTHON_SCRIPTS = {PYTHON[1], PYTHON[2], 'Scripts'}
--- 			set_binary_folder(PYTHON) -- python.exe
--- 			set_binary_folder(PYTHON_SCRIPTS) -- pip.exe
--- 			-- Python 
--- 			vim.g.python3_host_prog = NVIM / Path:new(PYTHON) .. '\\python.exe'
--- 		end,
--- 	},
--- 	-- Adicionar os binários dos lsp's aqui
--- 	{
--- 		config = function() -- Configuração de LSP servers
--- 			set_binary_folder({'lsp-servers', 'javascript'})
--- 			set_binary_folder({'lsp-servers', 'lua', 'bin'})
--- 			set_binary_folder({'lsp-servers', 'rust'})
--- 		end,
--- 	},
--- 	{
--- 		config = function() -- latex
--- 			local latex = vim.fs.find('x64', {path = vim.env.HOME, type = 'directory'})[1]
--- 			if not string.find(vim.env.PATH, latex) then
--- 				vim.env.PATH = vim.env.PATH .. ';' .. latex
--- 			end
--- 		end,
--- 	}
--- }
+local deps = Opt:new()
+deps:setup(PROGRAMAS)
 
--- for _, dep in ipairs(DEPENDENCIAS) do
--- 	dep.config(dep.args)
--- end
-
+-- TODO: Reformatar para utilizar o objeto Diretorio
 -- Instalação da fonte SauceCodePro no computador
 local SauceCodePro = {}
 
@@ -434,10 +348,6 @@ end
 
 SauceCodePro.download = function(self)
 	-- Realiza download em AppData/Local/Microsoft/Windows/Fonts
-	if self:fonte_extraida() then
-		notify('Encontrado fonte SauceCodePro neste computador!')
-		return
-	end
 	if vim.fn.isdirectory(self.DIRECTORY) == 0 then
 		vim.fn.mkdir(self.DIRECTORY, 'p', 0700)
 	end
@@ -495,10 +405,6 @@ end
 
 SauceCodePro.registrar = function(self)
 	-- Registra as fontes no RegEdit do sistema.
-	if self:fonte_intalada_regedit() then
-		notify('Fonte já registrada no sistema regedit deste computador!')
-		return
-	end
 	for _, fonte in ipairs(self.FILES) do
 		local arquivo = vim.fn.fnamemodify(fonte, ':t')
 		local diretorio = string.gsub(self.DIRECTORY .. '/' .. arquivo, '/', '\\')
@@ -518,18 +424,28 @@ SauceCodePro.registrar = function(self)
 end
 
 SauceCodePro.instalar = function(self)
-	self:download()
-	self:extrair()
-	self:registrar()
+	if self:fonte_extraida() then
+		notify('Encontrado fonte SauceCodePro extraída neste computador!')
+		return
+	else
+		self:download()
+		self:extrair()
+	end
 	if self:fonte_intalada_regedit() then
-		notify('Fonte SauceCodePro instalada com sucesso. Reinicie o nvim para carregar a fonte.')
+		notify('Fonte já registrada no sistema regedit deste computador!')
+		return
+	else
+		self:registrar()
+		if self:fonte_intalada_regedit() then
+			notify('Fonte SauceCodePro instalada com sucesso. Reinicie o nvim para carregar a fonte.')
+		end
 	end
 end
 
--- local has_curl = vim.fn.executable('curl') == 1
--- if has_curl then
--- 	SauceCodePro:instalar()
--- else
--- 	notify('Não foi possível instalar a fonte SauceCodePro neste computador. Instale curl para continuar.')
--- end
+local has_curl = vim.fn.executable('curl') == 1
+if has_curl then
+	SauceCodePro:instalar()
+else
+	notify('Não foi possível instalar a fonte SauceCodePro neste computador. Instale curl para continuar.')
+end
 
