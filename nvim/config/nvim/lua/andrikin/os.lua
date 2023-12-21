@@ -214,7 +214,7 @@ local PROGRAMAS = {
 	},{
 		nome = 'sumatra',
 		link = 'https://www.sumatrapdfreader.org/dl/rel/3.5.2/SumatraPDF-3.5.2-64.zip',
-		cmd = 'sumatra.exe'
+		cmd = 'SumatraPDF-3.5.2-64.exe'
 	},{
 		nome = 'node',
 		link = 'https://nodejs.org/dist/v20.10.0/node-v20.10.0-win-x64.zip',
@@ -253,12 +253,13 @@ local Opt = {}
 
 Opt.__index = Opt
 
+Opt.DIRETORIO = OPT
+
 Opt.new = function(self, obj)
 	obj = obj or {}
 	setmetatable(obj, self)
 	obj:bootstrap()
 	obj.curl = Curl:new()
-	obj.DIRETORIO = OPT
 	return obj
 end
 
@@ -270,7 +271,7 @@ Opt.bootstrap = function(self)
 end
 
 Opt.config = function(self, cfg)
-	self.PROGRAMAS = cfg
+	self.DEPS = cfg
 end
 
 -- @param programa table
@@ -300,7 +301,7 @@ Opt.registrar_path = function(self, programa)
 end
 
 Opt.init = function(self)
-	for _, programa in ipairs(self.PROGRAMAS) do
+	for _, programa in ipairs(self.DEPS) do
 		local arquivo = vim.fn.fnamemodify(programa.link, ':t')
 		local diretorio = self.DIRETORIO .. programa.nome
 		if not vim.loop.fs_stat(self.DIRETORIO .. arquivo) then
@@ -316,7 +317,6 @@ Opt.init = function(self)
 			self.curl.extrair(arquivo, programa.nome, self.DIRETORIO)
 		else
 			notify(string.format('Opt: init: Arquivo %s já extraído.', arquivo))
-			return
 		end
 		self:registrar_path(programa)
 	end
