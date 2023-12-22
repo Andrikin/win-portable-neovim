@@ -104,7 +104,7 @@ Latex.init()
 
 local Ouvidoria = {}
 Ouvidoria.TEX = '.tex'
-Ouvidoria.CI_FOLDER = vim.env.TEXINPUTS
+Ouvidoria.CI_FOLDER = vim.env.TEXINPUTS:match('..(.*).')
 Ouvidoria.OUTPUT_FOLDER = Latex.OUTPUT_FOLDER
 Ouvidoria.listagem = function()
 	return vim.tbl_map(
