@@ -12,6 +12,7 @@ lsp.html.setup({}) -- npm i -g vscode-langservers-extracted
 -- Javascript LSP
 lsp.denols.setup({})
 -- Lua LSP
+-- lsp.jdtls.setup({})
 lsp.lua_ls.setup(
 	{
 		settings = {

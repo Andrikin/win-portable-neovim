@@ -268,7 +268,11 @@ local PROGRAMAS = {
 		nome = 'lua',
 		link = 'https://github.com/LuaLS/lua-language-server/releases/download/3.7.3/lua-language-server-3.7.3-win32-x64.zip',
 		cmd = 'lua-language-server.exe'
-	},
+	},{
+		nome = 'jdtls',
+		link = 'https://www.eclipse.org/downloads/download.php?file=/jdtls/snapshots/jdt-language-server-latest.tar.gz',
+		cmd = 'jdtls'
+	}
 }
 
 local Opt = {}
