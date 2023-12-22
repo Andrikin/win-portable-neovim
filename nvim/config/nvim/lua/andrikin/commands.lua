@@ -45,13 +45,13 @@ Latex.clear = function(arquivo)
 	end
 end
 Latex.init = function() -- setando diretoria de modelos latex
-	vim.env.TEXINPUTS = vim.fs.find(
+	vim.env.TEXINPUTS = '.;' .. vim.fs.find(
 		'ouvidoria-latex-modelos',
 		{
 			path = vim.fn.fnamemodify(vim.env.HOME, ':h'),
 			type = 'directory',
 		}
-	)[1]
+	)[1] .. ';'
 end
 Latex.compile = function()
 	if Latex.ft() then
