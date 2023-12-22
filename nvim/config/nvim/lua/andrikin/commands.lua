@@ -7,6 +7,7 @@
 -- plugin: unificar objeto Latex com Ouvidoria
 -- plugin: identificar em qual sistema o nvim está executando!!!
 -- config: vim.loop.os_uname para obter informação do sistema
+-- TODO: Utilizar objeto Diretorio, para gerenciamento de path's
 
 local Path = vim.F.npcall(require, 'plenary.path')
 if not Path then
@@ -21,7 +22,7 @@ end
 local Latex = {}
 Latex.OUTPUT_FOLDER = vim.fs.find('Downloads', {path = vim.loop.os_homedir(), type = 'directory'})[1] -- windows 
 Latex.AUX_FOLDER = vim.env.TEMP -- windows
-Latex.PDF_READER = 'SumatraPDF-3.5.2-64.exe'
+Latex.PDF_READER = vim.fn.fnamemodify(vim.fn.glob(vim.env.HOME .. '/nvim/opt/sumatra/sumatra*exe'), ':t')
 Latex.ft = function()
 	return vim.o.ft ~= 'tex'
 end
