@@ -83,6 +83,8 @@ end
 
 local OPT = Diretorio:new(vim.env.HOME .. '/nvim/opt')
 
+vim.env.PATH = vim.env.PATH .. ';' .. OPT.dir
+
 local Curl = {}
 
 Curl.__index = Curl
@@ -105,6 +107,7 @@ Curl.bootstrap = function(self)
 	-- e adicioná-las ao PATH
 	if win7 and vim.fn.executable('tar') then
 		notify('Curl: bootstrap: Sistema não possui tar.exe! Realizar a instalação do programa.')
+		return
 	end
 	if vim.fn.executable('unzip') == 1 then
 		notify('Curl: bootstrap: Sistema já possui Unzip.')
@@ -148,10 +151,10 @@ Curl.download = function(link, diretorio)
 		diretorio,
 		link
 	})
-	if vim.v.shell_error > 0 then
-		notify(string.format('Curl: download: Não foi possível realizar o download do arquivo %s!', arquivo))
-	elseif vim.v.shell_error == 0 then
+	if vim.v.shell_error == 0 then
 		notify(string.format('Curl: download: Arquivo %s baixado!', arquivo))
+	else
+		notify(string.format('Curl: download: Não foi possível realizar o download do arquivo %s!', arquivo))
 	end
 end
 
@@ -189,10 +192,10 @@ Curl.extrair = function(arquivo, pasta, opt)
 			pasta
 		})
 	end
-	if vim.v.shell_error > 0 then
-		notify(string.format('Curl: extrair: Erro encontrado! Não foi possível extrair o arquivo %s', arquivo))
-	elseif vim.v.shell_error == 0 then
+	if vim.v.shell_error == 0 then
 		notify(string.format('Curl: extrair: Arquivo %s extraído com sucesso!', arquivo))
+	else
+		notify(string.format('Curl: extrair: Erro encontrado! Não foi possível extrair o arquivo %s', arquivo))
 	end
 end
 
@@ -238,12 +241,24 @@ local PROGRAMAS = {
 		end
 	},{
 		nome = 'latex',
-		-- link = 'https://github.com/rstudio/tinytex-releases/releases/download/daily/TinyTeX-2.exe',
-		-- link = 'https://ftp.math.utah.edu/pub/tex/historic/systems/protext/2021-3.2/protext-3.2-031721.zip',
-		-- link = 'https://miktex.org/download/ctan/systems/win32/miktex/setup/windows-x64/basic-miktex-23.10-x64.exe',
 		link = 'https://github.com/rstudio/tinytex-releases/releases/download/v2023.12/TinyTeX-v2023.12.zip',
 		cmd = 'pdflatex.exe',
 		config = function()
+			if vim.fn.executable('tlmgr') == 0 then
+				notify('latex: "tlmgr" não encontrado. Verificar distribuição Latex instalada.')
+				return
+			end
+			local instalar = {
+				'babel-portuges',
+				'datetime2'
+			}
+			for _, pacote in ipairs(instalar) do
+				vim.fn.system({
+					'tlmgr.bat',
+					'install',
+					pacote
+				})
+			end
 		end
 	},{
 		nome = 'deno',
@@ -285,16 +300,21 @@ end
 Opt.registrar_path = function(self, programa)
 	-- verificar se programa já está no PATH
 	local busca = self.DIRETORIO .. programa.nome
-	if vim.env.PATH:match(busca:gsub('\\', '.')) then
-		notify(string.format('Opt: registrar_path: Programa %s já registrado no sistema!', programa.nome))
-		return
-	end
 	local limite = vim.tbl_islist(programa.cmd) and #programa.cmd or 1
 	local diretorios = vim.fs.find(programa.cmd, {path = busca, type = 'file', limit = limite})
+	local registrado = vim.env.PATH:match(busca:gsub('\\', '.'))
+	if not registrado and #diretorios == 0 then
+		notify('Opt: registrar_path: Baixar programa e registrar no sistema.')
+		return false
+	end
+	if registrado then
+		notify(string.format('Opt: registrar_path: Programa %s já registrado no sistema!', programa.nome))
+		return true
+	end
 	-- adicionar ao PATH
 	if #diretorios == 0 then
 		notify(string.format('Opt: registrar_path: Executável de programa não encontrado %s', programa.nome))
-		return
+		return false
 	end
 	for _, dir in ipairs(diretorios) do
 		vim.env.PATH = vim.env.PATH .. ';' .. vim.fn.fnamemodify(dir, ':h')
@@ -305,27 +325,33 @@ Opt.registrar_path = function(self, programa)
 			programa.config()
 		end
 	end
+	return true
 end
 
 Opt.init = function(self)
 	for _, programa in ipairs(self.DEPS) do
 		local arquivo = vim.fn.fnamemodify(programa.link, ':t')
 		local diretorio = self.DIRETORIO .. programa.nome
-		if not vim.loop.fs_stat(self.DIRETORIO .. arquivo) then
-			self.curl.download(programa.link, self.DIRETORIO)
-		else
-			notify(string.format('Opt: init: Arquivo %s já existe. Abortando download.', arquivo))
-		end
-		if #vim.fn.glob(Diretorio:new(diretorio) .. '*', false, true) == 0 then
-			-- criar diretório para extrair arquivo
-			if vim.fn.isdirectory(diretorio) == 0 then
-				vim.fn.mkdir(diretorio, 'p', 0700)
+		local registrar = self:registrar_path(programa)
+		if not registrar then
+			if not vim.loop.fs_stat(self.DIRETORIO .. arquivo) then
+				self.curl.download(programa.link, self.DIRETORIO)
+			else
+				notify(string.format('Opt: init: Arquivo %s já existe. Abortando download.', arquivo))
 			end
-			self.curl.extrair(arquivo, programa.nome, self.DIRETORIO)
+			if #vim.fn.glob(Diretorio:new(diretorio) .. '*', false, true) == 0 then
+				-- criar diretório para extrair arquivo
+				if vim.fn.isdirectory(diretorio) == 0 then
+					vim.fn.mkdir(diretorio, 'p', 0700)
+				end
+				self.curl.extrair(arquivo, programa.nome, self.DIRETORIO)
+			else
+				notify(string.format('Opt: init: Arquivo %s já extraído.', arquivo))
+			end
+			self:registrar_path(programa)
 		else
-			notify(string.format('Opt: init: Arquivo %s já extraído.', arquivo))
+			notify(string.format('Opt: registrar_path: Realizando o registro do programa %s.', arquivo))
 		end
-		self:registrar_path(programa)
 	end
 end
 
