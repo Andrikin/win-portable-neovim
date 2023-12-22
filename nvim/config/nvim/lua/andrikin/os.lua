@@ -14,6 +14,8 @@
 -- pip installer: https://bootstrap.pypa.io/get-pip.py
 -- TexLive: (2021) http://linorg.usp.br/CTAN/systems/win32/w32tex/TLW64/tl-win64.zip
 -- TexLive: (Windows 7 2017) https://ftp.math.utah.edu/pub/tex/historic/systems/texlive/2017/texlive-20170524-bin.tar.xz
+-- TinyTex: https://yihui.org/tinytex/
+-- TinyTex: https://github.com/rstudio/tinytex-releases/releases/download/v2023.12/TinyTeX-1-v2023.12.zip
 -- rust: TODO
 
 -- LSPs:
@@ -236,8 +238,13 @@ local PROGRAMAS = {
 		end
 	},{
 		nome = 'latex',
-		link = 'http://linorg.usp.br/CTAN/systems/win32/w32tex/TLW64/tl-win64.zip',
+		-- link = 'https://github.com/rstudio/tinytex-releases/releases/download/daily/TinyTeX-2.exe',
+		-- link = 'https://ftp.math.utah.edu/pub/tex/historic/systems/protext/2021-3.2/protext-3.2-031721.zip',
+		-- link = 'https://miktex.org/download/ctan/systems/win32/miktex/setup/windows-x64/basic-miktex-23.10-x64.exe',
+		link = 'https://github.com/rstudio/tinytex-releases/releases/download/v2023.12/TinyTeX-v2023.12.zip',
 		cmd = 'pdflatex.exe',
+		config = function()
+		end
 	},{
 		nome = 'deno',
 		link = 'https://github.com/denoland/deno/releases/download/v1.27.0/deno-x86_64-pc-windows-msvc.zip',
