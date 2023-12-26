@@ -218,16 +218,15 @@ SauceCodePro.ZIP = SauceCodePro.DIRECTORY .. 'SauceCodePro.zip'
 
 SauceCodePro.REGISTRY = 'HKCU\\Software\\Microsoft\\Windows NT\\CurrentVersion\\Fonts'
 
-SauceCodePro.curl = Curl:new()
-
 SauceCodePro.new = function(self, obj)
 	obj = obj or {}
 	setmetatable(obj, self)
+	obj.curl = Curl:new()
 	return obj
 end
 
 SauceCodePro.setup = function(self)
-	if self.curl.exit() then
+	if self.curl.exist() then
 		self:instalar()
 	else
 		notify('Não foi possível instalar a fonte SauceCodePro neste computador. Instale curl para continuar.')
