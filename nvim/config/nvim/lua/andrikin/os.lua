@@ -83,8 +83,6 @@ end
 
 local OPT = Diretorio:new(vim.env.HOME .. '/nvim/opt')
 
-vim.env.PATH = vim.env.PATH .. ';' .. OPT.dir
-
 local Curl = {}
 
 Curl.__index = Curl
@@ -107,11 +105,11 @@ Curl.bootstrap = function(self)
 	-- e adicioná-las ao PATH
 	if win7 and vim.fn.executable('tar') then
 		notify('Curl: bootstrap: Sistema não possui tar.exe! Realizar a instalação do programa.')
-		return
+		do return end
 	end
 	if vim.fn.executable('unzip') == 1 then
 		notify('Curl: bootstrap: Sistema já possui Unzip.')
-		return
+		do return end
 	end
 	self.download(self.UNZIP, OPT)
 	local unzip = vim.fs.find('unzip.exe', {path = OPT.dir, type = 'file'})[1]
@@ -136,11 +134,11 @@ Curl.download = function(link, diretorio)
 	end
 	if not link or link == '' then
 		notify('lua config: os.lua: Curl: Link não encontrado ou nulo.')
-		return
+		do return end
 	end
 	if not diretorio or diretorio == '' then
 		notify('lua config: os.lua: Curl: Diretório não encontrado ou nulo.')
-		return
+		do return end
 	end
 	vim.fn.system({
 		'curl',
@@ -164,15 +162,15 @@ end
 Curl.extrair = function(arquivo, pasta, opt)
 	if not arquivo or arquivo == '' then
 		notify('Curl: extrair: Arquivo não encontrado ou nulo.')
-		return
+		do return end
 	end
 	if not pasta or pasta == '' then
 		notify('Curl: extrair: Nome para diretório de extração não encontrado ou nulo.')
-		return
+		do return end
 	end
 	if not opt or getmetatable(opt) ~= Diretorio then
 		error('Curl: extrair: Objeto Diretorio não encontrado ou nulo.')
-		return
+		do return end
 	end
 	local extencao = arquivo:match('%.(tar)%.[a-z]*$') or arquivo:match('%.([a-z]*)$')
 	pasta = opt .. pasta
@@ -198,82 +196,6 @@ Curl.extrair = function(arquivo, pasta, opt)
 		notify(string.format('Curl: extrair: Erro encontrado! Não foi possível extrair o arquivo %s', arquivo))
 	end
 end
-
-local PROGRAMAS = {
-	{
-		nome = 'w64devkit',
-		link = 'https://github.com/skeeto/w64devkit/releases/download/v1.21.0/w64devkit-1.21.0.zip',
-		cmd = 'gcc.exe'
-	},{
-		nome = 'git',
-		link = 'https://github.com/git-for-windows/git/releases/download/v2.43.0.windows.1/MinGit-2.43.0-64-bit.zip',
-		cmd = 'git.exe'
-	},{
-		nome = 'fd',
-		link = 'https://github.com/sharkdp/fd/releases/download/v8.7.1/fd-v8.7.1-x86_64-pc-windows-gnu.zip',
-		cmd = 'fd.exe'
-	},{
-		nome = 'ripgrep',
-		link = 'https://github.com/BurntSushi/ripgrep/releases/download/14.0.3/ripgrep-14.0.3-i686-pc-windows-msvc.zip',
-		cmd = 'rg.exe'
-	},{
-		nome = 'sumatra',
-		link = 'https://www.sumatrapdfreader.org/dl/rel/3.5.2/SumatraPDF-3.5.2-64.zip',
-		cmd = 'SumatraPDF-3.5.2-64.exe'
-	},{
-		nome = 'node',
-		link = 'https://nodejs.org/dist/v20.10.0/node-v20.10.0-win-x64.zip',
-		cmd = 'node.exe',
-		config = function()
-			-- configurações extras
-			if win7 and vim.env.NODE_SKIP_PLATFORM_CHECK ~= 1 then
-				vim.env.NODE_SKIP_PLATFORM_CHECK = 1
-			end
-		end
-	},{
-		nome = 'python',
-		link = 'https://www.python.org/ftp/python/3.8.9/python-3.8.9-embed-amd64.zip',
-		cmd = {'python.exe', 'pip.exe'},
-		config = function()
-			-- TODO: Na primeira instalação, baixar get-pip.py e modificar o arquivo python38._pth
-			-- descomentando a linha 4
-			vim.g.python3_host_prog = vim.fs.find('python.exe', {path = vim.env.HOME, type = 'file'})
-		end
-	},{
-		nome = 'latex',
-		link = 'https://github.com/rstudio/tinytex-releases/releases/download/v2023.12/TinyTeX-v2023.12.zip',
-		cmd = 'pdflatex.exe',
-		config = function()
-			if vim.fn.executable('tlmgr') == 0 then
-				notify('latex: "tlmgr" não encontrado. Verificar distribuição Latex instalada.')
-				return
-			end
-			local instalar = {
-				'babel-portuges',
-				'datetime2'
-			}
-			for _, pacote in ipairs(instalar) do
-				vim.fn.system({
-					'tlmgr.bat',
-					'install',
-					pacote
-				})
-			end
-		end
-	},{
-		nome = 'deno',
-		link = 'https://github.com/denoland/deno/releases/download/v1.27.0/deno-x86_64-pc-windows-msvc.zip',
-		cmd = 'deno.exe'
-	},{
-		nome = 'lua',
-		link = 'https://github.com/LuaLS/lua-language-server/releases/download/3.7.3/lua-language-server-3.7.3-win32-x64.zip',
-		cmd = 'lua-language-server.exe'
-	},{
-		nome = 'jdtls',
-		link = 'https://www.eclipse.org/downloads/download.php?file=/jdtls/snapshots/jdt-language-server-latest.tar.gz',
-		cmd = 'jdtls'
-	}
-}
 
 local Opt = {}
 
@@ -364,6 +286,84 @@ Opt.setup = function(self, cfg)
 	self:init()
 end
 
+vim.env.PATH = vim.env.PATH .. ';' .. OPT.dir
+
+local PROGRAMAS = {
+	{
+		nome = 'w64devkit',
+		link = 'https://github.com/skeeto/w64devkit/releases/download/v1.21.0/w64devkit-1.21.0.zip',
+		cmd = 'gcc.exe'
+	},{
+		nome = 'git',
+		link = 'https://github.com/git-for-windows/git/releases/download/v2.43.0.windows.1/MinGit-2.43.0-64-bit.zip',
+		cmd = 'git.exe'
+	},{
+		nome = 'fd',
+		link = 'https://github.com/sharkdp/fd/releases/download/v8.7.1/fd-v8.7.1-x86_64-pc-windows-gnu.zip',
+		cmd = 'fd.exe'
+	},{
+		nome = 'ripgrep',
+		link = 'https://github.com/BurntSushi/ripgrep/releases/download/14.0.3/ripgrep-14.0.3-i686-pc-windows-msvc.zip',
+		cmd = 'rg.exe'
+	},{
+		nome = 'sumatra',
+		link = 'https://www.sumatrapdfreader.org/dl/rel/3.5.2/SumatraPDF-3.5.2-64.zip',
+		cmd = 'SumatraPDF-3.5.2-64.exe'
+	},{
+		nome = 'node',
+		link = 'https://nodejs.org/dist/v20.10.0/node-v20.10.0-win-x64.zip',
+		cmd = 'node.exe',
+		config = function()
+			-- configurações extras
+			if win7 and vim.env.NODE_SKIP_PLATFORM_CHECK ~= 1 then
+				vim.env.NODE_SKIP_PLATFORM_CHECK = 1
+			end
+		end
+	},{
+		nome = 'python',
+		link = 'https://www.python.org/ftp/python/3.8.9/python-3.8.9-embed-amd64.zip',
+		cmd = {'python.exe', 'pip.exe'},
+		config = function()
+			-- TODO: Na primeira instalação, baixar get-pip.py e modificar o arquivo python38._pth
+			-- descomentando a linha 4
+			vim.g.python3_host_prog = vim.fs.find('python.exe', {path = vim.env.HOME, type = 'file'})
+		end
+	},{
+		nome = 'latex',
+		link = 'https://github.com/rstudio/tinytex-releases/releases/download/v2023.12/TinyTeX-v2023.12.zip',
+		cmd = 'pdflatex.exe',
+		config = function()
+			if vim.fn.executable('tlmgr') == 0 then
+				notify('latex: "tlmgr" não encontrado. Verificar distribuição Latex instalada.')
+				do return end
+			end
+			local instalar = {
+				'babel-portuges',
+				'datetime2'
+			}
+			for _, pacote in ipairs(instalar) do
+				vim.fn.system({
+					'tlmgr.bat',
+					'install',
+					pacote
+				})
+			end
+		end
+	},{
+		nome = 'deno',
+		link = 'https://github.com/denoland/deno/releases/download/v1.27.0/deno-x86_64-pc-windows-msvc.zip',
+		cmd = 'deno.exe'
+	},{
+		nome = 'lua',
+		link = 'https://github.com/LuaLS/lua-language-server/releases/download/3.7.3/lua-language-server-3.7.3-win32-x64.zip',
+		cmd = 'lua-language-server.exe'
+	},{
+		nome = 'jdtls',
+		link = 'https://www.eclipse.org/downloads/download.php?file=/jdtls/snapshots/jdt-language-server-latest.tar.gz',
+		cmd = 'jdtls'
+	}
+}
+
 local deps = Opt:new()
 deps:setup(PROGRAMAS)
 
@@ -409,7 +409,7 @@ SauceCodePro.extrair = function(self)
 	-- Appdata/Local
 	if not self:zip_encontrado() then
 		notify('Arquivo SauceCodePro.zip não encontrado! Realizar o download do arquivo para continuar a intalação.')
-		return
+		do return end
 	end
 	vim.fn.system({
 		'unzip',
@@ -463,14 +463,14 @@ end
 SauceCodePro.instalar = function(self)
 	if self:fonte_extraida() then
 		notify('Encontrado fonte SauceCodePro extraída neste computador!')
-		return
+		do return end
 	else
 		self:download()
 		self:extrair()
 	end
 	if self:fonte_intalada_regedit() then
 		notify('Fonte já registrada no sistema regedit deste computador!')
-		return
+		do return end
 	else
 		self:registrar()
 		if self:fonte_intalada_regedit() then
