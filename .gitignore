@@ -6,10 +6,30 @@
 # !nvim/config/nvim-data/site/plugin/awesome-substitute.vim
 # !nvim/share/nvim/sysinit.vim
 
-nvim/bin/
+*.exe
+*.zip
+desktop.ini
+.ssh/
+.bash_history
+
+nvim/share/applications/
+nvim/share/icons/
+nvim/share/locale/
+nvim/share/man/
+nvim/share/nvim-qt/
+nvim/share/nvim/runtime/
+
+nvim/config/nvim/plugged/
+nvim/config/nvim/lazy-lock.json
+nvim/config/nvim-data/lazy/
+nvim/config/nvim-data/telescope_history
+nvim/config/nvim-data/lsp.log.ssh/
+nvim/config/nvim-data/lsp.log
 nvim/config/nvim-data/harpoon.json
 nvim/config/nvim-data/shada/
 nvim/config/nvim-data/site/autoload/
+nvim/config/nvim-data/tree-sitter-markdown/
+nvim/config/nvim-data/tree-sitter-markdown_inline/
 nvim/config/nvim-data/tree-sitter-css/
 nvim/config/nvim-data/tree-sitter-html/
 nvim/config/nvim-data/tree-sitter-java/
@@ -18,27 +38,9 @@ nvim/config/nvim-data/tree-sitter-python/
 nvim/config/nvim-data/tree-sitter-scss/
 nvim/config/nvim-data/tree-sitter-vim/
 nvim/config/nvim-data/tree-sitter-vue/
-nvim/config/nvim/plugged/
+
+nvim/bin/
+nvim/opt
 nvim/deps/
 nvim/lib/
-nvim/share/applications/
-nvim/share/icons/
-nvim/share/locale/
-nvim/share/man/
-nvim/share/nvim-qt/
-nvim/share/nvim/runtime/
-nvim/config/nvim-data/lazy/
-nvim/config/nvim/lazy-lock.json
-nvim/config/nvim-data/telescope_history
-nvim/config/nvim-data/lsp.log.ssh/
-nvim/opt
-.ssh/
-.bash_history
 
-*.exe
-*.zip
-desktop.ini
-
-/.bash_history
-/nvim/config/nvim-data/lsp.log
-/nvim/opt/
