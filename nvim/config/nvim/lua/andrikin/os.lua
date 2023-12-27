@@ -29,6 +29,8 @@
 -- WIP: Como realizar o download do curl, quando não tem ele no sistema?
 -- WIP: Utilizar multithreads para realizar os downloads
 
+local npcall = vim.F.npcall
+
 local notify = function(msg)
 	vim.notify(msg)
 	vim.cmd.redraw({bang = true})
@@ -347,7 +349,7 @@ Opt.bootstrap = function(self)
 	if vim.fn.isdirectory(tostring(self.DIRETORIO)) == 0 then
 		vim.fn.mkdir(tostring(self.DIRETORIO), 'p', 0700)
 	end
-	if not vim.env.PATH:match(tostring(self.DIRETORIO)) then
+	if not vim.env.PATH:match(tostring(self.DIRETORIO):gsub('[\\/-]', '.')) then
 		vim.env.PATH = vim.env.PATH .. ';' .. tostring(self.DIRETORIO)
 	end
 end
@@ -362,7 +364,7 @@ Opt.registrar_path = function(self, programa)
 	local busca = self.DIRETORIO .. programa.nome
 	local limite = vim.tbl_islist(programa.cmd) and #programa.cmd or 1
 	local diretorios = vim.fs.find(programa.cmd, {path = busca, type = 'file', limit = limite})
-	local registrado = vim.env.PATH:match(busca:gsub('\\', '.'))
+	local registrado = vim.env.PATH:match(busca:gsub('[\\-]', '.'))
 	if not registrado and #diretorios == 0 then
 		notify('Opt: registrar_path: Baixar programa e registrar no sistema.')
 		return false
@@ -379,10 +381,13 @@ Opt.registrar_path = function(self, programa)
 	for _, dir in ipairs(diretorios) do
 		vim.env.PATH = vim.env.PATH .. ';' .. vim.fn.fnamemodify(dir, ':h')
 	end
-	if vim.env.PATH:match(busca:gsub('\\', '.')) then
+	if vim.env.PATH:match(busca:gsub('[\\-]', '.')) then
 		notify(string.format('Opt: registrar_path: Programa %s registrado no PATH do sistema.', programa.nome))
 		if programa.config then -- caso tenha configuração, executá-la
+			notify(string.format('Opt: registrar_path: Configurando programa %s.', programa.nome))
 			programa.config()
+		else
+			notify(string.format('Opt: registrar_path: Não foi encontrado configuração para o programa %s.', programa.nome))
 		end
 	end
 	return true
@@ -446,9 +451,28 @@ local PROGRAMAS = {
 		link = 'https://nodejs.org/dist/v20.10.0/node-v20.10.0-win-x64.zip',
 		cmd = 'node.exe',
 		config = function()
+			local installed = function(pacote) -- checar se diretório existe
+				return not vim.tbl_isempty(vim.fs.find(pacote, {path = OPT .. 'node', type = 'directory'}))
+			end
 			-- configurações extras
 			if win7 and vim.env.NODE_SKIP_PLATFORM_CHECK ~= 1 then
 				vim.env.NODE_SKIP_PLATFORM_CHECK = 1
+			end
+			if vim.fn.executable('npm') == 1 and not installed('neovim') then
+				vim.fn.system({
+					'npm',
+					'install',
+					'-g',
+					'neovim'
+				})
+			end
+			if vim.fn.executable('npm') == 1 and not installed('emmet-ls') then
+				vim.fn.system({ -- configuração LSP emmet
+					'npm',
+					'install',
+					'-g',
+					'emmet-ls'
+				})
 			end
 		end
 	},{
@@ -456,9 +480,86 @@ local PROGRAMAS = {
 		link = 'https://www.python.org/ftp/python/3.8.9/python-3.8.9-embed-amd64.zip',
 		cmd = {'python.exe', 'pip.exe'},
 		config = function()
-			-- TODO: Na primeira instalação, baixar get-pip.py e modificar o arquivo python38._pth
+			-- INFO: Na primeira instalação, baixar get-pip.py e modificar o arquivo python38._pth
 			-- descomentando a linha 4
-			vim.g.python3_host_prog = vim.fs.find('python.exe', {path = vim.env.HOME, type = 'file'})
+			local get_pip = {}
+			get_pip.link =  'https://bootstrap.pypa.io/get-pip.py'
+			get_pip.nome = vim.fn.fnamemodify(get_pip.link, ':t')
+			get_pip.diretorio = Diretorio:new(OPT .. 'python')
+			get_pip.instalado = function(self)
+				local pip = vim.fs.find('pip.exe', {path = tostring(self.diretorio), type = 'file'})[1]
+				if not pip then
+					return nil
+				end
+				return npcall(
+					vim.fn.fnamemodify,
+					pip,
+					':h'
+				)
+			end
+			get_pip.instalar = function(self)
+				local curl = Curl:new()
+				if vim.fn.executable('sed') == 1 then
+					vim.fn.system({
+						'sed',
+						'-i',
+						'$s/^#\\(.*\\)$/\\1/',
+						self.diretorio .. 'python38._pth' -- versão 3.8.9
+					})
+				else
+					notify('"sed" não encontrado nas dependências. Abortando configuração de python.')
+					do return end
+				end
+				-- download get-pip.py
+				if not vim.fs.find(self.nome, {path = tostring(self.diretorio), type = 'file'})[1] then
+					curl.download(self.link, self.diretorio)
+				end
+				-- executar get-pip.py
+				if vim.fn.executable('pip.exe') == 0 then
+					notify(string.format('Executando "%s".', self.nome))
+					vim.fn.system({
+						'python.exe',
+						self.diretorio .. self.nome
+					})
+				else
+					notify('Instalação de "pip.exe" encontrou um erro.')
+					do return end
+				end
+			end
+			if not get_pip:instalado() then
+				get_pip:instalar()
+				-- instalar lsp
+				local pip = vim.fn.fnamemodify(vim.fs.find('pip.exe', {path = tostring(get_pip.diretorio), type = 'file'})[1], ':h')
+				if pip then
+					vim.env.PATH = vim.env.PATH .. ';' .. pip
+				else
+					notify('Erro ao registrar "pip.exe" na variável de ambiente PATH.')
+					do return end
+				end
+			end
+			if vim.fn.executable('pip.exe') == 1 then
+				local instalar = function(pacote)
+					local instalado = vim.fs.find(pacote, {path = tostring(get_pip.diretorio), type = 'directory'})[1]
+				if not instalado then
+						notify(string.format('Instalando pacote python %s.', pacote))
+						vim.fn.system({
+							'pip.exe',
+							'install',
+							pacote
+						})
+					end
+				end
+				instalar('pyright')
+				instalar('pynvim')
+				instalar('greenlet')
+			else
+				notify('"pip.exe" não encontrado. Falha na instalação.')
+				do return end
+			end
+			vim.g.python3_host_prog = vim.fs.find('python.exe', {path = tostring(get_pip.diretorio), type = 'file'})[1]
+			if not vim.g.python3_host_prog or vim.g.python3_host_prog == '' then
+				notify('Variável python3_host_prog não configurado.')
+			end
 		end
 	},{
 		nome = 'latex',
@@ -473,12 +574,21 @@ local PROGRAMAS = {
 				'babel-portuges',
 				'datetime2'
 			}
-			for _, pacote in ipairs(instalar) do
-				vim.fn.system({
-					'tlmgr.bat',
-					'install',
-					pacote
-				})
+			local instalados = vim.fn.systemlist({
+				'kpsewhich',
+				'brazil.ldf',
+				'datetime2.sty'
+			})
+			if vim.tbl_isempty(instalados) then
+				for _, pacote in ipairs(instalar) do
+					vim.fn.system({
+						'tlmgr.bat',
+						'install',
+						pacote
+					})
+				end
+			else
+				notify('Packages latex já instalados.')
 			end
 		end
 	},{
