@@ -445,7 +445,24 @@ local PROGRAMAS = {
 	},{
 		nome = 'sumatra',
 		link = 'https://www.sumatrapdfreader.org/dl/rel/3.5.2/SumatraPDF-3.5.2-64.zip',
-		cmd = 'SumatraPDF-3.5.2-64.exe'
+		cmd = 'SumatraPDF-3.5.2-64.exe',
+		config = function()
+			local diretorio = Diretorio:new(OPT .. 'sumatra')
+			local instalado = vim.fn.glob(diretorio .. 'sumatra*.exe')
+			if instalado ~= '' then
+				if vim.fn.fnamemodify(instalado, ':t') == 'sumatra.exe' then
+					notify('Arquivo Sumatra já renomeado.')
+					do return end
+				end
+				vim.fn.system({
+					'mv',
+					instalado,
+					diretorio .. 'sumatra.exe'
+				})
+			else
+				notify('Erro ao renomear executável Sumatra.')
+			end
+		end
 	},{
 		nome = 'node',
 		link = 'https://nodejs.org/dist/v20.10.0/node-v20.10.0-win-x64.zip',
