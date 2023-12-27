@@ -30,7 +30,7 @@ Latex.clear = function(arquivo)
 	-- deletar arquivos auxiliares da compilação, no linux
 	if not vim.fn.has('linux') then
 		vim.notify('Caso esteja no sistema Windows, verifique a disponibilidade da opção de comando "-aux-directory"')
-		return
+		do return end
 	end
 	local auxiliares = vim.tbl_filter(
 		function(auxiliar)
@@ -39,7 +39,7 @@ Latex.clear = function(arquivo)
 		vim.fn.glob(Latex.OUTPUT_FOLDER .. '/' .. arquivo .. '.*', false, true)
 	)
 	if #auxiliares == 0 then
-		return
+		do return end
 	end
 	for _, auxiliar in ipairs(auxiliares) do
 		vim.fn.delete(auxiliar)
@@ -57,7 +57,7 @@ end
 Latex.compile = function()
 	if Latex.ft() then
 		vim.notify('Comando executável somente para arquivos .tex!')
-		return
+		do return end
 	end
 	if vim.o.modified then -- salvar arquivo que está modificado.
 		vim.cmd.write()
@@ -91,6 +91,7 @@ Latex.compile = function()
 	arquivo =  arquivo:match('(.*)%..*$') or arquivo
 	local pdf = Latex.OUTPUT_FOLDER .. '/' .. arquivo .. '.pdf'
 	if vim.loop.fs_stat(pdf) then
+		notify(string.format('Abrindo arquivo %s', vim.fn.fnamemodify(pdf, ':t')))
 		vim.fn.jobstart({
 			Latex.PDF_READER,
 			pdf
@@ -146,7 +147,7 @@ Ouvidoria.nova_comunicacao = function(opts)
 			)
 		else
 			vim.notify('Erro encontrado! Abortando comando Pdflatex.')
-			return
+			do return end
 		end
 	end
 	if NONAME then
