@@ -517,12 +517,14 @@ local PROGRAMAS = {
 			get_pip.instalar = function(self)
 				local curl = Curl:new()
 				if vim.fn.executable('sed') == 1 then
-					vim.fn.system({
-						'sed',
-						'-i',
-						'$s/^#\\(.*\\)$/\\1/',
-						self.diretorio .. 'python38._pth' -- versão 3.8.9
-					})
+					if vim.fn.executable('pip.exe') == 0 then
+						vim.fn.system({
+							'sed',
+							'-i',
+							'$s/^#\\(.*\\)$/\\1/',
+							self.diretorio .. 'python38._pth' -- versão 3.8.9
+						})
+					end
 				else
 					notify('"sed" não encontrado nas dependências. Abortando configuração de python.')
 					do return end
@@ -557,13 +559,15 @@ local PROGRAMAS = {
 			if vim.fn.executable('pip.exe') == 1 then
 				local instalar = function(pacote)
 					local instalado = vim.fs.find(pacote, {path = tostring(get_pip.diretorio), type = 'directory'})[1]
-				if not instalado then
+					if not instalado then
 						notify(string.format('Instalando pacote python %s.', pacote))
 						vim.fn.system({
 							'pip.exe',
 							'install',
 							pacote
 						})
+					else
+						notify(string.format('Pacote %s já instalado.', pacote))
 					end
 				end
 				instalar('pyright')
