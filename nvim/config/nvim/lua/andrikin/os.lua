@@ -445,7 +445,7 @@ local PROGRAMAS = {
 	},{
 		nome = 'sumatra',
 		link = 'https://www.sumatrapdfreader.org/dl/rel/3.5.2/SumatraPDF-3.5.2-64.zip',
-		cmd = 'SumatraPDF-3.5.2-64.exe',
+		cmd = 'sumatra.exe',
 		config = function()
 			local diretorio = Diretorio:new(OPT .. 'sumatra')
 			local instalado = vim.fn.glob(diretorio .. 'sumatra*.exe')
