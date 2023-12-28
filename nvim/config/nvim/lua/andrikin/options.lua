@@ -80,6 +80,10 @@ else
 	vim.g.grepprg = 'grep -R'
 end
 
+-- Matchit
+-- TODO: Criar arquivos ftplugin para cada linguagem, definindo b:match_words
+vim.opt.matchpairs:append('<:>')
+
 -- --- Emmet ---
 vim.g.user_emmet_install_global = 0
 -- vim.g.user_emmet_leader_key = '<m-space>'
