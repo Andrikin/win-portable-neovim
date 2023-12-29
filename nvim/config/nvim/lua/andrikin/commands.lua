@@ -194,7 +194,7 @@ vim.api.nvim_create_user_command(
 vim.api.nvim_create_user_command(
 	'Projetos',
 	function()
-		local projetos = ''
+		local projetos = nil
 		if vim.env.HOME:match('^.') == 'C' then
 			projetos = Path:new({
 				vim.loop.os_homedir(),
@@ -203,9 +203,9 @@ vim.api.nvim_create_user_command(
 		else
 			projetos = Path:new({
 				vim.fn.fnamemodify(vim.env.HOME, ':h'),
-				'projetos'
 			})
 		end
+		print(projetos)
 		vim.cmd.Dirvish(
 			vim.fs.find('projetos', {path = projetos.filename, type = 'directory'})
 		)
