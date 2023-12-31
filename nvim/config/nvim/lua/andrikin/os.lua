@@ -209,14 +209,14 @@ local SauceCodePro = {}
 
 SauceCodePro.__index = SauceCodePro
 
-SauceCodePro.DIRECTORY = Diretorio:new({
+SauceCodePro.DIRETORIO = Diretorio:new({
 	vim.env.LOCALAPPDATA,
 	'Microsoft',
 	'Windows',
 	'Fonts'
 })
 
-SauceCodePro.ZIP = SauceCodePro.DIRECTORY .. 'SauceCodePro.zip'
+SauceCodePro.ZIP = SauceCodePro.DIRETORIO .. 'SourceCodePro.zip'
 
 SauceCodePro.REGISTRY = 'HKCU\\Software\\Microsoft\\Windows NT\\CurrentVersion\\Fonts'
 
@@ -237,7 +237,7 @@ end
 
 
 SauceCodePro.fonte_extraida = function(self)
-	return #(vim.fn.glob(self.DIRECTORY .. 'SauceCodePro*.ttf', false, true)) > 0
+	return #(vim.fn.glob(self.DIRETORIO .. 'SauceCodePro*.ttf', false, true)) > 0
 end
 
 SauceCodePro.zip_encontrado = function(self)
@@ -246,13 +246,13 @@ end
 
 SauceCodePro.download = function(self)
 	-- Realiza download em AppData/Local/Microsoft/Windows/Fonts
-	if vim.fn.isdirectory(tostring(self.DIRECTORY)) == 0 then
-		vim.fn.mkdir(tostring(self.DIRECTORY), 'p', 0700)
+	if vim.fn.isdirectory(tostring(self.DIRETORIO)) == 0 then
+		vim.fn.mkdir(tostring(self.DIRETORIO), 'p', 0700)
 	end
 	-- Realizar download da fonte
 	self.curl.download(
 		'https://github.com/ryanoasis/nerd-fonts/releases/download/v3.1.1/SourceCodePro.zip',
-		self.DIRECTORY
+		self.DIRETORIO
 	)
 	if not self:zip_encontrado() then
 		error('Não foi possível realizar o download do arquivo da fonte.')
@@ -270,7 +270,7 @@ SauceCodePro.extrair = function(self)
 	self.curl.extrair(self.ZIP, tostring(self.DIRETORIO))
 	if self:fonte_extraida() then
 		notify('Arquivo fonte SauceCodePro.zip extraído!')
-		self.FONTES = vim.fn.glob(self.DIRECTORY .. 'SauceCodePro*.ttf', false, true)
+		self.FONTES = vim.fn.glob(self.DIRETORIO .. 'SauceCodePro*.ttf', false, true)
 	else
 		error('Não foi possível extrair os arquivo de fonte SauceCodePro.')
 	end
@@ -295,7 +295,7 @@ SauceCodePro.registrar = function(self)
 	-- Registra as fontes no RegEdit do sistema.
 	for _, fonte in ipairs(self.FONTES) do
 		local arquivo = vim.fn.fnamemodify(fonte, ':t')
-		local diretorio = self.DIRECTORY .. arquivo
+		local diretorio = self.DIRETORIO .. arquivo
 		vim.fn.system({
 			'reg',
 			'add',
