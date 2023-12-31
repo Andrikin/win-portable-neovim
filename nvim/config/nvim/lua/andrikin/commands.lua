@@ -158,12 +158,12 @@ Ouvidoria.nova_comunicacao = function(opts)
 end
 Ouvidoria.complete = function(args)
 	return vim.tbl_filter(
-		function(ci)
-			return ci:match(args)
+		function(comunicacao)
+			return comunicacao:match(args:gsub('-', '.')))
 		end,
 		vim.tbl_map(
-			function(ci)
-				return ci:match('(.*).tex$')
+			function(modelo)
+				return modelo:match('(.*).tex$')
 			end,
 			Ouvidoria.listagem()
 		)
