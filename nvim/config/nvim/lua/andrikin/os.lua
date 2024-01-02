@@ -426,6 +426,18 @@ Opt.setup = function(self, cfg)
 	self:init()
 end
 
+Opt.path = function(self)
+	for _, programa in ipairs(self.DEPS) do
+		local arquivo = vim.fn.fnamemodify(programa.link, ':t')
+		local registrar = self:registrar_path(programa)
+		if not registrar then
+			notify(string.format('Opt: registrar_path: Não foi possível realizar o registra do programa %s no PATH do sistema. Executar comando :Boot.', arquivo))
+		else
+			notify(string.format('Opt: registrar_path: Realizando o registro do programa %s.', arquivo))
+		end
+	end
+end
+
 local PROGRAMAS = {
 	{
 		nome = 'w64devkit',
@@ -630,11 +642,40 @@ local PROGRAMAS = {
 
 local Boot = {}
 
-Boot.boot = function()
-	local deps = Opt:new()
+Boot.install = function()
+	local opt = Opt:new()
 	local font = SauceCodePro:new()
-	deps:setup(PROGRAMAS)
+	opt:setup(PROGRAMAS)
 	font:setup()
 end
+
+Boot.boot = function()
+	local opt = Opt:new()
+	opt:config(PROGRAMAS)
+	opt:path()
+end
+
+Boot.menu = function(self, opts)
+	local opcao = opts.fargs[1] or 'boot'
+	if opcao == 'install' then
+		self.install()
+	else
+		self.boot()
+	end
+end
+
+Boot.complete = function(args)
+	return vim.tbl_filter(
+		function(opcao)
+			return opcao:match(args:gsub('-', '.'))
+		end,
+		{
+			'install',
+			'boot'
+		}
+	)
+end
+
+Boot.boot() -- inicializando PATH
 
 return Boot
