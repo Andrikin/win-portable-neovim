@@ -213,3 +213,10 @@ vim.api.nvim_create_user_command(
 	{}
 )
 
+vim.api.nvim_create_user_command(
+	'Boot',
+	function()
+		require('os').boot()
+	end,
+	{}
+)

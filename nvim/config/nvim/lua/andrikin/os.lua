@@ -28,6 +28,7 @@
 
 -- WIP: Como realizar o download do curl, quando não tem ele no sistema?
 -- WIP: Utilizar multithreads para realizar os downloads
+-- TODO: Refatorar código
 
 local npcall = vim.F.npcall
 
@@ -627,8 +628,13 @@ local PROGRAMAS = {
 	}
 }
 
-local deps = Opt:new()
-deps:setup(PROGRAMAS)
+local Boot = {}
 
-local font = SauceCodePro:new()
-font:setup()
+Boot.boot = function()
+	local deps = Opt:new()
+	local font = SauceCodePro:new()
+	deps:setup(PROGRAMAS)
+	font:setup()
+end
+
+return Boot
