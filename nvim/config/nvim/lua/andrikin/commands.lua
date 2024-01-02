@@ -159,7 +159,7 @@ end
 Ouvidoria.complete = function(args)
 	return vim.tbl_filter(
 		function(comunicacao)
-			return comunicacao:match(args:gsub('-', '.')))
+			return comunicacao:match(args:gsub('-', '.'))
 		end,
 		vim.tbl_map(
 			function(modelo)
