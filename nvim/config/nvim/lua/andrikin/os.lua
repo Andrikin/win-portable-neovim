@@ -63,23 +63,36 @@ Diretorio.new = function(self, diretorio)
 		end
 		diretorio = concatenar
 	end
-	obj.dir = self.sanitize(diretorio)
+	obj.nome = self.sanitize(diretorio)
 	return obj
 end
 
 Diretorio.sanitize = function(str)
+	vim.validate({ str = {str, 'string'} })
 	return string.gsub(str, '/', '\\')
 end
 
 Diretorio.suffix = function(str)
+	vim.validate({ str = {str, 'string'} })
 	return (str:match('^[/\\]') or str == '') and str or Diretorio.separador .. str
+end
+
+Diretorio.add = function(self, diretorio)
+	if type(diretorio) == 'table' then
+		local concatenar = ''
+		for _, p in ipairs(diretorio) do
+			concatenar = concatenar .. self.suffix(p)
+		end
+		diretorio = concatenar
+	end
+	self.nome = self.nome .. self.suffix(diretorio)
 end
 
 Diretorio.__div = function(self, other)
 	if getmetatable(self) ~= Diretorio or getmetatable(other) ~= Diretorio then
 		error('Diretorio: __div: Elementos precisam ser do tipo "string".')
 	end
-	return self.sanitize(self.dir .. Diretorio.suffix(other.dir))
+	return self.sanitize(self.nome .. Diretorio.suffix(other.dir))
 end
 
 Diretorio.__concat = function(self, str)
@@ -89,14 +102,12 @@ Diretorio.__concat = function(self, str)
 	if type(str) ~= 'string' then
 		error('Diretorio: __concat: Argumento precisa ser do tipo "string".')
 	end
-	return self.sanitize(self.dir .. Diretorio.suffix(str))
+	return self.sanitize(self.nome .. Diretorio.suffix(str))
 end
 
 Diretorio.__tostring = function(self)
-	return self.dir
+	return self.nome
 end
-
-local OPT = Diretorio:new(vim.env.HOME .. '/nvim/opt')
 
 local Curl = {}
 
@@ -125,34 +136,29 @@ Curl.bootstrap = function(self)
 		notify('Curl: bootstrap: Sistema já possui Unzip.')
 		do return end
 	end
-	self.download(self.UNZIP, OPT)
-	local unzip = vim.fs.find('unzip.exe', {path = OPT.dir, type = 'file'})[1]
+	self.download(self.UNZIP, vim.env.NVIM_OPT)
+	local unzip = vim.fs.find('unzip.exe', {path = vim.env.NVIM_OPT, type = 'file'})[1]
 	if unzip == '' then
 		error('Curl: bootstrap: Não foi possível encontrar o executável unzip.exe.')
 	end
 end
 
-Curl.exist = function()
+Curl.instalado = function()
 	return vim.fn.executable('curl') == 1
 end
 
 -- @param link string
--- @param diretorio Diretorio
+-- @param diretorio string
 Curl.download = function(link, diretorio)
+	vim.validate({
+		link = {link, 'string'},
+		diretorio = {diretorio, 'string'}
+	})
+	if link == '' or diretorio == '' then
+		error('Curl: download: Variável nula')
+	end
 	local arquivo = vim.fn.fnamemodify(link, ':t')
-	if getmetatable(diretorio) == Diretorio then
-		diretorio = tostring(diretorio .. arquivo)
-	else
-		error('Curl: download: Argumento deve ser do tipo "Diretorio".')
-	end
-	if not link or link == '' then
-		notify('lua config: os.lua: Curl: Link não encontrado ou nulo.')
-		do return end
-	end
-	if not diretorio or diretorio == '' then
-		notify('lua config: os.lua: Curl: Diretório não encontrado ou nulo.')
-		do return end
-	end
+	diretorio = Diretorio:new(diretorio) .. arquivo
 	vim.fn.system({
 		'curl',
 		'--fail',
@@ -169,39 +175,39 @@ Curl.download = function(link, diretorio)
 	end
 end
 
--- @param diretorio_arquivo string
--- @param diretorio_pasta string
-Curl.extrair = function(diretorio_arquivo, diretorio_pasta)
-	if not diretorio_arquivo or diretorio_arquivo == '' then
-		notify('Curl: extrair: Arquivo não encontrado ou nulo.')
-		do return end
+-- TODO: Relembrar como o comando funciona
+-- @param arquivo string
+-- @param diretorio string
+Curl.extrair = function(arquivo, diretorio)
+	vim.validate({
+		arquivo = {arquivo, 'string'},
+		diretorio = {diretorio, 'string'}
+	})
+	if arquivo == '' or diretorio == '' then
+		error('Curl: extrair: Variárvel nula.')
 	end
-	if not diretorio_pasta or diretorio_pasta == '' then
-		notify('Curl: extrair: Nome para diretório de extração não encontrado ou nulo.')
-		do return end
-	end
-	local extencao = diretorio_arquivo:match('%.(tar)%.[a-z.]*$') or diretorio_arquivo:match('%.([a-z]*)$')
+	local extencao = arquivo:match('%.(tar)%.[a-z.]*$') or arquivo:match('%.([a-z]*)$')
 	if extencao == 'zip' then
 		vim.fn.system({
 			'unzip',
-			diretorio_arquivo,
+			arquivo,
 			'-d',
-			diretorio_pasta
+			diretorio
 		})
 	elseif extencao == 'tar' then
 		vim.fn.system({
 			'tar',
 			'-xf',
-			diretorio_arquivo,
+			arquivo,
 			'-C',
-			diretorio_pasta
+			diretorio
 		})
 	end
-	local arquivo = diretorio_arquivo:match('[/\\]([^/\\]+)$') or diretorio_arquivo
+	local nome = arquivo:match('[/\\]([^/\\]+)$') or arquivo
 	if vim.v.shell_error == 0 then
-		notify(string.format('Curl: extrair: Arquivo %s extraído com sucesso!', arquivo))
+		notify(string.format('Curl: extrair: Arquivo %s extraído com sucesso!', nome))
 	else
-		notify(string.format('Curl: extrair: Erro encontrado! Não foi possível extrair o diretorio_arquivo %s', arquivo))
+		notify(string.format('Curl: extrair: Erro encontrado! Não foi possível extrair o diretorio_arquivo %s', nome))
 	end
 end
 
@@ -217,19 +223,19 @@ SauceCodePro.DIRETORIO = Diretorio:new({
 	'Fonts'
 })
 
-SauceCodePro.ZIP = SauceCodePro.DIRETORIO .. 'SourceCodePro.zip'
+SauceCodePro.LINK = 'https://github.com/ryanoasis/nerd-fonts/releases/download/v3.1.1/SourceCodePro.zip'
 
-SauceCodePro.REGISTRY = 'HKCU\\Software\\Microsoft\\Windows NT\\CurrentVersion\\Fonts'
+SauceCodePro.FONTE = SauceCodePro.DIRETORIO .. vim.fn.fnamemodify(SauceCodePro.LINK, ':t')
+
+SauceCodePro.REGISTRO = 'HKCU\\Software\\Microsoft\\Windows NT\\CurrentVersion\\Fonts'
 
 SauceCodePro.new = function(self, obj)
 	obj = obj or {}
-	setmetatable(obj, self)
-	obj.curl = Curl:new()
-	return obj
+	return setmetatable(obj, self)
 end
 
 SauceCodePro.setup = function(self)
-	if self.curl.exist() then
+	if Curl.instalado() then
 		self:instalar()
 	else
 		notify('Não foi possível instalar a fonte SauceCodePro neste computador. Instale curl para continuar.')
@@ -242,7 +248,7 @@ SauceCodePro.fonte_extraida = function(self)
 end
 
 SauceCodePro.zip_encontrado = function(self)
-	return vim.loop.fs_stat(self.ZIP)
+	return vim.loop.fs_stat(self.FONTE)
 end
 
 SauceCodePro.download = function(self)
@@ -251,10 +257,7 @@ SauceCodePro.download = function(self)
 		vim.fn.mkdir(tostring(self.DIRETORIO), 'p', 0700)
 	end
 	-- Realizar download da fonte
-	self.curl.download(
-		'https://github.com/ryanoasis/nerd-fonts/releases/download/v3.1.1/SourceCodePro.zip',
-		self.DIRETORIO
-	)
+	Curl.download(self.LINK, self.DIRETORIO.nome)
 	if not self:zip_encontrado() then
 		error('Não foi possível realizar o download do arquivo da fonte.')
 	end
@@ -268,7 +271,7 @@ SauceCodePro.extrair = function(self)
 		notify('Arquivo SauceCodePro.zip não encontrado! Realizar o download do arquivo para continuar a intalação.')
 		do return end
 	end
-	self.curl.extrair(self.ZIP, tostring(self.DIRETORIO))
+	Curl.extrair(self.FONTE, self.DIRETORIO.nome)
 	if self:fonte_extraida() then
 		notify('Arquivo fonte SauceCodePro.zip extraído!')
 		self.FONTES = vim.fn.glob(self.DIRETORIO .. 'SauceCodePro*.ttf', false, true)
@@ -277,7 +280,7 @@ SauceCodePro.extrair = function(self)
 	end
 end
 
-SauceCodePro.fonte_intalada_regedit = function(self)
+SauceCodePro.query_regedit = function(self)
 	-- Verificando se a fonte SauceCodePro está intalada no computador
 	local lista = vim.tbl_filter(
 		function(elemento)
@@ -286,13 +289,13 @@ SauceCodePro.fonte_intalada_regedit = function(self)
 		vim.fn.systemlist({
 			'reg',
 			'query',
-			self.REGISTRY,
+			self.REGISTRO,
 			'/s'
 	}))
 	return #lista > 0
 end
 
-SauceCodePro.registrar = function(self)
+SauceCodePro.regedit = function(self)
 	-- Registra as fontes no RegEdit do sistema.
 	for _, fonte in ipairs(self.FONTES) do
 		local arquivo = vim.fn.fnamemodify(fonte, ':t')
@@ -300,7 +303,7 @@ SauceCodePro.registrar = function(self)
 		vim.fn.system({
 			'reg',
 			'add',
-			self.REGISTRY,
+			self.REGISTRO,
 			'/v',
 			arquivo:match('(.*)%..*$') .. ' (TrueType)', -- nome de registro da fonte
 			'/t',
@@ -320,12 +323,12 @@ SauceCodePro.instalar = function(self)
 		self:download()
 		self:extrair()
 	end
-	if self:fonte_intalada_regedit() then
+	if self:query_regedit() then
 		notify('Fonte já registrada no sistema regedit deste computador!')
 		do return end
 	else
-		self:registrar()
-		if self:fonte_intalada_regedit() then
+		self:regedit()
+		if self:query_regedit() then
 			notify('Fonte SauceCodePro instalada com sucesso. Reinicie o nvim para carregar a fonte.')
 		end
 	end
@@ -335,7 +338,7 @@ local Opt = {}
 
 Opt.__index = Opt
 
-Opt.DIRETORIO = OPT
+Opt.DIRETORIO = Diretorio:new(vim.env.NVIM_OPT)
 
 Opt.new = function(self, obj)
 	obj = obj or {}
@@ -460,7 +463,7 @@ local PROGRAMAS = {
 		link = 'https://www.sumatrapdfreader.org/dl/rel/3.5.2/SumatraPDF-3.5.2-64.zip',
 		cmd = 'sumatra.exe',
 		config = function()
-			local diretorio = Diretorio:new(OPT .. 'sumatra')
+			local diretorio = Diretorio:new(vim.env.NVIM_OPT) .. 'sumatra'
 			local instalado = vim.fn.glob(diretorio .. 'sumatra*.exe')
 			if instalado ~= '' then
 				if vim.fn.fnamemodify(instalado, ':t') == 'sumatra.exe' then
@@ -482,7 +485,7 @@ local PROGRAMAS = {
 		cmd = 'node.exe',
 		config = function()
 			local installed = function(pacote) -- checar se diretório existe
-				return not vim.tbl_isempty(vim.fs.find(pacote, {path = OPT .. 'node', type = 'directory'}))
+				return not vim.tbl_isempty(vim.fs.find(pacote, {path = Diretorio:new(vim.env.NVIM_OPT) .. 'node', type = 'directory'}))
 			end
 			-- configurações extras
 			if win7 and vim.env.NODE_SKIP_PLATFORM_CHECK ~= 1 then
@@ -515,7 +518,7 @@ local PROGRAMAS = {
 			local get_pip = {}
 			get_pip.link =  'https://bootstrap.pypa.io/get-pip.py'
 			get_pip.nome = vim.fn.fnamemodify(get_pip.link, ':t')
-			get_pip.diretorio = Diretorio:new(OPT .. 'python')
+			get_pip.diretorio = Diretorio:new(vim.env.NVIM_OPT) .. 'python'
 			get_pip.instalado = function(self)
 				local pip = vim.fs.find('pip.exe', {path = tostring(self.diretorio), type = 'file'})[1]
 				if not pip then
