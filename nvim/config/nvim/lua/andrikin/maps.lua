@@ -224,9 +224,5 @@ vim.keymap.set("n", "]e", diagnostic(true, "ERROR"), { desc = "Next Error" })
 vim.keymap.set("n", "[e", diagnostic(false, "ERROR"), { desc = "Prev Error" })
 vim.keymap.set("n", "]w", diagnostic(true, "WARN"), { desc = "Next Warning" })
 vim.keymap.set("n", "[w", diagnostic(false, "WARN"), { desc = "Prev Warning" })
-vim.keymap.set(
-	'n',
-	'<leader>e',
-	vim.diagnostic.open_float
-)
+vim.keymap.set('n', '<leader>e', vim.diagnostic.open_float)
 
