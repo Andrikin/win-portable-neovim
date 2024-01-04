@@ -210,64 +210,23 @@ vim.keymap.set(
 	end
 )
 
--- --- Builtin LSP commands ---
--- Only available in git projects (git init)
-local lsp = function(opt)
-	vim.keymap.set(
-		'n',
-		opt.key,
-		opt.map
-	)
-end
-local lsp_maps = {
-	{
-		key = 'K',
-		map = vim.lsp.buf.hover,
-	},
-	{
-		key = 'gr',
-		map = vim.lsp.buf.references,
-	},
-	{
-		key = 'gd',
-		map = vim.lsp.buf.definition,
-	},
-	{
-		key = 'gD',
-		map = vim.lsp.buf.declaration,
-	},
-	{
-		key = '<c-k>',
-		map = vim.lsp.buf.signature_help,
-	}
-}
-for _,m in ipairs(lsp_maps) do
-	lsp(m)
-end
-
-vim.keymap.set(
-	'n',
-	'<leader>e',
-	vim.diagnostic.open_float
-)
-
-vim.keymap.set(
-	'n',
-	'<leader>s',
-	vim.lsp.buf.rename
-)
-
-local diag_goto = function(next, severity)
+-- vim.diagnostic
+local diagnostic = function(next, severity)
 	local go = next and vim.diagnostic.goto_next or vim.diagnostic.goto_prev
 	severity = severity and vim.diagnostic.severity[severity] or nil
 	return function()
 		go({ severity = severity })
 	end
 end
-vim.keymap.set("n", "]d", diag_goto(true), { desc = "Next Diagnostic" })
-vim.keymap.set("n", "[d", diag_goto(false), { desc = "Prev Diagnostic" })
-vim.keymap.set("n", "]e", diag_goto(true, "ERROR"), { desc = "Next Error" })
-vim.keymap.set("n", "[e", diag_goto(false, "ERROR"), { desc = "Prev Error" })
-vim.keymap.set("n", "]w", diag_goto(true, "WARN"), { desc = "Next Warning" })
-vim.keymap.set("n", "[w", diag_goto(false, "WARN"), { desc = "Prev Warning" })
+vim.keymap.set("n", "]d", diagnostic(true), { desc = "Next Diagnostic" })
+vim.keymap.set("n", "[d", diagnostic(false), { desc = "Prev Diagnostic" })
+vim.keymap.set("n", "]e", diagnostic(true, "ERROR"), { desc = "Next Error" })
+vim.keymap.set("n", "[e", diagnostic(false, "ERROR"), { desc = "Prev Error" })
+vim.keymap.set("n", "]w", diagnostic(true, "WARN"), { desc = "Next Warning" })
+vim.keymap.set("n", "[w", diagnostic(false, "WARN"), { desc = "Prev Warning" })
+vim.keymap.set(
+	'n',
+	'<leader>e',
+	vim.diagnostic.open_float
+)
 

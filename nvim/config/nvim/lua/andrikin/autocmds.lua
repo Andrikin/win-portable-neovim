@@ -95,3 +95,23 @@ autocmd(
 		end,
 	}
 )
+
+autocmd(
+	'LspAttach',
+	{
+		group = AndrikinGroup,
+		callback = function(ev)
+			local opts = {buffer = ev.buf}
+			-- --- Builtin LSP commands ---
+			-- Only available in git projects (git init)
+			vim.keymap.set( 'n', 'gd', vim.lsp.buf.definition, opts)
+			vim.keymap.set( 'n', 'gD', vim.lsp.buf.declaration, opts)
+			vim.keymap.set( 'n', 'K', vim.lsp.buf.hover, opts)
+			vim.keymap.set( 'n', 'gr', vim.lsp.buf.references, opts)
+			vim.keymap.set( 'n', 'gi', vim.lsp.buf.implementation, opts)
+			vim.keymap.set( 'n', '<c-k>', vim.lsp.buf.signature_help, opts)
+			vim.keymap.set( 'n', 'gs', vim.lsp.buf.rename, opts)
+		end
+	}
+)
+
