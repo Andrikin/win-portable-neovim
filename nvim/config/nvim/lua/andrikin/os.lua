@@ -33,6 +33,20 @@
 -- WIP: Utilizar multithreads para realizar os downloads
 -- TODO: Refatorar código?
 
+-- IMPORTANT(Windows 10+): Desabilitar python.exe e python3.exe em "Gerenciar aliases de execução de aplicativo".
+-- Windows executa este alias antes de executar python declarado em PATH.
+-- ALTERNATIVE FIX: Remover WindowsApps do PATH
+if vim.env.PATH:match('WindowsApps') then
+	local PATH = ''
+	for path in vim.env.PATH:gmatch('([^;]+)') do
+		if not path:match('WindowsApps') then
+			PATH = PATH ..  ';' .. path
+		end
+	end
+	PATH = PATH:match('^.(.*)$')
+	vim.env.PATH = PATH
+end
+
 local npcall = vim.F.npcall
 
 local notify = function(msg)
@@ -571,8 +585,6 @@ local PROGRAMAS = {
 				notify('"pip.exe" não encontrado. Falha na instalação.')
 				do return end
 			end
-			-- IMPORTANT(Windows 10+): Desabilitar python.exe e python3.exe em "Gerenciar aliases de execução de aplicativo".
-			-- Windows executa este alias antes de executar python declarado em PATH.
 			vim.g.python3_host_prog = vim.fs.find('python.exe', {path = tostring(get_pip.diretorio), type = 'file'})[1]
 			if not vim.g.python3_host_prog or vim.g.python3_host_prog == '' then
 				notify('Variável python3_host_prog não configurado.')
