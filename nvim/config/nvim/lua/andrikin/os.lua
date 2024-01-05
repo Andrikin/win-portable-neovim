@@ -615,6 +615,10 @@ local PROGRAMAS = {
 		nome = 'jdtls',
 		link = 'https://www.eclipse.org/downloads/download.php?file=/jdtls/snapshots/jdt-language-server-latest.tar.gz',
 		cmd = 'jdtls'
+	},{
+		nome = 'java',
+		link = 'https://download.oracle.com/java/21/latest/jdk-21_windows-x64_bin.zip',
+		cmd = 'java.exe'
 	}
 }
 
