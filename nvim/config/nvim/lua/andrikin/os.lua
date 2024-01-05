@@ -16,6 +16,9 @@
 -- TexLive: (Windows 7 2017) https://ftp.math.utah.edu/pub/tex/historic/systems/texlive/2017/texlive-20170524-bin.tar.xz
 -- TinyTex: https://yihui.org/tinytex/
 -- TinyTex: https://github.com/rstudio/tinytex-releases/releases/download/v2023.12/TinyTeX-1-v2023.12.zip
+-- Java: https://download.oracle.com/java/21/latest/jdk-21_windows-x64_bin.zip
+-- Jdtls: https://www.eclipse.org/downloads/download.php?file=/jdtls/snapshots/jdt-language-server-latest.tar.gz
+-- Maven: https://dlcdn.apache.org/maven/maven-3/3.9.6/binaries/apache-maven-3.9.6-bin.zip
 -- rust: TODO
 
 -- LSPs:
@@ -28,7 +31,7 @@
 
 -- WIP: Como realizar o download do curl, quando não tem ele no sistema?
 -- WIP: Utilizar multithreads para realizar os downloads
--- TODO: Refatorar código
+-- TODO: Refatorar código?
 
 local npcall = vim.F.npcall
 
@@ -612,13 +615,17 @@ local PROGRAMAS = {
 		link = 'https://github.com/LuaLS/lua-language-server/releases/download/3.7.3/lua-language-server-3.7.3-win32-x64.zip',
 		cmd = 'lua-language-server.exe'
 	},{
+		nome = 'java',
+		link = 'https://download.oracle.com/java/21/latest/jdk-21_windows-x64_bin.zip',
+		cmd = 'java.exe'
+	},{
 		nome = 'jdtls',
 		link = 'https://www.eclipse.org/downloads/download.php?file=/jdtls/snapshots/jdt-language-server-latest.tar.gz',
 		cmd = 'jdtls'
 	},{
-		nome = 'java',
-		link = 'https://download.oracle.com/java/21/latest/jdk-21_windows-x64_bin.zip',
-		cmd = 'java.exe'
+		nome = 'maven',
+		link = 'https://dlcdn.apache.org/maven/maven-3/3.9.6/binaries/apache-maven-3.9.6-bin.zip',
+		cmd = 'mvn.cmd'
 	}
 }
 
