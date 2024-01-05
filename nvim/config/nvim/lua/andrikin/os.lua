@@ -571,6 +571,8 @@ local PROGRAMAS = {
 				notify('"pip.exe" não encontrado. Falha na instalação.')
 				do return end
 			end
+			-- IMPORTANT(Windows 10+): Desabilitar python.exe e python3.exe em "Gerenciar aliases de execução de aplicativo".
+			-- Windows executa este alias antes de executar python declarado em PATH.
 			vim.g.python3_host_prog = vim.fs.find('python.exe', {path = tostring(get_pip.diretorio), type = 'file'})[1]
 			if not vim.g.python3_host_prog or vim.g.python3_host_prog == '' then
 				notify('Variável python3_host_prog não configurado.')
