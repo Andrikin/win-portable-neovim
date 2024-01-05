@@ -375,7 +375,7 @@ Opt.registrar = function(programa)
 	local diretorios = vim.fs.find(programa.cmd, {path = busca, type = 'file', limit = limite})
 	local registrado = vim.env.PATH:match(busca:gsub('[\\-]', '.'))
 	if not registrado and #diretorios == 0 then
-		notify('Opt: registrar_path: Baixar programa e registrar no sistema.')
+		notify(string.format('Opt: registrar_path: Baixar programa %s e registrar no sistema.', programa.nome))
 		return false
 	end
 	if registrado then
