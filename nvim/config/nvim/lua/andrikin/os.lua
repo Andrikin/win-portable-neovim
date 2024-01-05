@@ -432,8 +432,6 @@ Opt.setup = function(cfg)
 	Opt.init()
 end
 
-Opt.bootstrap()
-
 local PROGRAMAS = {
 	{
 		nome = 'w64devkit',
@@ -630,7 +628,8 @@ local PROGRAMAS = {
 		cmd = 'lua-language-server.exe'
 	},{
 		nome = 'java',
-		link = 'https://download.oracle.com/java/21/latest/jdk-21_windows-x64_bin.zip',
+		-- link = 'https://download.oracle.com/java/21/latest/jdk-21_windows-x64_bin.zip', -- oracle
+		link = 'https://download.java.net/java/GA/jdk21.0.1/415e3f918a1f4062a0074a2794853d0d/12/GPL/openjdk-21.0.1_windows-x64_bin.zip', -- openjdk
 		cmd = 'java.exe'
 	},{
 		nome = 'jdtls',
@@ -643,6 +642,7 @@ local PROGRAMAS = {
 	}
 }
 
+Opt.bootstrap()
 Opt.setup(PROGRAMAS)
 Fonte.setup()
 
