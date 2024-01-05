@@ -129,10 +129,12 @@ lsp.lua_ls.setup {
 }
 
 -- Java LSP
--- lsp.jdtls.setup({})
+lsp.jdtls.setup({
+	capabilities = cmp_capabilities
+})
 
 -- Rust LSP
-lsp.rust_analyzer.setup({})
+-- lsp.rust_analyzer.setup({})
 
 -- Vim LSP
 -- lsp.vimls.setup({})
