@@ -229,10 +229,8 @@ local Fonte = {}
 Fonte.__index = Fonte
 
 Fonte.DIRETORIO = Diretorio:new({
-	vim.env.LOCALAPPDATA,
-	'Microsoft',
-	'Windows',
-	'Fonts'
+	vim.env.NVIM_OPT,
+	'fonte'
 })
 
 Fonte.LINK = 'https://github.com/ryanoasis/nerd-fonts/releases/download/v3.1.1/SourceCodePro.zip'
@@ -241,7 +239,14 @@ Fonte.ARQUIVO = Fonte.DIRETORIO .. vim.fn.fnamemodify(Fonte.LINK, ':t')
 
 Fonte.REGISTRO = 'HKCU\\Software\\Microsoft\\Windows NT\\CurrentVersion\\Fonts'
 
+Fonte.bootstrap = function()
+	if vim.fn.isdirectory(Fonte.DIRETORIO.nome) == 0 then
+		vim.fn.mkdir(Fonte.DIRETORIO.nome, 'p', 0700)
+	end
+end
+
 Fonte.setup = function()
+	Fonte.bootstrap()
 	if Fonte.query_regedit() then
 		notify('Fonte SauceCodePro já instalada.')
 		do return end
