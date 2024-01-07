@@ -239,10 +239,17 @@ Fonte.ARQUIVO = Fonte.DIRETORIO .. vim.fn.fnamemodify(Fonte.LINK, ':t')
 
 Fonte.REGISTRO = 'HKCU\\Software\\Microsoft\\Windows NT\\CurrentVersion\\Fonts'
 
+Fonte.FONTES = vim.fn.glob(Fonte.DIRETORIO .. 'SauceCodePro*.ttf', false, true)
+
 Fonte.bootstrap = function()
 	if vim.fn.isdirectory(Fonte.DIRETORIO.nome) == 0 then
 		vim.fn.mkdir(Fonte.DIRETORIO.nome, 'p', 0700)
 	end
+	vim.api.nvim_create_user_command(
+		'FonteRemover',
+		Fonte.remover_regedit,
+		{}
+	)
 end
 
 Fonte.setup = function()
@@ -321,7 +328,7 @@ Fonte.regedit = function()
 			'add',
 			Fonte.REGISTRO,
 			'/v',
-			arquivo:match('(.*)%..*$') .. ' (TrueType)', -- nome de registro da fonte
+			arquivo:match('(.*)%..*$'), -- nome de registro da fonte
 			'/t',
 			'REG_SZ',
 			'/d',
@@ -331,10 +338,26 @@ Fonte.regedit = function()
 	end
 end
 
+Fonte.remover_regedit = function()
+	for _, fonte in ipairs(Fonte.FONTES) do
+		local nome = vim.fn.fnamemodify(fonte, ':t')
+		nome = nome:match('(.*)%..*$')
+		if nome then
+			vim.fn.system({
+				'reg',
+				'delete',
+				Fonte.REGISTRO,
+				'/v',
+				nome,
+				'/f'
+			})
+		end
+	end
+end
+
 Fonte.instalar = function()
 	if Fonte.fonte_extraida() then
 		notify('Encontrado fonte SauceCodePro extraída neste computador!')
-		do return end
 	else
 		Fonte.download()
 		Fonte.extrair()
@@ -346,6 +369,7 @@ Fonte.instalar = function()
 		Fonte.regedit()
 		if Fonte.query_regedit() then
 			notify('Fonte SauceCodePro instalada com sucesso. Reinicie o nvim para carregar a fonte.')
+			vim.cmd.quit({bang = true})
 		else
 			notify('Erro encontrado. Verificar se é possível executar comandos no regedit.')
 		end
