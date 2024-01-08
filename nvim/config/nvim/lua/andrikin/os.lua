@@ -12,10 +12,8 @@
 -- python 3.8.9 (Windows 7): https://www.python.org/ftp/python/3.8.9/python-3.8.9-embed-amd64.zip
 -- python 3.12.1: https://www.python.org/ftp/python/3.12.1/python-3.12.1-embed-amd64.zip
 -- pip installer: https://bootstrap.pypa.io/get-pip.py
--- TexLive: (2021) http://linorg.usp.br/CTAN/systems/win32/w32tex/TLW64/tl-win64.zip
--- TexLive: (Windows 7 2017) https://ftp.math.utah.edu/pub/tex/historic/systems/texlive/2017/texlive-20170524-bin.tar.xz
--- TinyTex: https://yihui.org/tinytex/
 -- TinyTex: https://github.com/rstudio/tinytex-releases/releases/download/v2023.12/TinyTeX-1-v2023.12.zip
+-- TinyTex: https://yihui.org/tinytex/
 -- Java: https://download.oracle.com/java/21/latest/jdk-21_windows-x64_bin.zip
 -- Jdtls: https://www.eclipse.org/downloads/download.php?file=/jdtls/snapshots/jdt-language-server-latest.tar.gz
 -- Maven: https://dlcdn.apache.org/maven/maven-3/3.9.6/binaries/apache-maven-3.9.6-bin.zip

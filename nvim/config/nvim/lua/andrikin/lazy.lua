@@ -50,8 +50,6 @@ local plugins = {
 	},
 	-- Harpoon - The Primeagen,
 	'https://github.com/ThePrimeagen/harpoon.git',
-	-- Lightline,
-	-- 'https://github.com/itchyny/lightline.vim.git',
 	-- Lualine,
 	{
 		'https://github.com/nvim-lualine/lualine.nvim',
