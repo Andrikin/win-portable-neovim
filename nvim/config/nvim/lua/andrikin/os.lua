@@ -152,8 +152,8 @@ Curl.instalado = function()
 	return vim.fn.executable('curl') == 1
 end
 
--- @param link string
--- @param diretorio string
+---@param link string
+---@param diretorio string
 Curl.download = function(link, diretorio)
 	vim.validate({
 		link = {link, 'string'},
@@ -180,8 +180,8 @@ Curl.download = function(link, diretorio)
 	end
 end
 
--- @param arquivo string
--- @param diretorio string
+---@param arquivo string
+---@param diretorio string
 Curl.extrair = function(arquivo, diretorio)
 	vim.validate({
 		arquivo = {arquivo, 'string'},
@@ -394,7 +394,7 @@ Opt.config = function(cfg)
 	Opt.DEPENDENCIAS = cfg
 end
 
--- @param programa table
+---@param programa table
 Opt.registrar = function(programa)
 	-- verificar se programa já está no PATH
 	local busca = Opt.DIRETORIO .. programa.nome
