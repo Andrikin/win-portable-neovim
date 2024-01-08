@@ -95,8 +95,6 @@ Latex.compile = function()
 		vim.fn.jobstart({
 			Latex.PDF_READER,
 			pdf
-		},{
-			detach = true
 		})
 	else
 		notify('Latex: Não foi encontrado arquivo .pdf!')
