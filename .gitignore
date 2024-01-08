@@ -38,9 +38,11 @@ nvim/config/nvim-data/tree-sitter-python/
 nvim/config/nvim-data/tree-sitter-scss/
 nvim/config/nvim-data/tree-sitter-vim/
 nvim/config/nvim-data/tree-sitter-vue/
+nvim/config/nvim-data/luasnip.log
 
 nvim/bin/
 nvim/opt
 nvim/deps/
 nvim/lib/
 
+/nvim/config/nvim-data/luasnip.log
