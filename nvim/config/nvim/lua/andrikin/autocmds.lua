@@ -1,3 +1,4 @@
+-- TODO: autocmds para quickfix e localfix
 -- Autocmds goosebumps
 local augroup = vim.api.nvim_create_augroup
 local autocmd = vim.api.nvim_create_autocmd
@@ -42,6 +43,26 @@ autocmd(
 				'n',
 				'gq',
 				vim.cmd.helpclose,
+				{
+					silent = true,
+					buffer = args.buf,
+				}
+			)
+		end,
+	}
+)
+
+-- 'gq' para fechar Undotree window
+autocmd(
+	'FileType',
+	{
+		group = AndrikinGroup,
+		pattern = 'undotree',
+		callback = function(args)
+			vim.keymap.set(
+				'n',
+				'gq',
+				vim.cmd.quit,
 				{
 					silent = true,
 					buffer = args.buf,
