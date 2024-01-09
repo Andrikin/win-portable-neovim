@@ -72,6 +72,26 @@ autocmd(
 	}
 )
 
+-- 'gq' para fechar quickfix list
+autocmd(
+	'FileType',
+	{
+		group = AndrikinGroup,
+		pattern = 'qf',
+		callback = function(args)
+			vim.keymap.set(
+				'n',
+				'gq',
+				vim.cmd.quit,
+				{
+					silent = true,
+					buffer = args.buf,
+				}
+			)
+		end,
+	}
+)
+
 -- Highlight configuração
 autocmd(
 	'TextYankPost',
