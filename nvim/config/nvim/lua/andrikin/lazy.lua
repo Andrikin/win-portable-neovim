@@ -48,8 +48,11 @@ local plugins = {
 		'https://github.com/mattn/emmet-vim.git',
 		lazy = true,
 	},
-	-- Harpoon - The Primeagen,
-	'https://github.com/ThePrimeagen/harpoon.git',
+	-- Harpoon2 - The Primeagen,
+	{
+		'https://github.com/ThePrimeagen/harpoon.git',
+		branch = "harpoon2",
+	},
 	-- Lualine,
 	{
 		'https://github.com/nvim-lualine/lualine.nvim',

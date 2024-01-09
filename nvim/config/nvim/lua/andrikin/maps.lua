@@ -1,9 +1,6 @@
 -- CUSTOM MAPS
 -- INFO: Função: vim.keymap.set()
 
-local harpoon_add = require('harpoon.mark')
-local harpoon_ui = require('harpoon.ui')
-
 if not vim.g.nvy or not vim.g.neovide then
 	-- Fix ^\ (nvim-qt/windows 7)
 	vim.notify('Mapeamento do comando <c-]>: Jump to the definition of the keyword under the cursor.')
@@ -170,45 +167,17 @@ vim.keymap.set(
 	end
 )
 
--- The Primeagen Harpoon
-vim.keymap.set(
-	'n',
-	'gha',
-	harpoon_add.add_file
-)
-vim.keymap.set(
-	'n',
-	'ghh',
-	harpoon_ui.toggle_quick_menu
-)
-vim.keymap.set(
-	'n',
-	'gh1',
-	function()
-		harpoon_ui.nav_file(1)
-	end
-)
-vim.keymap.set(
-	'n',
-	'gh2',
-	function()
-		harpoon_ui.nav_file(2)
-	end
-)
-vim.keymap.set(
-	'n',
-	'gh3',
-	function()
-		harpoon_ui.nav_file(3)
-	end
-)
-vim.keymap.set(
-	'n',
-	'gh4',
-	function()
-		harpoon_ui.nav_file(4)
-	end
-)
+-- The Primeagen Harpoon2
+local harpoon2 = require('harpoon')
+vim.keymap.set("n", "gha", function() harpoon2:list():append() end)
+vim.keymap.set("n", "ght", function() harpoon2.ui:toggle_quick_menu(harpoon2:list()) end)
+vim.keymap.set("n", "gh1", function() harpoon2:list():select(1) end)
+vim.keymap.set("n", "gh2", function() harpoon2:list():select(2) end)
+vim.keymap.set("n", "gh3", function() harpoon2:list():select(3) end)
+vim.keymap.set("n", "gh4", function() harpoon2:list():select(4) end)
+-- Toggle previous & next buffers stored within Harpoon list
+vim.keymap.set("n", "ghp", function() harpoon2:list():prev() end)
+vim.keymap.set("n", "ghn", function() harpoon2:list():next() end)
 
 -- vim.diagnostic
 local diagnostic = function(next, severity)
