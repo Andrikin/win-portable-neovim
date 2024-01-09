@@ -62,7 +62,7 @@ autocmd(
 			vim.keymap.set(
 				'n',
 				'gq',
-				vim.cmd.quit,
+				vim.cmd.UndotreeToggle,
 				{
 					silent = true,
 					buffer = args.buf,
