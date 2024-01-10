@@ -77,7 +77,7 @@ autocmd(
 	'FileType',
 	{
 		group = AndrikinGroup,
-		pattern = {'quickfix', 'checkhealth'},
+		pattern = {'qf', 'checkhealth'},
 		callback = function(args)
 			vim.keymap.set(
 				'n',
@@ -145,7 +145,7 @@ autocmd(
 		group = AndrikinGroup,
 		callback = function(ev)
 			local opts = {buffer = ev.buf}
-			vim.keymap.set('n', 'gd', vim.lsp.buf.definition, opts) -- TODO: on_list -> criar handler para retorno de listas
+			vim.keymap.set('n', 'gd', vim.lsp.buf.definition, opts)
 			vim.keymap.set('n', 'gD', vim.lsp.buf.declaration, opts)
 			vim.keymap.set('n', 'K', vim.lsp.buf.hover, opts)
 			vim.keymap.set('n', 'gr', vim.lsp.buf.references, opts)
