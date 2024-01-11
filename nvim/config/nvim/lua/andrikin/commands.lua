@@ -74,7 +74,7 @@ Latex.compile = function()
 	arquivo = string.format('C.I. N° %s.%s - ', numero_ci, os.date('%Y')) .. arquivo
 	if not vim.fn.expand('%'):match(arquivo) then
 		local antes = vim.fn.expand('%')
-		local depois = vim.fn.expand('%:h') .. '\\' .. arquivo
+		local depois = vim.fn.expand('%:h') .. '/' .. arquivo
 		local renomeado = vim.fn.rename(antes, depois)
 		if renomeado == 0 then
 			vim.cmd.edit(depois) -- recarregar arquivo buffer
