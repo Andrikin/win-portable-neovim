@@ -78,6 +78,7 @@ Latex.compile = function()
 		local renomeado = vim.fn.rename(antes, depois)
 		if renomeado == 0 then
 			vim.cmd.edit(depois) -- recarregar arquivo buffer
+			vim.fn.setreg('#', depois)
 			vim.cmd.bdelete(antes)
 		else
 			error('Não foi possível renomear o arquivo. Verifique e tente novamente.')
