@@ -67,12 +67,12 @@ Latex.compile = function()
 		vim.cmd.redraw({bang = true})
 	end
 	local arquivo = vim.fn.expand('%:t')
-	local numero_ci = vim.fn.getline(vim.fn.search('^.Cabecalho')):match('{(%d+)}')
-	if not numero_ci then
-		numero_ci = 'NUMEROCI'
-	end
-	arquivo = string.format('C.I. N° %s.%s - ', numero_ci, os.date('%Y')) .. arquivo
-	if not vim.fn.expand('%'):match(arquivo) then
+	if not vim.fn.expand('%'):match('C%.I%.') then
+		local numero_ci = vim.fn.getline(vim.fn.search('^.Cabecalho')):match('{(%d+)}')
+		if not numero_ci then
+			numero_ci = 'NUMEROCI'
+		end
+		arquivo = string.format('C.I. N° %s.%s - ', numero_ci, os.date('%Y')) .. arquivo
 		local antes = vim.fn.expand('%')
 		local depois = vim.fn.expand('%:h') .. '/' .. arquivo
 		local renomeado = vim.fn.rename(antes, depois)
