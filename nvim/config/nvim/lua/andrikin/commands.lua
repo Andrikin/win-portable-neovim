@@ -55,6 +55,9 @@ Latex.init = function() -- setando diretoria de modelos latex
 	)[1] .. ';'
 end
 Latex.compile = function()
+	if vim.fn.has('linux') == 1 then
+		error('Sistema OS Linux!')
+	end
 	if Latex.ft() then
 		vim.notify('Comando executável somente para arquivos .tex!')
 		do return end
@@ -64,25 +67,30 @@ Latex.compile = function()
 		vim.cmd.redraw({bang = true})
 	end
 	local arquivo = vim.fn.expand('%:t')
-	local comando = {}
-	if vim.fn.has('linux') then
-		comando = {
-			'pdflatex',
-			'-file-line-error',
-			'-interaction=nonstopmode',
-			'-output-directory=' .. Latex.OUTPUT_FOLDER,
-			arquivo
-		}
-	else -- para sistemas que não são linux, verificar a opção '-aux-directory'
-		comando = {
-			'pdflatex',
-			'-file-line-error',
-			'-interaction=nonstopmode',
-			'-aux-directory=' .. Latex.AUX_FOLDER,
-			'-output-directory=' .. Latex.OUTPUT_FOLDER,
-			arquivo
-		}
+	local numero_ci = vim.fn.getline(vim.fn.search('^.Cabecalho')):match('{(%d+)}')
+	if not numero_ci then
+		numero_ci = 'NUMEROCI'
 	end
+	arquivo = string.format('C.I. N° %s.%s - ', numero_ci, os.date('%Y')) .. arquivo
+	if not vim.fn.expand('%'):match(arquivo) then
+		local antes = vim.fn.expand('%')
+		local depois = vim.fn.expand('%:h') .. '\\' .. arquivo
+		local renomeado = vim.fn.rename(antes, depois)
+		if renomeado == 0 then
+			vim.cmd.edit(depois) -- recarregar arquivo buffer
+			vim.cmd.bdelete(antes)
+		else
+			error('Não foi possível renomear o arquivo. Verifique e tente novamente.')
+		end
+	end
+	local comando = { -- para sistemas que não são linux, verificar a opção '-aux-directory'
+		'pdflatex',
+		'-file-line-error',
+		'-interaction=nonstopmode',
+		'-aux-directory=' .. Latex.AUX_FOLDER,
+		'-output-directory=' .. Latex.OUTPUT_FOLDER,
+		arquivo
+	}
 	notify('1º compilação!')
 	vim.fn.system(comando)
 	notify('2º compilação!')
@@ -127,6 +135,11 @@ end
 Ouvidoria.nova_comunicacao = function(opts)
 	local tipo = opts.fargs[1] or 'modelo-basico'
 	local arquivo = opts.fargs[2] or 'ci-modelo'
+	if tipo:match('lai') then
+		arquivo = 'LAI-' .. arquivo
+	else
+		arquivo = 'OUV-' .. arquivo
+	end
 	local alternativo = vim.fn.expand('%')
 	local NONAME = vim.api.nvim_buf_get_name(vim.fn.bufnr('%')) == ''
 	vim.cmd.edit(Ouvidoria.CI_FOLDER .. '/' .. tipo .. Ouvidoria.TEX)
