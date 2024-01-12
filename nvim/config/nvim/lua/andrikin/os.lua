@@ -481,19 +481,20 @@ local PROGRAMAS = {
 		cmd = 'sumatra.exe',
 		config = function()
 			local diretorio = Diretorio:new(vim.env.NVIM_OPT) .. 'sumatra'
-			local instalado = vim.fn.glob(diretorio .. 'sumatra*.exe')
-			if instalado ~= '' then
-				if vim.fn.fnamemodify(instalado, ':t') == 'sumatra.exe' then
+			local executavel = vim.fn.glob(diretorio .. 'sumatra*.exe')
+			if executavel ~= '' then
+				if vim.fn.fnamemodify(executavel, ':t') == 'sumatra.exe' then
 					notify('Arquivo Sumatra já renomeado.')
 					do return end
 				end
+                notify('Renomeando executável Sumatra.')
 				vim.fn.system({
 					'mv',
-					instalado,
+					executavel,
 					diretorio .. 'sumatra.exe'
 				})
 			else
-				notify('Erro ao renomear executável Sumatra.')
+				notify('Não foi encontrado executável Sumatra.')
 			end
 		end
 	},{
@@ -512,16 +513,20 @@ local PROGRAMAS = {
 				local plugins = {
 					'neovim',
 					'emmet-ls',
-					'vim-language-server'
+					'vim-language-server',
+					'vscode-langservers-extracted',
 				}
 				for _, plugin in ipairs(plugins) do
 					if not installed(plugin) then
+                        notify(string.format('Instalando pacote node: %s', plugin))
 						vim.fn.system({
 							'npm',
 							'install',
 							'-g',
 							plugin
 						})
+                    else
+                        notify(string.format('Pacote node já instalado %s', plugin))
 					end
 				end
 			end
