@@ -137,3 +137,12 @@ local opts = {
 
 require("lazy").setup(plugins, opts)
 
+-- builtin plugins
+-- vim.cmd.packadd('cfilter') -- filtrar itens no quickfix/localfix list
+-- vim.cmd.packadd('justify')
+vim.cmd.packadd('matchit')
+-- vim.cmd.packadd('shellmenu')
+-- vim.cmd.packadd('swapmouse')
+-- vim.cmd.packadd('termdebug')
+-- vim.cmd.packadd('vimball')
+
