@@ -480,7 +480,10 @@ local PROGRAMAS = {
 		link = 'https://www.sumatrapdfreader.org/dl/rel/3.5.2/SumatraPDF-3.5.2-64.zip',
 		cmd = 'sumatra.exe',
 		config = function()
-			local diretorio = Diretorio:new(vim.env.NVIM_OPT) .. 'sumatra'
+			local diretorio = Diretorio:new({
+                vim.env.NVIM_OPT,
+                'sumatra',
+            })
 			local executavel = vim.fn.glob(diretorio .. 'sumatra*.exe')
 			if executavel ~= '' then
 				if vim.fn.fnamemodify(executavel, ':t') == 'sumatra.exe' then
