@@ -76,8 +76,8 @@ vim.keymap.set(
 -- inoremap <c-k> <c-o>:m.-2<cr>
 -- nnoremap <leader>k <cmd>m.-2<cr>
 -- nnoremap <leader>j <cmd>m.+1<cr>
-vim.keymap.set('v', 'K', ":m'<-2<cr>gv")
-vim.keymap.set('v', 'J', ":m'>+1<cr>gv")
+vim.keymap.set('v', 'K', ":m'<-2<cr>gv", {silent = true})
+vim.keymap.set('v', 'J', ":m'>+1<cr>gv", {silent = true})
 
 -- Copy and paste from clipboard (* -> selection register/+ -> primary register)
 vim.keymap.set('n', 'gP', '"+P')
