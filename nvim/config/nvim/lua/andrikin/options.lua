@@ -10,7 +10,7 @@ vim.opt.nu = true
 -- Tamanho da indentação
 vim.opt.tabstop = 4
 vim.opt.shiftwidth = 4
-vim.opt.softtabstop = 4
+-- vim.opt.softtabstop = 4
 
 -- Configurações para search
 vim.opt.incsearch = true
@@ -73,7 +73,7 @@ end
 vim.opt.inccommand = '' -- conflict with traces.vim
 vim.opt.fillchars = 'vert:|,fold:*,foldclose:+,diff:-'
 
--- Using ripgrep ([cf]open; [cf]do {cmd} | update)
+-- Using ripgrep populate quickfix/localfix lists ([cf]open; [cf]do {cmd} | update)
 if vim.fn.executable('rg') == 1 then
 	vim.g.grepprg = 'rg --vimgrep --smart-case --follow'
 else
