@@ -73,7 +73,7 @@ Diretorio.new = function(self, diretorio)
 	if type(diretorio) == 'table' then
 		local concatenar = diretorio[1]
 		for i=2,#diretorio do
-			concatenar = concatenar .. obj.suffix(diretorio[i])
+			concatenar = concatenar .. obj._suffix(diretorio[i])
 		end
 		diretorio = concatenar
 	end
