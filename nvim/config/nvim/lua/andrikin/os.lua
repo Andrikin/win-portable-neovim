@@ -508,21 +508,22 @@ local PROGRAMAS = {
 			if win7 and vim.env.NODE_SKIP_PLATFORM_CHECK ~= 1 then
 				vim.env.NODE_SKIP_PLATFORM_CHECK = 1
 			end
-			if vim.fn.executable('npm') == 1 and not installed('neovim') then
-				vim.fn.system({
-					'npm',
-					'install',
-					'-g',
-					'neovim'
-				})
-			end
-			if vim.fn.executable('npm') == 1 and not installed('emmet-ls') then
-				vim.fn.system({ -- configuração LSP emmet
-					'npm',
-					'install',
-					'-g',
-					'emmet-ls'
-				})
+			if vim.fn.executable('npm') == 1 then
+				local plugins = {
+					'neovim',
+					'emmet-ls',
+					'vim-language-server'
+				}
+				for _, plugin in ipairs(plugins) do
+					if not installed(plugin) then
+						vim.fn.system({
+							'npm',
+							'install',
+							'-g',
+							plugin
+						})
+					end
+				end
 			end
 		end
 	},{

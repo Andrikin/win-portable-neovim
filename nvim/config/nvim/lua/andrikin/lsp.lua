@@ -133,16 +133,18 @@ lsp.jdtls.setup({
 	capabilities = cmp_capabilities
 })
 
+-- Vim LSP
+lsp.vimls.setup({
+	capabilities = cmp_capabilities
+})
+
 -- Rust LSP
 -- lsp.rust_analyzer.setup({})
 
--- Vim LSP
--- lsp.vimls.setup({})
-
 require('colorizer').setup(nil, { css = true })
 
-require('nvim-treesitter.install').compilers = {'clang', 'gcc'}
-require('nvim-treesitter.configs').setup{
+-- require('nvim-treesitter.install').compilers = {'clang', 'gcc'}
+require('nvim-treesitter.configs').setup({
 	highlight = {
 		enable = true,
 		additional_vim_regex_highlighting = true,
@@ -166,7 +168,7 @@ require('nvim-treesitter.configs').setup{
 	context_commentstring = {
 		enable = true,
 	},
-}
+})
 
 local telescope_tema = 'dropdown'
 local telescope_actions = require('telescope.actions')
