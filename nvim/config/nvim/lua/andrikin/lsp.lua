@@ -72,32 +72,50 @@ vim.diagnostic.config(
 	}
 )
 -- Set up lspconfig.
--- Replace <YOUR_LSP_SERVER> with each lsp server you've enabled.
-local cmp_capabilities = require('cmp_nvim_lsp').default_capabilities()
+local capabilities = require('cmp_nvim_lsp').default_capabilities()
+capabilities.textDocument.completion.completionItem.snippetSupport = true -- habilitar completion para snippets
 
 -- LSP SERVERS 
--- TODO: Sempre instalar os arquivos binários dos executáveis
 local lsp = require('lspconfig')
 
 -- Emmet LSP
-lsp.emmet_ls.setup({}) -- npm install -g emmet-ls
+lsp.emmet_ls.setup({ -- npm install -g emmet-ls
+	capabilities = capabilities
+})
 
--- HTML LSP
-lsp.html.setup({}) -- npm i -g vscode-langservers-extracted
+-- VSCODE LSP PACKAGE
+lsp.html.setup({ -- npm i -g vscode-langservers-extracted
+	capabilities = capabilities
+})
+lsp.jsonls.setup({ -- npm i -g vscode-langservers-extracted
+	capabilities = capabilities
+})
+lsp.cssls.setup({ -- npm i -g vscode-langservers-extracted
+	capabilities = capabilities
+})
+lsp.eslint.setup({ -- npm i -g vscode-langservers-extracted
+	capabilities = capabilities,
+	on_attach = function(client, bufnr)
+		vim.api.nvim_create_autocmd("BufWritePre", {
+			buffer = bufnr,
+			command = "EslintFixAll",
+		})
+	end,
+})
 
 -- Python LSP
-lsp.pyright.setup({
-	capabilities = cmp_capabilities
-}) -- pip install pyright | npm -g install pyright
+lsp.pyright.setup({ -- pip install pyright | npm -g install pyright
+	capabilities = capabilities
+})
 
 -- Javascript LSP
 lsp.denols.setup({
-	capabilities = cmp_capabilities
+	capabilities = capabilities
 })
 
 -- Lua LSP
 lsp.lua_ls.setup {
-	capabilities = cmp_capabilities,
+	capabilities = capabilities,
 	on_init = function(client)
 		local path = client.workspace_folders[1].name
 		if not vim.loop.fs_stat(path..'/.luarc.json') and not vim.loop.fs_stat(path..'/.luarc.jsonc') then
@@ -130,12 +148,12 @@ lsp.lua_ls.setup {
 
 -- Java LSP
 lsp.jdtls.setup({
-	capabilities = cmp_capabilities
+	capabilities = capabilities
 })
 
 -- Vim LSP
 lsp.vimls.setup({
-	capabilities = cmp_capabilities
+	capabilities = capabilities
 })
 
 -- Rust LSP
