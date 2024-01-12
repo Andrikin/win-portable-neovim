@@ -14,7 +14,8 @@
 -- pip installer: https://bootstrap.pypa.io/get-pip.py
 -- TinyTex: https://github.com/rstudio/tinytex-releases/releases/download/v2023.12/TinyTeX-1-v2023.12.zip
 -- TinyTex: https://yihui.org/tinytex/
--- Java: https://download.oracle.com/java/21/latest/jdk-21_windows-x64_bin.zip
+-- Java: https://download.oracle.com/java/21/latest/jdk-21_windows-x64_bin.zip -- oracle
+-- Java: https://download.java.net/java/GA/jdk21.0.1/415e3f918a1f4062a0074a2794853d0d/12/GPL/openjdk-21.0.1_windows-x64_bin.zip -- openjdk
 -- Jdtls: https://www.eclipse.org/downloads/download.php?file=/jdtls/snapshots/jdt-language-server-latest.tar.gz
 -- Maven: https://dlcdn.apache.org/maven/maven-3/3.9.6/binaries/apache-maven-3.9.6-bin.zip
 -- rust: TODO
@@ -24,10 +25,8 @@
 -- lua: https://github.com/LuaLS/lua-language-server/releases/download/3.7.3/lua-language-server-3.7.3-win32-x64.zip
 -- emmet: npm install -g emmet-ls
 -- python: pip install pyright | npm -g install pyright
--- java: TODO
 -- rust: TODO
 
--- WIP: Como realizar o download do curl, quando não tem ele no sistema?
 -- WIP: Utilizar multithreads para realizar os downloads
 -- TODO: Refatorar código?
 
@@ -58,7 +57,7 @@ local Diretorio = {}
 
 Diretorio.__index = Diretorio
 
-Diretorio.separador = '\\'
+Diretorio._sep = '\\'
 
 Diretorio.new = function(self, diretorio)
 	vim.validate({diretorio = {diretorio, {'table', 'string'}}})
@@ -78,36 +77,36 @@ Diretorio.new = function(self, diretorio)
 		end
 		diretorio = concatenar
 	end
-	obj.nome = self.sanitize(diretorio)
+	obj.nome = self._sanitize(diretorio)
 	return obj
 end
 
-Diretorio.sanitize = function(str)
+Diretorio._sanitize = function(str)
 	vim.validate({ str = {str, 'string'} })
 	return string.gsub(str, '/', '\\')
 end
 
-Diretorio.suffix = function(str)
+Diretorio._suffix = function(str)
 	vim.validate({ str = {str, 'string'} })
-	return (str:match('^[/\\]') or str == '') and str or Diretorio.separador .. str
+	return (str:match('^[/\\]') or str == '') and str or Diretorio._sep .. str
 end
 
 Diretorio.add = function(self, diretorio)
 	if type(diretorio) == 'table' then
 		local concatenar = ''
 		for _, p in ipairs(diretorio) do
-			concatenar = concatenar .. self.suffix(p)
+			concatenar = concatenar .. self._suffix(p)
 		end
 		diretorio = concatenar
 	end
-	self.nome = self.nome .. self.suffix(diretorio)
+	self.nome = self.nome .. self._suffix(diretorio)
 end
 
 Diretorio.__div = function(self, other)
 	if getmetatable(self) ~= Diretorio or getmetatable(other) ~= Diretorio then
 		error('Diretorio: __div: Elementos precisam ser do tipo "string".')
 	end
-	return self.sanitize(self.nome .. Diretorio.suffix(other.dir))
+	return self._sanitize(self.nome .. Diretorio._suffix(other.dir))
 end
 
 Diretorio.__concat = function(self, str)
@@ -117,7 +116,7 @@ Diretorio.__concat = function(self, str)
 	if type(str) ~= 'string' then
 		error('Diretorio: __concat: Argumento precisa ser do tipo "string".')
 	end
-	return self.sanitize(self.nome .. Diretorio.suffix(str))
+	return self._sanitize(self.nome .. Diretorio._suffix(str))
 end
 
 Diretorio.__tostring = function(self)
@@ -655,7 +654,6 @@ local PROGRAMAS = {
 		cmd = 'lua-language-server.exe'
 	},{
 		nome = 'java',
-		-- link = 'https://download.oracle.com/java/21/latest/jdk-21_windows-x64_bin.zip', -- oracle
 		link = 'https://download.java.net/java/GA/jdk21.0.1/415e3f918a1f4062a0074a2794853d0d/12/GPL/openjdk-21.0.1_windows-x64_bin.zip', -- openjdk
 		cmd = 'java.exe'
 	},{
