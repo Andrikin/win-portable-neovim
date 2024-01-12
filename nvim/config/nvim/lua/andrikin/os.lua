@@ -608,7 +608,7 @@ local PROGRAMAS = {
 							pacote
 						})
 					else
-						notify(string.format('Pacote %s já instalado.', pacote))
+						notify(string.format('Pacote python %s já instalado.', pacote))
 					end
 				end
 				instalar('pyright')
@@ -650,7 +650,7 @@ local PROGRAMAS = {
 					})
 				end
 			else
-				notify('Packages latex já instalados.')
+				notify('Pacotes latex já instalados.')
 			end
 		end
 	},{
