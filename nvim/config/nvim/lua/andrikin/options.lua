@@ -10,7 +10,8 @@ vim.opt.nu = true
 -- Tamanho da indentação
 vim.opt.tabstop = 4
 vim.opt.shiftwidth = 4
--- vim.opt.softtabstop = 4
+vim.opt.softtabstop = 4
+vim.opt.expandtab = true -- ThePrimeagen way
 
 -- Configurações para search
 vim.opt.incsearch = true
