@@ -100,7 +100,7 @@ local plugins = {
 			'https://github.com/hrsh7th/cmp-buffer.git',
 			'https://github.com/hrsh7th/cmp-path.git',
 			'https://github.com/hrsh7th/cmp-cmdline.git',
-			'https://github.com/L3MON4D3/LuaSnip.git',
+			'https://github.com/saadparwaiz1/cmp_luasnip.git',
 		},
 	},
 	-- Telescope,
