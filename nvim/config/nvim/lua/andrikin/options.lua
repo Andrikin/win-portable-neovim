@@ -112,3 +112,16 @@ if vim.g.neovide then
 	vim.g.neovide_cursor_animate_command_line = false
 	vim.g.neovide_cursor_vfx_mode = ""
 end
+
+-- Mensagem de erro mais curta
+vim.diagnostic.config({
+    virtual_text = {
+        format = function(diag)
+            if diag.severity == vim.diagnostic.severity.ERROR then
+                return 'Erro!'
+            end
+            return diag.message
+        end
+    }
+})
+
