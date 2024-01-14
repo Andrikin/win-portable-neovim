@@ -156,3 +156,15 @@ autocmd(
 	}
 )
 
+autocmd(
+	'VimLeave',
+	{
+		group = AndrikinGroup,
+		pattern = '*',
+		callback = function()
+            if vim.env.HOME:sub(1, 1) ~= 'C' then
+                vim.cmd.FonteRemover()
+            end
+		end,
+	}
+)
