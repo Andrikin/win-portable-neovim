@@ -1,4 +1,5 @@
 vim.g.mapleader = ' '
+vim.g.maplocalleader = ' '
 
 -- Search recursively
 vim.opt.path:append('**')

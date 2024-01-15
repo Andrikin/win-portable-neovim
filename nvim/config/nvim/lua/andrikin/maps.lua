@@ -7,6 +7,9 @@ if not vim.g.nvy or not vim.g.neovide then
 	vim.keymap.set('n', '<c-\\>', '<c-]>')
 end
 
+-- Remover <space> dos modos: NORMAL e VISUAL (em conjunto com mapleader)
+vim.keymap.set({ 'n', 'v' }, '<Space>', '<Nop>', { silent = true })
+
 -- CTRL-U in insert mode deletes a lot. Use CTRL-G u to first break undo,
 -- so that you can undo CTRL-U after inserting a line break.
 -- Revert with ":iunmap <C-U>". -> from defaults.vim
@@ -159,9 +162,9 @@ vim.keymap.set(
 )
 
 -- --- Telescope ---
-vim.keymap.set(
+vim.keymap.set( -- telescope way to open buffers
 	'n',
-	'<leader>b',
+	'<leader><space>',
 	function()
 		vim.cmd.Telescope('buffers')
 	end
@@ -187,11 +190,12 @@ local diagnostic = function(next, severity)
 		go({ severity = severity })
 	end
 end
-vim.keymap.set("n", "]d", diagnostic(true), { desc = "Next Diagnostic" })
-vim.keymap.set("n", "[d", diagnostic(false), { desc = "Prev Diagnostic" })
-vim.keymap.set("n", "]e", diagnostic(true, "ERROR"), { desc = "Next Error" })
-vim.keymap.set("n", "[e", diagnostic(false, "ERROR"), { desc = "Prev Error" })
-vim.keymap.set("n", "]w", diagnostic(true, "WARN"), { desc = "Next Warning" })
-vim.keymap.set("n", "[w", diagnostic(false, "WARN"), { desc = "Prev Warning" })
-vim.keymap.set('n', '<leader>e', vim.diagnostic.open_float)
+vim.keymap.set("n", "]d", diagnostic(true), { desc = 'Próximo Diagnóstico' })
+vim.keymap.set("n", "[d", diagnostic(false), { desc = 'Diagnóstico Anterior' })
+vim.keymap.set("n", "]e", diagnostic(true, "ERROR"), { desc = 'Próximo Erro' })
+vim.keymap.set("n", "[e", diagnostic(false, "ERROR"), { desc = 'Erro Anterior' })
+vim.keymap.set("n", "]w", diagnostic(true, "WARN"), { desc = 'Próximo Alerta' })
+vim.keymap.set("n", "[w", diagnostic(false, "WARN"), { desc = 'Alerta Anterior' })
+vim.keymap.set('n', '<leader>e', vim.diagnostic.open_float, { desc = 'Abrir erro no cursor'})
+vim.keymap.set('n', '<leader>d', vim.diagnostic.setloclist, { desc = 'Abrir lista de diagnósticos' })
 

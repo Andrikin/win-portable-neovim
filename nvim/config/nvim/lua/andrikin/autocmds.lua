@@ -156,7 +156,7 @@ autocmd(
 	}
 )
 
-autocmd(
+autocmd( -- Remover fonte do regedit (Windows)
 	'VimLeave',
 	{
 		group = AndrikinGroup,
@@ -168,3 +168,4 @@ autocmd(
 		end,
 	}
 )
+
