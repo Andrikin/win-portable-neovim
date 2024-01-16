@@ -241,3 +241,11 @@ vim.api.nvim_create_user_command(
 	{}
 )
 
+vim.api.nvim_create_user_command(
+	'WhatsAppFormatarMensagem',
+	function()
+        vim.cmd('%s/^.*: \\(.*\\)$/\\1/g')
+	end,
+	{}
+)
+
