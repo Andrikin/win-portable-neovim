@@ -14,6 +14,7 @@
 -- pip installer: https://bootstrap.pypa.io/get-pip.py
 -- TinyTex: https://github.com/rstudio/tinytex-releases/releases/download/v2023.12/TinyTeX-1-v2023.12.zip
 -- TinyTex: https://yihui.org/tinytex/
+-- Tectonic: https://github.com/tectonic-typesetting/tectonic/releases/download/tectonic%400.14.1/tectonic-0.14.1-x86_64-pc-windows-msvc.zip
 -- Java: https://download.oracle.com/java/21/latest/jdk-21_windows-x64_bin.zip -- oracle
 -- Java: https://download.java.net/java/GA/jdk21.0.1/415e3f918a1f4062a0074a2794853d0d/12/GPL/openjdk-21.0.1_windows-x64_bin.zip -- openjdk
 -- Jdtls: https://www.eclipse.org/downloads/download.php?file=/jdtls/snapshots/jdt-language-server-latest.tar.gz
