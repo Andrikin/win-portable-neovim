@@ -1,9 +1,15 @@
 -- Configuração de LSP servers
+
 -- local has_words_before = function()
 --     unpack = unpack or table.unpack
 --     local line, col = unpack(vim.api.nvim_win_get_cursor(0))
 --     return col ~= 0 and vim.api.nvim_buf_get_lines(0, line - 1, line, true)[1]:sub(col, col):match("%s") == nil
 -- end
+
+local notify = function(msg)
+	vim.notify(msg)
+	vim.cmd.redraw({bang = true})
+end
 
 local cmp = require('cmp')
 local luasnip = require("luasnip")
@@ -20,7 +26,7 @@ cmp.setup({
         end,
     },
     completion = {
-        completeopt = 'menu,menuone,noinsert',
+        completeopt = vim.o.completeopt,
     },
     window = {
         -- completion = cmp.config.window.bordered(),
@@ -248,5 +254,8 @@ require('telescope').setup({
         },
     }
 })
-pcall(require('telescope').load_extension, 'fzf')
+local ok, _ = pcall(require('telescope').load_extension, 'fzf')
+if not ok then
+    notify('Telescope: não foi possível carregar fzf.')
+end
 

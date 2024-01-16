@@ -110,6 +110,7 @@ local plugins = {
 			'https://github.com/nvim-lua/plenary.nvim.git',
 		},
 	},
+    { 'nvim-telescope/telescope-fzf-native.nvim', build = 'make' },
 	-- Treesitter,
 	'https://github.com/nvim-treesitter/nvim-treesitter.git',
 	{
