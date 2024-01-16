@@ -88,30 +88,34 @@ Latex.compile = function()
 			error('Não foi possível renomear o arquivo. Verifique e tente novamente.')
 		end
 	end
-	local comando = { -- para sistemas que não são linux, verificar a opção '-aux-directory'
-		'pdflatex',
-		'-file-line-error',
-		'-interaction=nonstopmode',
-		'-aux-directory=' .. Latex.AUX_FOLDER,
-		'-output-directory=' .. Latex.OUTPUT_FOLDER,
-		arquivo
-	}
+    arquivo = vim.fn.expand('%')
+    local comando = { -- windows
+        'tectonic.exe',
+        '-X',
+        'compile',
+        '-o',
+        Latex.OUTPUT_FOLDER,
+        '-k',
+        '-Z',
+        'search-path=' .. vim.env.TEXINPUTS:match('^..(.+).$'),
+        arquivo
+    }
 	notify('1º compilação!')
-	vim.fn.system(comando)
-	notify('2º compilação!')
-	vim.fn.system(comando)
+	vim.print(vim.fn.system(comando))
 	notify('Pdf compilado!')
+    arquivo = vim.fn.fnamemodify(arquivo, ':t')
 	arquivo =  arquivo:match('(.*)%..*$') or arquivo
-	local pdf = Latex.OUTPUT_FOLDER .. '/' .. arquivo .. '.pdf'
-	if vim.loop.fs_stat(pdf) then
+    local pdf = vim.fs.find(arquivo .. '.pdf', {path = Latex.OUTPUT_FOLDER, type = 'file'})
+    if vim.tbl_isempty(pdf) then
+		notify('Latex: Não foi encontrado arquivo .pdf!')
+    else
+        pdf = pdf[1]
 		notify(string.format('Abrindo arquivo %s', vim.fn.fnamemodify(pdf, ':t')))
 		vim.fn.jobstart({
 			Latex.PDF_READER,
 			pdf
 		})
-	else
-		notify('Latex: Não foi encontrado arquivo .pdf!')
-	end
+    end
 	Latex.clear(arquivo)
 end
 Latex.init()

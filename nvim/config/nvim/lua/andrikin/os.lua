@@ -624,35 +624,13 @@ local PROGRAMAS = {
 			end
 		end
 	},{
-		nome = 'latex',
-		link = 'https://github.com/rstudio/tinytex-releases/releases/download/v2023.12/TinyTeX-v2023.12.zip',
-		cmd = 'pdflatex.exe',
-		config = function()
-			if vim.fn.executable('tlmgr') == 0 then
-				notify('latex: "tlmgr" não encontrado. Verificar distribuição Latex instalada.')
-				do return end
-			end
-			local instalar = {
-				'babel-portuges',
-				'datetime2'
-			}
-			local instalados = vim.fn.systemlist({
-				'kpsewhich',
-				'brazil.ldf',
-				'datetime2.sty'
-			})
-			if vim.tbl_isempty(instalados) then
-				for _, pacote in ipairs(instalar) do
-					vim.fn.system({
-						'tlmgr.bat',
-						'install',
-						pacote
-					})
-				end
-			else
-				notify('Pacotes latex já instalados.')
-			end
-		end
+		nome = 'latex-tectonic',
+		link = 'https://github.com/tectonic-typesetting/tectonic/releases/download/tectonic%400.14.1/tectonic-0.14.1-x86_64-pc-windows-msvc.zip',
+		cmd = 'tectonic.exe',
+	},{
+		nome = 'latexlsp',
+		link = 'https://github.com/latex-lsp/texlab/releases/download/v5.12.1/texlab-x86_64-windows.zip',
+		cmd = 'texlab.exe'
 	},{
 		nome = 'deno',
 		link = 'https://github.com/denoland/deno/releases/download/v1.27.0/deno-x86_64-pc-windows-msvc.zip',

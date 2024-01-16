@@ -155,6 +155,11 @@ lsp.vimls.setup({
     capabilities = capabilities
 })
 
+-- LaTeX LSP
+lsp.texlab.setup({
+    capabilities = capabilities
+})
+
 -- Rust LSP
 -- lsp.rust_analyzer.setup({})
 
