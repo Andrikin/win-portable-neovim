@@ -254,6 +254,8 @@ require('telescope').setup({
 })
 local ok, _ = pcall(require('telescope').load_extension, 'fzf')
 if not ok then
-    notify('Telescope: não foi possível carregar fzf.')
+    notify('Telescope: não foi possível carregar a extenção fzf.')
+else
+    notify('Telescope: extenção fzf carregada com sucesso')
 end
 
