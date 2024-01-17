@@ -47,19 +47,27 @@ end
 
 local npcall = vim.F.npcall
 
+---@param msg string
 local notify = function(msg)
+	vim.cmd.redrawstatus()
 	vim.notify(msg)
-	vim.cmd.redraw({bang = true})
 end
 
 local win7 = string.match(vim.loop.os_uname()['version'], 'Windows 7')
 
+---@class Diretorio
+---@field _sep string Separador de pastas no caminho do diretório
+---@field nome string Caminho completo do diretório
 local Diretorio = {}
 
 Diretorio.__index = Diretorio
 
 Diretorio._sep = '\\'
 
+Diretorio.nome = ''
+
+---@param diretorio string | table
+---@return Diretorio
 Diretorio.new = function(self, diretorio)
 	vim.validate({diretorio = {diretorio, {'table', 'string'}}})
 	if type(diretorio) == 'table' then
@@ -82,16 +90,25 @@ Diretorio.new = function(self, diretorio)
 	return obj
 end
 
+---@private
+---@param str string
+---@return string
 Diretorio._sanitize = function(str)
+    local sanitarizado = ''
 	vim.validate({ str = {str, 'string'} })
-	return string.gsub(str, '/', '\\')
+	sanitarizado = string.gsub(str, '/', '\\')
+    return sanitarizado
 end
 
+---@private
+---@param str string
+---@return string
 Diretorio._suffix = function(str)
 	vim.validate({ str = {str, 'string'} })
 	return (str:match('^[/\\]') or str == '') and str or Diretorio._sep .. str
 end
 
+---@param diretorio string | table
 Diretorio.add = function(self, diretorio)
 	if type(diretorio) == 'table' then
 		local concatenar = ''
@@ -103,13 +120,17 @@ Diretorio.add = function(self, diretorio)
 	self.nome = self.nome .. self._suffix(diretorio)
 end
 
+---@param other Diretorio
+---@return string
 Diretorio.__div = function(self, other)
 	if getmetatable(self) ~= Diretorio or getmetatable(other) ~= Diretorio then
 		error('Diretorio: __div: Elementos precisam ser do tipo "string".')
 	end
-	return self._sanitize(self.nome .. Diretorio._suffix(other.dir))
+	return self._sanitize(self.nome .. self._suffix(other.nome))
 end
 
+---@param str string
+---@return string
 Diretorio.__concat = function(self, str)
 	if getmetatable(self) ~= Diretorio then
 		error('Diretorio: __concat: Objeto não é do tipo Diretorio.')
@@ -117,13 +138,16 @@ Diretorio.__concat = function(self, str)
 	if type(str) ~= 'string' then
 		error('Diretorio: __concat: Argumento precisa ser do tipo "string".')
 	end
-	return self._sanitize(self.nome .. Diretorio._suffix(str))
+	return self._sanitize(self.nome .. self._suffix(str))
 end
 
+---@return string
 Diretorio.__tostring = function(self)
 	return self.nome
 end
 
+---@class Curl
+---@field UNZIP string Url para download de unzip.exe
 local Curl = {}
 
 Curl.__index = Curl
@@ -131,6 +155,7 @@ Curl.__index = Curl
 Curl.UNZIP = 'http://linorg.usp.br/CTAN/systems/win32/w32tex/unzip.exe'
 
 -- FATO: Windows 10 build 17063 or later is bundled with tar.exe which is capable of working with ZIP files 
+---@private
 Curl.bootstrap = function()
 	-- Realizar o download da ferramenta unzip
 	if win7 and vim.fn.executable('tar') == 0 then
@@ -148,6 +173,7 @@ Curl.bootstrap = function()
 	end
 end
 
+---@private
 Curl.instalado = function()
 	return vim.fn.executable('curl') == 1
 end
@@ -222,10 +248,17 @@ else
 end
 
 -- Instalação da fonte SauceCodePro no computador
+---@class Fonte
+---@field DIRETORIO Diretorio Onde a fonte será instalada
+---@field LINK string Url para download da fonte
+---@field ARQUIVO string Nome do arquivo
+---@field REGISTRO string Caminho aonde será instalado a fonte no regedit do sistema
+---@field FONTES table Lista de fontes encontradas no sistema
 local Fonte = {}
 
 Fonte.__index = Fonte
 
+---@type Diretorio
 Fonte.DIRETORIO = Diretorio:new({
 	vim.env.NVIM_OPT,
 	'fonte'
@@ -263,11 +296,12 @@ Fonte.setup = function()
 	end
 end
 
-
+---@return boolean
 Fonte.fonte_extraida = function()
 	return #(vim.fn.glob(Fonte.DIRETORIO .. 'SauceCodePro*.ttf', false, true)) > 0
 end
 
+---@return table
 Fonte.zip_encontrado = function()
 	return vim.loop.fs_stat(Fonte.ARQUIVO)
 end
@@ -301,6 +335,7 @@ Fonte.extrair = function()
 	end
 end
 
+---@return boolean
 Fonte.query_regedit = function()
 	-- Verificando se a fonte SauceCodePro está intalada no computador
 	local lista = vim.tbl_filter(
@@ -374,10 +409,13 @@ Fonte.instalar = function()
 	end
 end
 
+---@class Opt
+---@field DIRETORIO Diretorio Onde as dependências ficaram instaladas
 local Opt = {}
 
 Opt.__index = Opt
 
+---@type Diretorio
 Opt.DIRETORIO = Diretorio:new(vim.env.NVIM_OPT)
 
 Opt.bootstrap = function()
@@ -390,34 +428,34 @@ Opt.bootstrap = function()
 	end
 end
 
+---@param cfg table
 Opt.config = function(cfg)
 	Opt.DEPENDENCIAS = cfg
 end
 
 ---@param programa table
+---@return boolean
+---Verifica se o programa já está no PATH
 Opt.registrar = function(programa)
-	-- verificar se programa já está no PATH
-	local busca = Opt.DIRETORIO .. programa.nome
-	local limite = vim.tbl_islist(programa.cmd) and #programa.cmd or 1
-	local diretorios = vim.fs.find(programa.cmd, {path = busca, type = 'file', limit = limite})
-	local registrado = vim.env.PATH:match(busca:gsub('[\\-]', '.'))
-	if not registrado and #diretorios == 0 then
-		notify(string.format('Opt: registrar_path: Baixar programa %s e registrar no sistema.', programa.nome))
-		return false
-	end
+	local diretorio = Opt.DIRETORIO .. programa.nome
+	local registrado = vim.env.PATH:match(diretorio:gsub('[\\-]', '.'))
 	if registrado then
 		notify(string.format('Opt: registrar_path: Programa %s já registrado no sistema!', programa.nome))
 		return true
 	end
-	-- adicionar ao PATH
-	if #diretorios == 0 then
-		notify(string.format('Opt: registrar_path: Executável de programa não encontrado %s', programa.nome))
+	local limite = vim.tbl_islist(programa.cmd) and #programa.cmd or 1
+	local executaveis = vim.fs.find(programa.cmd, {path = diretorio, type = 'file', limit = limite})
+    local sem_executavel = vim.tbl_isempty(executaveis)
+	if not registrado and sem_executavel then
+		notify(string.format('Opt: registrar_path: Baixar programa %s e registrar no sistema.', programa.nome))
 		return false
 	end
-	for _, dir in ipairs(diretorios) do
-		vim.env.PATH = vim.env.PATH .. ';' .. vim.fn.fnamemodify(dir, ':h')
+	-- simplesmente adicionar ao PATH
+	for _, exe in ipairs(executaveis) do
+		vim.env.PATH = vim.env.PATH .. ';' .. vim.fn.fnamemodify(exe, ':h')
 	end
-	if vim.env.PATH:match(busca:gsub('[\\-]', '.')) then
+	registrado = vim.env.PATH:match(diretorio:gsub('[\\-]', '.'))
+	if registrado then
 		notify(string.format('Opt: registrar_path: Programa %s registrado no PATH do sistema.', programa.nome))
 		if programa.config then -- caso tenha configuração, executá-la
 			notify(string.format('Opt: registrar_path: Configurando programa %s.', programa.nome))
@@ -435,12 +473,14 @@ Opt.init = function()
 		local diretorio = Opt.DIRETORIO .. programa.nome
 		local registrado = Opt.registrar(programa)
 		if not registrado then
-			if not vim.loop.fs_stat(Opt.DIRETORIO .. arquivo) then
+			local baixado = vim.fn.getftype(Opt.DIRETORIO .. arquivo) ~= ''
+			local extraido = #vim.fn.glob(Diretorio:new(diretorio) .. '*', false, true) ~= 0
+			if not baixado then
 				Curl.download(programa.link, Opt.DIRETORIO.nome)
 			else
 				notify(string.format('Opt: init: Arquivo %s já existe.', arquivo))
 			end
-			if #vim.fn.glob(Diretorio:new(diretorio) .. '*', false, true) == 0 then
+			if not extraido and baixado then
 				-- criar diretório para extrair arquivo
 				if vim.fn.isdirectory(diretorio) == 0 then
 					vim.fn.mkdir(diretorio, 'p', 0700)
@@ -450,6 +490,10 @@ Opt.init = function()
 				notify(string.format('Opt: init: Arquivo %s já extraído.', arquivo))
 			end
 			Opt.registrar(programa)
+			-- Remover arquivo baixado (não é mais necessário) 
+			if baixado then
+				vim.fn.delete(Opt.DIRETORIO .. arquivo)
+			end
 		end
 	end
 end
@@ -629,15 +673,15 @@ local PROGRAMAS = {
 		link = 'https://github.com/tectonic-typesetting/tectonic/releases/download/tectonic%400.14.1/tectonic-0.14.1-x86_64-pc-windows-msvc.zip',
 		cmd = 'tectonic.exe',
 	},{
-		nome = 'latexlsp',
+		nome = 'latex-lsp',
 		link = 'https://github.com/latex-lsp/texlab/releases/download/v5.12.1/texlab-x86_64-windows.zip',
 		cmd = 'texlab.exe'
 	},{
-		nome = 'deno',
+		nome = 'javascript-lsp',
 		link = 'https://github.com/denoland/deno/releases/download/v1.27.0/deno-x86_64-pc-windows-msvc.zip',
 		cmd = 'deno.exe'
 	},{
-		nome = 'lua',
+		nome = 'lua-lsp',
 		link = 'https://github.com/LuaLS/lua-language-server/releases/download/3.7.3/lua-language-server-3.7.3-win32-x64.zip',
 		cmd = 'lua-language-server.exe'
 	},{
@@ -645,7 +689,7 @@ local PROGRAMAS = {
 		link = 'https://download.java.net/java/GA/jdk21.0.1/415e3f918a1f4062a0074a2794853d0d/12/GPL/openjdk-21.0.1_windows-x64_bin.zip', -- openjdk
 		cmd = 'java.exe'
 	},{
-		nome = 'jdtls',
+		nome = 'java-lsp',
 		link = 'https://www.eclipse.org/downloads/download.php?file=/jdtls/snapshots/jdt-language-server-latest.tar.gz',
 		cmd = 'jdtls'
 	},{
