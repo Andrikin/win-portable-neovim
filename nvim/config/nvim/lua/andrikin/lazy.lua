@@ -82,13 +82,9 @@ local plugins = {
 	{
 		'https://github.com/mfussenegger/nvim-jdtls.git',
 		lazy = true,
-		-- config = function()
-		-- end,
 	},
 	-- Traces.vim,
 	'https://github.com/markonm/traces.vim.git',
-	-- Nvim-ts-context-commentstring,
-	-- 'https://github.com/JoosepAlviste/nvim-ts-context-commentstring.git',
 	-- Undotree,
 	'https://github.com/mbbill/undotree.git',
 	-- Nim-cmp,
