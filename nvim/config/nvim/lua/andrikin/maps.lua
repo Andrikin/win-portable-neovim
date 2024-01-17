@@ -112,38 +112,67 @@ vim.keymap.set(
 )
 
 -- --- Quickfix window ---
--- TODO: Reescrever estas funções
+local toggle_list = function(modo, comando, on_error)
+    local on = false
+    local windows = vim.fn.getwininfo()
+    for _, win in ipairs(windows) do
+        on = win[modo] == 1
+        if on then
+            if vim.fn.tabpagenr() ~= win.tabnr then
+                vim.fn.win_gotoid(win.winid)
+            end
+            vim.cmd.windo({args = {'normal', 'ZQ'}, range = {win.winnr}})
+            do return end
+        end
+    end
+    if not on then
+        if modo == 'terminal' then
+            vim.cmd.split({range = {15}})
+        end
+        local ok, resultado = pcall(vim.cmd[comando])
+        if not ok and on_error then
+            on_error(resultado)
+        end
+    end
+end
 -- Toggle quickfix window
--- nnoremap <silent> <expr> <leader>c <SID>toggle_list('c')
--- nnoremap <silent> <expr> <leader>l <SID>toggle_list('l')
+vim.keymap.set('n', '<leader>c',
+    function()
+        toggle_list('quickfix', 'copen')
+    end
+)
+vim.keymap.set('n', '<leader>l',
+    function()
+        toggle_list('loclist', 'lopen',
+            function(resposta)
+                if resposta and resposta:match('E776') then
+                    vim.notify('loclist: Sem itens para listar.')
+                end
+            end
+        )
+    end
+)
 -- nnoremap <silent> <expr> <leader>q <SID>quit_list()
+-- vim.keymap.set('n', '<leader>q',
+--     function()
+--         toggle_list('quickfix', 'quit')
+--     end
+-- )
 
+-- --- Terminal ---
+
+vim.keymap.set('t', '<esc>', '<C-\\><C-n>')
 -- Terminal Toggle
-vim.keymap.set(
-	'n',
-	'<leader>t',
+vim.keymap.set('n', '<leader>t',
 	function()
-		local on = false
-		local term_win = 0
-		for _, win in ipairs(vim.fn.gettabinfo(vim.fn.tabpagenr())[1].windows) do
-			if vim.fn.getwininfo(win)[1].terminal == 1 then
-				on = true
-				term_win = vim.fn.win_id2win(win)
-				break
-			end
-		end
-		if on then
-			vim.cmd.windo({args = {'normal', 'ZQ'}, range = {term_win}})
-		else
-			vim.cmd.split({range = {15}})
-			local ok, resultado = pcall(vim.cmd.terminal)
-			if not ok then
-				if resultado and vim.fn.has('win32') and resultado:match('E903') then
+        toggle_list('terminal', 'terminal',
+            function(resposta)
+				if resposta and vim.fn.has('win32') and resposta:match('E903') then
 					vim.notify('Não foi possível abrir o terminal. Esta feature não está disponível para a sua versão de Windows, somente para Windows 10+.')
 					vim.cmd.normal('ZQ')
 				end
-			end
-		end
+            end
+        )
 	end
 )
 
