@@ -242,7 +242,7 @@ Curl.extrair = function(arquivo, diretorio)
 end
 
 if not Curl.instalado() then
-	error('Não foi encontrado curl no sistema. Verificar e realizar a instalação do curl neste computador!\nLink para download: https://curl.se/windows/latest.cgi?p=win64-mingw.zip')
+	error('Curl: instalado: Não foi encontrado curl no sistema. Verificar e realizar a instalação do curl neste computador!\nLink para download: https://curl.se/windows/latest.cgi?p=win64-mingw.zip')
 else
 	Curl.bootstrap()
 end
@@ -285,14 +285,14 @@ end
 
 Fonte.setup = function()
 	Fonte.bootstrap()
-	if Fonte.query_regedit() then
+	if not Fonte.instalada() then
+        if Curl.instalado() then
+            Fonte.instalar()
+        else
+            notify('Não foi possível instalar a fonte SauceCodePro neste computador. Instale curl para continuar.')
+        end
+    else
 		notify('Fonte SauceCodePro já instalada.')
-		do return end
-	end
-	if Curl.instalado() then
-		Fonte.instalar()
-	else
-		notify('Não foi possível instalar a fonte SauceCodePro neste computador. Instale curl para continuar.')
 	end
 end
 
@@ -301,43 +301,35 @@ Fonte.fonte_extraida = function()
 	return #(vim.fn.glob(Fonte.DIRETORIO .. 'SauceCodePro*.ttf', false, true)) > 0
 end
 
----@return table
-Fonte.zip_encontrado = function()
-	return vim.loop.fs_stat(Fonte.ARQUIVO)
-end
-
 Fonte.download = function()
-	-- Realiza download em AppData/Local/Microsoft/Windows/Fonts
 	if vim.fn.isdirectory(tostring(Fonte.DIRETORIO)) == 0 then
 		vim.fn.mkdir(tostring(Fonte.DIRETORIO), 'p', 0700)
 	end
 	-- Realizar download da fonte
 	Curl.download(Fonte.LINK, Fonte.DIRETORIO.nome)
-	if not Fonte.zip_encontrado() then
-		error('Não foi possível realizar o download do arquivo da fonte.')
+	if not Fonte.baixada() then
+		error('Fonte: download: Não foi possível realizar o download do arquivo da fonte.')
 	end
-	notify('Arquivo fonte SauceCodePro baixado!')
+	notify('Arquivo fonte .zip baixado!')
 end
 
+---Decompressar arquivo zip
 Fonte.extrair = function()
-	-- Decompressar arquivo zip
-	-- Appdata/Local
-	if not Fonte.zip_encontrado() then
-		notify('Arquivo SauceCodePro.zip não encontrado! Realizar o download do arquivo para continuar a intalação.')
-		do return end
+	if not Fonte.baixada() then
+		error('Fonte: extrair: Arquivo .zip não encontrado! Realizar o download do arquivo de fonte para continuar a intalação.')
 	end
 	Curl.extrair(Fonte.ARQUIVO, Fonte.DIRETORIO.nome)
 	if Fonte.fonte_extraida() then
 		notify('Arquivo fonte SauceCodePro.zip extraído!')
 		Fonte.FONTES = vim.fn.glob(Fonte.DIRETORIO .. 'SauceCodePro*.ttf', false, true)
 	else
-		error('Não foi possível extrair os arquivo de fonte SauceCodePro.')
+		error('Fonte: extrair: Não foi possível extrair os arquivo de fonte.')
 	end
 end
 
+---Verificando se a fonte está intalada no computador
 ---@return boolean
-Fonte.query_regedit = function()
-	-- Verificando se a fonte SauceCodePro está intalada no computador
+Fonte.instalada = function()
 	local lista = vim.tbl_filter(
 		function(elemento)
 			return elemento:match('SauceCodePro')
@@ -351,8 +343,8 @@ Fonte.query_regedit = function()
 	return #lista > 0
 end
 
+---Registra as fontes no regedit do sistema Windows.
 Fonte.regedit = function()
-	-- Registra as fontes no RegEdit do sistema.
 	for _, fonte in ipairs(Fonte.FONTES) do
 		local arquivo = vim.fn.fnamemodify(fonte, ':t')
 		local diretorio = Fonte.DIRETORIO .. arquivo
@@ -371,6 +363,12 @@ Fonte.regedit = function()
 	end
 end
 
+---@return boolean
+Fonte.baixada = function()
+    return vim.fn.getftype(Fonte.ARQUIVO) ~= ''
+end
+
+---Desinstala a fonte do regedit do sistema Windows.
 Fonte.remover_regedit = function()
 	for _, fonte in ipairs(Fonte.FONTES) do
 		local nome = vim.fn.fnamemodify(fonte, ':t')
@@ -388,24 +386,24 @@ Fonte.remover_regedit = function()
 	end
 end
 
+---Instalar a Fonte no sistema Windows.
 Fonte.instalar = function()
-	if Fonte.fonte_extraida() then
-		notify('Encontrado fonte SauceCodePro extraída neste computador!')
-	else
-		Fonte.download()
+	if not Fonte.fonte_extraida() then
+        if not Fonte.baixada() then
+            Fonte.download()
+        end
 		Fonte.extrair()
 	end
-	if Fonte.query_regedit() then
-		notify('Fonte SauceCodePro já registrada no sistema regedit deste computador!')
-		do return end
-	else
+	if not Fonte.instalada() then
 		Fonte.regedit()
-		if Fonte.query_regedit() then
-			notify('Fonte SauceCodePro instalada com sucesso. Reinicie o nvim para carregar a fonte.')
+		if Fonte.instalada() then
+			notify('Fonte instalada com sucesso. Reinicie o nvim para carregar a fonte.')
 			vim.cmd.quit({bang = true})
 		else
 			notify('Erro encontrado. Verificar se é possível executar comandos no regedit.')
 		end
+	else
+		notify('Fonte SauceCodePro já instalada no sistema!')
 	end
 end
 
