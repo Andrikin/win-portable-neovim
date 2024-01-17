@@ -78,7 +78,13 @@ local plugins = {
 		lazy = true,
 	},
 	-- Nvim Lspconfig,
-	'https://github.com/neovim/nvim-lspconfig.git',
+	{
+        'https://github.com/neovim/nvim-lspconfig.git',
+        dependencies = {
+            'https://github.com/folke/neodev.nvim.git', -- signature help, docs and completion for nvim lua API
+        }
+    },
+    -- Java LSP
 	{
 		'https://github.com/mfussenegger/nvim-jdtls.git',
 		lazy = true,
@@ -104,9 +110,15 @@ local plugins = {
 		'https://github.com/nvim-telescope/telescope.nvim.git',
 		dependencies = {
 			'https://github.com/nvim-lua/plenary.nvim.git',
+            {
+                'nvim-telescope/telescope-fzf-native.nvim',
+                build = 'make',
+                cond = function()
+                    return vim.fn.executable('make') == 1
+                end,
+            },
 		},
 	},
-    { 'nvim-telescope/telescope-fzf-native.nvim', build = 'make' },
 	-- Treesitter,
 	'https://github.com/nvim-treesitter/nvim-treesitter.git',
 	{
