@@ -34,10 +34,10 @@
 -- IMPORTANT(Windows 10+): Desabilitar python.exe e python3.exe em "Gerenciar aliases de execução de aplicativo".
 -- Windows executa este alias antes de executar python declarado em PATH.
 -- ALTERNATIVE FIX: Remover WindowsApps do PATH
-if vim.env.PATH:match('WindowsApps') then
+if vim.env.PATH:match('WindowsApps') or vim.env.PATH:match('Oracle') then
 	local PATH = ''
 	for path in vim.env.PATH:gmatch('([^;]+)') do
-		if not path:match('WindowsApps') then
+		if not path:match('WindowsApps') and not path:match('Oracle') then
 			PATH = PATH ..  ';' .. path
 		end
 	end
@@ -477,6 +477,7 @@ Opt.init = function()
 			local extraido = #vim.fn.glob(Diretorio:new(diretorio) .. '*', false, true) ~= 0
 			if not baixado then
 				Curl.download(programa.link, Opt.DIRETORIO.nome)
+                baixado = true
 			else
 				notify(string.format('Opt: init: Arquivo %s já existe.', arquivo))
 			end
@@ -669,7 +670,7 @@ local PROGRAMAS = {
 			end
 		end
 	},{
-		nome = 'latex-tectonic',
+		nome = 'tectonic',
 		link = 'https://github.com/tectonic-typesetting/tectonic/releases/download/tectonic%400.14.1/tectonic-0.14.1-x86_64-pc-windows-msvc.zip',
 		cmd = 'tectonic.exe',
 	},{
@@ -677,7 +678,7 @@ local PROGRAMAS = {
 		link = 'https://github.com/latex-lsp/texlab/releases/download/v5.12.1/texlab-x86_64-windows.zip',
 		cmd = 'texlab.exe'
 	},{
-		nome = 'javascript-lsp',
+		nome = 'deno-javascript-lsp',
 		link = 'https://github.com/denoland/deno/releases/download/v1.27.0/deno-x86_64-pc-windows-msvc.zip',
 		cmd = 'deno.exe'
 	},{
@@ -689,7 +690,7 @@ local PROGRAMAS = {
 		link = 'https://download.java.net/java/GA/jdk21.0.1/415e3f918a1f4062a0074a2794853d0d/12/GPL/openjdk-21.0.1_windows-x64_bin.zip', -- openjdk
 		cmd = 'java.exe'
 	},{
-		nome = 'java-lsp',
+		nome = 'jdtls-java-lsp',
 		link = 'https://www.eclipse.org/downloads/download.php?file=/jdtls/snapshots/jdt-language-server-latest.tar.gz',
 		cmd = 'jdtls'
 	},{
