@@ -322,6 +322,8 @@ Fonte.extrair = function()
 	if Fonte.fonte_extraida() then
 		notify('Arquivo fonte SauceCodePro.zip extraído!')
 		Fonte.FONTES = vim.fn.glob(Fonte.DIRETORIO .. 'SauceCodePro*.ttf', false, true)
+        -- remover arquivo .zip
+        vim.fn.delete(Fonte.ARQUIVO)
 	else
 		error('Fonte: extrair: Não foi possível extrair os arquivo de fonte.')
 	end
