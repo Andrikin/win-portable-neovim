@@ -90,14 +90,13 @@ local plugins = {
 	-- Nim-cmp,
 	{
 		'https://github.com/hrsh7th/nvim-cmp.git',
-		event = 'InsertEnter',
 		dependencies = {
 			'https://github.com/hrsh7th/cmp-nvim-lsp.git',
-			'https://github.com/hrsh7th/cmp-buffer.git',
 			'https://github.com/hrsh7th/cmp-path.git',
-			'https://github.com/hrsh7th/cmp-cmdline.git',
-			'https://github.com/L3MON4D3/LuaSnip.git',
             'https://github.com/saadparwaiz1/cmp_luasnip.git',
+			'https://github.com/L3MON4D3/LuaSnip.git',
+			-- 'https://github.com/hrsh7th/cmp-buffer.git',
+			-- 'https://github.com/hrsh7th/cmp-cmdline.git',
 		},
 	},
 	-- Telescope,
