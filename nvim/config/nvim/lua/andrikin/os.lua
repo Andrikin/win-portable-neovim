@@ -29,7 +29,7 @@
 -- rust: TODO
 
 -- WIP: Utilizar multithreads para realizar os downloads
--- TODO: Refatorar código? limpar arquivo fonte, melhorar notify (function)
+-- TODO: Refatorar código? Melhorar notify (function), como utilizar nvim-cmp?
 
 -- IMPORTANT(Windows 10+): Desabilitar python.exe e python3.exe em "Gerenciar aliases de execução de aplicativo".
 -- Windows executa este alias antes de executar python declarado em PATH.
