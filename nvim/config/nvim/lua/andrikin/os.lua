@@ -674,7 +674,7 @@ local PROGRAMAS = {
 		link = 'https://github.com/tectonic-typesetting/tectonic/releases/download/tectonic%400.14.1/tectonic-0.14.1-x86_64-pc-windows-msvc.zip',
 		cmd = 'tectonic.exe',
 	},{
-		nome = 'latex-lsp',
+		nome = 'texlab-latex-lsp',
 		link = 'https://github.com/latex-lsp/texlab/releases/download/v5.12.1/texlab-x86_64-windows.zip',
 		cmd = 'texlab.exe'
 	},{
