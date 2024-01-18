@@ -54,12 +54,12 @@ cmp.setup({
         -- { name = 'ultisnips' }, -- For ultisnips users.
         -- { name = 'snippy' }, -- For snippy users.
         }, {
-            { name = 'buffer' },
+            { name = 'path' },
     })
 })
 -- Set up lspconfig.
-local capabilities = require('cmp_nvim_lsp').default_capabilities()
--- capabilities.textDocument.completion.completionItem.snippetSupport = true -- habilitar completion para snippets
+local capabilities = vim.lsp.protocol.make_client_capabilities()
+capabilities = require('cmp_nvim_lsp').default_capabilities(capabilities)
 
 -- LSP SERVERS 
 local lsp = require('lspconfig')
@@ -152,7 +152,11 @@ lsp.texlab.setup({
 -- Rust LSP
 -- lsp.rust_analyzer.setup({})
 
+-- colorizer.lua
 require('colorizer').setup(nil, { css = true })
+
+-- Neodev
+require('neodev').setup()
 
 vim.defer_fn(
     function()
