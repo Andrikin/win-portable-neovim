@@ -7,7 +7,7 @@ end
 
 local cmp = require('cmp')
 local luasnip = require("luasnip")
-require('luasnip.loaders.from_vscode').lazy_load()
+require('luasnip.loaders.from_vscode').lazy_load() -- carregar snippets (templates)
 luasnip.config.setup({})
 cmp.setup({
     snippet = {
@@ -20,6 +20,7 @@ cmp.setup({
         end,
     },
     completion = {
+        autocomplete = true,
         completeopt = vim.o.completeopt,
     },
     window = {
@@ -48,9 +49,9 @@ cmp.setup({
         end, { "i", "s" }),
     }),
     sources = cmp.config.sources({
-        { name = 'nvim_lsp' },
+        { name = 'nvim_lsp', keyword_length = 1 },
         -- { name = 'vsnip' }, -- For vsnip users.
-        { name = 'luasnip' }, -- For luasnip users.
+        { name = 'luasnip', option = { show_autosnippets = true } }, -- For luasnip users.
         -- { name = 'ultisnips' }, -- For ultisnips users.
         -- { name = 'snippy' }, -- For snippy users.
         }, {
@@ -58,8 +59,9 @@ cmp.setup({
     })
 })
 -- Set up lspconfig.
-local capabilities = vim.lsp.protocol.make_client_capabilities()
-capabilities = require('cmp_nvim_lsp').default_capabilities(capabilities)
+-- local capabilities = vim.lsp.protocol.make_client_capabilities()
+-- capabilities = require('cmp_nvim_lsp').default_capabilities(capabilities)
+local capabilities = require('cmp_nvim_lsp').default_capabilities()
 
 -- LSP SERVERS 
 local lsp = require('lspconfig')
@@ -79,15 +81,16 @@ lsp.jsonls.setup({ -- npm i -g vscode-langservers-extracted
 lsp.cssls.setup({ -- npm i -g vscode-langservers-extracted
     capabilities = capabilities
 })
-lsp.eslint.setup({ -- npm i -g vscode-langservers-extracted
-    capabilities = capabilities,
-    on_attach = function(client, bufnr)
-        vim.api.nvim_create_autocmd("BufWritePre", {
-            buffer = bufnr,
-            command = "EslintFixAll",
-        })
-    end,
-})
+-- Utilizar denols
+-- lsp.eslint.setup({ -- npm i -g vscode-langservers-extracted
+--     capabilities = capabilities,
+--     on_attach = function(_, bufnr)
+--         vim.api.nvim_create_autocmd("BufWritePre", {
+--             buffer = bufnr,
+--             command = "EslintFixAll",
+--         })
+--     end,
+-- })
 
 -- Python LSP
 lsp.pyright.setup({ -- pip install pyright | npm -g install pyright
@@ -100,16 +103,16 @@ lsp.denols.setup({
 })
 
 -- Lua LSP
-lsp.lua_ls.setup {
+lsp.lua_ls.setup({
     capabilities = capabilities,
     on_init = function(client)
         local path = client.workspace_folders[1].name
-        if not vim.loop.fs_stat(path..'/.luarc.json') and not vim.loop.fs_stat(path..'/.luarc.jsonc') then
+        if not vim.loop.fs_stat(path .. '/.luarc.json') and not vim.loop.fs_stat(path .. '/.luarc.jsonc') then
             client.config.settings = vim.tbl_deep_extend('force', client.config.settings, {
                 Lua = {
-                    completion = {
-                        callSnippet = 'Replace',
-                    },
+                    -- completion = {
+                    --     callSnippet = 'Replace',
+                    -- },
                     runtime = {
                         -- Tell the language server which version of Lua you're using
                         -- (most likely LuaJIT in the case of Neovim)
@@ -132,7 +135,7 @@ lsp.lua_ls.setup {
         end
         return true
     end
-}
+})
 
 -- Java LSP
 lsp.jdtls.setup({
