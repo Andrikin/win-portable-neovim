@@ -35,6 +35,7 @@ local plugins = {
 	-- Dracula theme,
 	{
 		'https://github.com/Mofiqul/dracula.nvim.git',
+        priority = 1000,
 		config = function()
 			vim.cmd.colorscheme(TEMA)
 		end
