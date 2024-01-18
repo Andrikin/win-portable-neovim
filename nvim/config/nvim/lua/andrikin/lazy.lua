@@ -17,8 +17,8 @@ local plugins = {
 	-- Fork Tim Pope vim-capslock
 	'https://github.com/Andrikin/vim-capslock',
 	-- Tim Pope's miracles
+    'https://github.com/tpope/vim-fugitive.git',
 	'https://github.com/tpope/vim-commentary.git',
-	'https://github.com/tpope/vim-fugitive.git',
 	'https://github.com/tpope/vim-surround.git',
 	{
 		'https://github.com/tpope/vim-dadbod.git',
@@ -108,6 +108,7 @@ local plugins = {
 	-- Telescope,
 	{
 		'https://github.com/nvim-telescope/telescope.nvim.git',
+        lazy = true,
 		dependencies = {
 			'https://github.com/nvim-lua/plenary.nvim.git',
             {
