@@ -499,6 +499,7 @@ Opt.init = function()
 	end
 end
 
+---@param cfg table
 Opt.setup = function(cfg)
 	Opt.config(cfg)
 	Opt.init()
