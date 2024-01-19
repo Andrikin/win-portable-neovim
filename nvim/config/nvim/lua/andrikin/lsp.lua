@@ -13,7 +13,7 @@ require('neodev').setup()
 
 vim.defer_fn( -- kickstart.nvim
     function()
-        require('nvim-treesitter.install').compilers = {'clang', 'gcc'}
+        require('nvim-treesitter.install').compilers = {'gcc', 'cc', 'clang'}
         require('nvim-treesitter.configs').setup({
             highlight = {
                 enable = true,
