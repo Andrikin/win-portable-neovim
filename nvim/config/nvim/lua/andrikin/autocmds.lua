@@ -162,7 +162,12 @@ autocmd( -- Remover fonte do regedit (Windows)
 		group = AndrikinGroup,
 		pattern = '*',
 		callback = function()
-            if vim.env.HOME:sub(1, 1) ~= 'C' then
+            local flashdrive = vim.env.HOME:sub(1, 1) ~= 'C'
+            local remover = vim.fn.confirm(
+                'Remover fonte do regedit?',
+                '&Sim\n&Não'
+            ) == 1
+            if flashdrive and remover then
                 vim.cmd.FonteRemover()
             end
 		end,
