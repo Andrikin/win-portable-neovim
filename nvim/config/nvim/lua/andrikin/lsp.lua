@@ -271,7 +271,11 @@ lsp.lua_ls.setup({
                         }
                         -- or pull in all of 'runtimepath'. NOTE: this is a lot slower
                         -- library = vim.api.nvim_get_runtime_file("", true)
-                    }
+                    },
+                    diagnostics = {
+                        -- Get the language server to recognize the `vim` global
+                        globals = {'vim'},
+                    },
                 }
             })
             client.notify("workspace/didChangeConfiguration", { settings = client.config.settings })
