@@ -33,7 +33,7 @@ vim.defer_fn( -- kickstart.nvim
                 'vim', 'vimdoc',
                 'latex',
             },
-            sync_isntall = false,
+            sync_install = false,
             context_commentstring = {
                 enable = true,
             },
