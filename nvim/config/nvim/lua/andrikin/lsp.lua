@@ -21,7 +21,6 @@ cmp.setup({
     },
     completion = {
         autocomplete = true,
-        completeopt = vim.o.completeopt,
     },
     window = {
         -- completion = cmp.config.window.bordered(),
@@ -49,7 +48,7 @@ cmp.setup({
         end, { "i", "s" }),
     }),
     sources = cmp.config.sources({
-        { name = 'nvim_lsp', keyword_length = 1 },
+        { name = 'nvim_lsp' },
         -- { name = 'vsnip' }, -- For vsnip users.
         { name = 'luasnip', option = { show_autosnippets = true } }, -- For luasnip users.
         -- { name = 'ultisnips' }, -- For ultisnips users.
