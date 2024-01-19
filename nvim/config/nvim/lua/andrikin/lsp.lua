@@ -2,7 +2,7 @@
 
 local notify = function(msg)
 	vim.notify(msg)
-	vim.cmd.redraw({bang = true})
+	vim.cmd.redrawstatus()
 end
 
 -- colorizer.lua

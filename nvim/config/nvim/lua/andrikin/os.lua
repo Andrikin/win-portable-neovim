@@ -29,7 +29,7 @@
 -- rust: TODO
 
 -- WIP: Utilizar multithreads para realizar os downloads
--- TODO: Refatorar código? Melhorar notify (function), como utilizar nvim-cmp?
+-- TODO: Refatorar código? Melhorar notify (function), refatorar notify para arquivo utils, melhorar comando para fechar loclist ou quickfix
 
 -- IMPORTANT(Windows 10+): Desabilitar python.exe e python3.exe em "Gerenciar aliases de execução de aplicativo".
 -- Windows executa este alias antes de executar python declarado em PATH.
@@ -49,8 +49,8 @@ local npcall = vim.F.npcall
 
 ---@param msg string
 local notify = function(msg)
-	vim.cmd.redrawstatus()
 	vim.notify(msg)
+	vim.cmd.redrawstatus()
 end
 
 local win7 = string.match(vim.loop.os_uname()['version'], 'Windows 7')
