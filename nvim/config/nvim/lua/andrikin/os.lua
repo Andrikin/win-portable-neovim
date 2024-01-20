@@ -29,7 +29,7 @@
 -- rust: TODO
 
 -- WIP: Utilizar multithreads para realizar os downloads
--- TODO: Refatorar código? Melhorar notify (function), refatorar notify para arquivo utils, melhorar comando para fechar loclist ou quickfix
+-- TODO: Refatorar código? Melhorar notify (function)
 
 -- IMPORTANT(Windows 10+): Desabilitar python.exe e python3.exe em "Gerenciar aliases de execução de aplicativo".
 -- Windows executa este alias antes de executar python declarado em PATH.
