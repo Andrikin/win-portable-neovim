@@ -70,7 +70,7 @@ require('telescope').setup({
             theme = telescope_tema,
             mappings = {
                 n = {
-                    ["dd"] = telescope_actions.delete_buffer,
+                    ['dd'] = telescope_actions.delete_buffer,
                 },
             },
         },
@@ -93,12 +93,12 @@ require('telescope').setup({
         },
         mappings = {
             i = {
-                ["<NL>"] = telescope_actions.select_default + telescope_actions.center,
-                -- ["<esc>"] = telescope_actions.close,
-                ["<c-u>"] = {"<c-u>", type = "command"},
+                ['<NL>'] = telescope_actions.select_default + telescope_actions.center,
+                -- ['<esc>'] = telescope_actions.close,
+                ['<c-u>'] = {'<c-u>', type = 'command'},
             },
             n = {
-                ["<NL>"] = telescope_actions.select_default + telescope_actions.center,
+                ['<NL>'] = telescope_actions.select_default + telescope_actions.center,
             },
         },
     }
@@ -111,7 +111,7 @@ else
 end
 
 local cmp = require('cmp')
-local luasnip = require("luasnip")
+local luasnip = require('luasnip')
 
 require('luasnip.loaders.from_vscode').lazy_load() -- carregar snippets (templates)
 luasnip.config.setup({})
@@ -119,17 +119,17 @@ luasnip.config.setup({})
 local has_words_before = function()
   unpack = unpack or table.unpack
   local line, col = unpack(vim.api.nvim_win_get_cursor(0))
-  return col ~= 0 and vim.api.nvim_buf_get_lines(0, line - 1, line, true)[1]:sub(col, col):match("%s") == nil
+  return col ~= 0 and vim.api.nvim_buf_get_lines(0, line - 1, line, true)[1]:sub(col, col):match('%s') == nil
 end
 
 cmp.setup({
     snippet = {
         -- REQUIRED - you must specify a snippet engine
         expand = function(args)
-            -- vim.fn["vsnip#anonymous"](args.body) -- For `vsnip` users.
+            -- vim.fn['vsnip#anonymous'](args.body) -- For `vsnip` users.
             require('luasnip').lsp_expand(args.body) -- For `luasnip` users.
             -- require('snippy').expand_snippet(args.body) -- For `snippy` users.
-            -- vim.fn["UltiSnips#Anon"](args.body) -- For `ultisnips` users.
+            -- vim.fn['UltiSnips#Anon'](args.body) -- For `ultisnips` users.
         end,
     },
     completion = {
@@ -152,7 +152,7 @@ cmp.setup({
             else
                 fallback()
             end
-        end, { "i", "s" }),
+        end, { 'i', 's' }),
 
         ['<c-p>'] = cmp.mapping(function(fallback)
             if cmp.visible() then
@@ -162,7 +162,7 @@ cmp.setup({
             else
                 fallback()
             end
-        end, { "i", "s" }),
+        end, { 'i', 's' }),
         -- ['<C-n>'] = cmp.mapping.select_next_item({behavior = cmp.SelectBehavior.Select}), -- backup
         -- ['<C-p>'] = cmp.mapping.select_prev_item({behavior = cmp.SelectBehavior.Select}), -- backup
         ['<C-b>'] = cmp.mapping.scroll_docs(-4),
@@ -173,7 +173,7 @@ cmp.setup({
     sources = cmp.config.sources({
         { name = 'nvim_lsp' },
         -- { name = 'vsnip' }, -- For vsnip users.
-        { name = 'luasnip', option = { show_autosnippets = true } }, -- For luasnip users.
+        { name = 'luasnip' }, -- For luasnip users.
         -- { name = 'ultisnips' }, -- For ultisnips users.
         -- { name = 'snippy' }, -- For snippy users.
         }, {
@@ -236,9 +236,9 @@ lsp.cssls.setup({ -- npm i -g vscode-langservers-extracted
 -- lsp.eslint.setup({ -- npm i -g vscode-langservers-extracted
 --     capabilities = capabilities,
 --     on_attach = function(_, bufnr)
---         vim.api.nvim_create_autocmd("BufWritePre", {
+--         vim.api.nvim_create_autocmd('BufWritePre', {
 --             buffer = bufnr,
---             command = "EslintFixAll",
+--             command = 'EslintFixAll',
 --         })
 --     end,
 -- })
@@ -266,11 +266,11 @@ lsp.lua_ls.setup({
                         checkThirdParty = false,
                         library = {
                             vim.env.VIMRUNTIME
-                            -- "${3rd}/luv/library"
-                            -- "${3rd}/busted/library",
+                            -- '${3rd}/luv/library'
+                            -- '${3rd}/busted/library',
                         }
                         -- or pull in all of 'runtimepath'. NOTE: this is a lot slower
-                        -- library = vim.api.nvim_get_runtime_file("", true)
+                        -- library = vim.api.nvim_get_runtime_file('', true)
                     },
                     diagnostics = {
                         -- Get the language server to recognize the `vim` global
@@ -278,7 +278,7 @@ lsp.lua_ls.setup({
                     },
                 }
             })
-            client.notify("workspace/didChangeConfiguration", { settings = client.config.settings })
+            client.notify('workspace/didChangeConfiguration', { settings = client.config.settings })
         end
         return true
     end
