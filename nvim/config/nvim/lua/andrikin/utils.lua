@@ -3,8 +3,8 @@ local Utils = {}
 
 ---@param msg string
 Utils.notify = function(msg)
+	vim.cmd.mode()
 	vim.notify(msg)
-	vim.cmd.redrawstatus()
 end
 
 Utils.npcall = vim.F.npcall
