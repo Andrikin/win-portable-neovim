@@ -113,11 +113,11 @@ vim.keymap.set(
 
 -- --- Quickfix window ---
 local toggle_list = function(modo, comando, on_error)
-    local on = false
+    local aberto = false
     local windows = vim.fn.getwininfo()
     for _, win in ipairs(windows) do
-        on = win[modo] == 1
-        if on then
+        aberto = win[modo] == 1
+        if aberto then
             if vim.fn.tabpagenr() ~= win.tabnr then
                 vim.fn.win_gotoid(win.winid)
             end
@@ -125,7 +125,7 @@ local toggle_list = function(modo, comando, on_error)
             do return end
         end
     end
-    if not on then
+    if not aberto then
         if modo == 'terminal' then
             vim.cmd.split({range = {15}})
         end
@@ -136,7 +136,7 @@ local toggle_list = function(modo, comando, on_error)
     end
 end
 -- Toggle quickfix window
-vim.keymap.set('n', '<leader>c',
+vim.keymap.set('n', '<leader>q',
     function()
         toggle_list('quickfix', 'copen')
     end
@@ -145,19 +145,13 @@ vim.keymap.set('n', '<leader>l',
     function()
         toggle_list('loclist', 'lopen',
             function(resposta)
-                if resposta and resposta:match('E776') then
+                if resposta and resposta:match('E776:') then
                     vim.notify('loclist: Sem itens para listar.')
                 end
             end
         )
     end
 )
--- nnoremap <silent> <expr> <leader>q <SID>quit_list()
--- vim.keymap.set('n', '<leader>q',
---     function()
---         toggle_list('quickfix', 'quit')
---     end
--- )
 
 -- --- Terminal ---
 
@@ -167,7 +161,7 @@ vim.keymap.set('n', '<leader>t',
 	function()
         toggle_list('terminal', 'terminal',
             function(resposta)
-				if resposta and vim.fn.has('win32') and resposta:match('E903') then
+				if resposta and vim.fn.has('win32') and resposta:match('E903:') then
 					vim.notify('Não foi possível abrir o terminal. Esta feature não está disponível para a sua versão de Windows, somente para Windows 10+.')
 					vim.cmd.normal('ZQ')
 				end
