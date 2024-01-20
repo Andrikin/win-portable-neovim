@@ -1,9 +1,6 @@
 -- Configuração de LSP servers
 
-local notify = function(msg)
-	vim.notify(msg)
-	vim.cmd.redrawstatus()
-end
+local notify = require('andrikin.utils').notify
 
 -- colorizer.lua
 require('colorizer').setup(nil, { css = true })

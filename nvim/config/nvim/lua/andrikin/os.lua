@@ -45,13 +45,8 @@ if vim.env.PATH:match('WindowsApps') or vim.env.PATH:match('Oracle') then
 	vim.env.PATH = PATH
 end
 
-local npcall = vim.F.npcall
-
----@param msg string
-local notify = function(msg)
-	vim.notify(msg)
-	vim.cmd.redrawstatus()
-end
+local npcall = require('andrikin.utils').npcall
+local notify = require('andrikin.utils').notify
 
 local win7 = string.match(vim.loop.os_uname()['version'], 'Windows 7')
 
