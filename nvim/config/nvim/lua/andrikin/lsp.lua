@@ -262,16 +262,16 @@ lsp.lua_ls.setup({
                     --     version = 'LuaJIT'
                     -- },
                     -- Make the server aware of Neovim runtime files
-                    workspace = {
-                        checkThirdParty = false,
-                        library = {
-                            vim.env.VIMRUNTIME
-                            -- '${3rd}/luv/library'
-                            -- '${3rd}/busted/library',
-                        }
-                        -- or pull in all of 'runtimepath'. NOTE: this is a lot slower
-                        -- library = vim.api.nvim_get_runtime_file('', true)
-                    },
+                    -- workspace = {
+                    --     checkThirdParty = false,
+                    --     library = {
+                    --         vim.env.VIMRUNTIME
+                    --         -- '${3rd}/luv/library'
+                    --         -- '${3rd}/busted/library',
+                    --     }
+                    --     -- or pull in all of 'runtimepath'. NOTE: this is a lot slower
+                    --     -- library = vim.api.nvim_get_runtime_file('', true)
+                    -- },
                     diagnostics = {
                         -- Get the language server to recognize the `vim` global
                         globals = {'vim'},
