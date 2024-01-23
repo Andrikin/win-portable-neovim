@@ -1,5 +1,3 @@
--- CUSTOM MAPS
--- INFO: Função: vim.keymap.set()
 
 if not vim.g.nvy or not vim.g.neovide then
 	-- Fix ^\ (nvim-qt/windows 7)
@@ -89,8 +87,12 @@ vim.keymap.set({'n', 'v'}, 'gy', '"+y')
 vim.keymap.set('n', 'gY', '"+Y')
 
 -- Bracket maps
+-- For buffers
 vim.keymap.set('n', ']b', vim.cmd.bnext, {desc = 'Next buffer'})
 vim.keymap.set('n', '[b', vim.cmd.bprevious, {desc = 'Previous buffer'})
+-- For arglist
+vim.keymap.set('n', ']a', vim.cmd.next, {desc = 'Next arglist file'})
+vim.keymap.set('n', '[a', vim.cmd.Next, {desc = 'Previous arglist file'})
 
 -- --- Mapleader Commands ---
 
