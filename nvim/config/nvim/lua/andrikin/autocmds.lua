@@ -1,13 +1,12 @@
 -- Autocmds goosebumps
-local augroup = vim.api.nvim_create_augroup
 local autocmd = vim.api.nvim_create_autocmd
-local AndrikinGroup = augroup('Andrikin', {})
+local Andrikin = vim.api.nvim_create_augroup('Andrikin', {})
 
 -- Highlight linha quando entrar em InsertMode
 autocmd(
 	'InsertEnter',
 	{
-		group = AndrikinGroup,
+		group = Andrikin,
 		pattern = '*',
 		callback = function() vim.opt_local.cursorline = true end,
 	}
@@ -15,7 +14,7 @@ autocmd(
 autocmd(
 	'InsertLeave',
 	{
-		group = AndrikinGroup,
+		group = Andrikin,
 		pattern = '*',
 		callback = function() vim.opt_local.cursorline = false end,
 	}
@@ -25,7 +24,7 @@ autocmd(
 autocmd(
 	'FileType',
 	{
-		group = AndrikinGroup,
+		group = Andrikin,
 		pattern = {'*.html', '*.css'},
 		callback = vim.cmd.EmmetInstall,
 	}
@@ -35,7 +34,7 @@ autocmd(
 autocmd(
 	'FileType',
 	{
-		group = AndrikinGroup,
+		group = Andrikin,
 		pattern = 'help',
 		callback = function(args)
 			vim.keymap.set(
@@ -55,7 +54,7 @@ autocmd(
 autocmd(
 	'FileType',
 	{
-		group = AndrikinGroup,
+		group = Andrikin,
 		pattern = 'undotree',
 		callback = function(args)
 			vim.keymap.set(
@@ -75,7 +74,7 @@ autocmd(
 autocmd(
 	'FileType',
 	{
-		group = AndrikinGroup,
+		group = Andrikin,
 		pattern = {'qf', 'checkhealth'},
 		callback = function(args)
 			vim.keymap.set(
@@ -95,7 +94,7 @@ autocmd(
 autocmd(
 	'TextYankPost',
 	{
-		group = AndrikinGroup,
+		group = Andrikin,
 		pattern = '*',
 		callback = function()
 			vim.highlight.on_yank(
@@ -112,7 +111,7 @@ autocmd(
 autocmd(
 	'CmdlineEnter',
 	{
-		group = AndrikinGroup,
+		group = Andrikin,
 		pattern = '*',
 		callback = function()
 			require('cmp').setup(
@@ -128,7 +127,7 @@ autocmd(
 autocmd(
 	'FileType',
 	{
-		group = AndrikinGroup,
+		group = Andrikin,
 		pattern = 'fugitive',
 		callback = function()
 			vim.cmd.resize(15)
@@ -141,7 +140,7 @@ autocmd(
 autocmd(
 	'LspAttach',
 	{
-		group = AndrikinGroup,
+		group = Andrikin,
 		callback = function(ev)
 			local opts = {buffer = ev.buf}
 			vim.keymap.set('n', 'gd', vim.lsp.buf.definition, opts)
@@ -158,8 +157,7 @@ autocmd(
 autocmd( -- Remover fonte do regedit (Windows)
 	'VimLeave',
 	{
-		group = AndrikinGroup,
-		pattern = '*',
+		group = Andrikin,
 		callback = function()
             local flashdrive = vim.env.HOME:sub(1, 1):lower() ~= 'c'
             local remover = false
