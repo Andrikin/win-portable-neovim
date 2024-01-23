@@ -12,6 +12,9 @@ vim.defer_fn( -- kickstart.nvim
     function()
         require('nvim-treesitter.install').compilers = {'gcc', 'cc', 'clang'}
         require('nvim-treesitter.configs').setup({
+            modules = {},
+            ignore_install = {},
+            auto_install = true,
             highlight = {
                 enable = true,
                 additional_vim_regex_highlighting = true,
@@ -175,18 +178,18 @@ cmp.setup({
         -- { name = 'snippy' }, -- For snippy users.
         }, {
             { name = 'path' },
-            {
-                name = 'buffer',
-                option = {
-                    get_bufnrs = function()
-                        local bufs = {}
-                        for _, win in ipairs(vim.api.nvim_list_wins()) do
-                            bufs[vim.api.nvim_win_get_buf(win)] = true
-                        end
-                        return vim.tbl_keys(bufs)
-                    end
-                }
-            },
+            -- {
+            --     name = 'buffer',
+            --     option = {
+            --         get_bufnrs = function()
+            --             local bufs = {}
+            --             for _, win in ipairs(vim.api.nvim_list_wins()) do
+            --                 bufs[vim.api.nvim_win_get_buf(win)] = true
+            --             end
+            --             return vim.tbl_keys(bufs)
+            --         end
+            --     }
+            -- },
     })
 })
 
