@@ -455,8 +455,6 @@ Opt.registrar = function(programa)
 		if programa.config then -- caso tenha configuração, executá-la
 			notify(string.format('Opt: registrar_path: Configurando programa %s.', programa.nome))
 			programa.config()
-		else
-			notify(string.format('Opt: registrar_path: Não foi encontrado configuração para o programa %s.', programa.nome))
 		end
 	end
 	return true
