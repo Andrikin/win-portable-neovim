@@ -1,4 +1,3 @@
--- TODO: autocmds para quickfix e localfix
 -- Autocmds goosebumps
 local augroup = vim.api.nvim_create_augroup
 local autocmd = vim.api.nvim_create_autocmd
@@ -162,12 +161,13 @@ autocmd( -- Remover fonte do regedit (Windows)
 		group = AndrikinGroup,
 		pattern = '*',
 		callback = function()
-            local flashdrive = vim.env.HOME:sub(1, 1) ~= 'C'
+            local flashdrive = vim.env.HOME:sub(1, 1):lower() ~= 'c'
             local remover = false
             if flashdrive then
                 remover = vim.fn.confirm(
                     'Remover fonte do regedit?',
-                    '&Sim\n&Não'
+                    '&Sim\n&Não',
+                    2
                 ) == 1
             end
             if flashdrive and remover then
