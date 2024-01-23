@@ -34,7 +34,7 @@ vim.opt.encoding = 'utf-8'
 vim.opt.autoread = true
 vim.opt.tabpagemax = 50
 vim.opt.wildmenu = true
-vim.opt.completeopt = 'menu,menuone,noinsert'
+vim.opt.completeopt = 'menu,menuone,noselect'
 if vim.fn.has('win32') then
 	vim.g.shell = vim.env.COMSPEC
 else
