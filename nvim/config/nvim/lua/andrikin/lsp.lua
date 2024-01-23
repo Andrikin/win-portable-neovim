@@ -12,15 +12,11 @@ vim.defer_fn( -- kickstart.nvim
     function()
         require('nvim-treesitter.install').compilers = {'gcc', 'cc', 'clang'}
         require('nvim-treesitter.configs').setup({
-            modules = {},
-            ignore_install = {},
-            auto_install = true,
-            highlight = {
-                enable = true,
-                additional_vim_regex_highlighting = true,
-            },
-            indent = { enable = true },
-            ensure_installed = { -- linguagens para web development
+            modules = {}, -- padrao
+            ignore_install = {}, -- padrao
+            auto_install = false, -- padrao
+            sync_install = false, -- padrao
+            ensure_installed = { -- parsers para highlight - treesitter
                 'css', 'html', 'javascript', 'vue',
                 'diff',
                 'git_config', 'git_rebase', 'gitattributes', 'gitcommit', 'gitignore',
@@ -32,11 +28,13 @@ vim.defer_fn( -- kickstart.nvim
                 'python',
                 'vim', 'vimdoc',
                 'latex',
+                'comment',
             },
-            sync_install = false,
-            context_commentstring = {
+            highlight = {
                 enable = true,
+                additional_vim_regex_highlighting = true,
             },
+            indent = { enable = true },
         })
     end,
     0
@@ -116,12 +114,6 @@ local luasnip = require('luasnip')
 require('luasnip.loaders.from_vscode').lazy_load() -- carregar snippets (templates)
 luasnip.config.setup({})
 
-local has_words_before = function()
-  unpack = unpack or table.unpack
-  local line, col = unpack(vim.api.nvim_win_get_cursor(0))
-  return col ~= 0 and vim.api.nvim_buf_get_lines(0, line - 1, line, true)[1]:sub(col, col):match('%s') == nil
-end
-
 cmp.setup({
     snippet = {
         -- REQUIRED - you must specify a snippet engine
@@ -147,13 +139,12 @@ cmp.setup({
                 -- that way you will only jump inside the snippet region
             elseif luasnip.expand_or_jumpable() then
                 luasnip.expand_or_jump()
-            elseif has_words_before() then
-                cmp.complete()
+            elseif cmp.complete() then
+                do return end
             else
                 fallback()
             end
         end, { 'i', 's' }),
-
         ['<c-p>'] = cmp.mapping(function(fallback)
             if cmp.visible() then
                 cmp.select_prev_item({behavior = cmp.SelectBehavior.Select})
