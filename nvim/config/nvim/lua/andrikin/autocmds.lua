@@ -169,8 +169,10 @@ autocmd( -- Remover fonte do regedit (Windows)
                     '&Sim\n&Não',
                     2
                 ) == 1
+            else
+                do return end
             end
-            if flashdrive and remover then
+            if remover then
                 vim.cmd.FonteRemover()
             end
 		end,
