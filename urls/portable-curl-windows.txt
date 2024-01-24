@@ -1,1 +1,0 @@
-https://curl.se/windows/dl-8.1.2_3/curl-8.1.2_3-win64-mingw.zip
