@@ -155,7 +155,8 @@ autocmd(
 	}
 )
 
-autocmd( -- Remover fonte do regedit (Windows)
+-- Remover fonte do regedit (Windows)
+autocmd(
 	'VimLeave',
 	{
 		group = Andrikin,
@@ -178,27 +179,3 @@ autocmd( -- Remover fonte do regedit (Windows)
 	}
 )
 
--- nvim-cmp automatic autocomplete
--- autocmd(
---     {"TextChangedI", "TextChangedP"},
---     {
---         pattern = "*",
---         callback = function()
---             local line = vim.api.nvim_get_current_line()
---             local cursor = vim.api.nvim_win_get_cursor(0)[2]
-
---             local current = line:sub(cursor, cursor + 1)
---             if current == "." or current == "," or current == " " then
---                 cmp.close()
---             end
-
---             local before_line = line:sub(1, cursor + 1)
---             local after_line = line:sub(cursor + 1, -1)
---             if not before_line:match('^%s+$') then
---                 if after_line == "" or before_line:match(" $") or before_line:match("%.$") then
---                     cmp.complete()
---                 end
---             end
---         end,
---     }
--- )
