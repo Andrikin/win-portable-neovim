@@ -199,11 +199,12 @@ vim.keymap.set( -- telescope way to open buffers
 -- The Primeagen Harpoon2
 local harpoon2 = require('harpoon')
 vim.keymap.set("n", "gha", function() harpoon2:list():append() end)
-vim.keymap.set("n", "ght", function() harpoon2.ui:toggle_quick_menu(harpoon2:list()) end)
-vim.keymap.set("n", "gh1", function() harpoon2:list():select(1) end)
-vim.keymap.set("n", "gh2", function() harpoon2:list():select(2) end)
-vim.keymap.set("n", "gh3", function() harpoon2:list():select(3) end)
-vim.keymap.set("n", "gh4", function() harpoon2:list():select(4) end)
+vim.keymap.set("n", "ghm", function() harpoon2.ui:toggle_quick_menu(harpoon2:list()) end)
+-- LOL mapping style
+vim.keymap.set("n", "ghq", function() harpoon2:list():select(1) end)
+vim.keymap.set("n", "ghw", function() harpoon2:list():select(2) end)
+vim.keymap.set("n", "ghe", function() harpoon2:list():select(3) end)
+vim.keymap.set("n", "ghr", function() harpoon2:list():select(4) end)
 -- Toggle previous & next buffers stored within Harpoon list
 vim.keymap.set("n", "ghp", function() harpoon2:list():prev() end)
 vim.keymap.set("n", "ghn", function() harpoon2:list():next() end)
