@@ -126,6 +126,7 @@ cmp.setup({
     },
     completion = {
         completeopt = vim.o.completeopt,
+        autocomplete = false,
     },
     window = {
         -- completion = cmp.config.window.bordered(),
@@ -156,32 +157,37 @@ cmp.setup({
         end, { 'i', 's' }),
         -- ['<C-n>'] = cmp.mapping.select_next_item({behavior = cmp.SelectBehavior.Select}), -- backup
         -- ['<C-p>'] = cmp.mapping.select_prev_item({behavior = cmp.SelectBehavior.Select}), -- backup
-        ['<C-b>'] = cmp.mapping.scroll_docs(-4),
-        ['<C-f>'] = cmp.mapping.scroll_docs(4),
+        ['<C-u>'] = cmp.mapping.scroll_docs(-4), -- sobe janela doc visível
+        ['<C-d>'] = cmp.mapping.scroll_docs(4), -- desce janela doc visível
         ['<C-Space>'] = cmp.mapping.complete(),
         ['<CR>'] = cmp.mapping.confirm({ select = false }), -- Accept currently selected item. Set `select` to `false` to only confirm explicitly selected items.
     }),
     sources = cmp.config.sources({
         { name = 'nvim_lsp' },
-        -- { name = 'vsnip' }, -- For vsnip users.
         { name = 'luasnip' }, -- For luasnip users.
+        {
+            name = 'buffer',
+            option = {
+                get_bufnrs = function()
+                    local buf = vim.api.nvim_get_current_buf() -- ganho de performace
+                    local byte_size = vim.api.nvim_buf_get_offset(buf, vim.api.nvim_buf_line_count(buf))
+                    if byte_size > 1024 * 1024 then -- 1 Megabyte max
+                        return {}
+                    end
+                    local bufs = {} -- somente buffers visíveis
+                    for _, win in ipairs(vim.api.nvim_list_wins()) do
+                        bufs[vim.api.nvim_win_get_buf(win)] = true
+                    end
+                    return vim.tbl_keys(bufs)
+                end
+            }
+        },
+        { name = 'path' },
+        -- { name = 'vsnip' }, -- For vsnip users.
         -- { name = 'ultisnips' }, -- For ultisnips users.
         -- { name = 'snippy' }, -- For snippy users.
-        }, {
-            -- { name = 'buffer' },
-            { name = 'path' },
-            -- {
-            --     name = 'buffer',
-            --     option = {
-            --         get_bufnrs = function()
-            --             local bufs = {}
-            --             for _, win in ipairs(vim.api.nvim_list_wins()) do
-            --                 bufs[vim.api.nvim_win_get_buf(win)] = true
-            --             end
-            --             return vim.tbl_keys(bufs)
-            --         end
-            --     }
-            -- },
+        -- }, {
+            -- { name = 'path' },
     })
 })
 
