@@ -1,7 +1,8 @@
+local notify = require('andrikin.utils').notify
 
 if not vim.g.nvy or not vim.g.neovide then
 	-- Fix ^\ (nvim-qt/windows 7)
-	vim.notify('Mapeamento do comando <c-]>: Jump to the definition of the keyword under the cursor.')
+	notify('Mapeamento do comando <c-]>: Jump to the definition of the keyword under the cursor.')
 	vim.keymap.set('n', '<c-\\>', '<c-]>')
 end
 
@@ -148,7 +149,7 @@ vim.keymap.set('n', '<leader>l',
         toggle_list('loclist', 'lopen',
             function(resposta)
                 if resposta and resposta:match('E776:') then
-                    vim.notify('loclist: Sem itens para listar.')
+                    notify('loclist: Sem itens para listar.')
                 end
             end
         )
@@ -164,7 +165,7 @@ vim.keymap.set('n', '<leader>t',
         toggle_list('terminal', 'terminal',
             function(resposta)
 				if resposta and vim.fn.has('win32') and resposta:match('E903:') then
-					vim.notify('Não foi possível abrir o terminal. Esta feature não está disponível para a sua versão de Windows, somente para Windows 10+.')
+					notify('Não foi possível abrir o terminal. Esta feature não está disponível para a sua versão de Windows, somente para Windows 10+.')
 					vim.cmd.normal('ZQ')
 				end
             end
