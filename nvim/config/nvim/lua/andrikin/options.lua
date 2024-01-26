@@ -50,7 +50,7 @@ if vim.fn.has('persistent_undo') then
 	if vim.fn.isdirectory(path) == 0 then
 		vim.fn.mkdir(path, 'p', 0700)
 	end
-	vim.g.undodir = path
+	vim.opt.undodir = path
 	vim.opt.undofile = true
 end
 vim.opt.swapfile = false
