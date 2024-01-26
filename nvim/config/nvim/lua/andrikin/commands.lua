@@ -100,7 +100,7 @@ Latex.compile = function()
         'search-path=' .. vim.env.TEXINPUTS:match('^..(.+).$'),
         arquivo
     }
-	notify('1º compilação!')
+	notify('Compilando arquivo!')
 	vim.print(vim.fn.system(comando))
     if vim.v.shell_error > 0 then
         notify('Erro encontrado ao compilar arquivo. Verifique com o comando "g<".')
