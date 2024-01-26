@@ -102,6 +102,10 @@ Latex.compile = function()
     }
 	notify('1º compilação!')
 	vim.print(vim.fn.system(comando))
+    if vim.v.shell_error > 0 then
+        notify('Erro encontrado ao compilar arquivo. Verifique com o comando "g<".')
+        do return end
+    end
 	notify('Pdf compilado!')
     arquivo = vim.fn.fnamemodify(arquivo, ':t')
 	arquivo =  arquivo:match('(.*)%..*$') or arquivo
