@@ -98,6 +98,7 @@ require('telescope').setup({
             },
             n = {
                 ['<NL>'] = telescope_actions.select_default + telescope_actions.center,
+                ['gq'] = telescope_actions.close,
             },
         },
     }
