@@ -167,28 +167,28 @@ cmp.setup({
     sources = cmp.config.sources({
         { name = 'nvim_lsp' },
         { name = 'luasnip' }, -- For luasnip users.
-        {
-            name = 'buffer',
-            option = {
-                get_bufnrs = function()
-                    local buf = vim.api.nvim_get_current_buf() -- ganho de performace
-                    local byte_size = vim.api.nvim_buf_get_offset(buf, vim.api.nvim_buf_line_count(buf))
-                    if byte_size > 1024 * 1024 then -- 1 Megabyte max
-                        return {}
-                    end
-                    local bufs = {} -- somente buffers visíveis
-                    for _, win in ipairs(vim.api.nvim_list_wins()) do
-                        bufs[vim.api.nvim_win_get_buf(win)] = true
-                    end
-                    return vim.tbl_keys(bufs)
-                end
-            }
-        },
         { name = 'path' },
         -- { name = 'vsnip' }, -- For vsnip users.
         -- { name = 'ultisnips' }, -- For ultisnips users.
         -- { name = 'snippy' }, -- For snippy users.
-        -- }, {
+        }, {
+            {
+                name = 'buffer',
+                option = {
+                    get_bufnrs = function()
+                        local buf = vim.api.nvim_get_current_buf() -- ganho de performace
+                        local byte_size = vim.api.nvim_buf_get_offset(buf, vim.api.nvim_buf_line_count(buf))
+                        if byte_size > 1024 * 1024 then -- 1 Megabyte max
+                            return {}
+                        end
+                        local bufs = {} -- somente buffers visíveis
+                        for _, win in ipairs(vim.api.nvim_list_wins()) do
+                            bufs[vim.api.nvim_win_get_buf(win)] = true
+                        end
+                        return vim.tbl_keys(bufs)
+                    end
+                }
+            },
             -- { name = 'path' },
     })
 })
