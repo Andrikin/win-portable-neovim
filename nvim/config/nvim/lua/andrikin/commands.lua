@@ -23,8 +23,9 @@ local Latex = {}
 Latex.OUTPUT_FOLDER = vim.fs.find('Downloads', {path = vim.loop.os_homedir(), type = 'directory'})[1] -- windows 
 Latex.AUX_FOLDER = vim.env.TEMP -- windows
 Latex.PDF_READER = vim.fn.fnamemodify(vim.fn.glob(vim.env.HOME .. '/nvim/opt/sumatra/sumatra*exe'), ':t')
-Latex.ft = function()
-	return vim.o.ft ~= 'tex'
+Latex.not_tex_file = function()
+    local extencao = vim.fn.expand('%'):match('%.(.*)$')
+    return extencao and extencao ~= 'tex'
 end
 Latex.clear = function(arquivo)
 	-- deletar arquivos auxiliares da compilação, no linux
@@ -58,7 +59,7 @@ Latex.compile = function()
 	if vim.fn.has('linux') == 1 then
 		error('Sistema OS Linux!')
 	end
-	if Latex.ft() then
+	if Latex.not_tex_file() then
 		vim.notify('Comando executável somente para arquivos .tex!')
 		do return end
 	end
@@ -238,7 +239,7 @@ vim.api.nvim_create_user_command(
 )
 
 vim.api.nvim_create_user_command(
-	'Sysinit',
+	'SysinitEdit',
 	function()
 		vim.cmd.edit('$VIM/sysinit.vim')
 	end,
