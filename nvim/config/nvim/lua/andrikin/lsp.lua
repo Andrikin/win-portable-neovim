@@ -126,6 +126,21 @@ cmp.setup({
             -- vim.fn['UltiSnips#Anon'](args.body) -- For `ultisnips` users.
         end,
     },
+    formatting = {
+        expandable_indicator = true,
+        fields = { 'abbr', 'kind', 'menu' },
+        format = function(entry, vim_item)
+            -- Source
+            vim_item.menu = ({
+                buffer = "[Buffer]",
+                nvim_lsp = "[LSP]",
+                luasnip = "[LuaSnip]",
+                nvim_lua = "[Lua]",
+                latex_symbols = "[LaTeX]",
+            })[entry.source.name]
+            return vim_item
+        end
+    },
     completion = {
         completeopt = vim.o.completeopt,
         autocomplete = false,
@@ -137,7 +152,7 @@ cmp.setup({
     mapping = cmp.mapping.preset.insert({
         ['<c-n>'] = cmp.mapping(function(fallback)
             if cmp.visible() then
-                cmp.select_next_item({behavior = cmp.SelectBehavior.Select})
+                cmp.select_next_item({behavior = cmp.SelectBehavior.Insert})
                 -- You could replace the expand_or_jumpable() calls with expand_or_locally_jumpable() 
                 -- that way you will only jump inside the snippet region
             elseif luasnip.expand_or_jumpable() then
@@ -150,7 +165,7 @@ cmp.setup({
         end, { 'i', 's' }),
         ['<c-p>'] = cmp.mapping(function(fallback)
             if cmp.visible() then
-                cmp.select_prev_item({behavior = cmp.SelectBehavior.Select})
+                cmp.select_prev_item({behavior = cmp.SelectBehavior.Insert})
             elseif luasnip.jumpable(-1) then
                 luasnip.jump(-1)
             else
@@ -167,28 +182,28 @@ cmp.setup({
     sources = cmp.config.sources({
         { name = 'nvim_lsp' },
         { name = 'luasnip' }, -- For luasnip users.
+        {
+            name = 'buffer',
+            option = {
+                get_bufnrs = function()
+                    local buf = vim.api.nvim_get_current_buf() -- ganho de performace
+                    local byte_size = vim.api.nvim_buf_get_offset(buf, vim.api.nvim_buf_line_count(buf))
+                    if byte_size > 1024 * 1024 then -- 1 Megabyte max
+                        return {}
+                    end
+                    local bufs = {} -- somente buffers visíveis
+                    for _, win in ipairs(vim.api.nvim_list_wins()) do
+                        bufs[vim.api.nvim_win_get_buf(win)] = true
+                    end
+                    return vim.tbl_keys(bufs)
+                end
+            }
+        },
         { name = 'path' },
         -- { name = 'vsnip' }, -- For vsnip users.
         -- { name = 'ultisnips' }, -- For ultisnips users.
         -- { name = 'snippy' }, -- For snippy users.
         }, {
-            {
-                name = 'buffer',
-                option = {
-                    get_bufnrs = function()
-                        local buf = vim.api.nvim_get_current_buf() -- ganho de performace
-                        local byte_size = vim.api.nvim_buf_get_offset(buf, vim.api.nvim_buf_line_count(buf))
-                        if byte_size > 1024 * 1024 then -- 1 Megabyte max
-                            return {}
-                        end
-                        local bufs = {} -- somente buffers visíveis
-                        for _, win in ipairs(vim.api.nvim_list_wins()) do
-                            bufs[vim.api.nvim_win_get_buf(win)] = true
-                        end
-                        return vim.tbl_keys(bufs)
-                    end
-                }
-            },
             -- { name = 'path' },
     })
 })
