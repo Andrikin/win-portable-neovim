@@ -1,13 +1,8 @@
 -- CUSTOM COMMANDS
--- TODO: Criar plugin; criar método para configuração
--- config: setar arquivos auxiliares para pasta temp, conforme sistema
--- config: setar diretório onde se encontra as configurações latex
--- config: setar qual programa irá abrir o pdf (chrome como padrão?)
+
 -- config: verificar a existência de TEXINPUTS antes de setá-lo
--- plugin: unificar objeto Latex com Ouvidoria
--- plugin: identificar em qual sistema o nvim está executando!!!
--- config: vim.loop.os_uname para obter informação do sistema
--- TODO: Utilizar objeto Diretorio, para gerenciamento de path's
+-- config: setar diretório onde se encontra as configurações latex TEXINPUTS
+-- tratamento de erros
 
 local Path = vim.F.npcall(require, 'plenary.path')
 if not Path then
