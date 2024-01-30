@@ -24,7 +24,7 @@ Latex.OUTPUT_FOLDER = vim.fs.find('Downloads', {path = vim.loop.os_homedir(), ty
 Latex.AUX_FOLDER = vim.env.TEMP -- windows
 Latex.PDF_READER = vim.fn.fnamemodify(vim.fn.glob(vim.env.HOME .. '/nvim/opt/sumatra/sumatra*exe'), ':t')
 Latex.not_tex_file = function()
-    local extencao = vim.fn.expand('%'):match('%.(.*)$')
+    local extencao = vim.fn.expand('%'):match('%.([a-zA-Z0-9]*)$')
     return extencao and extencao ~= 'tex'
 end
 Latex.clear = function(arquivo)
