@@ -152,28 +152,24 @@ cmp.setup({
     mapping = cmp.mapping.preset.insert({
         ['<c-n>'] = cmp.mapping(function(fallback)
             if cmp.visible() then
-                cmp.select_next_item({behavior = cmp.SelectBehavior.Insert})
+                cmp.select_next_item({behavior = cmp.SelectBehavior.Select})
                 -- You could replace the expand_or_jumpable() calls with expand_or_locally_jumpable() 
                 -- that way you will only jump inside the snippet region
             elseif luasnip.expand_or_jumpable() then
                 luasnip.expand_or_jump()
-            elseif cmp.complete() then
-                do return end
             else
-                fallback()
+                return cmp.complete() or fallback()
             end
         end, { 'i', 's' }),
         ['<c-p>'] = cmp.mapping(function(fallback)
             if cmp.visible() then
-                cmp.select_prev_item({behavior = cmp.SelectBehavior.Insert})
+                cmp.select_prev_item({behavior = cmp.SelectBehavior.Select})
             elseif luasnip.jumpable(-1) then
                 luasnip.jump(-1)
             else
-                fallback()
+                return cmp.complete() or fallback()
             end
         end, { 'i', 's' }),
-        -- ['<C-n>'] = cmp.mapping.select_next_item({behavior = cmp.SelectBehavior.Select}), -- backup
-        -- ['<C-p>'] = cmp.mapping.select_prev_item({behavior = cmp.SelectBehavior.Select}), -- backup
         ['<C-u>'] = cmp.mapping.scroll_docs(-4), -- sobe janela doc visível
         ['<C-d>'] = cmp.mapping.scroll_docs(4), -- desce janela doc visível
         ['<C-Space>'] = cmp.mapping.complete(),
@@ -181,7 +177,6 @@ cmp.setup({
     }),
     sources = cmp.config.sources({
         { name = 'nvim_lsp' },
-        { name = 'luasnip' }, -- For luasnip users.
         {
             name = 'buffer',
             option = {
@@ -199,12 +194,12 @@ cmp.setup({
                 end
             }
         },
-        { name = 'path' },
+        { name = 'luasnip' }, -- For luasnip users.
         -- { name = 'vsnip' }, -- For vsnip users.
         -- { name = 'ultisnips' }, -- For ultisnips users.
         -- { name = 'snippy' }, -- For snippy users.
         }, {
-            -- { name = 'path' },
+            { name = 'path' },
     })
 })
 
