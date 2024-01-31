@@ -204,108 +204,85 @@ cmp.setup({
 })
 
 -- Set up lspconfig.
-local capabilities = vim.lsp.protocol.make_client_capabilities()
-capabilities = require('cmp_nvim_lsp').default_capabilities(capabilities)
+local capabilities = require('cmp_nvim_lsp').default_capabilities(vim.lsp.protocol.make_client_capabilities())
 
--- LSP SERVERS 
+-- LSP CONFIGURATION
 local lsp = require('lspconfig')
 
--- Emmet LSP
-lsp.emmet_ls.setup({ -- npm install -g emmet-ls
-    capabilities = capabilities
-})
+local servers = {
+    'emmet_ls', -- emmet LSP
+    'pyright', -- python LSP
+    'denols', -- javascript LSP
+    'texlab', -- LaTeX LSP
+    'jdtls', -- java LSP
+    'vimls', -- vim LSP
+    'html', -- html LSP
+    'jsonls', -- json LSP
+    'cssls', -- css LSP
+    -- 'rust_analyzer', -- rust LSP
+    'lua_ls',
+    -- {
+    --     lsp = 'lua_ls',
+    --     config = {
+    --         on_init = function(client)
+    --             local path = client.workspace_folders[1].name
+    --             if not vim.loop.fs_stat(path .. '/.luarc.json') and not vim.loop.fs_stat(path .. '/.luarc.jsonc') then
+    --                 client.config.settings = vim.tbl_deep_extend('force', client.config.settings, {
+    --                     Lua = {
+    --                         completion = { -- folke/neodev configuration
+    --                             callSnippet = "Replace"
+    --                         },
+    --                         runtime = { -- comentado para funcionamento do neodev
+    --                             -- Tell the language server which version of Lua you're using
+    --                             -- (most likely LuaJIT in the case of Neovim)
+    --                             version = 'LuaJIT'
+    --                         },
+    --                         -- Make the server aware of Neovim runtime files
+    --                         workspace = {
+    --                             checkThirdParty = false,
+    --                             library = {
+    --                                 vim.env.VIMRUNTIME
+    --                                 -- '${3rd}/luv/library'
+    --                                 -- '${3rd}/busted/library',
+    --                             }
+    --                             -- or pull in all of 'runtimepath'. NOTE: this is a lot slower
+    --                             -- library = vim.api.nvim_get_runtime_file('', true)
+    --                         },
+    --                         diagnostics = {
+    --                             -- Get the language server to recognize the `vim` global
+    --                             globals = {'vim'},
+    --                         },
+    --                     }
+    --                 })
+    --                 client.notify('workspace/didChangeConfiguration', { settings = client.config.settings })
+    --             end
+    --             return true
+    --         end
+    --     },
+    -- },
+    -- { -- javascript LSP
+    --     lsp = 'eslint',
+    --     config = {
+    --         on_attach = function(_, bufnr)
+    --             vim.api.nvim_create_autocmd('BufWritePre', {
+    --                 buffer = bufnr,
+    --                 command = 'EslintFixAll',
+    --             })
+    --         end,
+    --     }
+    -- },
+}
 
--- Python LSP
-lsp.pyright.setup({ -- pip install pyright | npm -g install pyright
-    capabilities = capabilities
-})
-
--- Javascript LSP
-lsp.denols.setup({
-    capabilities = capabilities
-})
-
--- LaTeX LSP
-lsp.texlab.setup({
-    capabilities = capabilities
-})
-
--- Java LSP
-lsp.jdtls.setup({
-    capabilities = capabilities
-})
-
--- Vim LSP
-lsp.vimls.setup({
-    capabilities = capabilities
-})
-
--- VSCODE LSP PACKAGE
--- HTML
-lsp.html.setup({ -- npm i -g vscode-langservers-extracted
-    capabilities = capabilities
-})
--- JSON
-lsp.jsonls.setup({ -- npm i -g vscode-langservers-extracted
-    capabilities = capabilities
-})
--- CSS
-lsp.cssls.setup({ -- npm i -g vscode-langservers-extracted
-    capabilities = capabilities
-})
--- WARNING: Utilizar denols
--- JS
--- lsp.eslint.setup({ -- npm i -g vscode-langservers-extracted
---     capabilities = capabilities,
---     on_attach = function(_, bufnr)
---         vim.api.nvim_create_autocmd('BufWritePre', {
---             buffer = bufnr,
---             command = 'EslintFixAll',
---         })
---     end,
--- })
-
--- -- Rust LSP
--- lsp.rust_analyzer.setup({
---    capabilities = capabilities
--- })
-
--- Lua LSP
-lsp.lua_ls.setup({
-    capabilities = capabilities,
-    on_init = function(client)
-        local path = client.workspace_folders[1].name
-        if not vim.loop.fs_stat(path .. '/.luarc.json') and not vim.loop.fs_stat(path .. '/.luarc.jsonc') then
-            client.config.settings = vim.tbl_deep_extend('force', client.config.settings, {
-                Lua = {
-                    completion = { -- folke/neodev configuration
-                        callSnippet = "Replace"
-                    },
-                    -- runtime = { -- comentado para funcionamento do neodev
-                    --     -- Tell the language server which version of Lua you're using
-                    --     -- (most likely LuaJIT in the case of Neovim)
-                    --     version = 'LuaJIT'
-                    -- },
-                    -- Make the server aware of Neovim runtime files
-                    -- workspace = {
-                    --     checkThirdParty = false,
-                    --     library = {
-                    --         vim.env.VIMRUNTIME
-                    --         -- '${3rd}/luv/library'
-                    --         -- '${3rd}/busted/library',
-                    --     }
-                    --     -- or pull in all of 'runtimepath'. NOTE: this is a lot slower
-                    --     -- library = vim.api.nvim_get_runtime_file('', true)
-                    -- },
-                    diagnostics = {
-                        -- Get the language server to recognize the `vim` global
-                        globals = {'vim'},
-                    },
-                }
-            })
-            client.notify('workspace/didChangeConfiguration', { settings = client.config.settings })
-        end
-        return true
+for _, server in ipairs(servers) do
+    if server.config then
+        lsp[server.lsp].setup({
+            capabilities = capabilities,
+            unpack(server.config)
+        })
+    else
+        lsp[server].setup({
+            capabilities = capabilities
+        })
     end
-})
+end
 
