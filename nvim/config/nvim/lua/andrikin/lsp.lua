@@ -141,9 +141,12 @@ cmp.setup({
             return vim_item
         end
     },
+    experimental = {
+        ghost_text = true,
+    },
     completion = {
         completeopt = vim.o.completeopt,
-        autocomplete = false,
+        autocomplete = true,
     },
     window = {
         -- completion = cmp.config.window.bordered(),
