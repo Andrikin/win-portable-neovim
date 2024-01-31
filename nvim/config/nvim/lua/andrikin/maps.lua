@@ -252,4 +252,12 @@ if package.loaded['cmp'] then
             fallback()
         end
     end)
+    vim.keymap.set("i", "<c-y>", function()
+        local cmp = require('cmp')
+        cmp.confirm({select = false})
+    end)
+    vim.keymap.set("i", "<c-e>", function()
+        local cmp = require('cmp')
+        cmp.abort()
+    end)
 end
