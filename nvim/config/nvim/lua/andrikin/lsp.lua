@@ -121,7 +121,7 @@ cmp.setup({
         -- REQUIRED - you must specify a snippet engine
         expand = function(args)
             -- vim.fn['vsnip#anonymous'](args.body) -- For `vsnip` users.
-            require('luasnip').lsp_expand(args.body) -- For `luasnip` users.
+            luasnip.lsp_expand(args.body) -- For `luasnip` users.
             -- require('snippy').expand_snippet(args.body) -- For `snippy` users.
             -- vim.fn['UltiSnips#Anon'](args.body) -- For `ultisnips` users.
         end,
@@ -160,8 +160,8 @@ cmp.setup({
                 -- that way you will only jump inside the snippet region
             elseif luasnip.expand_or_jumpable() then
                 luasnip.expand_or_jump()
-            else
-                return cmp.complete() or fallback()
+            elseif not cmp.complete() then
+                fallback()
             end
         end, { 'i', 's' }),
         ['<c-p>'] = cmp.mapping(function(fallback)
@@ -169,14 +169,12 @@ cmp.setup({
                 cmp.select_prev_item({behavior = cmp.SelectBehavior.Select})
             elseif luasnip.jumpable(-1) then
                 luasnip.jump(-1)
-            else
-                return cmp.complete() or fallback()
+            elseif not cmp.complete() then
+                fallback()
             end
         end, { 'i', 's' }),
         ['<C-u>'] = cmp.mapping.scroll_docs(-4), -- sobe janela doc visível
         ['<C-d>'] = cmp.mapping.scroll_docs(4), -- desce janela doc visível
-        ['<C-Space>'] = cmp.mapping.complete(),
-        ['<CR>'] = cmp.mapping.confirm({ select = false }), -- Accept currently selected item. Set `select` to `false` to only confirm explicitly selected items.
     }),
     sources = cmp.config.sources({
         { name = 'nvim_lsp' },
