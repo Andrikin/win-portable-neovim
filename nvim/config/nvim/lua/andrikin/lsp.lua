@@ -112,10 +112,8 @@ end
 
 local cmp = require('cmp')
 local luasnip = require('luasnip')
-
 require('luasnip.loaders.from_vscode').lazy_load() -- carregar snippets (templates)
 luasnip.config.setup({})
-
 cmp.setup({
     snippet = {
         -- REQUIRED - you must specify a snippet engine
@@ -146,33 +144,8 @@ cmp.setup({
     },
     completion = {
         completeopt = vim.o.completeopt,
-        autocomplete = true,
-    },
-    window = {
-        -- completion = cmp.config.window.bordered(),
-        -- documentation = cmp.config.window.bordered(),
     },
     mapping = cmp.mapping.preset.insert({
-        ['<c-n>'] = cmp.mapping(function(fallback)
-            if cmp.visible() then
-                cmp.select_next_item({behavior = cmp.SelectBehavior.Select})
-                -- You could replace the expand_or_jumpable() calls with expand_or_locally_jumpable() 
-                -- that way you will only jump inside the snippet region
-            elseif luasnip.expand_or_jumpable() then
-                luasnip.expand_or_jump()
-            elseif not cmp.complete() then
-                fallback()
-            end
-        end, { 'i', 's' }),
-        ['<c-p>'] = cmp.mapping(function(fallback)
-            if cmp.visible() then
-                cmp.select_prev_item({behavior = cmp.SelectBehavior.Select})
-            elseif luasnip.jumpable(-1) then
-                luasnip.jump(-1)
-            elseif not cmp.complete() then
-                fallback()
-            end
-        end, { 'i', 's' }),
         ['<C-u>'] = cmp.mapping.scroll_docs(-4), -- sobe janela doc visível
         ['<C-d>'] = cmp.mapping.scroll_docs(4), -- desce janela doc visível
     }),
@@ -196,9 +169,6 @@ cmp.setup({
             }
         },
         { name = 'luasnip' }, -- For luasnip users.
-        -- { name = 'vsnip' }, -- For vsnip users.
-        -- { name = 'ultisnips' }, -- For ultisnips users.
-        -- { name = 'snippy' }, -- For snippy users.
         }, {
             { name = 'path' },
     })
@@ -209,7 +179,6 @@ local capabilities = require('cmp_nvim_lsp').default_capabilities(vim.lsp.protoc
 
 -- LSP CONFIGURATION
 local lsp = require('lspconfig')
-
 local servers = {
     'emmet_ls', -- emmet LSP
     'pyright', -- python LSP
@@ -273,7 +242,6 @@ local servers = {
     --     }
     -- },
 }
-
 for _, server in ipairs(servers) do
     if server.config then
         lsp[server.lsp].setup({

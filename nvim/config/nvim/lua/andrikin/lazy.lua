@@ -106,7 +106,6 @@ local plugins = {
 	-- Nim-cmp,
 	{
 		'https://github.com/hrsh7th/nvim-cmp.git',
-        event = "InsertEnter",
 		dependencies = {
 			'https://github.com/hrsh7th/cmp-nvim-lsp.git',
 			'https://github.com/hrsh7th/cmp-buffer.git',
