@@ -145,10 +145,10 @@ cmp.setup({
     completion = {
         completeopt = vim.o.completeopt,
     },
-    mapping = cmp.mapping.preset.insert({
-        ['<C-u>'] = cmp.mapping.scroll_docs(-4), -- sobe janela doc visível
-        ['<C-d>'] = cmp.mapping.scroll_docs(4), -- desce janela doc visível
-    }),
+    -- mapping = cmp.mapping.preset.insert({
+    --     ['<C-u>'] = cmp.mapping.scroll_docs(-4), -- sobe janela doc visível
+    --     ['<C-d>'] = cmp.mapping.scroll_docs(4), -- desce janela doc visível
+    -- }),
     sources = cmp.config.sources({
         { name = 'nvim_lsp' },
         {
