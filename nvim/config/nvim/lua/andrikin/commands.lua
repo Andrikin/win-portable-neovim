@@ -144,9 +144,11 @@ end
 Ouvidoria.nova_comunicacao = function(opts)
 	local tipo = opts.fargs[1] or 'modelo-basico'
 	local arquivo = opts.fargs[2] or 'ci-modelo'
-	if tipo:match('lai') then
+	if tipo:match('sipe.lai') then
 		arquivo = 'LAI-' .. arquivo
-	else
+	elseif tipo:match('carga.gabinete') then
+        arquivo = 'GAB-PREF-LAI-' .. arquivo
+    else
 		arquivo = 'OUV-' .. arquivo
 	end
 	local alternativo = vim.fn.expand('%')
