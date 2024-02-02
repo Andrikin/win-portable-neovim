@@ -29,7 +29,7 @@
 -- rust: TODO
 
 -- WIP: Utilizar multithreads para realizar os downloads
--- TODO: Refatorar código? Melhorar notify (function)
+-- TODO: Refatorar código?
 
 -- IMPORTANT(Windows 10+): Desabilitar python.exe e python3.exe em "Gerenciar aliases de execução de aplicativo".
 -- Windows executa este alias antes de executar python declarado em PATH.
@@ -47,99 +47,9 @@ end
 
 local npcall = require('andrikin.utils').npcall
 local notify = require('andrikin.utils').notify
+local Diretorio = require('andrikin.utils').Diretorio
 
 local win7 = string.match(vim.loop.os_uname()['version'], 'Windows 7')
-
----@class Diretorio
----@field _sep string Separador de pastas no caminho do diretório
----@field nome string Caminho completo do diretório
-local Diretorio = {}
-
-Diretorio.__index = Diretorio
-
-Diretorio._sep = '\\'
-
-Diretorio.nome = ''
-
----@param diretorio string | table
----@return Diretorio
-Diretorio.new = function(self, diretorio)
-	vim.validate({diretorio = {diretorio, {'table', 'string'}}})
-	if type(diretorio) == 'table' then
-		for _, valor in ipairs(diretorio) do
-			if type(valor) ~= 'string' then
-				error('Diretorio: new: Elemento de lista diferente de "string"!')
-			end
-		end
-	end
-	local obj = {}
-	setmetatable(obj, self)
-	if type(diretorio) == 'table' then
-		local concatenar = diretorio[1]
-		for i=2,#diretorio do
-			concatenar = concatenar .. obj._suffix(diretorio[i])
-		end
-		diretorio = concatenar
-	end
-	obj.nome = self._sanitize(diretorio)
-	return obj
-end
-
----@private
----@param str string
----@return string
-Diretorio._sanitize = function(str)
-    local sanitarizado = ''
-	vim.validate({ str = {str, 'string'} })
-	sanitarizado = string.gsub(str, '/', '\\')
-    return sanitarizado
-end
-
----@private
----@param str string
----@return string
-Diretorio._suffix = function(str)
-	vim.validate({ str = {str, 'string'} })
-	return (str:match('^[/\\]') or str == '') and str or Diretorio._sep .. str
-end
-
----@param diretorio string | table
-Diretorio.add = function(self, diretorio)
-	if type(diretorio) == 'table' then
-		local concatenar = ''
-		for _, p in ipairs(diretorio) do
-			concatenar = concatenar .. self._suffix(p)
-		end
-		diretorio = concatenar
-	end
-	self.nome = self.nome .. self._suffix(diretorio)
-end
-
----@param other Diretorio
----@return string
-Diretorio.__div = function(self, other)
-	if getmetatable(self) ~= Diretorio or getmetatable(other) ~= Diretorio then
-		error('Diretorio: __div: Elementos precisam ser do tipo "string".')
-	end
-	return self._sanitize(self.nome .. self._suffix(other.nome))
-end
-
----@param str string
----@return string
-Diretorio.__concat = function(self, str)
-	if getmetatable(self) ~= Diretorio then
-		error('Diretorio: __concat: Objeto não é do tipo Diretorio.')
-	end
-	if type(str) ~= 'string' then
-		error('Diretorio: __concat: Argumento precisa ser do tipo "string".')
-	end
-	return self._sanitize(self.nome .. self._suffix(str))
-end
-
----@return string
-Diretorio.__tostring = function(self)
-	return self.nome
-end
 
 ---@class Curl
 ---@field UNZIP string Url para download de unzip.exe
@@ -184,7 +94,7 @@ Curl.download = function(link, diretorio)
 		error('Curl: download: Variável nula')
 	end
 	local arquivo = vim.fn.fnamemodify(link, ':t')
-	diretorio = Diretorio:new(diretorio) .. arquivo
+	diretorio = (Diretorio:new(diretorio) / arquivo).nome
 	vim.fn.system({
 		'curl',
 		'--fail',
@@ -254,10 +164,7 @@ local Fonte = {}
 Fonte.__index = Fonte
 
 ---@type Diretorio
-Fonte.DIRETORIO = Diretorio:new({
-	vim.env.NVIM_OPT,
-	'fonte'
-})
+Fonte.DIRETORIO = Diretorio:new(vim.env.NVIM_OPT) / 'fonte'
 
 Fonte.LINK = 'https://github.com/ryanoasis/nerd-fonts/releases/download/v3.1.1/SourceCodePro.zip'
 
@@ -467,7 +374,7 @@ Opt.init = function()
 		local registrado = Opt.registrar(programa)
 		if not registrado then
 			local baixado = vim.fn.getftype(Opt.DIRETORIO .. arquivo) ~= ''
-			local extraido = #vim.fn.glob(Diretorio:new(diretorio) .. '*', false, true) ~= 0
+			local extraido = #vim.fn.glob((Diretorio:new(diretorio) / '*').nome, false, true) ~= 0
 			if not baixado then
 				Curl.download(programa.link, Opt.DIRETORIO.nome)
                 baixado = true
@@ -520,11 +427,8 @@ local PROGRAMAS = {
 		link = 'https://www.sumatrapdfreader.org/dl/rel/3.5.2/SumatraPDF-3.5.2-64.zip',
 		cmd = 'sumatra.exe',
 		config = function()
-			local diretorio = Diretorio:new({
-                vim.env.NVIM_OPT,
-                'sumatra',
-            })
-			local executavel = vim.fn.glob(diretorio .. 'sumatra*.exe')
+			local diretorio = Diretorio:new(vim.env.NVIM_OPT) / 'sumatra'
+			local executavel = vim.fn.glob((diretorio / 'sumatra*.exe').nome)
 			if executavel ~= '' then
 				if vim.fn.fnamemodify(executavel, ':t') == 'sumatra.exe' then
 					notify('Arquivo Sumatra já renomeado.')
@@ -546,7 +450,7 @@ local PROGRAMAS = {
 		cmd = 'node.exe',
 		config = function()
 			local installed = function(pacote) -- checar se diretório existe
-				return not vim.tbl_isempty(vim.fs.find(pacote, {path = Diretorio:new(vim.env.NVIM_OPT) .. 'node', type = 'directory'}))
+				return not vim.tbl_isempty(vim.fs.find(pacote, {path = (Diretorio:new(vim.env.NVIM_OPT) / 'node').nome, type = 'directory'}))
 			end
 			-- configurações extras
 			if win7 and vim.env.NODE_SKIP_PLATFORM_CHECK ~= 1 then
@@ -584,7 +488,7 @@ local PROGRAMAS = {
 			local get_pip = {}
 			get_pip.link =  'https://bootstrap.pypa.io/get-pip.py'
 			get_pip.nome = vim.fn.fnamemodify(get_pip.link, ':t')
-			get_pip.diretorio = Diretorio:new(vim.env.NVIM_OPT) .. 'python'
+			get_pip.diretorio = (Diretorio:new(vim.env.NVIM_OPT) / 'python').nome
 			get_pip.instalado = function(self)
 				local pip = vim.fs.find('pip.exe', {path = tostring(self.diretorio), type = 'file'})[1]
 				if not pip then
