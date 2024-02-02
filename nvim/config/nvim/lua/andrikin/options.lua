@@ -86,6 +86,9 @@ end
 -- TODO: Criar arquivos ftplugin para cada linguagem, definindo b:match_words
 vim.opt.matchpairs:append('<:>')
 
+-- Dirvish
+vim.g.dirvish_mode = '%sort /.*\\\\\\|.*[^\\\\]/' -- diretórios primeiro, depois arquivos
+
 -- --- Emmet ---
 vim.g.user_emmet_install_global = 0
 -- vim.g.user_emmet_leader_key = '<m-space>'
