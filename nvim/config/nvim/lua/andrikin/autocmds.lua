@@ -142,6 +142,8 @@ autocmd(
 	{
 		group = Andrikin,
 		callback = function(ev)
+            -- local client = vim.lsp.get_client_by_id(ev.data.client_id) -- remover LSP highlight 
+            -- client.server_capabilities.semanticTokensProvider = nil -- remover LSP highlight 
 			local opts = {buffer = ev.buf}
 			vim.keymap.set('n', 'gd', vim.lsp.buf.definition, opts)
 			vim.keymap.set('n', 'gD', vim.lsp.buf.declaration, opts)
