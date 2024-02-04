@@ -1,4 +1,5 @@
 ---@class Utils
+---@field Diretorio Diretorio
 local Utils = {}
 
 ---@class Diretorio
