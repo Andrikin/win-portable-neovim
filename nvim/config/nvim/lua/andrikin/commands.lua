@@ -244,7 +244,7 @@ vim.api.nvim_create_user_command(
 )
 
 vim.api.nvim_create_user_command(
-	'WhatsAppFormatarMensagem',
+	'WhatsAppMensagem',
 	function()
         local fim = vim.fn.getpos('$')[2]
         if fim < 1 then
