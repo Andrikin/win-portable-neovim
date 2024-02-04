@@ -48,6 +48,8 @@ end
 local npcall = require('andrikin.utils').npcall
 local notify = require('andrikin.utils').notify
 local Diretorio = require('andrikin.utils').Diretorio
+---@type Diretorio
+local NVIM_OPT = Diretorio:new(vim.env.NVIM_OPT)
 
 local win7 = string.match(vim.loop.os_uname()['version'], 'Windows 7')
 
@@ -71,8 +73,8 @@ Curl.bootstrap = function()
 		notify('Curl: bootstrap: Sistema já possui Unzip.')
 		do return end
 	end
-	Curl.download(Curl.UNZIP, vim.env.NVIM_OPT)
-	local unzip = vim.fs.find('unzip.exe', {path = vim.env.NVIM_OPT, type = 'file'})[1]
+	Curl.download(Curl.UNZIP, NVIM_OPT.nome)
+	local unzip = vim.fs.find('unzip.exe', {path = NVIM_OPT.nome, type = 'file'})[1]
 	if unzip == '' then
 		error('Curl: bootstrap: Não foi possível encontrar o executável unzip.exe.')
 	end
@@ -159,37 +161,37 @@ end
 ---@field ARQUIVO string Nome do arquivo
 ---@field REGISTRO string Caminho aonde será instalado a fonte no regedit do sistema
 ---@field FONTES table Lista de fontes encontradas no sistema
-local Fonte = {}
+local SauceCodePro = {}
 
-Fonte.__index = Fonte
+SauceCodePro.__index = SauceCodePro
 
 ---@type Diretorio
-Fonte.DIRETORIO = Diretorio:new(vim.env.NVIM_OPT) / 'fonte'
+SauceCodePro.DIRETORIO = NVIM_OPT / 'fonte'
 
-Fonte.LINK = 'https://github.com/ryanoasis/nerd-fonts/releases/download/v3.1.1/SourceCodePro.zip'
+SauceCodePro.LINK = 'https://github.com/ryanoasis/nerd-fonts/releases/download/v3.1.1/SourceCodePro.zip'
 
-Fonte.ARQUIVO = Fonte.DIRETORIO .. vim.fn.fnamemodify(Fonte.LINK, ':t')
+SauceCodePro.ARQUIVO = SauceCodePro.DIRETORIO .. vim.fn.fnamemodify(SauceCodePro.LINK, ':t')
 
-Fonte.REGISTRO = 'HKCU\\Software\\Microsoft\\Windows NT\\CurrentVersion\\Fonts'
+SauceCodePro.REGISTRO = 'HKCU\\Software\\Microsoft\\Windows NT\\CurrentVersion\\Fonts'
 
-Fonte.FONTES = vim.fn.glob(Fonte.DIRETORIO .. 'SauceCodePro*.ttf', false, true)
+SauceCodePro.FONTES = vim.fn.glob(SauceCodePro.DIRETORIO .. 'SauceCodePro*.ttf', false, true)
 
-Fonte.bootstrap = function()
-	if vim.fn.isdirectory(Fonte.DIRETORIO.nome) == 0 then
-		vim.fn.mkdir(Fonte.DIRETORIO.nome, 'p', 0700)
+SauceCodePro.bootstrap = function()
+	if vim.fn.isdirectory(SauceCodePro.DIRETORIO.nome) == 0 then
+		vim.fn.mkdir(SauceCodePro.DIRETORIO.nome, 'p', 0700)
 	end
 	vim.api.nvim_create_user_command(
 		'FonteRemover',
-		Fonte.remover_regedit,
+		SauceCodePro.remover_regedit,
 		{}
 	)
 end
 
-Fonte.setup = function()
-	Fonte.bootstrap()
-	if not Fonte.instalada() then
+SauceCodePro.setup = function()
+	SauceCodePro.bootstrap()
+	if not SauceCodePro.instalada() then
         if Curl.instalado() then
-            Fonte.instalar()
+            SauceCodePro.instalar()
         else
             notify('Não foi possível instalar a fonte SauceCodePro neste computador. Instale curl para continuar.')
         end
@@ -199,33 +201,33 @@ Fonte.setup = function()
 end
 
 ---@return boolean
-Fonte.fonte_extraida = function()
-	return #(vim.fn.glob(Fonte.DIRETORIO .. 'SauceCodePro*.ttf', false, true)) > 0
+SauceCodePro.fonte_extraida = function()
+	return #(vim.fn.glob(SauceCodePro.DIRETORIO .. 'SauceCodePro*.ttf', false, true)) > 0
 end
 
-Fonte.download = function()
-	if vim.fn.isdirectory(tostring(Fonte.DIRETORIO)) == 0 then
-		vim.fn.mkdir(tostring(Fonte.DIRETORIO), 'p', 0700)
+SauceCodePro.download = function()
+	if vim.fn.isdirectory(tostring(SauceCodePro.DIRETORIO)) == 0 then
+		vim.fn.mkdir(tostring(SauceCodePro.DIRETORIO), 'p', 0700)
 	end
 	-- Realizar download da fonte
-	Curl.download(Fonte.LINK, Fonte.DIRETORIO.nome)
-	if not Fonte.baixada() then
+	Curl.download(SauceCodePro.LINK, SauceCodePro.DIRETORIO.nome)
+	if not SauceCodePro.baixada() then
 		error('Fonte: download: Não foi possível realizar o download do arquivo da fonte.')
 	end
 	notify('Arquivo fonte .zip baixado!')
 end
 
 ---Decompressar arquivo zip
-Fonte.extrair = function()
-	if not Fonte.baixada() then
+SauceCodePro.extrair = function()
+	if not SauceCodePro.baixada() then
 		error('Fonte: extrair: Arquivo .zip não encontrado! Realizar o download do arquivo de fonte para continuar a intalação.')
 	end
-	Curl.extrair(Fonte.ARQUIVO, Fonte.DIRETORIO.nome)
-	if Fonte.fonte_extraida() then
+	Curl.extrair(SauceCodePro.ARQUIVO, SauceCodePro.DIRETORIO.nome)
+	if SauceCodePro.fonte_extraida() then
 		notify('Arquivo fonte SauceCodePro.zip extraído!')
-		Fonte.FONTES = vim.fn.glob(Fonte.DIRETORIO .. 'SauceCodePro*.ttf', false, true)
+		SauceCodePro.FONTES = vim.fn.glob(SauceCodePro.DIRETORIO .. 'SauceCodePro*.ttf', false, true)
         -- remover arquivo .zip
-        vim.fn.delete(Fonte.ARQUIVO)
+        vim.fn.delete(SauceCodePro.ARQUIVO)
 	else
 		error('Fonte: extrair: Não foi possível extrair os arquivo de fonte.')
 	end
@@ -233,7 +235,7 @@ end
 
 ---Verificando se a fonte está intalada no computador
 ---@return boolean
-Fonte.instalada = function()
+SauceCodePro.instalada = function()
 	local lista = vim.tbl_filter(
 		function(elemento)
 			return elemento:match('SauceCodePro')
@@ -241,21 +243,21 @@ Fonte.instalada = function()
 		vim.fn.systemlist({
 			'reg',
 			'query',
-			Fonte.REGISTRO,
+			SauceCodePro.REGISTRO,
 			'/s'
 	}))
 	return #lista > 0
 end
 
 ---Registra as fontes no regedit do sistema Windows.
-Fonte.regedit = function()
-	for _, fonte in ipairs(Fonte.FONTES) do
+SauceCodePro.regedit = function()
+	for _, fonte in ipairs(SauceCodePro.FONTES) do
 		local arquivo = vim.fn.fnamemodify(fonte, ':t')
-		local diretorio = Fonte.DIRETORIO .. arquivo
+		local diretorio = SauceCodePro.DIRETORIO .. arquivo
 		vim.fn.system({
 			'reg',
 			'add',
-			Fonte.REGISTRO,
+			SauceCodePro.REGISTRO,
 			'/v',
 			arquivo:match('(.*)%..*$'), -- nome de registro da fonte
 			'/t',
@@ -268,20 +270,20 @@ Fonte.regedit = function()
 end
 
 ---@return boolean
-Fonte.baixada = function()
-    return vim.fn.getftype(Fonte.ARQUIVO) ~= ''
+SauceCodePro.baixada = function()
+    return vim.fn.getftype(SauceCodePro.ARQUIVO) ~= ''
 end
 
 ---Desinstala a fonte do regedit do sistema Windows.
-Fonte.remover_regedit = function()
-	for _, fonte in ipairs(Fonte.FONTES) do
+SauceCodePro.remover_regedit = function()
+	for _, fonte in ipairs(SauceCodePro.FONTES) do
 		local nome = vim.fn.fnamemodify(fonte, ':t')
 		nome = nome:match('(.*)%..*$')
 		if nome then
 			vim.fn.system({
 				'reg',
 				'delete',
-				Fonte.REGISTRO,
+				SauceCodePro.REGISTRO,
 				'/v',
 				nome,
 				'/f'
@@ -291,16 +293,16 @@ Fonte.remover_regedit = function()
 end
 
 ---Instalar a Fonte no sistema Windows.
-Fonte.instalar = function()
-	if not Fonte.fonte_extraida() then
-        if not Fonte.baixada() then
-            Fonte.download()
+SauceCodePro.instalar = function()
+	if not SauceCodePro.fonte_extraida() then
+        if not SauceCodePro.baixada() then
+            SauceCodePro.download()
         end
-		Fonte.extrair()
+		SauceCodePro.extrair()
 	end
-	if not Fonte.instalada() then
-		Fonte.regedit()
-		if Fonte.instalada() then
+	if not SauceCodePro.instalada() then
+		SauceCodePro.regedit()
+		if SauceCodePro.instalada() then
 			notify('Fonte instalada com sucesso. Reinicie o nvim para carregar a fonte.')
 			vim.cmd.quit({bang = true})
 		else
@@ -318,7 +320,7 @@ local Opt = {}
 Opt.__index = Opt
 
 ---@type Diretorio
-Opt.DIRETORIO = Diretorio:new(vim.env.NVIM_OPT)
+Opt.DIRETORIO = NVIM_OPT
 
 Opt.bootstrap = function()
 	-- Criar diretório, setar configurações, etc
@@ -427,7 +429,7 @@ local PROGRAMAS = {
 		link = 'https://www.sumatrapdfreader.org/dl/rel/3.5.2/SumatraPDF-3.5.2-64.zip',
 		cmd = 'sumatra.exe',
 		config = function()
-			local diretorio = Diretorio:new(vim.env.NVIM_OPT) / 'sumatra'
+			local diretorio = NVIM_OPT / 'sumatra'
 			local executavel = vim.fn.glob((diretorio / 'sumatra*.exe').nome)
 			if executavel ~= '' then
 				if vim.fn.fnamemodify(executavel, ':t') == 'sumatra.exe' then
@@ -450,7 +452,7 @@ local PROGRAMAS = {
 		cmd = 'node.exe',
 		config = function()
 			local installed = function(pacote) -- checar se diretório existe
-				return not vim.tbl_isempty(vim.fs.find(pacote, {path = (Diretorio:new(vim.env.NVIM_OPT) / 'node').nome, type = 'directory'}))
+				return not vim.tbl_isempty(vim.fs.find(pacote, {path = (NVIM_OPT / 'node').nome, type = 'directory'}))
 			end
 			-- configurações extras
 			if win7 and vim.env.NODE_SKIP_PLATFORM_CHECK ~= 1 then
@@ -488,7 +490,7 @@ local PROGRAMAS = {
 			local get_pip = {}
 			get_pip.link =  'https://bootstrap.pypa.io/get-pip.py'
 			get_pip.nome = vim.fn.fnamemodify(get_pip.link, ':t')
-			get_pip.diretorio = (Diretorio:new(vim.env.NVIM_OPT) / 'python').nome
+			get_pip.diretorio = (NVIM_OPT / 'python').nome
 			get_pip.instalado = function(self)
 				local pip = vim.fs.find('pip.exe', {path = tostring(self.diretorio), type = 'file'})[1]
 				if not pip then
@@ -600,5 +602,5 @@ local PROGRAMAS = {
 
 Opt.bootstrap()
 Opt.setup(PROGRAMAS)
-Fonte.setup()
+SauceCodePro.setup()
 
