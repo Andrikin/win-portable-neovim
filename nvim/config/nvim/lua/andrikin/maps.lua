@@ -226,38 +226,3 @@ vim.keymap.set("n", "[w", diagnostic(false, "WARN"), { desc = 'Alerta Anterior' 
 vim.keymap.set('n', '<leader>e', vim.diagnostic.open_float, { desc = 'Abrir erro no cursor'})
 vim.keymap.set('n', '<leader>d', vim.diagnostic.setloclist, { desc = 'Abrir lista de diagnósticos' })
 
--- nvim-cmp (force autocompletion)
-if package.loaded['cmp'] then
-    vim.keymap.set("i", "<c-n>", function(fallback)
-        local cmp = require('cmp')
-        local luasnip = require('luasnip')
-        if cmp.visible() then
-            cmp.select_next_item({behavior = cmp.SelectBehavior.Select})
-            -- You could replace the expand_or_jumpable() calls with expand_or_locally_jumpable() 
-            -- that way you will only jump inside the snippet region
-        elseif luasnip.expand_or_jumpable() then
-            luasnip.expand_or_jump()
-        elseif not cmp.complete() then
-            fallback()
-        end
-    end)
-    vim.keymap.set("i", "<c-p>", function(fallback)
-        local cmp = require('cmp')
-        local luasnip = require('luasnip')
-        if cmp.visible() then
-            cmp.select_prev_item({behavior = cmp.SelectBehavior.Select})
-        elseif luasnip.jumpable(-1) then
-            luasnip.jump(-1)
-        elseif not cmp.complete() then
-            fallback()
-        end
-    end)
-    vim.keymap.set("i", "<c-y>", function()
-        local cmp = require('cmp')
-        cmp.confirm({select = false})
-    end)
-    vim.keymap.set("i", "<c-e>", function()
-        local cmp = require('cmp')
-        cmp.abort()
-    end)
-end

@@ -152,7 +152,38 @@ autocmd(
 			vim.keymap.set('n', 'gi', vim.lsp.buf.implementation, opts)
 			vim.keymap.set('n', '<c-k>', vim.lsp.buf.signature_help, opts)
 			vim.keymap.set('n', 'gs', vim.lsp.buf.rename, opts)
-		end
+            -- nvim-cmp (force autocompletion)
+            if package.loaded['cmp'] then
+                local cmp = require('cmp')
+                local luasnip = require('luasnip')
+                vim.keymap.set("i", "<c-n>", function(fallback)
+                    if cmp.visible() then
+                        cmp.select_next_item({behavior = cmp.SelectBehavior.Select})
+                        -- You could replace the expand_or_jumpable() calls with expand_or_locally_jumpable() 
+                        -- that way you will only jump inside the snippet region
+                    elseif luasnip.expand_or_jumpable() then
+                        luasnip.expand_or_jump()
+                    elseif not cmp.complete() then
+                        fallback()
+                    end
+                end)
+                vim.keymap.set("i", "<c-p>", function(fallback)
+                    if cmp.visible() then
+                        cmp.select_prev_item({behavior = cmp.SelectBehavior.Select})
+                    elseif luasnip.jumpable(-1) then
+                        luasnip.jump(-1)
+                    elseif not cmp.complete() then
+                        fallback()
+                    end
+                end)
+                vim.keymap.set("i", "<c-y>", function()
+                    cmp.confirm({select = false})
+                end)
+                vim.keymap.set("i", "<c-e>", function()
+                    cmp.abort()
+                end)
+            end
+        end
 	}
 )
 
