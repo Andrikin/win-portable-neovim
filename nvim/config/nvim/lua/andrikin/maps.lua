@@ -12,22 +12,19 @@ vim.keymap.set({ 'n', 'v' }, '<Space>', '<Nop>', { silent = true })
 -- CTRL-U in insert mode deletes a lot. Use CTRL-G u to first break undo,
 -- so that you can undo CTRL-U after inserting a line break.
 -- Revert with ":iunmap <C-U>". -> from defaults.vim
-vim.keymap.set('i', '<c-u>', '<c-g>u<c-u>')
-vim.keymap.set('i', '<c-w>', '<c-g>u<c-w>')
+-- vim.keymap.set('i', '<c-u>', '<c-g>u<c-u>') -- default in neovim
+-- vim.keymap.set('i', '<c-w>', '<c-g>u<c-w>') -- default in neovim
 vim.keymap.set('n', '<backspace>', 'X')
 vim.keymap.set('n', '<c-h>', 'X')
 vim.keymap.set('n', "'", '`')
 -- Fix & command. Redo :substitute command
-vim.keymap.set(
-	{'n', 'x'},
-	'&',
-	function()
-		vim.cmd('&&')
-	end
-)
+-- vim.keymap.set( 'n', '&', function() -- default in neovim
+-- 		vim.cmd('&&')
+-- end)
 -- Yank to end of sreen line. Make default in Neovim 0.6.0
 -- g$ cursor after last character, g_ cursor at last character
--- vim.keymap.set('n', 'Y', 'yg_')
+vim.api.nvim_del_keymap('n', 'Y') -- removing default mapping
+vim.keymap.set('n', 'Y', 'yg_') -- better than 'y$'
 -- Disable <c-z> (:stop)
 vim.keymap.set('n', '<c-z>', '<nop>')
 -- Join lines in a better way - From a video of ThePrimeagen
