@@ -50,7 +50,7 @@ SauceCodePro:setup()
 ---@type Registrador
 local Registrador = require('andrikin.utils').Registrador.new()
 ---@type Diretorio
-local NVIM_OPT = require('andrikin.utils').OPT
+local OPT = require('andrikin.utils').OPT
 
 local programas = {
 	{
@@ -74,8 +74,8 @@ local programas = {
 		link = 'https://www.sumatrapdfreader.org/dl/rel/3.5.2/SumatraPDF-3.5.2-64.zip',
 		cmd = 'sumatra.exe',
 		config = function()
-			local diretorio = NVIM_OPT / 'sumatra'
-			local executavel = vim.fn.glob((diretorio / 'sumatra*.exe').nome)
+			local diretorio = OPT / 'sumatra'
+			local executavel = vim.fn.glob(tostring(diretorio / 'sumatra*.exe'))
 			if executavel ~= '' then
 				if vim.fn.fnamemodify(executavel, ':t') == 'sumatra.exe' then
 					notify('Arquivo Sumatra já renomeado.')
@@ -97,7 +97,7 @@ local programas = {
 		cmd = 'node.exe',
 		config = function()
 			local installed = function(pacote) -- checar se diretório existe
-				return not vim.tbl_isempty(vim.fs.find(pacote, {path = (NVIM_OPT / 'node').nome, type = 'directory'}))
+				return not vim.tbl_isempty(vim.fs.find(pacote, {path = tostring(OPT / 'node'), type = 'directory'}))
 			end
 			-- configurações extras
 			if win7 and vim.env.NODE_SKIP_PLATFORM_CHECK ~= 1 then
@@ -135,7 +135,7 @@ local programas = {
 			local get_pip = {}
 			get_pip.link =  'https://bootstrap.pypa.io/get-pip.py'
 			get_pip.nome = vim.fn.fnamemodify(get_pip.link, ':t')
-			get_pip.diretorio = (NVIM_OPT / 'python').nome
+			get_pip.diretorio = OPT / 'python'
 			get_pip.instalado = function(self)
 				local pip = vim.fs.find('pip.exe', {path = tostring(self.diretorio), type = 'file'})[1]
 				if not pip then
@@ -154,7 +154,7 @@ local programas = {
 							'sed',
 							'-i',
 							'$s/^#\\(.*\\)$/\\1/',
-							self.diretorio .. 'python38._pth' -- versão 3.8.9
+							tostring(self.diretorio / 'python38._pth') -- versão 3.8.9
 						})
 					end
 				else
@@ -162,15 +162,15 @@ local programas = {
 					do return end
 				end
 				-- download get-pip.py
-				if not vim.fs.find(self.nome, {path = tostring(self.diretorio), type = 'file'})[1] then
-					Curl.download(self.link, self.diretorio)
+				if not vim.fs.find(self.nome, {path = self.diretorio.diretorio, type = 'file'})[1] then
+					Curl.download(self.link, self.diretorio.diretorio)
 				end
 				-- executar get-pip.py
 				if vim.fn.executable('pip.exe') == 0 then
 					notify(string.format('Executando "%s".', self.nome))
 					vim.fn.system({
 						'python.exe',
-						self.diretorio .. self.nome
+						tostring(self.diretorio / self.nome)
 					})
 				else
 					notify('Instalação de "pip.exe" encontrou um erro.')
@@ -180,7 +180,7 @@ local programas = {
 			if not get_pip:instalado() then
 				get_pip:instalar()
 				-- instalar lsp
-				local pip = vim.fn.fnamemodify(vim.fs.find('pip.exe', {path = tostring(get_pip.diretorio), type = 'file'})[1], ':h')
+				local pip = vim.fn.fnamemodify(vim.fs.find('pip.exe', {path = get_pip.diretorio.diretorio, type = 'file'})[1], ':h')
 				if pip then
 					vim.env.PATH = vim.env.PATH .. ';' .. pip
 				else
@@ -190,7 +190,7 @@ local programas = {
 			end
 			if vim.fn.executable('pip.exe') == 1 then
 				local instalar = function(pacote)
-					local instalado = vim.fs.find(pacote, {path = tostring(get_pip.diretorio), type = 'directory'})[1]
+					local instalado = vim.fs.find(pacote, {path = get_pip.diretorio.diretorio, type = 'directory'})[1]
 					if not instalado then
 						notify(string.format('Instalando pacote python %s.', pacote))
 						vim.fn.system({
@@ -209,7 +209,7 @@ local programas = {
 				notify('"pip.exe" não encontrado. Falha na instalação.')
 				do return end
 			end
-			vim.g.python3_host_prog = vim.fs.find('python.exe', {path = tostring(get_pip.diretorio), type = 'file'})[1]
+			vim.g.python3_host_prog = vim.fs.find('python.exe', {path = get_pip.diretorio.diretorio, type = 'file'})[1]
 			if not vim.g.python3_host_prog or vim.g.python3_host_prog == '' then
 				notify('Variável python3_host_prog não configurado.')
 			end

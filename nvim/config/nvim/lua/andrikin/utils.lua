@@ -19,7 +19,7 @@ Registrador.new = function()
     local registrador = setmetatable({
         diretorio = Utils.OPT,
     }, Registrador)
-    Registrador.bootstrap()
+    registrador:bootstrap()
     return registrador
 end
 
@@ -29,13 +29,13 @@ Registrador.__tostring = function(self)
 end
 
 ---@private
-Registrador.bootstrap = function()
+Registrador.bootstrap = function(self)
 	-- Criar diretório, setar configurações, etc
-	if vim.fn.isdirectory(tostring(Registrador)) == 0 then
-		vim.fn.mkdir(tostring(Registrador), 'p', 0700)
+	if vim.fn.isdirectory(tostring(self)) == 0 then
+		vim.fn.mkdir(tostring(self), 'p', 0700)
 	end
-	if not vim.env.PATH:match(tostring(Registrador):gsub('[\\/-]', '.')) then
-		vim.env.PATH = vim.env.PATH .. ';' .. tostring(Registrador)
+	if not vim.env.PATH:match(tostring(self):gsub('[\\/-]', '.')) then
+		vim.env.PATH = vim.env.PATH .. ';' .. tostring(self)
 	end
 end
 
@@ -79,11 +79,11 @@ end
 Registrador.init = function(self)
 	for _, programa in ipairs(self.deps) do
 		local arquivo = vim.fn.fnamemodify(programa.link, ':t')
-		local diretorio = self.diretorio .. programa.nome
+		local diretorio = self.diretorio / programa.nome
 		local registrado = self:registrar(programa)
 		if not registrado then
-			local baixado = vim.fn.getftype(self.diretorio .. arquivo) ~= ''
-			local extraido = #vim.fn.glob((Utils.Diretorio.new(diretorio) / '*').nome, false, true) ~= 0
+			local baixado = vim.fn.getftype(tostring(self.diretorio / arquivo)) ~= ''
+			local extraido = #vim.fn.glob(tostring(diretorio / '*'), false, true) ~= 0
 			if not baixado then
 				Utils.Curl.download(programa.link, self.diretorio.diretorio)
                 baixado = true
@@ -92,10 +92,10 @@ Registrador.init = function(self)
 			end
 			if not extraido and baixado then
 				-- criar diretório para extrair arquivo
-				if vim.fn.isdirectory(diretorio) == 0 then
-					vim.fn.mkdir(diretorio, 'p', 0700)
+				if vim.fn.isdirectory(tostring(diretorio)) == 0 then
+					vim.fn.mkdir(tostring(diretorio), 'p', 0700)
 				end
-				Utils.Curl.extrair(self.diretorio .. arquivo, diretorio)
+				Utils.Curl.extrair(tostring(self.diretorio / arquivo), diretorio.diretorio)
 			else
 				Utils.notify(string.format('Opt: init: Arquivo %s já extraído.', arquivo))
 			end
@@ -136,7 +136,7 @@ SauceCodePro.new = function()
         registro = Utils.Diretorio.new('HKCU') / 'Software' / 'Microsoft' / 'Windows NT' / 'CurrentVersion' / 'Fonts',
         fontes = vim.fn.glob(tostring(diretorio / 'SauceCodePro*.ttf'), false, true),
     }, SauceCodePro)
-    SauceCodePro.bootstrap()
+    fonte:bootstrap()
     return fonte
 end
 
@@ -146,19 +146,18 @@ SauceCodePro.__tostring = function(self)
 end
 
 ---@private
-SauceCodePro.bootstrap = function()
-	if vim.fn.isdirectory(tostring(SauceCodePro)) == 0 then
-		vim.fn.mkdir(tostring(SauceCodePro), 'p', 0700)
+SauceCodePro.bootstrap = function(self)
+	if vim.fn.isdirectory(tostring(self)) == 0 then
+		vim.fn.mkdir(tostring(self), 'p', 0700)
 	end
 	vim.api.nvim_create_user_command(
 		'FonteRemover',
-		SauceCodePro.remover_regedit,
+		self.remover_regedit,
 		{}
 	)
 end
 
 SauceCodePro.setup = function(self)
-	self:bootstrap()
 	if not self:instalado() then
         self:instalar()
     else
@@ -168,7 +167,7 @@ end
 
 ---@return boolean
 SauceCodePro.fonte_extraida = function(self)
-	return #(vim.fn.glob(self.diretorio .. 'SauceCodePro*.ttf', false, true)) > 0
+	return #(vim.fn.glob(tostring(self.diretorio / 'SauceCodePro*.ttf'), false, true)) > 0
 end
 
 SauceCodePro.download = function(self)
@@ -234,12 +233,13 @@ SauceCodePro.regedit = function(self)
 	end
 end
 
+--- Verifica se existe o arquivo SourceCodePro
 ---@return boolean
 SauceCodePro.baixada = function(self)
     return vim.fn.getftype(self.arquivo) ~= ''
 end
 
----Desinstala a fonte do regedit do sistema Windows.
+--- Desinstala a fonte no regedit do sistema Windows.
 SauceCodePro.remover_regedit = function(self)
 	for _, fonte in ipairs(self.fontes) do
 		local nome = vim.fn.fnamemodify(fonte, ':t')
@@ -257,7 +257,7 @@ SauceCodePro.remover_regedit = function(self)
 	end
 end
 
----Instalar a Fonte no sistema Windows.
+--- Instala a fonte no sistema Windows.
 SauceCodePro.instalar = function(self)
 	if not self:fonte_extraida() then
         if not self:baixada() then
@@ -285,7 +285,7 @@ local Curl = {}
 Curl.__index = Curl
 
 Curl.new = function()
-    if vim.fn.executable('curl') == 1 then -- verificar se curl está instalado no sistema
+    if vim.fn.executable('curl') == 0 then -- verificar se curl está instalado no sistema
         error('curl: instalado: Não foi encontrado curl no sistema. Verificar e realizar a instalação do curl neste computador!\nLink para download: https://curl.se/windows/latest.cgi?p=win64-mingw.zip')
     end
     local curl = setmetatable({
@@ -327,7 +327,7 @@ Curl.download = function(link, diretorio)
 		error('Curl: download: Variável nula')
 	end
 	local arquivo = vim.fn.fnamemodify(link, ':t')
-	diretorio = (Utils.Diretorio.new(diretorio) / arquivo).nome
+	diretorio = tostring(Utils.Diretorio.new(diretorio) / arquivo)
 	vim.fn.system({
 		'curl',
 		'--fail',
@@ -380,7 +380,6 @@ Curl.extrair = function(arquivo, diretorio)
 end
 
 ---@class Diretorio
----@field _sep string Separador de pastas no caminho do diretório
 ---@field diretorio string Caminho completo do diretório
 local Diretorio = {}
 
@@ -398,7 +397,6 @@ Diretorio.new = function(caminho)
 		end
 	end
 	local diretorio = setmetatable({
-        _sep = '\\',
         diretorio = '',
     }, Diretorio)
 	if type(caminho) == 'table' then
@@ -427,7 +425,7 @@ end
 ---@return string
 Diretorio._suffix = function(str)
 	vim.validate({ str = {str, 'string'} })
-	return (str:match('^[/\\]') or str == '') and str or Diretorio._sep .. str
+	return (str:match('^[/\\]') or str == '') and str or '\\' .. str
 end
 
 ---@param caminho string | table
@@ -502,6 +500,7 @@ end
 
 Utils.npcall = vim.F.npcall
 
+---@type string | nil
 Utils.win7 = string.match(vim.loop.os_uname()['version'], 'Windows 7')
 
 Utils.Diretorio = Diretorio
@@ -512,6 +511,7 @@ Utils.SauceCodePro = SauceCodePro
 
 Utils.Registrador = Registrador
 
+---@type Diretorio
 Utils.OPT = Utils.Diretorio.new(vim.env.NVIM_OPT)
 
 return Utils
