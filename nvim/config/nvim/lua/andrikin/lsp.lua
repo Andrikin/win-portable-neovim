@@ -145,9 +145,7 @@ cmp.setup({
     },
     completion = {
         completeopt = vim.o.completeopt,
-        autocomplete = { -- TESTE
-            require('cmp.types').cmp.TriggerEvent.TextChanged,
-        },
+        autocomplete = false,
     },
     sources = cmp.config.sources({
         { name = 'nvim_lsp' },

@@ -135,6 +135,30 @@ autocmd(
 	}
 )
 
+-- Remover fonte do regedit (Windows)
+autocmd(
+	'VimLeave',
+	{
+		group = Andrikin,
+		callback = function()
+            local flashdrive = vim.env.HOME:sub(1, 1):lower() ~= 'c'
+            local remover = false
+            if flashdrive then
+                remover = vim.fn.confirm(
+                    'Remover fonte do regedit?',
+                    '&Sim\n&Não',
+                    2
+                ) == 1
+            else
+                do return end
+            end
+            if remover then
+                vim.cmd.FonteRemover()
+            end
+		end,
+	}
+)
+
 -- --- Builtin LSP commands ---
 -- Only available in git projects (git init)
 autocmd(
@@ -192,27 +216,27 @@ autocmd(
 	}
 )
 
--- Remover fonte do regedit (Windows)
-autocmd(
-	'VimLeave',
-	{
-		group = Andrikin,
-		callback = function()
-            local flashdrive = vim.env.HOME:sub(1, 1):lower() ~= 'c'
-            local remover = false
-            if flashdrive then
-                remover = vim.fn.confirm(
-                    'Remover fonte do regedit?',
-                    '&Sim\n&Não',
-                    2
-                ) == 1
-            else
-                do return end
-            end
-            if remover then
-                vim.cmd.FonteRemover()
-            end
-		end,
-	}
-)
+--- Forçar nvim-cmp a mostrar autocompletion
+-- autocmd(
+--     {"TextChangedI", "TextChangedP"},
+--     {
+--         callback = function()
+--             local cmp = require('cmp')
+--             local line = vim.api.nvim_get_current_line()
+--             local cursor = vim.api.nvim_win_get_cursor(0)[2]
+--             local current = string.sub(line, cursor, cursor + 1)
+--             if current == "." or current == "," or current == " " then
+--                 cmp.close()
+--             end
+--             local before_line = string.sub(line, 1, cursor + 1)
+--             local after_line = string.sub(line, cursor + 1, -1)
+--             if not string.match(before_line, '^%s+$') then
+--                 if after_line == "" or string.match(before_line, " $") or string.match(before_line, "%.$") then
+--                     cmp.complete()
+--                 end
+--             end
+--         end,
+--         pattern = "*"
+--     }
+-- )
 
