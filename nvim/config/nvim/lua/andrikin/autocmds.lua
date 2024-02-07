@@ -179,8 +179,10 @@ autocmd(
                 vim.keymap.set("i", "<c-y>", function()
                     cmp.confirm({select = false})
                 end)
-                vim.keymap.set("i", "<cr>", function()
+                vim.keymap.set("i", "<cr>", function() -- insert word and skip from INSERT MODE
                     cmp.confirm({select = false})
+                    local esc = vim.api.nvim_replace_termcodes("<esc>", true, false, true)
+                    vim.api.nvim_feedkeys(esc, 'n', false)
                 end)
                 vim.keymap.set("i", "<c-e>", function()
                     cmp.abort()
