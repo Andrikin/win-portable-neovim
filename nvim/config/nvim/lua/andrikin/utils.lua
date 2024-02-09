@@ -302,11 +302,11 @@ Registrador.init = function(self)
 			else
 				Utils.notify(string.format('Opt: init: Arquivo %s já extraído.', arquivo))
 			end
-			if download_realizado and registrado then
+			if download_realizado then
                 if executavel then
-                    vim.fn.rename(tostring(download), tostring(diretorio / arquivo)) -- mover arquivo para a pasta dele
+                    vim.fn.rename(download.diretorio, (diretorio / arquivo).diretorio) -- mover arquivo para a pasta dele
                 else
-                    vim.fn.delete(tostring(download)) -- remover arquivo comprimido baixado
+                    vim.fn.delete(download.diretorio) -- remover arquivo comprimido baixado
                 end
 			end
 			registrado = self:registrar(programa)
