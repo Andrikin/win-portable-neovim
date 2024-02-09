@@ -44,18 +44,19 @@ Registrador.config = function(self, cfg)
 	self.deps = cfg
 end
 
+--- Verifica se o programa já está no PATH, busca pelo executável e 
+--- realiza o registro no PATH do sistema
 ---@param programa table
 ---@return boolean
----Verifica se o programa já está no PATH
 Registrador.registrar = function(self, programa)
-	local diretorio = self.diretorio .. programa.nome
-	local registrado = vim.env.PATH:match(diretorio:gsub('[\\-]', '.'))
+	local diretorio = self.diretorio / programa.nome
+	local registrado = vim.env.PATH:match(diretorio.diretorio:gsub('[\\-]', '.'))
 	if registrado then
 		Utils.notify(string.format('Opt: registrar_path: Programa %s já registrado no sistema!', programa.nome))
 		return true
 	end
 	local limite = vim.tbl_islist(programa.cmd) and #programa.cmd or 1
-	local executaveis = vim.fs.find(programa.cmd, {path = diretorio, type = 'file', limit = limite})
+	local executaveis = vim.fs.find(programa.cmd, {path = diretorio.diretorio, type = 'file', limit = limite})
     local sem_executavel = vim.tbl_isempty(executaveis)
 	if not registrado and sem_executavel then
 		Utils.notify(string.format('Opt: registrar_path: Baixar programa %s e registrar no sistema.', programa.nome))
@@ -65,45 +66,47 @@ Registrador.registrar = function(self, programa)
 	for _, exe in ipairs(executaveis) do
 		vim.env.PATH = vim.env.PATH .. ';' .. vim.fn.fnamemodify(exe, ':h')
 	end
-	registrado = vim.env.PATH:match(diretorio:gsub('[\\-]', '.'))
-	if registrado then
-		Utils.notify(string.format('Opt: registrar_path: Programa %s registrado no PATH do sistema.', programa.nome))
-		if programa.config then -- caso tenha configuração, executá-la
-			Utils.notify(string.format('Opt: registrar_path: Configurando programa %s.', programa.nome))
-			programa.config()
-		end
-	end
+    Utils.notify(string.format('Opt: registrar_path: Programa %s registrado no PATH do sistema.', programa.nome))
+    if programa.config then -- caso tenha configuração, executá-la
+        Utils.notify(string.format('Opt: registrar_path: Configurando programa %s.', programa.nome))
+        programa.config()
+    end
 	return true
 end
 
 Registrador.init = function(self)
 	for _, programa in ipairs(self.deps) do
-		local arquivo = vim.fn.fnamemodify(programa.link, ':t')
 		local diretorio = self.diretorio / programa.nome
+		local arquivo = vim.fn.fnamemodify(programa.link, ':t')
+        local executavel = arquivo:match('%.([^_-.]+)$') == 'exe'
+        local download = self.diretorio / arquivo
 		local registrado = self:registrar(programa)
 		if not registrado then
-			local baixado = vim.fn.getftype(tostring(self.diretorio / arquivo)) ~= ''
+			local download_realizado = vim.fn.getftype(download.diretorio) ~= ''
 			local extraido = #vim.fn.glob(tostring(diretorio / '*'), false, true) ~= 0
-			if not baixado then
+			if not download_realizado then
 				Utils.Curl.download(programa.link, self.diretorio.diretorio)
-                baixado = true
+                download_realizado = true
 			else
-				Utils.notify(string.format('Opt: init: Arquivo %s já existe.', arquivo))
+				Utils.notify(string.format('Opt: init: Arquivo %s já download_realizado.', arquivo))
 			end
-			if not extraido and baixado then
+			if not extraido and download_realizado then
 				-- criar diretório para extrair arquivo
-				if vim.fn.isdirectory(tostring(diretorio)) == 0 then
-					vim.fn.mkdir(tostring(diretorio), 'p', 0700)
+				if vim.fn.isdirectory(diretorio.diretorio) == 0 then
+					vim.fn.mkdir(diretorio.diretorio, 'p', 0700)
 				end
-				Utils.Curl.extrair(tostring(self.diretorio / arquivo), diretorio.diretorio)
+                Utils.Curl.extrair(download.diretorio, diretorio.diretorio)
 			else
 				Utils.notify(string.format('Opt: init: Arquivo %s já extraído.', arquivo))
 			end
-			self:registrar(programa)
-			-- Remover arquivo baixado (não é mais necessário) 
-			if baixado then
-				vim.fn.delete(self.diretorio .. arquivo)
+			if download_realizado and registrado then
+                if executavel then
+                    vim.fn.rename(tostring(download), tostring(diretorio / arquivo)) -- mover arquivo para a pasta dele
+                else
+                    vim.fn.delete(tostring(download)) -- remover arquivo comprimido baixado
+                end
 			end
+			registrado = self:registrar(programa)
 		end
 	end
 end
@@ -355,6 +358,7 @@ Curl.extrair = function(arquivo, diretorio)
 		error('Curl: extrair: Variárvel nula.')
 	end
 	local extencao = arquivo:match('%.(tar)%.[a-z.]*$') or arquivo:match('%.([a-z]*)$')
+    local extracao = false
 	if extencao == 'zip' then
 		vim.fn.system({
 			'unzip',
@@ -362,6 +366,7 @@ Curl.extrair = function(arquivo, diretorio)
 			'-d',
 			diretorio
 		})
+        extracao = true
 	elseif extencao == 'tar' then
 		vim.fn.system({
 			'tar',
@@ -370,13 +375,16 @@ Curl.extrair = function(arquivo, diretorio)
 			'-C',
 			diretorio
 		})
+        extracao = true
 	end
-	local nome = arquivo:match('[/\\]([^/\\]+)$') or arquivo
-	if vim.v.shell_error == 0 then
-		Utils.notify(string.format('Curl: extrair: Arquivo %s extraído com sucesso!', nome))
-	else
-		Utils.notify(string.format('Curl: extrair: Erro encontrado! Não foi possível extrair o diretorio_arquivo %s', nome))
-	end
+    if extracao then
+        local nome = arquivo:match('[/\\]([^/\\]+)$') or arquivo
+        if vim.v.shell_error == 0 then
+            Utils.notify(string.format('Curl: extrair: Arquivo %s extraído com sucesso!', nome))
+        else
+            Utils.notify(string.format('Curl: extrair: Erro encontrado! Não foi possível extrair o diretorio_arquivo %s', nome))
+        end
+    end
 end
 
 ---@class Diretorio

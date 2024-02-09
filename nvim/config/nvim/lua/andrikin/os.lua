@@ -242,6 +242,10 @@ local programas = {
 		nome = 'maven',
 		link = 'https://dlcdn.apache.org/maven/maven-3/3.9.6/binaries/apache-maven-3.9.6-bin.zip',
 		cmd = 'mvn.cmd'
+	},{
+		nome = 'jq',
+		link = 'https://github.com/jqlang/jq/releases/download/jq-1.7.1/jq-windows-i386.exe',
+		cmd = 'jq-windows-i386.exe',
 	}
 }
 
