@@ -68,7 +68,16 @@ local plugins = {
 						lualine_x = {},
 						lualine_y = {},
 						lualine_z = {}
-					}
+					},
+                    tabline = {
+                        lualine_a = {
+                            {
+                                'tabs',
+                                mode = 1,
+                                path = 0,
+                            },
+                        },
+                    }
 				}
 			)
 		end
