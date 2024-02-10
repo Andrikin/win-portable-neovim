@@ -222,38 +222,42 @@ autocmd(
 	{
 		group = Andrikin,
 		pattern = 'qf',
-		callback = function()
+		callback = function(args)
             local qf_mover = function(movimento)
-                local windows = vim.fn.getwininfo()
-                local qf = {}
-                for _, win in ipairs(windows) do
-                    if win.quickfix == 1 then
-                        qf = win
-                        break
-                    end
-                end
-                return ''
+                local linha = vim.fn.getpos('.')[2]
+                local movimentos = {
+                    l = function(lista)
+                        local cmd = lista.loclist == 1 and 'll' or 'cc'
+                        vim.cmd[cmd]({count = linha + vim.v.count1})
+                        vim.fn.win_gotoid(lista.winid) -- retornar para quickfix/loclist
+                    end,
+                    h = function(lista)
+                        local cmd = lista.loclist == 1 and 'll' or 'cc'
+                        vim.cmd[cmd]({count = linha - vim.v.count1})
+                        vim.fn.win_gotoid(lista.winid) -- retornar para quickfix/loclist
+                    end,
+                    j = function(lista)
+                        local cmd = lista.loclist == 1 and 'lnext' or 'cnext'
+                        vim.cmd[cmd]({count = vim.v.count1, bang = true})
+                        vim.fn.win_gotoid(lista.winid) -- retornar para quickfix/loclist
+                    end,
+                    k = function(lista)
+                        local cmd = lista.loclist == 1 and 'lprevious' or 'cprevious'
+                        vim.cmd[cmd]({count = vim.v.count1, bang = true})
+                        vim.fn.win_gotoid(lista.winid) -- retornar para quickfix/loclist
+                    end,
+                }
+                local qf = vim.fn.getwininfo(vim.fn.bufwinid(args.buf))
+                movimentos[movimento](qf)
             end
-            vim.keymap.set('n', '', function() qf_mover('l') end, {
-                expr = true,
-                silent = true,
-            })
-            vim.keymap.set('n', '', function() qf_mover('h') end, {
-                expr = true,
-                silent = true,
-            })
-            vim.keymap.set('n', '', function() qf_mover('k') end, {
-                expr = true,
-                silent = true,
-            })
-            vim.keymap.set('n', '', function() qf_mover('j') end, {
-                expr = true,
-                silent = true,
-            })
-            vim.keymap.set('n', '', function() qf_mover('gq') end, {
-                expr = true,
-                silent = true,
-            })
+            local opts = {
+                buffer = true,
+                -- silent = true,
+            }
+            vim.keymap.set('n', 'l', function() qf_mover('l') end, opts)
+            vim.keymap.set('n', 'h', function() qf_mover('h') end, opts)
+            vim.keymap.set('n', 'k', function() qf_mover('k') end, opts)
+            vim.keymap.set('n', 'j', function() qf_mover('j') end, opts)
 		end,
 	}
 )
