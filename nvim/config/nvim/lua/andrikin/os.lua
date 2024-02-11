@@ -29,7 +29,6 @@
 -- rust: TODO
 
 -- WIP: Utilizar multithreads para realizar os downloads
--- TODO: Refatorar código?
 
 -- IMPORTANT(Windows 10+): Desabilitar python.exe e python3.exe em "Gerenciar aliases de execução de aplicativo".
 -- Windows executa este alias antes de executar python declarado em PATH.
@@ -51,6 +50,8 @@ SauceCodePro:setup()
 local Registrador = require('andrikin.utils').Registrador.new()
 ---@type Diretorio
 local OPT = require('andrikin.utils').OPT
+
+require('andrikin.utils'):bootstrap()
 
 local programas = {
 	{

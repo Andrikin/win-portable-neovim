@@ -102,6 +102,13 @@ Utils.Diretorio = Diretorio
 ---@type Diretorio
 Utils.OPT = Utils.Diretorio.new(vim.env.NVIM_OPT)
 
+--- Criar diretório 'opt' caso não exista
+Utils.bootstrap = function(self)
+    if vim.fn.isdirectory(self.OPT) then
+        vim.fn.mkdir(self.OPT.diretorio, 'p', 0700)
+    end
+end
+
 ---@class Curl
 ---@field unzip_link string Url para download de unzip.exe
 local Curl = {}
@@ -537,3 +544,4 @@ Utils.npcall = vim.F.npcall
 Utils.win7 = string.match(vim.loop.os_uname()['version'], 'Windows 7')
 
 return Utils
+
