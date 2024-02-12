@@ -104,7 +104,7 @@ Utils.OPT = Utils.Diretorio.new(vim.env.NVIM_OPT)
 
 --- Criar diretório 'opt' caso não exista
 Utils.bootstrap = function(self)
-    if vim.fn.isdirectory(self.OPT) then
+    if vim.fn.isdirectory(self.OPT.diretorio) then
         vim.fn.mkdir(self.OPT.diretorio, 'p', 0700)
     end
 end
