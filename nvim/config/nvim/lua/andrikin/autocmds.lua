@@ -1,14 +1,32 @@
 -- Autocmds goosebumps
 local autocmd = vim.api.nvim_create_autocmd
-local Andrikin = vim.api.nvim_create_augroup('Andrikin', {})
+local Andrikin = vim.api.nvim_create_augroup('Andrikin', {clear = true})
+local cursorline = {
+    toggle = function(cursorlineopt)
+        cursorlineopt = cursorlineopt or {'number', 'line'}
+        vim.opt.cursorlineopt = cursorlineopt
+        vim.o.cursorline = not vim.o.cursorline
+    end,
+    on = function(cursorlineopt)
+        cursorlineopt = cursorlineopt or {'number', 'line'}
+        vim.opt.cursorlineopt = cursorlineopt
+        vim.o.cursorline = true
+    end,
+    off = function()
+        vim.o.cursorline = false
+    end
 
--- Highlight linha quando entrar em InsertMode
+}
+
+-- Highlight linha quando entrar em INSERT MODE
 autocmd(
 	'InsertEnter',
 	{
 		group = Andrikin,
 		pattern = '*',
-		callback = function() vim.opt_local.cursorline = true end,
+		callback = function()
+            cursorline.on()
+        end,
 	}
 )
 autocmd(
@@ -16,7 +34,12 @@ autocmd(
 	{
 		group = Andrikin,
 		pattern = '*',
-		callback = function() vim.opt_local.cursorline = false end,
+		callback = function()
+            local dirvish = vim.o.ft == 'dirvish' -- não desativar quando for Dirvish
+            if not dirvish then
+                cursorline.off()
+            end
+        end,
 	}
 )
 
@@ -27,26 +50,6 @@ autocmd(
 		group = Andrikin,
 		pattern = {'*.html', '*.css'},
 		callback = vim.cmd.EmmetInstall,
-	}
-)
-
--- 'gq' para fechar help
-autocmd(
-	'FileType',
-	{
-		group = Andrikin,
-		pattern = 'help',
-		callback = function(args)
-			vim.keymap.set(
-				'n',
-				'gq',
-				vim.cmd.helpclose,
-				{
-					silent = true,
-					buffer = args.buf,
-				}
-			)
-		end,
 	}
 )
 
@@ -70,17 +73,17 @@ autocmd(
 	}
 )
 
--- 'gq' para fechar quickfix list
+-- 'gq' para fechar quickfix/loclist, checkhealth e help window
 autocmd(
 	'FileType',
 	{
 		group = Andrikin,
-		pattern = {'qf', 'checkhealth'},
+		pattern = {'qf', 'checkhealth', 'help'},
 		callback = function(args)
 			vim.keymap.set(
 				'n',
 				'gq',
-				vim.cmd.quit,
+                vim.cmd.quit,
 				{
 					silent = true,
 					buffer = args.buf,
@@ -216,48 +219,89 @@ autocmd(
 	}
 )
 
+--- Quando quickfix/loclist for para estado hidden, resetar configurações
+autocmd(
+    'User',
+    {
+        group = Andrikin,
+        pattern = 'AndrikinQuickFixHidden',
+        callback = function(ev)
+            local qf_winid = vim.fn.bufwinid(ev.buf)
+            local windows = vim.fn.gettabinfo(vim.fn.tabpagenr())[1].windows
+            windows = vim.tbl_filter(function(winid)
+                return winid ~= qf_winid
+            end, windows)
+            for _, window in ipairs(windows) do
+                local bufnr = vim.fn.getwininfo(window)[1].bufnr
+                vim.fn.setbufvar(bufnr, '&cursorline', false)
+                vim.fn.setbufvar(bufnr, '&cursorlineopt', 'number,line')
+            end
+        end
+    }
+)
+autocmd(
+    {'BufHidden', 'BufLeave'},
+    {
+        group = Andrikin,
+        pattern = '*',
+        callback = function()
+            if vim.o.buftype == 'quickfix' then
+                vim.api.nvim_exec_autocmds('User', {
+                    group = Andrikin,
+                    pattern = 'AndrikinQuickFixHidden',
+                })
+            end
+        end
+    }
+)
+
 --- Registra mapeamentos para comandos na janela quickfix e loclist
 autocmd(
 	'FileType',
 	{
 		group = Andrikin,
 		pattern = 'qf',
-		callback = function(args)
-            local qf_mover = function(movimento)
-                local linha = vim.fn.getpos('.')[2]
-                local movimentos = {
-                    l = function(lista)
-                        local cmd = lista.loclist == 1 and 'll' or 'cc'
-                        vim.cmd[cmd]({count = linha + vim.v.count1})
-                        vim.fn.win_gotoid(lista.winid) -- retornar para quickfix/loclist
-                    end,
-                    h = function(lista)
-                        local cmd = lista.loclist == 1 and 'll' or 'cc'
-                        vim.cmd[cmd]({count = linha - vim.v.count1})
-                        vim.fn.win_gotoid(lista.winid) -- retornar para quickfix/loclist
-                    end,
-                    j = function(lista)
-                        local cmd = lista.loclist == 1 and 'lnext' or 'cnext'
-                        vim.cmd[cmd]({count = vim.v.count1, bang = true})
-                        vim.fn.win_gotoid(lista.winid) -- retornar para quickfix/loclist
-                    end,
-                    k = function(lista)
-                        local cmd = lista.loclist == 1 and 'lprevious' or 'cprevious'
-                        vim.cmd[cmd]({count = vim.v.count1, bang = true})
-                        vim.fn.win_gotoid(lista.winid) -- retornar para quickfix/loclist
-                    end,
-                }
-                local qf = vim.fn.getwininfo(vim.fn.bufwinid(args.buf))
-                movimentos[movimento](qf)
-            end
-            local opts = {
-                buffer = true,
-                -- silent = true,
+		callback = function(ev)
+            local qf = vim.fn.getwininfo(vim.fn.bufwinid(ev.buf))[1]
+            local mover = {
+                mover = function(cmd, count)
+                    count = count or vim.v.count1
+                    local ok, erro = pcall(vim.cmd[cmd], {count =  count})
+                    if not ok then
+                        if erro:match('Vim:E553:') then
+                            print('fim da lista.')
+                        end
+                    end
+                    cursorline.on()
+                    vim.fn.win_gotoid(qf.winid) -- retornar para quickfix/loclist
+                end,
+                enter = function(self)
+                    local cmd = qf.loclist == 1 and 'll' or 'cc'
+                    local linha = vim.fn.getpos('.')[2]
+                    self.mover(cmd, linha)
+                end,
+                i = function()
+                    local cmd = qf.loclist == 1 and 'll' or 'cc'
+                    local linha = vim.fn.getpos('.')[2]
+                    vim.cmd[cmd]({count = linha})
+                    cursorline.off()
+                    vim.cmd[cmd:sub(1, 1) .. 'close']()
+                end,
+                j = function(self)
+                    local cmd = qf.loclist == 1 and 'lnext' or 'cnext'
+                    self.mover(cmd)
+                end,
+                k = function(self)
+                    local cmd = qf.loclist == 1 and 'lprevious' or 'cprevious'
+                    self.mover(cmd)
+                end,
             }
-            vim.keymap.set('n', 'l', function() qf_mover('l') end, opts)
-            vim.keymap.set('n', 'h', function() qf_mover('h') end, opts)
-            vim.keymap.set('n', 'k', function() qf_mover('k') end, opts)
-            vim.keymap.set('n', 'j', function() qf_mover('j') end, opts)
+            local opts = { buffer = true }
+            vim.keymap.set('n', 'k', function() mover:k() end, opts)
+            vim.keymap.set('n', 'j', function() mover:j() end, opts)
+            vim.keymap.set('n', '<cr>', function() mover:enter() end, opts)
+            vim.keymap.set('n', 'i', function() mover.i() end, opts)
+            -- ... adicionar mais comandos para quickfix/loclist
 		end,
 	}
 )
