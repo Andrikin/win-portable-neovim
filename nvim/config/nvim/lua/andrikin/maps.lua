@@ -14,13 +14,11 @@ vim.keymap.set({ 'n', 'v' }, '<Space>', '<Nop>', { silent = true })
 -- Revert with ":iunmap <C-U>". -> from defaults.vim
 -- vim.keymap.set('i', '<c-u>', '<c-g>u<c-u>') -- default in neovim
 -- vim.keymap.set('i', '<c-w>', '<c-g>u<c-w>') -- default in neovim
+-- Fix & command. Redo :substitute command
+-- vim.keymap.set( 'n', '&', function() vim.cmd('&&') end) -- default in neovim
 vim.keymap.set('n', '<backspace>', 'X')
 vim.keymap.set('n', '<c-h>', 'X')
 vim.keymap.set('n', "'", '`')
--- Fix & command. Redo :substitute command
--- vim.keymap.set( 'n', '&', function() -- default in neovim
--- 		vim.cmd('&&')
--- end)
 -- Yank to end of sreen line. Make default in Neovim 0.6.0
 -- g$ cursor after last character, g_ cursor at last character
 vim.api.nvim_del_keymap('n', 'Y') -- removing default mapping
@@ -71,7 +69,7 @@ vim.keymap.set(
 )
 
 -- Moving lines up and down - The Primeagen knowledge word
--- inoremap <c-j> <c-o>:m.+1<cr> " utilizo muito <c-j> para newlines, seria inviável trocar para essa funcionalidade
+-- inoremap <c-j> <c-o>:m.+1<cr> -- utilizo muito <c-j> para newlines, seria inviável trocar para essa funcionalidade
 -- inoremap <c-k> <c-o>:m.-2<cr>
 -- nnoremap <leader>k <cmd>m.-2<cr>
 -- nnoremap <leader>j <cmd>m.+1<cr>
