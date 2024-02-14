@@ -543,5 +543,22 @@ Utils.npcall = vim.F.npcall
 ---@type string | nil
 Utils.win7 = string.match(vim.loop.os_uname()['version'], 'Windows 7')
 
+Utils.cursorline = {
+    toggle = function(cursorlineopt)
+        cursorlineopt = cursorlineopt or {'number', 'line'}
+        vim.opt.cursorlineopt = cursorlineopt
+        vim.o.cursorline = not vim.o.cursorline
+    end,
+    on = function(cursorlineopt)
+        cursorlineopt = cursorlineopt or {'number', 'line'}
+        vim.opt.cursorlineopt = cursorlineopt
+        vim.o.cursorline = true
+    end,
+    off = function()
+        vim.o.cursorline = false
+    end
+
+}
+
 return Utils
 

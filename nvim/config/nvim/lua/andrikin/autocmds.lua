@@ -1,22 +1,7 @@
 -- Autocmds goosebumps
 local autocmd = vim.api.nvim_create_autocmd
 local Andrikin = vim.api.nvim_create_augroup('Andrikin', {clear = true})
-local cursorline = {
-    toggle = function(cursorlineopt)
-        cursorlineopt = cursorlineopt or {'number', 'line'}
-        vim.opt.cursorlineopt = cursorlineopt
-        vim.o.cursorline = not vim.o.cursorline
-    end,
-    on = function(cursorlineopt)
-        cursorlineopt = cursorlineopt or {'number', 'line'}
-        vim.opt.cursorlineopt = cursorlineopt
-        vim.o.cursorline = true
-    end,
-    off = function()
-        vim.o.cursorline = false
-    end
-
-}
+local cursorline = require('andrikin.utils').cursorline
 
 -- Highlight linha quando entrar em INSERT MODE
 autocmd(
