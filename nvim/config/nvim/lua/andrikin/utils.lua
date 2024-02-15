@@ -255,10 +255,10 @@ Registrador.config = function(self, cfg)
 end
 
 --- Verifica se o programa já está no PATH, busca pelo executável e 
---- realiza o registro no PATH do sistema
+--- adiciona o programa no PATH do sistema
 ---@param programa table
 ---@return boolean
-Registrador.registrar = function(self, programa)
+Registrador.adicionar_path = function(self, programa)
 	local diretorio = self.diretorio / programa.nome
 	local registrado = vim.env.PATH:match(diretorio.diretorio:gsub('[\\-]', '.'))
 	if registrado then
@@ -284,40 +284,48 @@ Registrador.registrar = function(self, programa)
 	return true
 end
 
+---@param self Registrador
+---@param programa table
+Registrador.registrar = function(self, programa)
+    local diretorio = self.diretorio / programa.nome
+    local arquivo = vim.fn.fnamemodify(programa.link, ':t')
+    local executavel = arquivo:match('%.([^_-.]+)$') == 'exe'
+    local download = self.diretorio / arquivo
+    local registrado = self:adicionar_path(programa)
+    if not registrado then
+        local download_realizado = vim.fn.getftype(download.diretorio) ~= ''
+        local extraido = #vim.fn.glob(tostring(diretorio / '*'), false, true) ~= 0
+        if not download_realizado then
+            Utils.Curl.download(programa.link, self.diretorio.diretorio)
+            download_realizado = true
+        else
+            Utils.notify(string.format('Opt: init: Arquivo %s já download_realizado.', arquivo))
+        end
+        if not extraido and download_realizado then
+            -- criar diretório para extrair arquivo
+            if vim.fn.isdirectory(diretorio.diretorio) == 0 then
+                vim.fn.mkdir(diretorio.diretorio, 'p', 0700)
+            end
+            Utils.Curl.extrair(download.diretorio, diretorio.diretorio)
+        else
+            Utils.notify(string.format('Opt: init: Arquivo %s já extraído.', arquivo))
+        end
+        if download_realizado then
+            if executavel then
+                vim.fn.rename(download.diretorio, (diretorio / arquivo).diretorio) -- mover arquivo para a pasta dele
+            else
+                vim.fn.delete(download.diretorio) -- remover arquivo comprimido baixado
+            end
+        end
+        registrado = self:adicionar_path(programa)
+    end
+end
+
+---@param self Registrador
 Registrador.init = function(self)
+    -- Utils.multithread(self.deps, self)
 	for _, programa in ipairs(self.deps) do
-		local diretorio = self.diretorio / programa.nome
-		local arquivo = vim.fn.fnamemodify(programa.link, ':t')
-        local executavel = arquivo:match('%.([^_-.]+)$') == 'exe'
-        local download = self.diretorio / arquivo
-		local registrado = self:registrar(programa)
-		if not registrado then
-			local download_realizado = vim.fn.getftype(download.diretorio) ~= ''
-			local extraido = #vim.fn.glob(tostring(diretorio / '*'), false, true) ~= 0
-			if not download_realizado then
-				Utils.Curl.download(programa.link, self.diretorio.diretorio)
-                download_realizado = true
-			else
-				Utils.notify(string.format('Opt: init: Arquivo %s já download_realizado.', arquivo))
-			end
-			if not extraido and download_realizado then
-				-- criar diretório para extrair arquivo
-				if vim.fn.isdirectory(diretorio.diretorio) == 0 then
-					vim.fn.mkdir(diretorio.diretorio, 'p', 0700)
-				end
-                Utils.Curl.extrair(download.diretorio, diretorio.diretorio)
-			else
-				Utils.notify(string.format('Opt: init: Arquivo %s já extraído.', arquivo))
-			end
-			if download_realizado then
-                if executavel then
-                    vim.fn.rename(download.diretorio, (diretorio / arquivo).diretorio) -- mover arquivo para a pasta dele
-                else
-                    vim.fn.delete(download.diretorio) -- remover arquivo comprimido baixado
-                end
-			end
-			registrado = self:registrar(programa)
-		end
+        self:registrar(programa)
 	end
 end
 
@@ -557,8 +565,27 @@ Utils.cursorline = {
     off = function()
         vim.o.cursorline = false
     end
-
 }
+
+---@param programas table
+---@param operador Registrador
+Utils.multithread = function(programas, operador)
+    local uv = vim.loop
+    ---@param id number
+    ---@param programa table
+    ---@param registrador Registrador
+    local task = function(id, programa, registrador)
+        registrador:registrar(programa)
+        return id
+    end
+    local done = function(id)
+        print('Programa registrado: ', id)
+    end
+    local pool = uv.new_work(task, done)
+    for id, programa in ipairs(programas) do
+        uv.queue_work(pool, id, programa, operador)
+    end
+end
 
 return Utils
 
