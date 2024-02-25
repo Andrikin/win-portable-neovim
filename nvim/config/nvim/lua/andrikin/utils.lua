@@ -321,18 +321,38 @@ Registrador.registrar = function(self, programa)
     end
 end
 
----@param self Registrador
-Registrador.init = function(self)
-    -- Utils.multithread(self.deps, self)
-	for _, programa in ipairs(self.deps) do
-        self:registrar(programa)
-	end
+---@param programas table
+Registrador.multithread = function(self, programas)
+    local uv = vim.loop
+    ---@param nome string
+    ---@param link string
+    ---@param cmd string
+    ---@param config function
+    local task = function(nome, link, cmd, config)
+        self:registrar({
+            nome = nome,
+            link = link,
+            cmd = cmd,
+            config = config
+        })
+        return nome
+    end
+    local done = function(programa)
+        print('Programa registrado: ', programa)
+    end
+    local ctx = uv.new_work(task, done)
+    for _, programa in ipairs(programas) do
+        ctx:queue(unpack(programa))
+        -- uv.queue_work(ctx, id, programa, self)
+    end
 end
 
----@param cfg table
-Registrador.setup = function(self, cfg)
-	self:config(cfg)
-	self:init()
+---@param programas table
+Registrador.setup = function(self, programas)
+    self:multithread(programas)
+	-- for _, programa in ipairs(programas) do
+        -- self:registrar(programa)
+	-- end
 end
 
 Utils.Registrador = Registrador
@@ -566,26 +586,6 @@ Utils.cursorline = {
         vim.o.cursorline = false
     end
 }
-
----@param programas table
----@param operador Registrador
-Utils.multithread = function(programas, operador)
-    local uv = vim.loop
-    ---@param id number
-    ---@param programa table
-    ---@param registrador Registrador
-    local task = function(id, programa, registrador)
-        registrador:registrar(programa)
-        return id
-    end
-    local done = function(id)
-        print('Programa registrado: ', id)
-    end
-    local pool = uv.new_work(task, done)
-    for id, programa in ipairs(programas) do
-        uv.queue_work(pool, id, programa, operador)
-    end
-end
 
 return Utils
 
