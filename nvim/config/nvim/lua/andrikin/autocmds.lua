@@ -216,10 +216,8 @@ autocmd(
             windows = vim.tbl_filter(function(winid)
                 return winid ~= qf_winid
             end, windows)
-            for _, window in ipairs(windows) do
-                local bufnr = vim.fn.getwininfo(window)[1].bufnr
-                vim.fn.setbufvar(bufnr, '&cursorline', false)
-                vim.fn.setbufvar(bufnr, '&cursorlineopt', 'number,line')
+            for _, id in ipairs(windows) do
+                vim.wo[id].cursorline = false
             end
         end
     }
