@@ -12,7 +12,7 @@ if not vim.loop.fs_stat(lazypath) then
 end
 vim.opt.rtp:prepend(lazypath)
 
-local TEMA = 'dracula'
+local dracula = 'dracula'
 local plugins = {
 	-- Fork Tim Pope vim-capslock
 	'https://github.com/Andrikin/vim-capslock',
@@ -37,7 +37,7 @@ local plugins = {
 		'https://github.com/Mofiqul/dracula.nvim.git',
         priority = 1000,
 		config = function()
-			vim.cmd.colorscheme(TEMA)
+			vim.cmd.colorscheme(dracula)
 		end
 	},
 	-- Vim Cool,
@@ -60,7 +60,7 @@ local plugins = {
 		config = function()
 			require('lualine').setup(
 				{
-					options = { theme = TEMA },
+					options = { theme = dracula },
 					winbar = {
 						lualine_a = {},
 						lualine_b = {},
