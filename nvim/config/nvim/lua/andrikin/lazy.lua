@@ -20,12 +20,9 @@ local plugins = {
     'https://github.com/tpope/vim-fugitive.git',
 	'https://github.com/tpope/vim-commentary.git',
 	'https://github.com/tpope/vim-surround.git',
+    'https://github.com/tpope/vim-eunuch.git',
 	{
 		'https://github.com/tpope/vim-dadbod.git',
-		lazy = true,
-	},
-	{
-		'https://github.com/tpope/vim-eunuch.git',
 		lazy = true,
 	},
 	{
