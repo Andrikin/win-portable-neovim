@@ -94,7 +94,7 @@ local programas = {
 		end
 	},{
 		nome = 'node',
-		link = 'https://nodejs.org/dist/v20.10.0/node-v20.10.0-win-x64.zip',
+		link = win7 and 'https://nodejs.org/download/release/latest-v12.x/node-v12.22.12-win-x64.zip' or 'https://nodejs.org/dist/v20.10.0/node-v20.10.0-win-x64.zip',
 		cmd = 'node.exe',
 		config = function()
 			local installed = function(pacote) -- checar se diretório existe

@@ -41,6 +41,7 @@ nvim/config/nvim-data/tree-sitter-vue/
 nvim/config/nvim-data/tree-sitter-vimdoc/
 nvim/config/nvim-data/luasnip.log
 nvim/config/nvim-data/undotree/
+nvim/config/configstore/
 
 nvim/bin/
 nvim/opt
