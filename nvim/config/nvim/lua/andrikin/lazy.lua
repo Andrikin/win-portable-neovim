@@ -20,7 +20,10 @@ local plugins = {
     'https://github.com/tpope/vim-fugitive.git',
 	'https://github.com/tpope/vim-commentary.git',
 	'https://github.com/tpope/vim-surround.git',
-    'https://github.com/tpope/vim-eunuch.git',
+    {
+        'https://github.com/tpope/vim-eunuch.git',
+        lazy = vim.fn.executable('rm') == 1 and vim.fn.executable('mkdir') == 1,
+    },
 	{
 		'https://github.com/tpope/vim-dadbod.git',
 		lazy = true,
