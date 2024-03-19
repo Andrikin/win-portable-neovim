@@ -121,7 +121,7 @@ local programas = {
 							plugin
 						})
                         if vim.v.shell_error ~= 0 then
-                            notify('Aconteceu um erro ao instalar o programa %s', plugin)
+                            notify(string.format('Aconteceu um erro ao instalar o programa %s', plugin))
                         end
                     else
                         notify(string.format('Pacote node já instalado %s', plugin))
