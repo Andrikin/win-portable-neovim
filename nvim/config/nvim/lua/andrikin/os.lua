@@ -1,3 +1,5 @@
+-- TODO: Problema com dependência de ouvidoria-latex-modelos (necessário para comando Pdflatex); como resolver a falta
+-- das pastas .ssh e .git?
 -- INFO: Lista de links para download das dependências:
 -- curl: https://curl.se/windows/latest.cgi?p=win64-mingw.zip
 -- unzip: http://linorg.usp.br/CTAN/systems/win32/w32tex/unzip.exe
@@ -41,13 +43,13 @@ end
 local npcall = require('andrikin.utils').npcall
 local notify = require('andrikin.utils').notify
 local win7 = require('andrikin.utils').win7
+---@type Registrador
+local Registrador = require('andrikin.utils').Registrador.new()
 ---@type Curl
 local Curl = require('andrikin.utils').Curl.new()
 ---@type SauceCodePro
 local SauceCodePro = require('andrikin.utils').SauceCodePro.new()
 SauceCodePro:setup()
----@type Registrador
-local Registrador = require('andrikin.utils').Registrador.new()
 ---@type Diretorio
 local OPT = require('andrikin.utils').OPT
 
@@ -73,7 +75,7 @@ local programas = {
 	},{
 		nome = 'sumatra',
 		link = 'https://www.sumatrapdfreader.org/dl/rel/3.5.2/SumatraPDF-3.5.2-64.zip',
-		cmd = 'sumatra.exe',
+		cmd = {'sumatra.exe', 'SumatraPDF-3.5.2-64.exe'},
 		config = function()
 			local diretorio = OPT / 'sumatra'
 			local executavel = vim.fn.glob(tostring(diretorio / 'sumatra*.exe'))

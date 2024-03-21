@@ -131,8 +131,7 @@ end
 Curl.bootstrap = function(self)
 	-- Realizar o download da ferramenta unzip
 	if Utils.win7 and vim.fn.executable('tar') == 0 then
-		Utils.notify('Curl: bootstrap: Sistema não possui tar.exe! Realizar a instalação do programa.')
-		do return end
+		Utils.notify('Curl: bootstrap: Sistema não possui tar.exe!')
 	end
 	if vim.fn.executable('unzip') == 1 then
 		Utils.notify('Curl: bootstrap: Sistema já possui Unzip.')
