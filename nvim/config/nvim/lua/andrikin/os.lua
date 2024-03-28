@@ -133,7 +133,7 @@ local programas = {
 		end
 	},{
 		nome = 'python',
-		link = 'https://www.python.org/ftp/python/3.8.9/python-3.8.9-embed-amd64.zip',
+		link = win7 and 'https://www.python.org/ftp/python/3.8.9/python-3.8.9-embed-amd64.zip' or 'https://www.python.org/ftp/python/3.12.2/python-3.12.2-embed-amd64.zip',
 		cmd = {'python.exe', 'pip.exe'},
 		config = function()
 			-- INFO: Na primeira instalação, baixar get-pip.py e modificar o arquivo python38._pth
@@ -142,6 +142,7 @@ local programas = {
 			get_pip.link =  'https://bootstrap.pypa.io/get-pip.py'
 			get_pip.nome = vim.fn.fnamemodify(get_pip.link, ':t')
 			get_pip.diretorio = OPT / 'python'
+			get_pip.pth = win7 and 'python38._pth' or 'python312._pth'
 			get_pip.instalado = function(self)
 				local pip = vim.fs.find('pip.exe', {path = tostring(self.diretorio), type = 'file'})[1]
 				if not pip then
@@ -160,7 +161,7 @@ local programas = {
 							'sed',
 							'-i',
 							'$s/^#\\(.*\\)$/\\1/',
-							tostring(self.diretorio / 'python38._pth') -- versão 3.8.9
+							tostring(self.diretorio / self.pth)
 						})
 					end
 				else
