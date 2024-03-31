@@ -248,6 +248,67 @@ Registrador.bootstrap = function(self)
 	end
 end
 
+---@private
+---@param programas table
+Registrador._extrair_programas = function(self, programas)
+    for _, programa in ipairs(programas) do
+        Utils.Curl.extrair(programa.diretorio, diretorio.diretorio)
+    end
+end
+
+---@private
+---@param programas table Lista dos programas que são dependência para o nvim
+---@return table
+Registrador._iniciar = function(self, programas)
+    local instalar = {}
+    local Programa = {
+        __index = function(table, key)
+            local atributo = table[key]
+            if atributo == nil then
+                return nil
+            elseif type(atributo) == 'table' then
+                -- CONTINUAR
+            elseif type(atributo) == 'function' then
+            end
+        end
+    }
+	for _, programa in ipairs(programas) do
+        programa = setmetatable(programa, Programa)
+		local diretorio = self.diretorio / programa.nome
+		local arquivo = vim.fn.fnamemodify(programa.link, ':t')
+        local executavel = arquivo:match('%.([^_-.]+)$') == 'exe'
+        local download = self.diretorio / arquivo
+		local registrado = self:registrar(programa)
+        if registrado then
+            goto continuar
+        end
+        local download_realizado = vim.fn.getftype(download.diretorio) ~= ''
+        local extraido = #vim.fn.glob(tostring(diretorio / '*'), false, true) ~= 0
+        if not download_realizado then
+            instalar[#instalar + 1] = programa
+        end
+        if not extraido and download_realizado then
+            -- criar diretório para extrair arquivo
+            if vim.fn.isdirectory(diretorio.diretorio) == 0 then
+                vim.fn.mkdir(diretorio.diretorio, 'p', 0700)
+            end
+            Utils.Curl.extrair(download.diretorio, diretorio.diretorio)
+        else
+            Utils.notify(string.format('Opt: init: Arquivo %s já extraído.', arquivo))
+        end
+        if download_realizado then
+            if executavel then
+                vim.fn.rename(download.diretorio, (diretorio / arquivo).diretorio) -- mover arquivo para a pasta dele
+            else
+                vim.fn.delete(download.diretorio) -- remover arquivo comprimido baixado
+            end
+        end
+        registrado = self:registrar(programa)
+        ::continuar::
+	end
+    return instalar
+end
+
 ---@param cfg table
 Registrador.config = function(self, cfg)
 	self.deps = cfg
