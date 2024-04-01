@@ -1,3 +1,6 @@
+-- TODO: Verificar se bootstrap do Curl/SauceCodePro deve ser modificado para 
+-- ficar em conforme com vim.loop.spawn
+
 ---@class Utils
 ---@field Diretorio Diretorio
 ---@field SauceCodePro SauceCodePro
@@ -6,6 +9,41 @@
 ---@field OPT Diretorio
 ---@field win7 string | nil
 local Utils = {}
+
+---@class Programa
+---@field nome string
+---@field link string
+---@field cmd string|table
+---@field arquivo string
+---@field diretorio Diretorio
+---@field executavel boolean
+---@field extracao Diretorio
+---@field baixado boolean
+---@field config function
+Utils.Programa = {
+    __index = function(table, key)
+        local diretorio = Utils.OPT
+        if not table[key] then
+            if key == 'arquivo' then -- nome do arquivo
+                table[key] = vim.fn.fnamemodify(table.link, ':t')
+            elseif key == 'diretorio' then -- diretório para instalar o programa
+                table[key] = diretorio / table.nome
+            elseif key == 'executavel' then -- arquivo baixado já é um executável .exe
+                table[key] = table.arquivo:match('%.([^_-.]+)$') == 'exe'
+            elseif key == 'extracao' then -- diretório do arquivo do programa baixado pronto para extração
+                table[key] = diretorio / table.arquivo
+            else
+                if key == 'extraido' then -- arquivo extraído?
+                    table[key] = #vim.fn.glob(tostring(table.diretorio / '*'), false, true) ~= 0
+                end
+                if key == 'baixado' then -- arquivo baixado?
+                    table[key] = vim.fn.getftype(table.download.diretorio) ~= ''
+                end
+            end
+            return table[key]
+        end
+    end
+}
 
 ---@class Diretorio
 ---@field diretorio string Caminho completo do diretório
@@ -149,6 +187,7 @@ end
 ---@param link string
 ---@param diretorio string
 Curl.download = function(link, diretorio)
+    local download
 	vim.validate({
 		link = {link, 'string'},
 		diretorio = {diretorio, 'string'}
@@ -158,20 +197,25 @@ Curl.download = function(link, diretorio)
 	end
 	local arquivo = vim.fn.fnamemodify(link, ':t')
 	diretorio = tostring(Utils.Diretorio.new(diretorio) / arquivo)
-	vim.fn.system({
-		'curl',
-		'--fail',
-		'--location',
-		'--silent',
-		'--output',
-		diretorio,
-		link
-	})
-	if vim.v.shell_error == 0 then
-		Utils.notify(string.format('Curl: download: Arquivo %s baixado!', arquivo))
-	else
-		Utils.notify(string.format('Curl: download: Não foi possível realizar o download do arquivo %s!', arquivo))
-	end
+    download = vim.loop.spawn('curl', {
+        args = {
+            '--fail',
+            '--location',
+            '--silent',
+            '--output',
+            diretorio,
+            link
+        },
+        function()
+            local programa = vim.fn.fnamemodify(link, ':t')
+            if not download then
+                Utils.notify(string.format('Download realizado: %s', programa))
+                download:close()
+            else
+                Utils.notify(string.format('Não foi possível realizar o download do arquivo: %s', programa))
+            end
+        end
+    })
 end
 
 ---@param arquivo string
@@ -182,36 +226,39 @@ Curl.extrair = function(arquivo, diretorio)
 		diretorio = {diretorio, 'string'}
 	})
 	if arquivo == '' or diretorio == '' then
-		error('Curl: extrair: Variárvel nula.')
+		error('Curl: extrair: Variável nula.')
 	end
+    local nome = arquivo:match('[/\\]([^/\\]+)$') or arquivo
 	local extencao = arquivo:match('%.(tar)%.[a-z.]*$') or arquivo:match('%.([a-z]*)$')
-    local extracao = false
+    local extracao
 	if extencao == 'zip' then
-		vim.fn.system({
-			'unzip',
-			arquivo,
-			'-d',
-			diretorio
-		})
-        extracao = true
+        extracao = vim.loop.spawn('unzip',
+            {
+                arquivo,
+                '-d',
+                diretorio
+            }, function()
+                if not extracao then
+                    Utils.notify(string.format('Extração concluída: %s', nome))
+                    extracao:close()
+                end
+            end
+        )
 	elseif extencao == 'tar' then
-		vim.fn.system({
-			'tar',
-			'-xf',
-			arquivo,
-			'-C',
-			diretorio
-		})
-        extracao = true
+        extracao = vim.loop.spawn('tar',
+            {
+                '-xf',
+                arquivo,
+                '-C',
+                diretorio
+            }, function()
+                if not extracao then
+                    Utils.notify(string.format('Extração concluída: %s', nome))
+                    extracao:close()
+                end
+            end
+        )
 	end
-    if extracao then
-        local nome = arquivo:match('[/\\]([^/\\]+)$') or arquivo
-        if vim.v.shell_error == 0 then
-            Utils.notify(string.format('Curl: extrair: Arquivo %s extraído com sucesso!', nome))
-        else
-            Utils.notify(string.format('Curl: extrair: Erro encontrado! Não foi possível extrair o diretorio_arquivo %s', nome))
-        end
-    end
 end
 
 Utils.Curl = Curl
@@ -249,84 +296,74 @@ Registrador.bootstrap = function(self)
 end
 
 ---@private
----@param programas table
-Registrador._extrair_programas = function(self, programas)
+---@param programas Programa
+Registrador._extrair_programas = function(programas)
     for _, programa in ipairs(programas) do
-        Utils.Curl.extrair(programa.diretorio, diretorio.diretorio)
+        local diretorio = tostring(programa.diretorio)
+        local extracao = tostring(programa.extracao)
+        if vim.fn.isdirectory(diretorio) == 0 then
+            vim.fn.mkdir(diretorio, 'p', 0700)
+        end
+        Utils.Curl.extrair(extracao, diretorio)
     end
 end
 
 ---@private
----@param programas table Lista dos programas que são dependência para o nvim
----@return table
-Registrador._iniciar = function(self, programas)
-    local instalar = {}
-    local Programa = {
-        __index = function(table, key)
-            local atributo = table[key]
-            if atributo == nil then
-                return nil
-            elseif type(atributo) == 'table' then
-                -- CONTINUAR
-            elseif type(atributo) == 'function' then
-            end
+---@param programas Programa
+Registrador._baixar_programas = function(programas)
+    for _, programa in ipairs(programas) do
+        local diretorio = tostring(programa.diretorio)
+        if vim.fn.isdirectory(diretorio) == 0 then
+            vim.fn.mkdir(diretorio, 'p', 0700)
         end
-    }
+        Utils.Curl.download(programa.link, diretorio)
+    end
+end
+
+---@param programas table Lista dos programas que são dependência para o nvim
+---@return table baixar Programa table
+---@return table extrair Programa table
+Registrador.iniciar = function(self, programas)
+    local baixar = {}
+    local extrair = {}
 	for _, programa in ipairs(programas) do
-        programa = setmetatable(programa, Programa)
-		local diretorio = self.diretorio / programa.nome
-		local arquivo = vim.fn.fnamemodify(programa.link, ':t')
-        local executavel = arquivo:match('%.([^_-.]+)$') == 'exe'
-        local download = self.diretorio / arquivo
-		local registrado = self:registrar(programa)
+        programa = setmetatable(programa, Utils.Programa)
+		local registrado = self.registrar(programa)
         if registrado then
             goto continuar
         end
-        local download_realizado = vim.fn.getftype(download.diretorio) ~= ''
-        local extraido = #vim.fn.glob(tostring(diretorio / '*'), false, true) ~= 0
-        if not download_realizado then
-            instalar[#instalar + 1] = programa
+        if not programa.baixado then
+            baixar[#baixar + 1] = programa
         end
-        if not extraido and download_realizado then
-            -- criar diretório para extrair arquivo
-            if vim.fn.isdirectory(diretorio.diretorio) == 0 then
-                vim.fn.mkdir(diretorio.diretorio, 'p', 0700)
-            end
-            Utils.Curl.extrair(download.diretorio, diretorio.diretorio)
+        if not programa.extraido and programa.baixado then
+            extrair[#extrair + 1] = programa
         else
-            Utils.notify(string.format('Opt: init: Arquivo %s já extraído.', arquivo))
+            Utils.notify(string.format('Opt: init: Arquivo %s já extraído.', programa.arquivo))
         end
-        if download_realizado then
-            if executavel then
-                vim.fn.rename(download.diretorio, (diretorio / arquivo).diretorio) -- mover arquivo para a pasta dele
+        if programa.baixado then
+            if programa.executavel then
+                vim.fn.rename(programa.extracao.diretorio, (programa.diretorio / programa.arquivo).diretorio) -- mover arquivo para a pasta dele
             else
-                vim.fn.delete(download.diretorio) -- remover arquivo comprimido baixado
+                vim.fn.delete(programa.extracao.diretorio) -- remover arquivo programa baixado
             end
         end
-        registrado = self:registrar(programa)
         ::continuar::
 	end
-    return instalar
-end
-
----@param cfg table
-Registrador.config = function(self, cfg)
-	self.deps = cfg
+    return baixar, extrair
 end
 
 --- Verifica se o programa já está no PATH, busca pelo executável e 
 --- realiza o registro no PATH do sistema
----@param programa table
+---@param programa Programa
 ---@return boolean
-Registrador.registrar = function(self, programa)
-	local diretorio = self.diretorio / programa.nome
-	local registrado = vim.env.PATH:match(diretorio.diretorio:gsub('[\\-]', '.'))
+Registrador.registrar = function(programa)
+	local registrado = vim.env.PATH:match(programa.diretorio.diretorio:gsub('[\\-]', '.'))
 	if registrado then
 		Utils.notify(string.format('Opt: registrar_path: Programa %s já registrado no sistema!', programa.nome))
 		return true
 	end
 	local limite = vim.tbl_islist(programa.cmd) and #programa.cmd or 1
-	local executaveis = vim.fs.find(programa.cmd, {path = diretorio.diretorio, type = 'file', limit = limite})
+	local executaveis = vim.fs.find(programa.cmd, {path = programa.diretorio.diretorio, type = 'file', limit = limite})
     local sem_executavel = vim.tbl_isempty(executaveis)
 	if not registrado and sem_executavel then
 		Utils.notify(string.format('Opt: registrar_path: Baixar programa %s e registrar no sistema.', programa.nome))
@@ -344,47 +381,12 @@ Registrador.registrar = function(self, programa)
 	return true
 end
 
-Registrador.init = function(self)
-	for _, programa in ipairs(self.deps) do
-		local diretorio = self.diretorio / programa.nome
-		local arquivo = vim.fn.fnamemodify(programa.link, ':t')
-        local executavel = arquivo:match('%.([^_-.]+)$') == 'exe'
-        local download = self.diretorio / arquivo
-		local registrado = self:registrar(programa)
-		if not registrado then
-			local download_realizado = vim.fn.getftype(download.diretorio) ~= ''
-			local extraido = #vim.fn.glob(tostring(diretorio / '*'), false, true) ~= 0
-			if not download_realizado then
-				Utils.Curl.download(programa.link, self.diretorio.diretorio)
-                download_realizado = true
-			else
-				Utils.notify(string.format('Opt: init: Arquivo %s já download_realizado.', arquivo))
-			end
-			if not extraido and download_realizado then
-				-- criar diretório para extrair arquivo
-				if vim.fn.isdirectory(diretorio.diretorio) == 0 then
-					vim.fn.mkdir(diretorio.diretorio, 'p', 0700)
-				end
-                Utils.Curl.extrair(download.diretorio, diretorio.diretorio)
-			else
-				Utils.notify(string.format('Opt: init: Arquivo %s já extraído.', arquivo))
-			end
-			if download_realizado then
-                if executavel then
-                    vim.fn.rename(download.diretorio, (diretorio / arquivo).diretorio) -- mover arquivo para a pasta dele
-                else
-                    vim.fn.delete(download.diretorio) -- remover arquivo comprimido baixado
-                end
-			end
-			registrado = self:registrar(programa)
-		end
-	end
-end
-
----@param cfg table
-Registrador.setup = function(self, cfg)
-	self:config(cfg)
-	self:init()
+---@param programas table
+Registrador.setup = function(self, programas)
+    local baixados, extraidos = self:iniciar(programas)
+    while #baixados > 0 or #extraidos > 0 do
+        baixados, extraidos = self:iniciar(programas)
+    end
 end
 
 Utils.Registrador = Registrador
