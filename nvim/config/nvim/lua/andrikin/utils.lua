@@ -13,7 +13,7 @@ local Utils = {}
 ---@class Programa
 ---@field nome string
 ---@field link string
----@field cmd string|table
+---@field cmd string | table
 ---@field arquivo string
 ---@field diretorio Diretorio
 ---@field executavel boolean
@@ -156,7 +156,10 @@ Curl.__index = Curl
 
 Curl.new = function()
     if vim.fn.executable('curl') == 0 then -- verificar se curl está instalado no sistema
-        error('curl: instalado: Não foi encontrado curl no sistema. Verificar e realizar a instalação do curl neste computador!\nLink para download: https://curl.se/windows/latest.cgi?p=win64-mingw.zip')
+        error([[
+        curl: instalado: Não foi encontrado curl no sistema. Verificar e realizar a instalação do curl neste computador!
+        Link para download: https://curl.se/windows/latest.cgi?p=win64-mingw.zip
+        ]])
     end
     local curl = setmetatable({
         unzip_link = 'http://linorg.usp.br/CTAN/systems/win32/w32tex/unzip.exe'
@@ -176,7 +179,10 @@ Curl.bootstrap = function(self)
 		Utils.notify('Curl: bootstrap: Sistema já possui Unzip.')
 		do return end
 	end
-	self.download(self.unzip_link, Utils.OPT.diretorio)
+	local pid = self.download(self.unzip_link, Utils.OPT.diretorio)
+    while vim.loop.kill(pid, 0) == 0 do
+        vim.cmd.sleep(2)
+    end
 	local unzip = vim.fs.find('unzip.exe', {path = Utils.OPT.diretorio, type = 'file'})[1]
     if vim.v.shell_error > 0 then
         error('Curl: bootstrap: Não foi possível realizar o download do unzip.exe')
@@ -187,8 +193,9 @@ end
 
 ---@param link string
 ---@param diretorio string
+---@return integer pid Número do processo
 Curl.download = function(link, diretorio)
-    local download
+    local download, pid
 	vim.validate({
 		link = {link, 'string'},
 		diretorio = {diretorio, 'string'}
@@ -198,7 +205,7 @@ Curl.download = function(link, diretorio)
 	end
 	local arquivo = vim.fn.fnamemodify(link, ':t')
 	diretorio = tostring(Utils.Diretorio.new(diretorio) / arquivo)
-    download = vim.loop.spawn('curl', {
+    download, pid = vim.loop.spawn('curl', {
         args = {
             '--fail',
             '--location',
@@ -207,20 +214,24 @@ Curl.download = function(link, diretorio)
             diretorio,
             link
         },
-        function()
+        function(code)
             local programa = vim.fn.fnamemodify(link, ':t')
-            if not download then
+            if download then
+                vim.loop.close(download)
+            end
+            if code == 0 then
                 Utils.notify(string.format('Curl: Download realizado: %s', programa))
-                download:close()
             else
                 Utils.notify(string.format('Curl: Não foi possível realizar o download do arquivo: %s', programa))
             end
         end
     })
+    return pid
 end
 
 ---@param arquivo string
 ---@param diretorio string
+---@return integer pid Número do processo
 Curl.extrair = function(arquivo, diretorio)
 	vim.validate({
 		arquivo = {arquivo, 'string'},
@@ -231,35 +242,40 @@ Curl.extrair = function(arquivo, diretorio)
 	end
     local nome = arquivo:match('[/\\]([^/\\]+)$') or arquivo
 	local extencao = arquivo:match('%.(tar)%.[a-z.]*$') or arquivo:match('%.([a-z]*)$')
-    local extracao
+    local extracao, pid
 	if extencao == 'zip' then
-        extracao = vim.loop.spawn('unzip',
+        extracao, pid = vim.loop.spawn('unzip',
             {
                 arquivo,
                 '-d',
                 diretorio
-            }, function()
-                if not extracao then
+            }, function(code)
+                if extracao then
+                    vim.loop.close(extracao)
+                end
+                if code == 0 then
                     Utils.notify(string.format('Curl: Extração concluída: %s', nome))
-                    extracao:close()
                 end
             end
         )
 	elseif extencao == 'tar' then
-        extracao = vim.loop.spawn('tar',
+        extracao, pid = vim.loop.spawn('tar',
             {
                 '-xf',
                 arquivo,
                 '-C',
                 diretorio
-            }, function()
-                if not extracao then
+            }, function(code)
+                if extracao then
+                    vim.loop.close(extracao)
+                end
+                if code == 0 then
                     Utils.notify(string.format('Curl: Extração concluída: %s', nome))
-                    extracao:close()
                 end
             end
         )
 	end
+    return pid
 end
 
 Utils.Curl = Curl
@@ -298,27 +314,37 @@ end
 
 ---@private
 ---@param programas Programa
+---@return table lista Lista de processos iniciados
 Registrador._extrair_programas = function(programas)
+    local lista = {}
     for _, programa in ipairs(programas) do
+        local pid
         local diretorio = tostring(programa.diretorio)
         local extracao = tostring(programa.extracao)
         if vim.fn.isdirectory(diretorio) == 0 then
             vim.fn.mkdir(diretorio, 'p', 0700)
         end
-        Utils.Curl.extrair(extracao, diretorio)
+        pid = Utils.Curl.extrair(extracao, diretorio)
+        table.insert(lista, pid)
     end
+    return lista
 end
 
 ---@private
 ---@param programas Programa
+---@return table lista Lista de processos iniciados
 Registrador._baixar_programas = function(programas)
+    local lista = {}
     for _, programa in ipairs(programas) do
+        local pid
         local diretorio = tostring(programa.diretorio)
         if vim.fn.isdirectory(diretorio) == 0 then
             vim.fn.mkdir(diretorio, 'p', 0700)
         end
-        Utils.Curl.download(programa.link, diretorio)
+        pid = Utils.Curl.download(programa.link, diretorio)
+        table.insert(lista, pid)
     end
+    return lista
 end
 
 ---@param programas table Lista dos programas que são dependência para o nvim
@@ -384,13 +410,28 @@ Registrador.registrar = function(programa)
 	return true
 end
 
+---@private
+---@param pids table
+---@return boolean
+Registrador._processos_finalizados = function(pids)
+    for _, pid in ipairs(pids) do
+        if vim.loop.kill(pid, 0) == 0 then
+            return false
+        end
+    end
+    return true
+end
+
 ---@param programas table
 Registrador.setup = function(self, programas)
-    local baixar, extrair = self:iniciar(programas)
-    while #baixar > 0 or #extrair > 0 do
-        self._baixar_programas(baixar)
-        self._extrair_programas(extrair)
-        baixar, extrair = self:iniciar(programas)
+    local programas_baixar, programas_extrair = self:iniciar(programas)
+    while #programas_baixar > 0 or #programas_extrair > 0 do
+        local baixados = self._baixar_programas(programas_baixar)
+        local extraidos = self._extrair_programas(programas_extrair)
+        while not self._processos_finalizados(baixados) or not self._processos_finalizados(extraidos) do
+            vim.cmd.sleep(5)
+        end
+        programas_baixar, programas_extrair = self:iniciar(programas)
     end
 end
 
@@ -463,7 +504,10 @@ SauceCodePro.download = function(self)
 		vim.fn.mkdir(tostring(self), 'p', 0700)
 	end
 	-- Realizar download da fonte
-	Utils.Curl.download(self.link, tostring(self))
+    local pid = Utils.Curl.download(self.link, tostring(self))
+    while vim.loop.kill(pid, 0) == 0 do
+        vim.cmd.sleep(2)
+    end
 	if not self:zip_baixado() then
 		error('Fonte: download: Não foi possível realizar o download do arquivo da fonte.')
 	end
@@ -472,7 +516,10 @@ end
 
 ---Decompressar arquivo zip
 SauceCodePro.extrair_zip = function(self)
-	Utils.Curl.extrair(self.arquivo.diretorio, tostring(self))
+	local pid = Utils.Curl.extrair(self.arquivo.diretorio, tostring(self))
+    while vim.loop.kill(pid, 0) == 0 do
+        vim.cmd.sleep(2)
+    end
     Utils.notify('Arquivo fonte SauceCodePro.zip extraído!')
     -- remover arquivo .zip
     if vim.fn.getftype(self.arquivo.diretorio) == 'file' then
