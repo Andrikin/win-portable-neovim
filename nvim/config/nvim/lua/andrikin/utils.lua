@@ -22,25 +22,26 @@ local Utils = {}
 ---@field config function
 Utils.Programa = {
     __index = function(table, key)
-        local diretorio = Utils.OPT
-        if not table[key] then
+        local atributo = rawget(table, key)
+        if not atributo then
+            local diretorio = Utils.OPT
             if key == 'arquivo' then -- nome do arquivo
-                table[key] = vim.fn.fnamemodify(table.link, ':t')
+                rawset(table, key, vim.fn.fnamemodify(table.link, ':t'))
             elseif key == 'diretorio' then -- diretório para instalar o programa
-                table[key] = diretorio / table.nome
+                rawset(table, key, diretorio / table.nome)
             elseif key == 'executavel' then -- arquivo baixado já é um executável .exe
-                table[key] = table.arquivo:match('%.([^_-.]+)$') == 'exe'
+                rawset(table, key, table.arquivo:match('%.([^_-.]+)$') == 'exe')
             elseif key == 'extracao' then -- diretório do arquivo do programa baixado pronto para extração
-                table[key] = diretorio / table.arquivo
+                rawset(table, key, diretorio / table.arquivo)
             else
                 if key == 'extraido' then -- arquivo extraído?
-                    table[key] = #vim.fn.glob(tostring(table.diretorio / '*'), false, true) ~= 0
+                    rawset(table, key, #vim.fn.glob(tostring(table.diretorio / '*'), false, true) ~= 0)
                 end
                 if key == 'baixado' then -- arquivo baixado?
-                    table[key] = vim.fn.getftype(table.download.diretorio) ~= ''
+                    rawset(table, key, vim.fn.getftype(table.extracao.diretorio) ~= '')
                 end
             end
-            return table[key]
+            return rawget(table, key)
         end
     end
 }
@@ -209,10 +210,10 @@ Curl.download = function(link, diretorio)
         function()
             local programa = vim.fn.fnamemodify(link, ':t')
             if not download then
-                Utils.notify(string.format('Download realizado: %s', programa))
+                Utils.notify(string.format('Curl: Download realizado: %s', programa))
                 download:close()
             else
-                Utils.notify(string.format('Não foi possível realizar o download do arquivo: %s', programa))
+                Utils.notify(string.format('Curl: Não foi possível realizar o download do arquivo: %s', programa))
             end
         end
     })
@@ -239,7 +240,7 @@ Curl.extrair = function(arquivo, diretorio)
                 diretorio
             }, function()
                 if not extracao then
-                    Utils.notify(string.format('Extração concluída: %s', nome))
+                    Utils.notify(string.format('Curl: Extração concluída: %s', nome))
                     extracao:close()
                 end
             end
@@ -253,7 +254,7 @@ Curl.extrair = function(arquivo, diretorio)
                 diretorio
             }, function()
                 if not extracao then
-                    Utils.notify(string.format('Extração concluída: %s', nome))
+                    Utils.notify(string.format('Curl: Extração concluída: %s', nome))
                     extracao:close()
                 end
             end
@@ -327,7 +328,9 @@ Registrador.iniciar = function(self, programas)
     local baixar = {}
     local extrair = {}
 	for _, programa in ipairs(programas) do
-        programa = setmetatable(programa, Utils.Programa)
+        if getmetatable(programa) ~= Utils.Programa then
+            programa = setmetatable(programa, Utils.Programa)
+        end
 		local registrado = self.registrar(programa)
         if registrado then
             goto continuar
@@ -383,9 +386,11 @@ end
 
 ---@param programas table
 Registrador.setup = function(self, programas)
-    local baixados, extraidos = self:iniciar(programas)
-    while #baixados > 0 or #extraidos > 0 do
-        baixados, extraidos = self:iniciar(programas)
+    local baixar, extrair = self:iniciar(programas)
+    while #baixar > 0 or #extrair > 0 do
+        self._baixar_programas(baixar)
+        self._extrair_programas(extrair)
+        baixar, extrair = self:iniciar(programas)
     end
 end
 
