@@ -347,9 +347,9 @@ Registrador._baixar_programas = function(programas)
     return lista
 end
 
----@param programas table Lista dos programas que são dependência para o nvim
----@return table baixar Programa table
----@return table extrair Programa table
+---@param programas table | Programa Lista dos programas que são dependência para o nvim
+---@return Programa baixar
+---@return Programa extrair
 Registrador.iniciar = function(self, programas)
     local baixar = {}
     local extrair = {}
@@ -362,10 +362,10 @@ Registrador.iniciar = function(self, programas)
             goto continuar
         end
         if not programa.baixado then
-            baixar[#baixar + 1] = programa
+            table.insert(baixar, programa)
         end
         if not programa.extraido and programa.baixado then
-            extrair[#extrair + 1] = programa
+            table.insert(extrair, programa)
         else
             Utils.notify(string.format('Opt: init: Arquivo %s já extraído.', programa.arquivo))
         end
@@ -391,7 +391,12 @@ Registrador.registrar = function(programa)
 		Utils.notify(string.format('Opt: registrar_path: Programa %s já registrado no sistema!', programa.nome))
 		return true
 	end
-	local limite = vim.tbl_islist(programa.cmd) and #programa.cmd or 1
+    local limite
+    if type(programa.cmd) == 'table' then
+        limite = #programa.cmd
+    else
+        limite = 1
+    end
 	local executaveis = vim.fs.find(programa.cmd, {path = programa.diretorio.diretorio, type = 'file', limit = limite})
     local sem_executavel = vim.tbl_isempty(executaveis)
 	if not registrado and sem_executavel then
