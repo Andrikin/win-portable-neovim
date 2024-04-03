@@ -12,46 +12,42 @@ local Utils = {}
 
 local Processo = {}
 
-Processo.new = function()
-    return setmetatable({}, Processo)
-end
-
 ---@type table<uv_process_t, true>
 Processo.running = {}
 
 Processo.signals = {
-  "HUP",
-  "INT",
-  "QUIT",
-  "ILL",
-  "TRAP",
-  "ABRT",
-  "BUS",
-  "FPE",
-  "KILL",
-  "USR1",
-  "SEGV",
-  "USR2",
-  "PIPE",
-  "ALRM",
-  "TERM",
-  "CHLD",
-  "CONT",
-  "STOP",
-  "TSTP",
-  "TTIN",
-  "TTOU",
-  "URG",
-  "XCPU",
-  "XFSZ",
-  "VTALRM",
-  "PROF",
-  "WINCH",
-  "IO",
-  "PWR",
-  "EMT",
-  "SYS",
-  "INFO",
+    "HUP",
+    "INT",
+    "QUIT",
+    "ILL",
+    "TRAP",
+    "ABRT",
+    "BUS",
+    "FPE",
+    "KILL",
+    "USR1",
+    "SEGV",
+    "USR2",
+    "PIPE",
+    "ALRM",
+    "TERM",
+    "CHLD",
+    "CONT",
+    "STOP",
+    "TSTP",
+    "TTIN",
+    "TTOU",
+    "URG",
+    "XCPU",
+    "XFSZ",
+    "VTALRM",
+    "PROF",
+    "WINCH",
+    "IO",
+    "PWR",
+    "EMT",
+    "SYS",
+    "INFO",
 }
 
 ---@class ProcessOpts
@@ -65,148 +61,146 @@ Processo.signals = {
 ---@param opts? ProcessOpts
 ---@param cmd string
 function Processo.spawn(cmd, opts)
-  opts = opts or {}
-  opts.timeout = opts.timeout or (120 * 1000) -- finalizar processo que tenham passado de 2 minutos
+    opts = opts or {}
+    opts.timeout = opts.timeout or (120 * 1000) -- finalizar processo que tenham passado de 2 minutos
 
-  ---@type table<string, string>
-  local env = vim.tbl_extend("force", {
-    GIT_SSH_COMMAND = "ssh -oBatchMode=yes",
-  }, vim.loop.os_environ(), opts.env or {})
-  env.GIT_DIR = nil
-  env.GIT_WORK_TREE = nil
-  env.GIT_TERMINAL_PROMPT = "0"
-  env.GIT_INDEX_FILE = nil
+    ---@type table<string, string>
+    local env = vim.tbl_extend("force", {
+        GIT_SSH_COMMAND = "ssh -oBatchMode=yes",
+    }, vim.loop.os_environ(), opts.env or {})
+    env.GIT_DIR = nil
+    env.GIT_WORK_TREE = nil
+    env.GIT_TERMINAL_PROMPT = "0"
+    env.GIT_INDEX_FILE = nil
 
-  ---@type string[]
-  local env_flat = {}
-  for k, v in pairs(env) do
-    env_flat[#env_flat + 1] = k .. "=" .. v
-  end
-
-  local stdout = assert(vim.loop.new_pipe())
-  local stderr = assert(vim.loop.new_pipe())
-
-  local output = ""
-  ---@type uv_process_t?
-  local handle = nil
-
-  ---@type uv_timer_t
-  local timeout
-  local killed = false
-  if opts.timeout then
-    timeout = assert(vim.loop.new_timer())
-    timeout:start(opts.timeout, 0, function()
-      if Processo.kill(handle) then
-        killed = true
-      end
-    end)
-  end
-
-  -- make sure the cwd is valid
-  if not opts.cwd and type(vim.loop.cwd()) ~= "string" then
-    opts.cwd = vim.loop.os_homedir()
-  end
-
-  handle = vim.loop.spawn(cmd, {
-    stdio = { nil, stdout, stderr },
-    args = opts.args,
-    cwd = opts.cwd,
-    env = env_flat,
-  }, function(exit_code, signal)
-    ---@cast handle uv_process_t
-    Processo.running[handle] = nil
-    if timeout then
-      timeout:stop()
-      timeout:close()
+    ---@type string[]
+    local env_flat = {}
+    for k, v in pairs(env) do
+        env_flat[#env_flat + 1] = k .. "=" .. v
     end
-    handle:close()
-    stdout:close()
-    stderr:close()
-    local check = assert(vim.loop.new_check())
-    check:start(function()
-      if not stdout:is_closing() or not stderr:is_closing() then
-        return
-      end
-      check:stop()
-      if opts.on_exit then
-        output = output:gsub("[^\r\n]+\r", "")
-        if killed then
-          output = output .. "\n" .. "Process was killed because it reached the timeout"
-        elseif signal ~= 0 then
-          output = output .. "\n" .. "Process was killed with SIG" .. Processo.signals[signal]
+
+    local stdout = assert(vim.loop.new_pipe())
+    local stderr = assert(vim.loop.new_pipe())
+
+    local output = ""
+    ---@type uv_process_t?
+    local handle = nil
+
+    ---@type uv_timer_t
+    local timeout
+    local killed = false
+    if opts.timeout then
+        timeout = assert(vim.loop.new_timer())
+        timeout:start(opts.timeout, 0, function()
+            if Processo.kill(handle) then
+                killed = true
+            end
+        end)
+    end
+
+    -- make sure the cwd is valid
+    if not opts.cwd and type(vim.loop.cwd()) ~= "string" then
+        opts.cwd = vim.loop.os_homedir()
+    end
+
+    handle = vim.loop.spawn(cmd, {
+        stdio = { nil, stdout, stderr },
+        args = opts.args,
+        cwd = opts.cwd,
+        env = env_flat,
+    }, function(exit_code, signal)
+            ---@cast handle uv_process_t
+            Processo.running[handle] = nil
+            if timeout then
+                timeout:stop()
+                timeout:close()
+            end
+            handle:close()
+            stdout:close()
+            stderr:close()
+            local check = assert(vim.loop.new_check())
+            check:start(function()
+                if not stdout:is_closing() or not stderr:is_closing() then
+                    return
+                end
+                check:stop()
+                if opts.on_exit then
+                    output = output:gsub("[^\r\n]+\r", "")
+                    if killed then
+                        output = output .. "\n" .. "Process was killed because it reached the timeout"
+                    elseif signal ~= 0 then
+                        output = output .. "\n" .. "Process was killed with SIG" .. Processo.signals[signal]
+                    end
+
+                    vim.schedule(function()
+                        opts.on_exit(exit_code == 0 and signal == 0, output)
+                    end)
+                end
+            end)
+        end)
+
+    if not handle then
+        if opts.on_exit then
+            opts.on_exit(false, "Failed to spawn process " .. cmd .. " " .. vim.inspect(opts))
         end
-
-        vim.schedule(function()
-          opts.on_exit(exit_code == 0 and signal == 0, output)
-        end)
-      end
-    end)
-  end)
-
-  if not handle then
-    if opts.on_exit then
-      opts.on_exit(false, "Failed to spawn process " .. cmd .. " " .. vim.inspect(opts))
+        return
     end
-    return
-  end
-  Processo.running[handle] = true
+    Processo.running[handle] = true
 
-  ---@param data? string
-  local function on_output(err, data)
-    assert(not err, err)
+    ---@param data? string
+    local function on_output(err, data)
+        assert(not err, err)
 
-    if data then
-      output = output .. data:gsub("\r\n", "\n")
-      local lines = vim.split(vim.trim(output:gsub("\r$", "")):gsub("[^\n\r]+\r", ""), "\n")
+        if data then
+            output = output .. data:gsub("\r\n", "\n")
+            local lines = vim.split(vim.trim(output:gsub("\r$", "")):gsub("[^\n\r]+\r", ""), "\n")
 
-      if opts.on_line then
-        vim.schedule(function()
-          opts.on_line(lines[#lines])
-        end)
-      end
+            if opts.on_line then
+                vim.schedule(function()
+                    opts.on_line(lines[#lines])
+                end)
+            end
+        end
     end
-  end
 
-  vim.loop.read_start(stdout, on_output)
-  vim.loop.read_start(stderr, on_output)
+    vim.loop.read_start(stdout, on_output)
+    vim.loop.read_start(stderr, on_output)
 
-  return handle
+    return handle
 end
 
 function Processo.kill(handle)
-  if handle and not handle:is_closing() then
-    Processo.running[handle] = nil
-    vim.loop.process_kill(handle, "sigint")
-    return true
-  end
+    if handle and not handle:is_closing() then
+        Processo.running[handle] = nil
+        vim.loop.process_kill(handle, "sigint")
+        return true
+    end
 end
 
 function Processo.abort()
-  for handle in pairs(Processo.running) do
-    Processo.kill(handle)
-  end
+    for handle in pairs(Processo.running) do
+        Processo.kill(handle)
+    end
 end
 
 ---@param cmd string[]
 ---@param opts? {cwd:string, env:table}
 function Processo.exec(cmd, opts)
-  opts = opts or {}
-  ---@type string[]
-  local lines
-  local job = vim.fn.jobstart(cmd, {
-    cwd = opts.cwd,
-    pty = false,
-    env = opts.env,
-    stdout_buffered = true,
-    on_stdout = function(_, _lines)
-      lines = _lines
-    end,
-  })
-  vim.fn.jobwait({ job })
-  return lines
+    opts = opts or {}
+    ---@type string[]
+    local lines
+    local job = vim.fn.jobstart(cmd, {
+        cwd = opts.cwd,
+        pty = false,
+        env = opts.env,
+        stdout_buffered = true,
+        on_stdout = function(_, _lines)
+            lines = _lines
+        end,
+    })
+    vim.fn.jobwait({ job })
+    return lines
 end
-
-Utils.Processo = Processo
 
 ---@class Programa
 ---@field nome string
@@ -253,26 +247,26 @@ Diretorio.__index = Diretorio
 ---@param caminho string | table
 ---@return Diretorio
 Diretorio.new = function(caminho)
-	vim.validate({caminho = {caminho, {'table', 'string'}}})
-	if type(caminho) == 'table' then
-		for _, valor in ipairs(caminho) do
-			if type(valor) ~= 'string' then
-				error('Diretorio: new: Elemento de lista diferente de "string"!')
-			end
-		end
-	end
-	local diretorio = setmetatable({
+    vim.validate({caminho = {caminho, {'table', 'string'}}})
+    if type(caminho) == 'table' then
+        for _, valor in ipairs(caminho) do
+            if type(valor) ~= 'string' then
+                error('Diretorio: new: Elemento de lista diferente de "string"!')
+            end
+        end
+    end
+    local diretorio = setmetatable({
         diretorio = '',
     }, Diretorio)
-	if type(caminho) == 'table' then
-		local concatenar = caminho[1]
-		for i=2, #caminho do
-			concatenar = concatenar .. diretorio._suffix(caminho[i])
-		end
-		caminho = concatenar
-	end
-	diretorio.diretorio = diretorio._sanitize(caminho)
-	return diretorio
+    if type(caminho) == 'table' then
+        local concatenar = caminho[1]
+        for i=2, #caminho do
+            concatenar = concatenar .. diretorio._suffix(caminho[i])
+        end
+        caminho = concatenar
+    end
+    diretorio.diretorio = diretorio._sanitize(caminho)
+    return diretorio
 end
 
 ---@private
@@ -280,8 +274,8 @@ end
 ---@return string
 Diretorio._sanitize = function(str)
     local sanitarizado = ''
-	vim.validate({ str = {str, 'string'} })
-	sanitarizado = string.gsub(str, '/', '\\')
+    vim.validate({ str = {str, 'string'} })
+    sanitarizado = string.gsub(str, '/', '\\')
     return sanitarizado
 end
 
@@ -289,49 +283,49 @@ end
 ---@param str string
 ---@return string
 Diretorio._suffix = function(str)
-	vim.validate({ str = {str, 'string'} })
-	return (str:match('^[/\\]') or str == '') and str or '\\' .. str
+    vim.validate({ str = {str, 'string'} })
+    return (str:match('^[/\\]') or str == '') and str or '\\' .. str
 end
 
 ---@param caminho string | table
 Diretorio.add = function(self, caminho)
-	if type(caminho) == 'table' then
-		local concatenar = ''
-		for _, c in ipairs(caminho) do
-			concatenar = concatenar .. Diretorio._suffix(c)
-		end
-		caminho = concatenar
-	end
-	self.diretorio = self.diretorio .. Diretorio._suffix(caminho)
+    if type(caminho) == 'table' then
+        local concatenar = ''
+        for _, c in ipairs(caminho) do
+            concatenar = concatenar .. Diretorio._suffix(c)
+        end
+        caminho = concatenar
+    end
+    self.diretorio = self.diretorio .. Diretorio._suffix(caminho)
 end
 
 ---@param other Diretorio | string
 ---@return Diretorio
 Diretorio.__div = function(self, other)
     local nome = self.diretorio
-	if getmetatable(other) == Diretorio then
+    if getmetatable(other) == Diretorio then
         other = other.diretorio
     elseif type(other) ~= 'string' then
-		error('Diretorio: __div: Elementos precisam ser do tipo "string".')
-	end
-	return Diretorio.new(Diretorio._sanitize(nome .. Diretorio._suffix(other)))
+        error('Diretorio: __div: Elementos precisam ser do tipo "string".')
+    end
+    return Diretorio.new(Diretorio._sanitize(nome .. Diretorio._suffix(other)))
 end
 
 ---@param str string
 ---@return string
 Diretorio.__concat = function(self, str)
-	if getmetatable(self) ~= Diretorio then
-		error('Diretorio: __concat: Objeto não é do tipo Diretorio.')
-	end
-	if type(str) ~= 'string' then
-		error('Diretorio: __concat: Argumento precisa ser do tipo "string".')
-	end
-	return Diretorio._sanitize(self.diretorio .. Diretorio._suffix(str))
+    if getmetatable(self) ~= Diretorio then
+        error('Diretorio: __concat: Objeto não é do tipo Diretorio.')
+    end
+    if type(str) ~= 'string' then
+        error('Diretorio: __concat: Argumento precisa ser do tipo "string".')
+    end
+    return Diretorio._sanitize(self.diretorio .. Diretorio._suffix(str))
 end
 
 ---@return string
 Diretorio.__tostring = function(self)
-	return self.diretorio
+    return self.diretorio
 end
 
 Utils.Diretorio = Diretorio
@@ -369,24 +363,21 @@ end
 -- FATO: Windows 10 build 17063 or later is bundled with tar.exe which is capable of working with ZIP files 
 ---@private
 Curl.bootstrap = function(self)
-	-- Realizar o download da ferramenta unzip
-	if Utils.win7 and vim.fn.executable('tar') == 0 then
-		Utils.notify('Curl: bootstrap: Sistema não possui tar.exe!')
-	end
-	if vim.fn.executable('unzip') == 1 then
-		Utils.notify('Curl: bootstrap: Sistema já possui Unzip.')
-		do return end
-	end
-	local pid = self.download(self.unzip_link, Utils.OPT.diretorio)
-    while vim.loop.kill(pid, 0) == 0 do
-        vim.cmd.sleep(2)
+    -- Realizar o download da ferramenta unzip
+    if Utils.win7 and vim.fn.executable('tar') == 0 then
+        Utils.notify('Curl: bootstrap: Sistema não possui tar.exe!')
     end
-	local unzip = vim.fs.find('unzip.exe', {path = Utils.OPT.diretorio, type = 'file'})[1]
+    if vim.fn.executable('unzip') == 1 then
+        Utils.notify('Curl: bootstrap: Sistema já possui Unzip.')
+        do return end
+    end
+    self.download(self.unzip_link, Utils.OPT.diretorio)
+    local unzip = vim.fs.find('unzip.exe', {path = Utils.OPT.diretorio, type = 'file'})[1]
     if vim.v.shell_error > 0 then
         error('Curl: bootstrap: Não foi possível realizar o download do unzip.exe')
     elseif unzip == '' then
-		error('Curl: bootstrap: Não foi possível encontrar o executável unzip.exe.')
-	end
+        error('Curl: bootstrap: Não foi possível encontrar o executável unzip.exe.')
+    end
 end
 
 ---@param link string
@@ -394,16 +385,16 @@ end
 ---@return integer pid Número do processo
 Curl.download = function(link, diretorio)
     local download, pid
-	vim.validate({
-		link = {link, 'string'},
-		diretorio = {diretorio, 'string'}
-	})
-	if link == '' or diretorio == '' then
-		error('Curl: download: Variável nula')
-	end
-	local arquivo = vim.fn.fnamemodify(link, ':t')
-	diretorio = tostring(Utils.Diretorio.new(diretorio) / arquivo)
-    download, pid = vim.loop.spawn('curl', {
+    vim.validate({
+        link = {link, 'string'},
+        diretorio = {diretorio, 'string'}
+    })
+    if link == '' or diretorio == '' then
+        error('Curl: download: Variável nula')
+    end
+    local arquivo = vim.fn.fnamemodify(link, ':t')
+    diretorio = tostring(Utils.Diretorio.new(diretorio) / arquivo)
+    download = Processo.spawn('curl',{
         args = {
             '--fail',
             '--location',
@@ -411,69 +402,42 @@ Curl.download = function(link, diretorio)
             '--output',
             diretorio,
             link
-        },
-        function(code)
-            local programa = vim.fn.fnamemodify(link, ':t')
-            if download then
-                vim.loop.close(download)
-            end
-            if code == 0 then
-                Utils.notify(string.format('Curl: Download realizado: %s', programa))
-            else
-                Utils.notify(string.format('Curl: Não foi possível realizar o download do arquivo: %s', programa))
-            end
-        end
+        }
     })
-    return pid
 end
 
 ---@param arquivo string
 ---@param diretorio string
 ---@return integer pid Número do processo
 Curl.extrair = function(arquivo, diretorio)
-	vim.validate({
-		arquivo = {arquivo, 'string'},
-		diretorio = {diretorio, 'string'}
-	})
-	if arquivo == '' or diretorio == '' then
-		error('Curl: extrair: Variável nula.')
-	end
+    vim.validate({
+        arquivo = {arquivo, 'string'},
+        diretorio = {diretorio, 'string'}
+    })
+    if arquivo == '' or diretorio == '' then
+        error('Curl: extrair: Variável nula.')
+    end
     local nome = arquivo:match('[/\\]([^/\\]+)$') or arquivo
-	local extencao = arquivo:match('%.(tar)%.[a-z.]*$') or arquivo:match('%.([a-z]*)$')
+    local extencao = arquivo:match('%.(tar)%.[a-z.]*$') or arquivo:match('%.([a-z]*)$')
     local extracao, pid
-	if extencao == 'zip' then
-        extracao, pid = vim.loop.spawn('unzip',
-            {
+    if extencao == 'zip' then
+        extracao = Processo.spawn('unzip', {
+            args = {
                 arquivo,
                 '-d',
                 diretorio
-            }, function(code)
-                if extracao then
-                    vim.loop.close(extracao)
-                end
-                if code == 0 then
-                    Utils.notify(string.format('Curl: Extração concluída: %s', nome))
-                end
-            end
-        )
-	elseif extencao == 'tar' then
-        extracao, pid = vim.loop.spawn('tar',
-            {
+            }
+        })
+    elseif extencao == 'tar' then
+        extracao = Processo.spawn('tar', {
+            args = {
                 '-xf',
                 arquivo,
                 '-C',
                 diretorio
-            }, function(code)
-                if extracao then
-                    vim.loop.close(extracao)
-                end
-                if code == 0 then
-                    Utils.notify(string.format('Curl: Extração concluída: %s', nome))
-                end
-            end
-        )
-	end
-    return pid
+            }
+        })
+    end
 end
 
 Utils.Curl = Curl
@@ -501,48 +465,39 @@ end
 
 ---@private
 Registrador.bootstrap = function(self)
-	-- Criar diretório, setar configurações, etc
-	if vim.fn.isdirectory(tostring(self)) == 0 then
-		vim.fn.mkdir(tostring(self), 'p', 0700)
-	end
-	if not vim.env.PATH:match(tostring(self):gsub('[\\/-]', '.')) then
-		vim.env.PATH = vim.env.PATH .. ';' .. tostring(self)
-	end
+    -- Criar diretório, setar configurações, etc
+    if vim.fn.isdirectory(tostring(self)) == 0 then
+        vim.fn.mkdir(tostring(self), 'p', 0700)
+    end
+    if not vim.env.PATH:match(tostring(self):gsub('[\\/-]', '.')) then
+        vim.env.PATH = vim.env.PATH .. ';' .. tostring(self)
+    end
 end
 
 ---@private
 ---@param programas Programa
----@return table lista Lista de processos iniciados
 Registrador._extrair_programas = function(programas)
-    local lista = {}
     for _, programa in ipairs(programas) do
-        local pid
         local diretorio = tostring(programa.diretorio)
         local extracao = tostring(programa.extracao)
         if vim.fn.isdirectory(diretorio) == 0 then
             vim.fn.mkdir(diretorio, 'p', 0700)
         end
-        pid = Utils.Curl.extrair(extracao, diretorio)
+        Utils.Curl.extrair(extracao, diretorio)
         table.insert(lista, pid)
     end
-    return lista
 end
 
 ---@private
 ---@param programas Programa
----@return table lista Lista de processos iniciados
 Registrador._baixar_programas = function(programas)
-    local lista = {}
     for _, programa in ipairs(programas) do
-        local pid
         local diretorio = tostring(programa.diretorio)
         if vim.fn.isdirectory(diretorio) == 0 then
             vim.fn.mkdir(diretorio, 'p', 0700)
         end
-        pid = Utils.Curl.download(programa.link, diretorio)
-        table.insert(lista, pid)
+        Utils.Curl.download(programa.link, diretorio)
     end
-    return lista
 end
 
 ---@param programas table | Programa Lista dos programas que são dependência para o nvim
@@ -551,11 +506,11 @@ end
 Registrador.iniciar = function(self, programas)
     local baixar = {}
     local extrair = {}
-	for _, programa in ipairs(programas) do
+    for _, programa in ipairs(programas) do
         if getmetatable(programa) ~= Utils.Programa then
             programa = setmetatable(programa, Utils.Programa)
         end
-		local registrado = self.registrar(programa)
+        local registrado = self.registrar(programa)
         if registrado then
             goto continuar
         end
@@ -575,7 +530,7 @@ Registrador.iniciar = function(self, programas)
             end
         end
         ::continuar::
-	end
+    end
     return baixar, extrair
 end
 
@@ -584,43 +539,31 @@ end
 ---@param programa Programa
 ---@return boolean
 Registrador.registrar = function(programa)
-	local registrado = vim.env.PATH:match(programa.diretorio.diretorio:gsub('[\\-]', '.'))
-	if registrado then
-		Utils.notify(string.format('Opt: registrar_path: Programa %s já registrado no sistema!', programa.nome))
-		return true
-	end
+    local registrado = vim.env.PATH:match(programa.diretorio.diretorio:gsub('[\\-]', '.'))
+    if registrado then
+        Utils.notify(string.format('Opt: registrar_path: Programa %s já registrado no sistema!', programa.nome))
+        return true
+    end
     local limite
     if type(programa.cmd) == 'table' then
         limite = #programa.cmd
     else
         limite = 1
     end
-	local executaveis = vim.fs.find(programa.cmd, {path = programa.diretorio.diretorio, type = 'file', limit = limite})
+    local executaveis = vim.fs.find(programa.cmd, {path = programa.diretorio.diretorio, type = 'file', limit = limite})
     local sem_executavel = vim.tbl_isempty(executaveis)
-	if not registrado and sem_executavel then
-		Utils.notify(string.format('Opt: registrar_path: Baixar programa %s e registrar no sistema.', programa.nome))
-		return false
-	end
-	-- simplesmente adicionar ao PATH
-	for _, exe in ipairs(executaveis) do
-		vim.env.PATH = vim.env.PATH .. ';' .. vim.fn.fnamemodify(exe, ':h')
-	end
+    if not registrado and sem_executavel then
+        Utils.notify(string.format('Opt: registrar_path: Baixar programa %s e registrar no sistema.', programa.nome))
+        return false
+    end
+    -- simplesmente adicionar ao PATH
+    for _, exe in ipairs(executaveis) do
+        vim.env.PATH = vim.env.PATH .. ';' .. vim.fn.fnamemodify(exe, ':h')
+    end
     Utils.notify(string.format('Opt: registrar_path: Programa %s registrado no PATH do sistema.', programa.nome))
     if programa.config then -- caso tenha configuração, executá-la
         Utils.notify(string.format('Opt: registrar_path: Configurando programa %s.', programa.nome))
         programa.config()
-    end
-	return true
-end
-
----@private
----@param pids table
----@return boolean
-Registrador._processos_finalizados = function(pids)
-    for _, pid in ipairs(pids) do
-        if vim.loop.kill(pid, 0) == 0 then
-            return false
-        end
     end
     return true
 end
@@ -628,10 +571,10 @@ end
 ---@param programas table
 Registrador.setup = function(self, programas)
     local programas_baixar, programas_extrair = self:iniciar(programas)
-    while #programas_baixar > 0 or #programas_extrair > 0 do
-        local baixados = self._baixar_programas(programas_baixar)
-        local extraidos = self._extrair_programas(programas_extrair)
-        while not self._processos_finalizados(baixados) or not self._processos_finalizados(extraidos) do
+    while next(programas_baixar) or next(programas_extrair) do
+        self._baixar_programas(programas_baixar)
+        self._extrair_programas(programas_extrair)
+        while next(Processo.running) do
             vim.cmd.sleep(5)
         end
         programas_baixar, programas_extrair = self:iniciar(programas)
@@ -673,24 +616,24 @@ end
 
 ---@private
 SauceCodePro.bootstrap = function(self)
-	if vim.fn.isdirectory(tostring(self)) == 0 then
-		vim.fn.mkdir(tostring(self), 'p', 0700)
-	end
-	vim.api.nvim_create_user_command(
-		'FonteRemover',
+    if vim.fn.isdirectory(tostring(self)) == 0 then
+        vim.fn.mkdir(tostring(self), 'p', 0700)
+    end
+    vim.api.nvim_create_user_command(
+        'FonteRemover',
         function()
             self:remover_regedit()
         end,
-		{}
-	)
+        {}
+    )
 end
 
 SauceCodePro.setup = function(self)
-	if not self:instalado() then
+    if not self:instalado() then
         self:instalar()
     else
-		Utils.notify('Fonte SauceCodePro já instalada.')
-	end
+        Utils.notify('Fonte SauceCodePro já instalada.')
+    end
 end
 
 SauceCodePro.listar_arquivos = function(self)
@@ -703,26 +646,20 @@ SauceCodePro.fonte_extraida = function(self)
 end
 
 SauceCodePro.download = function(self)
-	if vim.fn.isdirectory(tostring(self)) == 0 then
-		vim.fn.mkdir(tostring(self), 'p', 0700)
-	end
-	-- Realizar download da fonte
-    local pid = Utils.Curl.download(self.link, tostring(self))
-    while vim.loop.kill(pid, 0) == 0 do
-        vim.cmd.sleep(2)
+    if vim.fn.isdirectory(tostring(self)) == 0 then
+        vim.fn.mkdir(tostring(self), 'p', 0700)
     end
-	if not self:zip_baixado() then
-		error('Fonte: download: Não foi possível realizar o download do arquivo da fonte.')
-	end
-	Utils.notify('Arquivo fonte .zip baixado!')
+    -- Realizar download da fonte
+    Utils.Curl.download(self.link, tostring(self))
+    if not self:zip_baixado() then
+        error('Fonte: download: Não foi possível realizar o download do arquivo da fonte.')
+    end
+    Utils.notify('Arquivo fonte .zip baixado!')
 end
 
 ---Decompressar arquivo zip
 SauceCodePro.extrair_zip = function(self)
-	local pid = Utils.Curl.extrair(self.arquivo.diretorio, tostring(self))
-    while vim.loop.kill(pid, 0) == 0 do
-        vim.cmd.sleep(2)
-    end
+    Utils.Curl.extrair(self.arquivo.diretorio, tostring(self))
     Utils.notify('Arquivo fonte SauceCodePro.zip extraído!')
     -- remover arquivo .zip
     if vim.fn.getftype(self.arquivo.diretorio) == 'file' then
@@ -734,7 +671,7 @@ end
 ---@private
 ---@return boolean
 SauceCodePro.instalado = function(self)
-	return #self:query_fontes_regedit() > 0
+    return #self:query_fontes_regedit() > 0
 end
 
 ---@private
@@ -750,15 +687,15 @@ SauceCodePro.query_fontes_regedit = function(self)
         return {}
     end
     local query = vim.tbl_filter(
-		function(entrada)
-			return entrada:match('SauceCodePro')
-		end,
+        function(entrada)
+            return entrada:match('SauceCodePro')
+        end,
         comando
     )
     local fontes = vim.tbl_filter(
-		function(fonte)
-			return fonte:match('(.:.*%.ttf)')
-		end,
+        function(fonte)
+            return fonte:match('(.:.*%.ttf)')
+        end,
         query
     )
     return fontes
@@ -766,21 +703,21 @@ end
 
 ---Registra as fontes no regedit do sistema Windows.
 SauceCodePro.regedit = function(self)
-	for _, fonte in ipairs(self.fontes) do
-		local nome = vim.fn.fnamemodify(fonte, ':t')
-		vim.fn.system({
-			'reg',
-			'add',
-			self.registro.diretorio,
-			'/v',
-			nome:match('(.*)%..*$'),
-			'/t',
-			'REG_SZ',
-			'/d',
-			tostring(self.diretorio / nome),
-			'/f'
-		})
-	end
+    for _, fonte in ipairs(self.fontes) do
+        local nome = vim.fn.fnamemodify(fonte, ':t')
+        vim.fn.system({
+            'reg',
+            'add',
+            self.registro.diretorio,
+            '/v',
+            nome:match('(.*)%..*$'),
+            '/t',
+            'REG_SZ',
+            '/d',
+            tostring(self.diretorio / nome),
+            '/f'
+        })
+    end
 end
 
 --- Verifica se existe o arquivo SourceCodePro
@@ -791,19 +728,19 @@ end
 
 --- Desinstala a fonte no regedit do sistema Windows.
 SauceCodePro.remover_regedit = function(self)
-	for _, fonte in ipairs(self:query_fontes_regedit()) do
-		local nome = vim.fn.fnamemodify(fonte, ':t'):match('(.*)%..*$')
-		if nome then
-			vim.fn.system({
-				'reg',
-				'delete',
-				self.registro.diretorio,
-				'/v',
-				nome,
-				'/f'
-			})
-		end
-	end
+    for _, fonte in ipairs(self:query_fontes_regedit()) do
+        local nome = vim.fn.fnamemodify(fonte, ':t'):match('(.*)%..*$')
+        if nome then
+            vim.fn.system({
+                'reg',
+                'delete',
+                self.registro.diretorio,
+                '/v',
+                nome,
+                '/f'
+            })
+        end
+    end
 end
 
 --- Instala a fonte no sistema Windows.
