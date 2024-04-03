@@ -54,9 +54,6 @@ Processo.signals = {
   "INFO",
 }
 
----@diagnostic disable-next-line: no-unknown
-local uv = vim.uv
-
 ---@class ProcessOpts
 ---@field args string[]
 ---@field cwd? string
@@ -69,12 +66,12 @@ local uv = vim.uv
 ---@param cmd string
 function Processo.spawn(cmd, opts)
   opts = opts or {}
-  opts.timeout = opts.timeout or (Config.options.git and Config.options.git.timeout * 1000)
+  opts.timeout = opts.timeout or (120 * 1000) -- finalizar processo que tenham passado de 2 minutos
 
   ---@type table<string, string>
   local env = vim.tbl_extend("force", {
     GIT_SSH_COMMAND = "ssh -oBatchMode=yes",
-  }, uv.os_environ(), opts.env or {})
+  }, vim.loop.os_environ(), opts.env or {})
   env.GIT_DIR = nil
   env.GIT_WORK_TREE = nil
   env.GIT_TERMINAL_PROMPT = "0"
@@ -86,8 +83,8 @@ function Processo.spawn(cmd, opts)
     env_flat[#env_flat + 1] = k .. "=" .. v
   end
 
-  local stdout = assert(uv.new_pipe())
-  local stderr = assert(uv.new_pipe())
+  local stdout = assert(vim.loop.new_pipe())
+  local stderr = assert(vim.loop.new_pipe())
 
   local output = ""
   ---@type uv_process_t?
@@ -97,7 +94,7 @@ function Processo.spawn(cmd, opts)
   local timeout
   local killed = false
   if opts.timeout then
-    timeout = assert(uv.new_timer())
+    timeout = assert(vim.loop.new_timer())
     timeout:start(opts.timeout, 0, function()
       if Processo.kill(handle) then
         killed = true
@@ -106,11 +103,11 @@ function Processo.spawn(cmd, opts)
   end
 
   -- make sure the cwd is valid
-  if not opts.cwd and type(uv.cwd()) ~= "string" then
-    opts.cwd = uv.os_homedir()
+  if not opts.cwd and type(vim.loop.cwd()) ~= "string" then
+    opts.cwd = vim.loop.os_homedir()
   end
 
-  handle = uv.spawn(cmd, {
+  handle = vim.loop.spawn(cmd, {
     stdio = { nil, stdout, stderr },
     args = opts.args,
     cwd = opts.cwd,
@@ -125,7 +122,7 @@ function Processo.spawn(cmd, opts)
     handle:close()
     stdout:close()
     stderr:close()
-    local check = assert(uv.new_check())
+    local check = assert(vim.loop.new_check())
     check:start(function()
       if not stdout:is_closing() or not stderr:is_closing() then
         return
@@ -170,8 +167,8 @@ function Processo.spawn(cmd, opts)
     end
   end
 
-  uv.read_start(stdout, on_output)
-  uv.read_start(stderr, on_output)
+  vim.loop.read_start(stdout, on_output)
+  vim.loop.read_start(stderr, on_output)
 
   return handle
 end
@@ -179,7 +176,7 @@ end
 function Processo.kill(handle)
   if handle and not handle:is_closing() then
     Processo.running[handle] = nil
-    uv.process_kill(handle, "sigint")
+    vim.loop.process_kill(handle, "sigint")
     return true
   end
 end
