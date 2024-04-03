@@ -233,8 +233,8 @@ Utils.Programa = {
                     rawset(table, key, vim.fn.getftype(table.extracao.diretorio) ~= '')
                 end
             end
-            return rawget(table, key)
         end
+        return rawget(table, key)
     end
 }
 
@@ -382,9 +382,9 @@ end
 
 ---@param link string
 ---@param diretorio string
----@return integer pid Número do processo
+---@return uv_process_t download Processo executado async
 Curl.download = function(link, diretorio)
-    local download, pid
+    local download
     vim.validate({
         link = {link, 'string'},
         diretorio = {diretorio, 'string'}
@@ -404,11 +404,12 @@ Curl.download = function(link, diretorio)
             link
         }
     })
+    return download
 end
 
 ---@param arquivo string
 ---@param diretorio string
----@return integer pid Número do processo
+---@return uv_process_t extracao Processo executado async
 Curl.extrair = function(arquivo, diretorio)
     vim.validate({
         arquivo = {arquivo, 'string'},
@@ -419,7 +420,7 @@ Curl.extrair = function(arquivo, diretorio)
     end
     local nome = arquivo:match('[/\\]([^/\\]+)$') or arquivo
     local extencao = arquivo:match('%.(tar)%.[a-z.]*$') or arquivo:match('%.([a-z]*)$')
-    local extracao, pid
+    local extracao
     if extencao == 'zip' then
         extracao = Processo.spawn('unzip', {
             args = {
@@ -438,6 +439,7 @@ Curl.extrair = function(arquivo, diretorio)
             }
         })
     end
+    return extracao
 end
 
 Utils.Curl = Curl
@@ -474,38 +476,12 @@ Registrador.bootstrap = function(self)
     end
 end
 
----@private
----@param programas Programa
-Registrador._extrair_programas = function(programas)
-    for _, programa in ipairs(programas) do
-        local diretorio = tostring(programa.diretorio)
-        local extracao = tostring(programa.extracao)
-        if vim.fn.isdirectory(diretorio) == 0 then
-            vim.fn.mkdir(diretorio, 'p', 0700)
-        end
-        Utils.Curl.extrair(extracao, diretorio)
-        table.insert(lista, pid)
-    end
-end
-
----@private
----@param programas Programa
-Registrador._baixar_programas = function(programas)
-    for _, programa in ipairs(programas) do
-        local diretorio = tostring(programa.diretorio)
-        if vim.fn.isdirectory(diretorio) == 0 then
-            vim.fn.mkdir(diretorio, 'p', 0700)
-        end
-        Utils.Curl.download(programa.link, diretorio)
-    end
-end
-
 ---@param programas table | Programa Lista dos programas que são dependência para o nvim
----@return Programa baixar
----@return Programa extrair
 Registrador.iniciar = function(self, programas)
-    local baixar = {}
-    local extrair = {}
+    local extrair, timer
+    ::reiniciar::
+    extrair = {}
+    timer = vim.loop.new_timer()
     for _, programa in ipairs(programas) do
         if getmetatable(programa) ~= Utils.Programa then
             programa = setmetatable(programa, Utils.Programa)
@@ -515,12 +491,18 @@ Registrador.iniciar = function(self, programas)
             goto continuar
         end
         if not programa.baixado then
-            table.insert(baixar, programa)
+            if vim.fn.isdirectory(programa.diretorio.diretorio) == 0 then
+                vim.fn.mkdir(programa.diretorio.diretorio, 'p', 0700)
+            end
+            Utils.Curl.download(programa.link, programa.diretorio.diretorio)
         end
         if not programa.extraido and programa.baixado then
             table.insert(extrair, programa)
-        else
+            Utils.Curl.extrair(programa.extracao.diretorio, programa.diretorio.diretorio)
+        elseif programa.extraido then
             Utils.notify(string.format('Opt: init: Arquivo %s já extraído.', programa.arquivo))
+        else
+            Utils.notify(string.format('Opt: init: Erro ao extrair arquivo %s.', programa.arquivo))
         end
         if programa.baixado then
             if programa.executavel then
@@ -531,7 +513,14 @@ Registrador.iniciar = function(self, programas)
         end
         ::continuar::
     end
-    return baixar, extrair
+    timer:start(1000, 1000, function()
+        if not next(Processo.running) then
+            timer:close()
+        end
+    end)
+    if next(extrair) then
+        goto reiniciar
+    end
 end
 
 --- Verifica se o programa já está no PATH, busca pelo executável e 
@@ -570,15 +559,7 @@ end
 
 ---@param programas table
 Registrador.setup = function(self, programas)
-    local programas_baixar, programas_extrair = self:iniciar(programas)
-    while next(programas_baixar) or next(programas_extrair) do
-        self._baixar_programas(programas_baixar)
-        self._extrair_programas(programas_extrair)
-        while next(Processo.running) do
-            vim.cmd.sleep(5)
-        end
-        programas_baixar, programas_extrair = self:iniciar(programas)
-    end
+    self:iniciar(programas)
 end
 
 Utils.Registrador = Registrador
