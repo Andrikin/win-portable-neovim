@@ -10,219 +10,154 @@
 ---@field win7 string | nil
 local Utils = {}
 
-local Processo = {}
-
----@type table<uv_process_t, true>
-Processo.running = {}
-
-Processo.signals = {
-    "HUP",
-    "INT",
-    "QUIT",
-    "ILL",
-    "TRAP",
-    "ABRT",
-    "BUS",
-    "FPE",
-    "KILL",
-    "USR1",
-    "SEGV",
-    "USR2",
-    "PIPE",
-    "ALRM",
-    "TERM",
-    "CHLD",
-    "CONT",
-    "STOP",
-    "TSTP",
-    "TTIN",
-    "TTOU",
-    "URG",
-    "XCPU",
-    "XFSZ",
-    "VTALRM",
-    "PROF",
-    "WINCH",
-    "IO",
-    "PWR",
-    "EMT",
-    "SYS",
-    "INFO",
-}
-
----@class ProcessOpts
----@field args string[]
----@field cwd? string
----@field on_line? fun(string)
----@field on_exit? fun(ok:boolean, output:string)
----@field timeout? number
----@field env? table<string,string>
-
----@param opts? ProcessOpts
----@param cmd string
-function Processo.spawn(cmd, opts)
-    opts = opts or {}
-    opts.timeout = opts.timeout or (120 * 1000) -- finalizar processo que tenham passado de 2 minutos
-    ---@type table<string, string>
-    local env = vim.tbl_extend("force", {
-        GIT_SSH_COMMAND = "ssh -oBatchMode=yes",
-    }, vim.loop.os_environ(), opts.env or {})
-    env.GIT_DIR = nil
-    env.GIT_WORK_TREE = nil
-    env.GIT_TERMINAL_PROMPT = "0"
-    env.GIT_INDEX_FILE = nil
-    ---@type string[]
-    local env_flat = {}
-    for k, v in pairs(env) do
-        env_flat[#env_flat + 1] = k .. "=" .. v
-    end
-    local stdout = assert(vim.loop.new_pipe())
-    local stderr = assert(vim.loop.new_pipe())
-    local output = ""
-    ---@type uv_process_t?
-    local handle = nil
-    ---@type uv_timer_t
-    local timeout
-    local killed = false
-    if opts.timeout then
-        timeout = assert(vim.loop.new_timer())
-        timeout:start(opts.timeout, 0, function()
-            if Processo.kill(handle) then
-                killed = true
-            end
-        end)
-    end
-    -- make sure the cwd is valid
-    if not opts.cwd and type(vim.loop.cwd()) ~= "string" then
-        opts.cwd = vim.loop.os_homedir()
-    end
-    handle = vim.loop.spawn(cmd, {
-        stdio = { nil, stdout, stderr },
-        args = opts.args,
-        cwd = opts.cwd,
-        env = env_flat,
-    }, function(exit_code, signal)
-            ---@cast handle uv_process_t
-            Processo.running[handle] = nil
-            if timeout then
-                timeout:stop()
-                timeout:close()
-            end
-            handle:close()
-            stdout:close()
-            stderr:close()
-            local check = assert(vim.loop.new_check())
-            check:start(function()
-                if not stdout:is_closing() or not stderr:is_closing() then
-                    return
-                end
-                check:stop()
-                if opts.on_exit then
-                    output = output:gsub("[^\r\n]+\r", "")
-                    if killed then
-                        output = output .. "\n" .. "Process was killed because it reached the timeout"
-                    elseif signal ~= 0 then
-                        output = output .. "\n" .. "Process was killed with SIG" .. Processo.signals[signal]
-                    end
-                    vim.schedule(function()
-                        opts.on_exit(exit_code == 0 and signal == 0, output)
-                    end)
-                end
-            end)
-        end)
-    if not handle then
-        if opts.on_exit then
-            opts.on_exit(false, "Failed to spawn process " .. cmd .. " " .. vim.inspect(opts))
-        end
-        return
-    end
-    Processo.running[handle] = true
-    ---@param data? string
-    local function on_output(err, data)
-        assert(not err, err)
-        if data then
-            output = output .. data:gsub("\r\n", "\n")
-            local lines = vim.split(vim.trim(output:gsub("\r$", "")):gsub("[^\n\r]+\r", ""), "\n")
-            if opts.on_line then
-                vim.schedule(function()
-                    opts.on_line(lines[#lines])
-                end)
-            end
-        end
-    end
-    vim.loop.read_start(stdout, on_output)
-    vim.loop.read_start(stderr, on_output)
-    return handle
-end
-
-function Processo.kill(handle)
-    if handle and not handle:is_closing() then
-        Processo.running[handle] = nil
-        vim.loop.process_kill(handle, "sigint")
-        return true
-    end
-end
-
-function Processo.abort()
-    for handle in pairs(Processo.running) do
-        Processo.kill(handle)
-    end
-end
-
----@param cmd string[]
----@param opts? {cwd:string, env:table}
-function Processo.exec(cmd, opts)
-    opts = opts or {}
-    ---@type string[]
-    local lines
-    local job = vim.fn.jobstart(cmd, {
-        cwd = opts.cwd,
-        pty = false,
-        env = opts.env,
-        stdout_buffered = true,
-        on_stdout = function(_, _lines)
-            lines = _lines
-        end,
-    })
-    vim.fn.jobwait({ job })
-    return lines
-end
-
+--- TODO: FINALIZAR
 ---@class Programa
 ---@field nome string
 ---@field link string
 ---@field cmd string | table
----@field arquivo string
----@field diretorio Diretorio
----@field executavel boolean
----@field extracao Diretorio
----@field baixado boolean
 ---@field config function
-Utils.Programa = {
-    __index = function(table, key)
-        local atributo = rawget(table, key)
-        if not atributo then
-            local diretorio = Utils.OPT
-            if key == 'arquivo' then -- nome do arquivo
-                atributo = vim.fn.fnamemodify(table.link, ':t')
-            elseif key == 'diretorio' then -- diretório para instalar o programa
-                atributo = diretorio / table.nome
-            elseif key == 'executavel' then -- arquivo baixado já é um executável .exe
-                atributo = table.arquivo:match('%.([^_-.]+)$') == 'exe'
-            elseif key == 'extracao' then -- diretório do arquivo do programa baixado pronto para extração
-                atributo = diretorio / table.arquivo
-            else
-                if key == 'extraido' then -- arquivo extraído?
-                    atributo = #vim.fn.glob(tostring(table.diretorio / '*'), false, true) ~= 0
-                end
-                if key == 'baixado' then -- arquivo baixado?
-                    atributo = vim.fn.getftype(table.extracao.diretorio) ~= ''
-                end
+---@field baixado boolean
+---@field extraido boolean
+---@field finalizado boolean
+local Programa = {}
+
+Programa.__index = Programa
+
+Programa.baixado = false
+
+Programa.extraido = false
+
+Programa.finalizado = false
+
+Programa._timeout = 120 * 1000
+
+Programa.__tostring = function(self)
+    return self:diretorio().diretorio
+end
+
+---@return Diretorio diretorio
+Programa.diretorio = function(self)
+    if not self.nome then -- TESTE
+        error('Utils: Programa: Não foi encontrado valor para o atributo self.nome.') -- TESTE
+    end -- TESTE
+    return Utils.OPT / self.nome
+end
+
+--- Verifica se programa é um executável
+---@return boolean executavel
+Programa.executavel = function(self)
+    local arquivo = vim.fn.fnamemodify(self.link, ':t')
+    return arquivo:match('%.([^_-.]+)$') == 'exe'
+end
+
+Programa.baixar = function(self, encerrar_canais)
+    self._timeout = self._timeout or (120 * 1000)
+    encerrar_canais = encerrar_canais or false
+    local handler
+    local arquivo = vim.fn.fnamemodify(self.link, ':t')
+    local diretorio = tostring(self:diretorio())
+    local timer = assert(vim.loop.new_timer())
+    timer:start(self._timeout, 0, function()
+        self:_kill(handler)
+    end)
+    if not self.stdio then
+        self.stdio = {
+            stdin = assert(vim.loop.new_pipe()),
+            stdout = assert(vim.loop.new_pipe()),
+            stderr = assert(vim.loop.new_pipe()),
+        }
+    end
+    handler = vim.loop.spawn('curl',{
+        args = {
+            '--fail',
+            '--location',
+            '--silent',
+            '--output',
+            arquivo,
+            self.link
+        },
+        stdio = self.stdio,
+        cwd = diretorio
+    }, function(codigo, sinal)
+        if timer then
+            timer:stop()
+            timer:close()
+        end
+        handler:close()
+        for _, _io in ipairs(self.stdio) do
+            if _io and encerrar_canais then
+                _io:close()
             end
         end
-        return atributo
+        self.baixado = true
+    end)
+    return handler
+end
+
+Programa.extrair = function(self)
+    self._timeout = self._timeout or (120 * 1000)
+    local handler
+    local diretorio = tostring(self:diretorio())
+    local arquivo = vim.fn.fnamemodify(self.link, ':t')
+    local tar = arquivo:match('%.(tar)%.[a-z.]*$') == 'tar'
+    local zip = arquivo:match('%.([a-z]*)$') == 'zip'
+    local timer = assert(vim.loop.new_timer())
+    timer:start(self._timeout, 0, function()
+        self:_kill(handler)
+        self.finalizado = true
+    end)
+    if zip then
+        handler = vim.loop.spawn('unzip', {
+            args = {
+                arquivo,
+                '-d',
+                diretorio
+            },
+            stdio = self.stdio,
+            cwd = diretorio
+        }, function(codigo, sinal)
+            handler:close()
+            for _, _io in ipairs(self.stdio) do
+                _io:close()
+            end
+            self.extraido = true
+        end)
+    elseif tar then
+        handler = vim.loop.spawn('tar', {
+            args = {
+                '-xf',
+                arquivo,
+                '-C',
+                diretorio
+            },
+            stdio = self.stdio,
+            cwd = diretorio
+        }, function(codigo, sinal)
+            handler:close()
+            for _, _io in ipairs(self.stdio) do
+                _io:close()
+            end
+            self.extraido = true
+        end)
     end
-}
+    return handler
+end
+
+---@param handler uv_process_t
+Programa._kill = function(self, handler)
+    if handler and not handler:is_closing() then
+        vim.loop.process_kill(handler, 'sigint')
+        return true
+    end
+end
+
+--- TODO: FINALIZAR
+Programa.instalar = function(self)
+    self:baixar()
+    self:extrair()
+end
+
+Utils.Programa = Programa
 
 ---@class Diretorio
 ---@field diretorio string Caminho completo do diretório
@@ -368,64 +303,70 @@ end
 
 ---@param link string
 ---@param diretorio string
----@return uv_process_t download Processo executado async
 Curl.download = function(link, diretorio)
-    local download
-    vim.validate({
-        link = {link, 'string'},
-        diretorio = {diretorio, 'string'}
-    })
-    if link == '' or diretorio == '' then
-        error('Curl: download: Variável nula')
-    end
-    local arquivo = vim.fn.fnamemodify(link, ':t')
-    diretorio = tostring(Utils.Diretorio.new(diretorio) / arquivo)
-    download = Processo.spawn('curl',{
-        args = {
-            '--fail',
-            '--location',
-            '--silent',
-            '--output',
-            diretorio,
-            link
-        }
-    })
-    return download
+	vim.validate({
+		link = {link, 'string'},
+		diretorio = {diretorio, 'string'}
+	})
+	if link == '' or diretorio == '' then
+		error('Curl: download: Variável nula')
+	end
+	local arquivo = vim.fn.fnamemodify(link, ':t')
+	diretorio = tostring(Utils.Diretorio.new(diretorio) / arquivo)
+	vim.fn.system({
+		'curl',
+		'--fail',
+		'--location',
+		'--silent',
+		'--output',
+		diretorio,
+		link
+	})
+	if vim.v.shell_error == 0 then
+		Utils.notify(string.format('Curl: download: Arquivo %s baixado!', arquivo))
+	else
+		Utils.notify(string.format('Curl: download: Não foi possível realizar o download do arquivo %s!', arquivo))
+	end
 end
 
 ---@param arquivo string
 ---@param diretorio string
----@return uv_process_t extracao Processo executado async
 Curl.extrair = function(arquivo, diretorio)
-    vim.validate({
-        arquivo = {arquivo, 'string'},
-        diretorio = {diretorio, 'string'}
-    })
-    if arquivo == '' or diretorio == '' then
-        error('Curl: extrair: Variável nula.')
+	vim.validate({
+		arquivo = {arquivo, 'string'},
+		diretorio = {diretorio, 'string'}
+	})
+	if arquivo == '' or diretorio == '' then
+		error('Curl: extrair: Variárvel nula.')
+	end
+	local extencao = arquivo:match('%.(tar)%.[a-z.]*$') or arquivo:match('%.([a-z]*)$')
+    local extracao = false
+	if extencao == 'zip' then
+		vim.fn.system({
+			'unzip',
+			arquivo,
+			'-d',
+			diretorio
+		})
+        extracao = true
+	elseif extencao == 'tar' then
+		vim.fn.system({
+			'tar',
+			'-xf',
+			arquivo,
+			'-C',
+			diretorio
+		})
+        extracao = true
+	end
+    if extracao then
+        local nome = arquivo:match('[/\\]([^/\\]+)$') or arquivo
+        if vim.v.shell_error == 0 then
+            Utils.notify(string.format('Curl: extrair: Arquivo %s extraído com sucesso!', nome))
+        else
+            Utils.notify(string.format('Curl: extrair: Erro encontrado! Não foi possível extrair o diretorio_arquivo %s', nome))
+        end
     end
-    local nome = arquivo:match('[/\\]([^/\\]+)$') or arquivo
-    local extencao = arquivo:match('%.(tar)%.[a-z.]*$') or arquivo:match('%.([a-z]*)$')
-    local extracao
-    if extencao == 'zip' then
-        extracao = Processo.spawn('unzip', {
-            args = {
-                arquivo,
-                '-d',
-                diretorio
-            }
-        })
-    elseif extencao == 'tar' then
-        extracao = Processo.spawn('tar', {
-            args = {
-                '-xf',
-                arquivo,
-                '-C',
-                diretorio
-            }
-        })
-    end
-    return extracao
 end
 
 Utils.Curl = Curl
@@ -462,55 +403,16 @@ Registrador.bootstrap = function(self)
     end
 end
 
----@param programas table | Programa Lista dos programas que são dependência para o nvim
+--- TODO: FINALIZAR
+---@param programas table | table<Programa> Lista dos programas que são dependência para o nvim
 Registrador.iniciar = function(self, programas)
     for i, programa in ipairs(programas) do
         if getmetatable(programa) ~= Utils.Programa then
             programas[i] = setmetatable(programa, Utils.Programa)
         end
     end
-    local timer, baixados, extracoes, downloads, extraidos
-    baixados = {}
-    extracoes = {}
-    downloads = {}
-    extraidos = {}
-    ::reiniciar::
-    timer = vim.loop.new_timer()
-    for i, programa in ipairs(programas) do
-        local registrado = self.registrar(programa)
-        if registrado then
-            programas[i] = nil
-            goto continuar
-        end
-        if not baixados[programa] and not Processo.running[downloads[programa]] then
-            baixados[programa] = true
-            if vim.fn.isdirectory(programa.diretorio.diretorio) == 0 then
-                vim.fn.mkdir(programa.diretorio.diretorio, 'p', 0700)
-            end
-            downloads[programa] = Utils.Curl.download(programa.link, programa.diretorio.diretorio)
-            goto continuar
-        end
-        if baixados[programa] and not Processo.running[downloads[programa]] and not extracoes[programa] and not Processo.running[extraidos[programa]] then
-            extracoes[programa] = true
-            extraidos[programa] = Utils.Curl.extrair(programa.extracao.diretorio, programa.diretorio.diretorio)
-            goto continuar
-        end
-        if baixados[programa] and extracoes[programa] and not Processo.running[downloads[programa]] and not Processo.running[extraidos[programa]] then
-            if programa.executavel then
-                vim.fn.rename(programa.extracao.diretorio, (programa.diretorio / programa.arquivo).diretorio) -- mover arquivo para a pasta dele
-            else
-                vim.fn.delete(programa.extracao.diretorio) -- remover arquivo programa baixado
-            end
-        end
-        ::continuar::
-    end
-    timer:start(1000, 1000, function()
-        if not next(Processo.running) then
-            timer:close()
-        end
-    end)
-    if next(programas) then
-        goto reiniciar
+    for _, programa in ipairs(programas) do
+        programa:instalar()
     end
 end
 
