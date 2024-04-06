@@ -1,6 +1,3 @@
--- TODO: Verificar se bootstrap do Curl/SauceCodePro deve ser modificado para 
--- ficar em conforme com vim.loop.spawn
-
 ---@class Utils
 ---@field Diretorio Diretorio
 ---@field SauceCodePro SauceCodePro
@@ -19,6 +16,8 @@ local Utils = {}
 ---@field baixado boolean
 ---@field extraido boolean
 ---@field finalizado boolean
+---@field timeout number
+---@field stdio table
 local Programa = {}
 
 Programa.__index = Programa
@@ -29,7 +28,7 @@ Programa.extraido = false
 
 Programa.finalizado = false
 
-Programa._timeout = 120 * 1000
+Programa.timeout = 120 * 1000
 
 Programa.__tostring = function(self)
     return self:diretorio().diretorio
@@ -43,21 +42,27 @@ Programa.diretorio = function(self)
     return Utils.OPT / self.nome
 end
 
+---@return string nome
+Programa.nome_arquivo_baixado = function(self)
+	return vim.fn.fnamemodify(self.link, ':t')
+end
+
 --- Verifica se programa é um executável
 ---@return boolean executavel
 Programa.executavel = function(self)
-    local arquivo = vim.fn.fnamemodify(self.link, ':t')
+    local arquivo = self:nome_arquivo_baixado()
     return arquivo:match('%.([^_-.]+)$') == 'exe'
 end
 
-Programa.baixar = function(self, encerrar_canais)
-    self._timeout = self._timeout or (120 * 1000)
-    encerrar_canais = encerrar_canais or false
+---@param on_pipes boolean
+Programa.baixar = function(self, on_pipes)
+    self.timeout = self.timeout or (120 * 1000)
+    on_pipes = on_pipes or false
     local handler
-    local arquivo = vim.fn.fnamemodify(self.link, ':t')
+    local arquivo = self:nome_arquivo_baixado()
     local diretorio = tostring(self:diretorio())
     local timer = assert(vim.loop.new_timer())
-    timer:start(self._timeout, 0, function()
+    timer:start(self.timeout, 0, function()
         self:_kill(handler)
     end)
     if not self.stdio then
@@ -72,8 +77,9 @@ Programa.baixar = function(self, encerrar_canais)
             '--fail',
             '--location',
             '--silent',
-            '--output',
-            arquivo,
+            -- '--output',
+            -- arquivo,
+			'-O', -- nome do arquivo no servidor
             self.link
         },
         stdio = self.stdio,
@@ -85,7 +91,7 @@ Programa.baixar = function(self, encerrar_canais)
         end
         handler:close()
         for _, _io in ipairs(self.stdio) do
-            if _io and encerrar_canais then
+            if _io and on_pipes then
                 _io:close()
             end
         end
@@ -95,14 +101,14 @@ Programa.baixar = function(self, encerrar_canais)
 end
 
 Programa.extrair = function(self)
-    self._timeout = self._timeout or (120 * 1000)
+    self.timeout = self.timeout or (120 * 1000)
     local handler
     local diretorio = tostring(self:diretorio())
     local arquivo = vim.fn.fnamemodify(self.link, ':t')
     local tar = arquivo:match('%.(tar)%.[a-z.]*$') == 'tar'
     local zip = arquivo:match('%.([a-z]*)$') == 'zip'
     local timer = assert(vim.loop.new_timer())
-    timer:start(self._timeout, 0, function()
+    timer:start(self.timeout, 0, function()
         self:_kill(handler)
         self.finalizado = true
     end)
@@ -144,11 +150,13 @@ Programa.extrair = function(self)
 end
 
 ---@param handler uv_process_t
-Programa._kill = function(self, handler)
+---@return boolean
+Programa._kill = function(handler)
     if handler and not handler:is_closing() then
         vim.loop.process_kill(handler, 'sigint')
         return true
     end
+	return false
 end
 
 --- TODO: FINALIZAR
@@ -403,19 +411,6 @@ Registrador.bootstrap = function(self)
     end
 end
 
---- TODO: FINALIZAR
----@param programas table | table<Programa> Lista dos programas que são dependência para o nvim
-Registrador.iniciar = function(self, programas)
-    for i, programa in ipairs(programas) do
-        if getmetatable(programa) ~= Utils.Programa then
-            programas[i] = setmetatable(programa, Utils.Programa)
-        end
-    end
-    for _, programa in ipairs(programas) do
-        programa:instalar()
-    end
-end
-
 --- Verifica se o programa já está no PATH, busca pelo executável e 
 --- realiza o registro no PATH do sistema
 ---@param programa Programa
@@ -450,9 +445,17 @@ Registrador.registrar = function(programa)
     return true
 end
 
----@param programas table
-Registrador.setup = function(self, programas)
-    self:iniciar(programas)
+--- TODO: FINALIZAR
+---@param programas table Lista dos programas que são dependência para o nvim
+Registrador.iniciar = function(programas)
+    for i, programa in ipairs(programas) do
+        if getmetatable(programa) ~= Utils.Programa then
+            programas[i] = setmetatable(programa, Utils.Programa)
+        end
+    end
+    for _, programa in ipairs(programas) do
+        programa:instalar()
+    end
 end
 
 Utils.Registrador = Registrador

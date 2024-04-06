@@ -259,5 +259,5 @@ local programas = {
 	}
 }
 
-Registrador:setup(programas)
+Registrador.iniciar(programas)
 
