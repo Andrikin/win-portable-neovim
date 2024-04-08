@@ -22,11 +22,11 @@ local Programa = {}
 
 Programa.__index = Programa
 
-Programa.baixado = false
+-- Programa.baixado = false
 
-Programa.extraido = false
+-- Programa.extraido = false
 
-Programa.finalizado = false
+-- Programa.finalizado = false
 
 Programa.timeout = 120 * 1000
 
@@ -159,8 +159,17 @@ Programa._kill = function(handler)
 	return false
 end
 
+--- Verifica se programa já está baixado ou se já encontra-se
+--- extraído
+Programa.checar_instalacao = function(self)
+    self.baixado = false
+    self.extraido = false
+    self.finalizado = false
+end
+
 --- TODO: FINALIZAR
 Programa.instalar = function(self)
+    self:checar_instalacao()
     self:baixar()
     self:extrair()
 end
@@ -445,7 +454,6 @@ Registrador.registrar = function(programa)
     return true
 end
 
---- TODO: FINALIZAR
 ---@param programas table Lista dos programas que são dependência para o nvim
 Registrador.iniciar = function(programas)
     for i, programa in ipairs(programas) do
