@@ -22,11 +22,11 @@ local Programa = {}
 
 Programa.__index = Programa
 
--- Programa.baixado = false
+Programa.baixado = false
 
--- Programa.extraido = false
+Programa.extraido = false
 
--- Programa.finalizado = false
+Programa.finalizado = false
 
 Programa.timeout = 120 * 1000
 
@@ -43,27 +43,31 @@ Programa.diretorio = function(self)
 end
 
 ---@return string nome
-Programa.nome_arquivo_baixado = function(self)
+Programa.nome_arquivo = function(self)
 	return vim.fn.fnamemodify(self.link, ':t')
 end
 
---- Verifica se programa é um executável
+---@return string extencao
+Programa.extencao = function(self)
+    local extencao = self:nome_arquivo():match('%.([^_-.]+)$')
+    return extencao
+end
+
+--- Verifica se programa é um executável .exe
 ---@return boolean executavel
 Programa.executavel = function(self)
-    local arquivo = self:nome_arquivo_baixado()
-    return arquivo:match('%.([^_-.]+)$') == 'exe'
+    return self:extencao() == 'exe'
 end
 
 ---@param on_pipes boolean
 Programa.baixar = function(self, on_pipes)
-    self.timeout = self.timeout or (120 * 1000)
     on_pipes = on_pipes or false
     local handler
-    local arquivo = self:nome_arquivo_baixado()
+    local arquivo = self:nome_arquivo()
     local diretorio = tostring(self:diretorio())
     local timer = assert(vim.loop.new_timer())
     timer:start(self.timeout, 0, function()
-        self:_kill(handler)
+        self:kill()
     end)
     if not self.stdio then
         self.stdio = {
@@ -90,26 +94,49 @@ Programa.baixar = function(self, on_pipes)
             timer:close()
         end
         handler:close()
-        for _, _io in ipairs(self.stdio) do
-            if _io and on_pipes then
+        if _io and on_pipes then
+            for _, _io in pairs(self.stdio) do
                 _io:close()
             end
         end
         self.baixado = true
     end)
-    return handler
+    self._handler = handler
 end
 
 Programa.extrair = function(self)
-    self.timeout = self.timeout or (120 * 1000)
+    if self.stdio then
+        self.stdio.stdin:close()
+        self.stdio.stderr:close()
+        self.stdio = {
+            stdin = self.stdio.stdout,
+            stdout = assert(vim.loop.new_pipe()),
+            stderr = assert(vim.loop.new_pipe()),
+        }
+    else
+        self.stdio = self.stdio or {
+            stdin = nil,
+            stdout = assert(vim.loop.new_pipe()),
+            stderr = assert(vim.loop.new_pipe()),
+        }
+    end
     local handler
+    local on_exit = function(codigo, sinal)
+        handler:close()
+        for _, _io in pairs(self.stdio) do
+            _io:close()
+        end
+        self.extraido = true
+        if self.config then -- executar configuração
+            self.config()
+        end
+    end
     local diretorio = tostring(self:diretorio())
-    local arquivo = vim.fn.fnamemodify(self.link, ':t')
-    local tar = arquivo:match('%.(tar)%.[a-z.]*$') == 'tar'
-    local zip = arquivo:match('%.([a-z]*)$') == 'zip'
+    local arquivo = self:nome_arquivo()
+    local zip = self:extencao() == 'zip'
     local timer = assert(vim.loop.new_timer())
     timer:start(self.timeout, 0, function()
-        self:_kill(handler)
+        self:kill()
         self.finalizado = true
     end)
     if zip then
@@ -121,14 +148,8 @@ Programa.extrair = function(self)
             },
             stdio = self.stdio,
             cwd = diretorio
-        }, function(codigo, sinal)
-            handler:close()
-            for _, _io in ipairs(self.stdio) do
-                _io:close()
-            end
-            self.extraido = true
-        end)
-    elseif tar then
+        }, on_exit)
+    else
         handler = vim.loop.spawn('tar', {
             args = {
                 '-xf',
@@ -138,40 +159,97 @@ Programa.extrair = function(self)
             },
             stdio = self.stdio,
             cwd = diretorio
-        }, function(codigo, sinal)
-            handler:close()
-            for _, _io in ipairs(self.stdio) do
-                _io:close()
-            end
-            self.extraido = true
-        end)
+        }, on_exit)
     end
-    return handler
+    self._handler = handler
 end
 
 ---@param handler uv_process_t
 ---@return boolean
-Programa._kill = function(handler)
-    if handler and not handler:is_closing() then
-        vim.loop.process_kill(handler, 'sigint')
+Programa.kill = function(self)
+    if self._handler and not self._handler:is_closing() then
+        vim.loop.process_kill(self._handler, 'sigint')
         return true
     end
 	return false
 end
 
+--- Verifica se o programa já está no PATH, busca pelo executável e 
+--- realiza o registro na variável PATH do sistema
+---@return boolean
+Programa.registrar = function(self)
+    local registrado = vim.env.PATH:match(self:diretorio().diretorio:gsub('[\\-]', '.'))
+    if registrado then
+        Utils.notify(string.format('Opt: registrar_path: Programa %s já registrado no sistema!', self.nome))
+        return true
+    end
+    local limite = 1
+    if type(self.cmd) == 'table' then
+        limite = #self.cmd
+    end
+    local executaveis = vim.fs.find(self.cmd, {path = self:diretorio().diretorio, type = 'file', limit = limite})
+    local sem_executavel = vim.tbl_isempty(executaveis)
+    if not registrado and sem_executavel then
+        return false
+    end
+    -- simplesmente adicionar diretório dos executáveis ao PATH
+    for _, exe in ipairs(executaveis) do
+        vim.env.PATH = vim.env.PATH .. ';' .. vim.fn.fnamemodify(exe, ':h')
+    end
+    Utils.notify(string.format('Opt: registrar_path: Programa %s registrado no PATH do sistema.', self.nome))
+    return true
+end
+
 --- Verifica se programa já está baixado ou se já encontra-se
 --- extraído
 Programa.checar_instalacao = function(self)
-    self.baixado = false
-    self.extraido = false
-    self.finalizado = false
+    if vim.fn.getftype(tostring(self:diretorio() / self:nome_arquivo())) ~= '' then
+        self.baixado = true
+    end
+    if #vim.fn.glob(tostring(self:diretorio() / '*'), false, true) > 1 and self.baixado then
+        self.extraido = true
+    end
+end
+
+Programa.finalizar_instalacao = function(self)
+    if self.stdio then
+        vim.loop.shutdown(self.stdio.stdout, function()
+            if self.stdio.stdin then
+                self.stdio.stdin:close()
+            end
+            self.stdio.stdout:close()
+            self.stdio.stderr:close()
+            self:kill()
+        end)
+    end
+end
+
+Programa.criar_diretorio = function(self)
+    if vim.fn.isdirectory(self:diretorio().diretorio) then
+        vim.fn.mkdir(self:diretorio().diretorio, 'p', 0700)
+    end
 end
 
 --- TODO: FINALIZAR
+--- Instalação do programa.
+--- Realiza duas tentativas de inclusão no PATH, baixando e extraindo programa
+--- na primeira falha. Na segunda, retorna mensagem de erro.
 Programa.instalar = function(self)
+    self:criar_diretorio()
+    if self:registrar() then
+        return
+    end
     self:checar_instalacao()
-    self:baixar()
-    self:extrair()
+    if not self.baixado and not self.extraido then
+        self:baixar(true)
+        self:extrair()
+    elseif not self.extraido then
+        self:extrair()
+    end
+    self:finalizar_instalacao()
+    if not self:registrar() then
+        Utils.notify(string.format('Programa: instalar: Não foi possível realizar a instalação do programa %s.' , self.nome))
+    end
 end
 
 Utils.Programa = Programa
@@ -390,7 +468,6 @@ Utils.Curl = Curl
 
 ---@class Registrador
 ---@field diretorio Diretorio Onde as dependências ficaram instaladas
----@field deps table Configurações do Registrador
 local Registrador = {}
 
 Registrador.__index = Registrador
@@ -418,40 +495,6 @@ Registrador.bootstrap = function(self)
     if not vim.env.PATH:match(tostring(self):gsub('[\\/-]', '.')) then
         vim.env.PATH = vim.env.PATH .. ';' .. tostring(self)
     end
-end
-
---- Verifica se o programa já está no PATH, busca pelo executável e 
---- realiza o registro no PATH do sistema
----@param programa Programa
----@return boolean
-Registrador.registrar = function(programa)
-    local registrado = vim.env.PATH:match(programa.diretorio.diretorio:gsub('[\\-]', '.'))
-    if registrado then
-        Utils.notify(string.format('Opt: registrar_path: Programa %s já registrado no sistema!', programa.nome))
-        return true
-    end
-    local limite
-    if type(programa.cmd) == 'table' then
-        limite = #programa.cmd
-    else
-        limite = 1
-    end
-    local executaveis = vim.fs.find(programa.cmd, {path = programa.diretorio.diretorio, type = 'file', limit = limite})
-    local sem_executavel = vim.tbl_isempty(executaveis)
-    if not registrado and sem_executavel then
-        Utils.notify(string.format('Opt: registrar_path: Baixar programa %s e registrar no sistema.', programa.nome))
-        return false
-    end
-    -- simplesmente adicionar ao PATH
-    for _, exe in ipairs(executaveis) do
-        vim.env.PATH = vim.env.PATH .. ';' .. vim.fn.fnamemodify(exe, ':h')
-    end
-    Utils.notify(string.format('Opt: registrar_path: Programa %s registrado no PATH do sistema.', programa.nome))
-    if programa.config then -- caso tenha configuração, executá-la
-        Utils.notify(string.format('Opt: registrar_path: Configurando programa %s.', programa.nome))
-        programa.config()
-    end
-    return true
 end
 
 ---@param programas table Lista dos programas que são dependência para o nvim
