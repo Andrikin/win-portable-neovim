@@ -1,3 +1,6 @@
+-- TODO: utilizar vim.loop.new_thread e vim.mpack.encode/decode para criar 
+-- multithreads
+
 ---@class Utils
 ---@field Diretorio Diretorio
 ---@field SauceCodePro SauceCodePro
