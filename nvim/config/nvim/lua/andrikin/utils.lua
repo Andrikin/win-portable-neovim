@@ -10,7 +10,6 @@
 ---@field win7 string | nil
 local Utils = {}
 
---- TODO: FINALIZAR
 ---@class Programa
 ---@field nome string
 ---@field link string
@@ -20,7 +19,6 @@ local Utils = {}
 ---@field extraido boolean
 ---@field finalizado boolean
 ---@field timeout number
----@field stdio table
 local Programa = {}
 
 Programa.__index = Programa
@@ -39,9 +37,6 @@ end
 
 ---@return Diretorio diretorio
 Programa.diretorio = function(self)
-    if not self.nome then -- TESTE
-        error('Utils: Programa: Não foi encontrado valor para o atributo self.nome.') -- TESTE
-    end -- TESTE
     return Utils.OPT / self.nome
 end
 
@@ -62,119 +57,44 @@ Programa.executavel = function(self)
     return self:extencao() == 'exe'
 end
 
----@param on_pipes boolean
-Programa.baixar = function(self, on_pipes)
-    on_pipes = on_pipes or false
-    local handler
-    local arquivo = self:nome_arquivo()
-    local diretorio = tostring(self:diretorio())
-    local timer = assert(vim.loop.new_timer())
-    timer:start(self.timeout, 0, function()
-        self:kill()
-    end)
-    if not self.stdio then
-        self.stdio = {
-            stdin = assert(vim.loop.new_pipe()),
-            stdout = assert(vim.loop.new_pipe()),
-            stderr = assert(vim.loop.new_pipe()),
-        }
-    end
-    handler = vim.loop.spawn('curl',{
-        args = {
-            '--fail',
-            '--location',
-            '--silent',
-            -- '--output',
-            -- arquivo,
-			'-O', -- nome do arquivo no servidor
-            self.link
-        },
-        stdio = self.stdio,
-        cwd = diretorio
-    }, function(codigo, sinal)
-        if timer then
-            timer:stop()
-            timer:close()
-        end
-        handler:close()
-        if _io and on_pipes then
-            for _, _io in pairs(self.stdio) do
-                _io:close()
-            end
-        end
+Programa.baixar = function(self)
+	vim.fn.system({
+		'curl',
+		'--fail',
+		'--location',
+		'--silent',
+        '-O',
+		self.link
+	})
+	if vim.v.shell_error == 0 then
         self.baixado = true
-    end)
-    self._handler = handler
+        self:extrair() -- realizar extração do arquivo 
+	end
 end
 
 Programa.extrair = function(self)
-    if self.stdio then
-        self.stdio.stdin:close()
-        self.stdio.stderr:close()
-        self.stdio = {
-            stdin = self.stdio.stdout,
-            stdout = assert(vim.loop.new_pipe()),
-            stderr = assert(vim.loop.new_pipe()),
-        }
-    else
-        self.stdio = self.stdio or {
-            stdin = nil,
-            stdout = assert(vim.loop.new_pipe()),
-            stderr = assert(vim.loop.new_pipe()),
-        }
-    end
-    local handler
-    local on_exit = function(codigo, sinal)
-        handler:close()
-        for _, _io in pairs(self.stdio) do
-            _io:close()
-        end
-        self.extraido = true
-        if self.config then -- executar configuração
-            self.config()
-        end
-    end
     local diretorio = tostring(self:diretorio())
     local arquivo = self:nome_arquivo()
     local zip = self:extencao() == 'zip'
-    local timer = assert(vim.loop.new_timer())
-    timer:start(self.timeout, 0, function()
-        self:kill()
-        self.finalizado = true
-    end)
     if zip then
-        handler = vim.loop.spawn('unzip', {
-            args = {
-                arquivo,
-                '-d',
-                diretorio
-            },
-            stdio = self.stdio,
-            cwd = diretorio
-        }, on_exit)
+		vim.fn.system({
+			'unzip',
+			arquivo,
+			'-d',
+			diretorio
+		})
     else
-        handler = vim.loop.spawn('tar', {
-            args = {
-                '-xf',
-                arquivo,
-                '-C',
-                diretorio
-            },
-            stdio = self.stdio,
-            cwd = diretorio
-        }, on_exit)
+		vim.fn.system({
+			'tar',
+			'-xf',
+			arquivo,
+			'-C',
+			diretorio
+		})
     end
-    self._handler = handler
-end
-
----@param handler uv_process_t
----@return boolean
-Programa.kill = function(self)
-    if self._handler and not self._handler:is_closing() then
-        vim.loop.process_kill(self._handler, 'sigint')
-        return true
-    end
-	return false
+	if vim.v.shell_error == 0 then
+        self.extraido = true
+	end
 end
 
 --- Verifica se o programa já está no PATH, busca pelo executável e 
@@ -214,26 +134,12 @@ Programa.checar_instalacao = function(self)
     end
 end
 
-Programa.finalizar_instalacao = function(self)
-    if self.stdio then
-        vim.loop.shutdown(self.stdio.stdout, function()
-            if self.stdio.stdin then
-                self.stdio.stdin:close()
-            end
-            self.stdio.stdout:close()
-            self.stdio.stderr:close()
-            self:kill()
-        end)
-    end
-end
-
 Programa.criar_diretorio = function(self)
     if vim.fn.isdirectory(self:diretorio().diretorio) then
         vim.fn.mkdir(self:diretorio().diretorio, 'p', 0700)
     end
 end
 
---- TODO: FINALIZAR
 --- Instalação do programa.
 --- Realiza duas tentativas de inclusão no PATH, baixando e extraindo programa
 --- na primeira falha. Na segunda, retorna mensagem de erro.
@@ -244,14 +150,17 @@ Programa.instalar = function(self)
     end
     self:checar_instalacao()
     if not self.baixado and not self.extraido then
-        self:baixar(true)
-        self:extrair()
+        self:baixar()
     elseif not self.extraido then
         self:extrair()
+    else
+        Utils.notify(string.format('Utils: Programa: Algum erro ocorreu ao realizar a instalação do programa %s.', self.nome))
+        return
     end
-    self:finalizar_instalacao()
     if not self:registrar() then
-        Utils.notify(string.format('Programa: instalar: Não foi possível realizar a instalação do programa %s.' , self.nome))
+        Utils.notify(string.format('Utils: Programa: instalar: Não foi possível realizar a instalação do programa %s.' , self.nome))
+    else
+        self.finalizado = true -- instalação concluída
     end
 end
 
@@ -500,6 +409,7 @@ Registrador.bootstrap = function(self)
     end
 end
 
+-- TODO: FINALIZAR
 ---@param programas table Lista dos programas que são dependência para o nvim
 Registrador.iniciar = function(programas)
     for i, programa in ipairs(programas) do
@@ -508,8 +418,18 @@ Registrador.iniciar = function(programas)
         end
     end
     for _, programa in ipairs(programas) do
-        programa:instalar()
+    	programa:instalar()
     end
+    -- local work = vim.loop.new_work(
+        -- Programa.instalar,
+        -- function()
+    -- end)
+    -- local queue = vim.loop.queue_work
+    -- local encode = vim.mpack.encode
+    -- for _, programa in ipairs(programas) do
+        -- queue(work, encode(programa))
+    -- end
+    -- vim.loop.run()
 end
 
 Utils.Registrador = Registrador
