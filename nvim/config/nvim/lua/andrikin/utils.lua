@@ -72,6 +72,7 @@ Programa.baixar = function(self)
 	end
 end
 
+-- TODO: Remover arquivo depois de extração
 Programa.extrair = function(self)
     local diretorio = tostring(self:diretorio())
     local arquivo = self:nome_arquivo()
