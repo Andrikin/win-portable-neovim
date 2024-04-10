@@ -63,6 +63,8 @@ Programa.baixar = function(self)
 		'--fail',
 		'--location',
 		'--silent',
+        '--output-dir',
+        self:diretorio(),
         '-O',
 		self.link
 	})
@@ -72,7 +74,6 @@ Programa.baixar = function(self)
 	end
 end
 
--- TODO: Remover arquivo depois de extração
 Programa.extrair = function(self)
     local diretorio = tostring(self:diretorio())
     local arquivo = self:nome_arquivo()
@@ -95,6 +96,7 @@ Programa.extrair = function(self)
     end
 	if vim.v.shell_error == 0 then
         self.extraido = true
+        vim.fn.delete(tostring(self:diretorio() / arquivo)) -- remover arquivo comprimido baixado
 	end
 end
 
