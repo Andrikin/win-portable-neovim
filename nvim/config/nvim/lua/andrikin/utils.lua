@@ -103,7 +103,7 @@ end
 Programa.registrar = function(self)
     local registrado = vim.env.PATH:match(self:diretorio().diretorio:gsub('[\\-]', '.'))
     if registrado then
-        Utils.notify(string.format('Opt: registrar_path: Programa %s já registrado no sistema!', self.nome))
+        Utils.notify(string.format('Programa: registrar_path: Programa %s já registrado no sistema!', self.nome))
         return true
     end
     local limite = 1
@@ -119,7 +119,7 @@ Programa.registrar = function(self)
     for _, exe in ipairs(executaveis) do
         vim.env.PATH = vim.env.PATH .. ';' .. vim.fn.fnamemodify(exe, ':h')
     end
-    Utils.notify(string.format('Opt: registrar_path: Programa %s registrado no PATH do sistema.', self.nome))
+    Utils.notify(string.format('Programa: registrar_path: Programa %s registrado no PATH do sistema.', self.nome))
     return true
 end
 
@@ -146,7 +146,7 @@ end
 Programa.instalar = function(self)
     self:criar_diretorio()
     if self:registrar() then
-        return
+        do return end
     end
     self:checar_instalacao()
     if not self.baixado and not self.extraido then
@@ -155,10 +155,10 @@ Programa.instalar = function(self)
         self:extrair()
     else
         Utils.notify(string.format('Utils: Programa: Algum erro ocorreu ao realizar a instalação do programa %s.', self.nome))
-        return
+        do return end
     end
     if not self:registrar() then
-        Utils.notify(string.format('Utils: Programa: instalar: Não foi possível realizar a instalação do programa %s.' , self.nome))
+        Utils.notify(string.format('Utils: Programa: instalar: Não foi possível realizar a instalação do programa %s.', self.nome))
     else
         self.finalizado = true -- instalação concluída
     end
