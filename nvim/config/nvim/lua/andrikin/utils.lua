@@ -47,8 +47,7 @@ end
 
 ---@return string extencao
 Programa.extencao = function(self)
-    local extencao = self:nome_arquivo():match('%.([^_-.]+)$')
-    return extencao
+    return self:nome_arquivo():match('%.([^._-]-)$')
 end
 
 --- Verifica se programa é um executável .exe
@@ -58,7 +57,7 @@ Programa.executavel = function(self)
 end
 
 Programa.baixar = function(self)
-	local diretorio = self:diretorio()
+	local diretorio = tostring(self:diretorio())
 	vim.fn.system({
 		'curl',
 		'--fail',
@@ -158,11 +157,11 @@ Programa.instalar = function(self)
     elseif not self.extraido then
         self:extrair()
     else
-        Utils.notify(string.format('Utils: Programa: Algum erro ocorreu ao realizar a instalação do programa %s.', self.nome))
+        Utils.notify(string.format('Programa: Algum erro ocorreu ao realizar a instalação do programa %s.', self.nome))
         do return end
     end
     if not self:registrar() then
-        Utils.notify(string.format('Utils: Programa: instalar: Não foi possível realizar a instalação do programa %s.', self.nome))
+        Utils.notify(string.format('Programa: instalar: Não foi possível realizar a instalação do programa %s.', self.nome))
 		do return end
     else
         self.finalizado = true -- instalação concluída
