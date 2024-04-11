@@ -161,13 +161,14 @@ Programa.instalar = function(self)
         Utils.notify(string.format('Utils: Programa: Algum erro ocorreu ao realizar a instalação do programa %s.', self.nome))
         do return end
     end
-    if self.config then
-        self.config()
-    end
     if not self:registrar() then
         Utils.notify(string.format('Utils: Programa: instalar: Não foi possível realizar a instalação do programa %s.', self.nome))
+		do return end
     else
         self.finalizado = true -- instalação concluída
+		if self.config then
+			self.config()
+		end
     end
 end
 
