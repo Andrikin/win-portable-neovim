@@ -58,13 +58,14 @@ Programa.executavel = function(self)
 end
 
 Programa.baixar = function(self)
+	local diretorio = self:diretorio()
 	vim.fn.system({
 		'curl',
 		'--fail',
 		'--location',
 		'--silent',
         '--output-dir',
-        self:diretorio(),
+		diretorio,
         '-O',
 		self.link
 	})
@@ -76,7 +77,7 @@ end
 
 Programa.extrair = function(self)
     local diretorio = tostring(self:diretorio())
-    local arquivo = self:nome_arquivo()
+    local arquivo = tostring(self:diretorio() / self:nome_arquivo())
     local zip = self:extencao() == 'zip'
     if zip then
 		vim.fn.system({
@@ -96,7 +97,7 @@ Programa.extrair = function(self)
     end
 	if vim.v.shell_error == 0 then
         self.extraido = true
-        vim.fn.delete(tostring(self:diretorio() / arquivo)) -- remover arquivo comprimido baixado
+        vim.fn.delete(arquivo) -- remover arquivo comprimido baixado
 	end
 end
 
