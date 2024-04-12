@@ -1,6 +1,3 @@
--- TODO: utilizar vim.loop.new_thread e vim.mpack.encode/decode para criar 
--- multithreads
-
 ---@class Utils
 ---@field Diretorio Diretorio
 ---@field SauceCodePro SauceCodePro
@@ -19,6 +16,7 @@ local Utils = {}
 ---@field extraido boolean
 ---@field finalizado boolean
 ---@field timeout number
+---@field processo thread
 local Programa = {}
 
 Programa.__index = Programa
@@ -45,9 +43,14 @@ Programa.nome_arquivo = function(self)
 	return vim.fn.fnamemodify(self.link, ':t')
 end
 
----@return string extencao
+---@return string ext
 Programa.extencao = function(self)
-    return self:nome_arquivo():match('%.([^._-]-)$')
+	local ext = vim.fn.fnamemodify(self.link, ':e')
+	if ext == '' then
+		error('Programa: extencao: Não foi encontrado extenção para o arquivo.')
+	end
+	return ext
+    -- return self:nome_arquivo():match('%.([^._-]-)$')
 end
 
 --- Verifica se programa é um executável .exe
@@ -100,6 +103,88 @@ Programa.extrair = function(self)
 	end
 end
 
+-- TODO: Refazer utilizando vim.loop.spawn e coroutines
+Programa.baixar2 = function(self)
+	local diretorio = tostring(self:diretorio())
+	local handler
+	handler = vim.loop.spawn('curl',
+		{
+			args = {
+				'--fail',
+				'--location',
+				'--silent',
+				'--output-dir',
+				diretorio,
+				'-O',
+				self.link
+			}
+		}, function(codigo, sinal)
+			handler:close()
+			self.baixado = true
+	end)
+end
+
+Programa.extrair2 = function(self)
+    local diretorio = tostring(self:diretorio())
+    local arquivo = tostring(self:diretorio() / self:nome_arquivo())
+    local zip = self:extencao() == 'zip'
+	local handler
+    if zip then
+		handler = vim.loop.spawn('unzip', {
+			args = {
+				arquivo,
+				'-d',
+				diretorio
+			}
+		}, function()
+				handler:close()
+				self.extraido = true
+		end)
+    else
+		handler = vim.loop.spawn('tar', {
+			args = {
+				'-xf',
+				arquivo,
+				'-C',
+				diretorio
+			}
+		}, function()
+				handler:close()
+				self.extraido = true
+		end)
+    end
+end
+
+--- Instalação do programa.
+--- Realiza duas tentativas de inclusão no PATH, baixando e extraindo programa
+--- na primeira falha. Na segunda, retorna mensagem de erro.
+Programa.instalar2 = function(self)
+    if self:registrar() then
+        do return end
+    end
+    self:criar_diretorio()
+    self:checar_instalacao()
+    if not self.baixado and not self.extraido then
+		self:baixar2()
+		coroutine.yield(self)
+    elseif not self.extraido then
+        self:extrair2()
+		coroutine.yield(self)
+    else
+        Utils.notify(string.format('Programa: Algum erro ocorreu ao realizar a instalação do programa %s.', self.nome))
+        do return end
+    end
+    if not self:registrar() then
+        Utils.notify(string.format('Programa: instalar: Não foi possível realizar a instalação do programa %s.', self.nome))
+		do return end
+    else
+        self.finalizado = true -- instalação concluída
+		if self.config then
+			self.config()
+		end
+    end
+end
+
 --- Verifica se o programa já está no PATH, busca pelo executável e 
 --- realiza o registro na variável PATH do sistema
 ---@return boolean
@@ -147,10 +232,10 @@ end
 --- Realiza duas tentativas de inclusão no PATH, baixando e extraindo programa
 --- na primeira falha. Na segunda, retorna mensagem de erro.
 Programa.instalar = function(self)
-    self:criar_diretorio()
     if self:registrar() then
         do return end
     end
+    self:criar_diretorio()
     self:checar_instalacao()
     if not self.baixado and not self.extraido then
         self:baixar()
@@ -427,16 +512,6 @@ Registrador.iniciar = function(programas)
     for _, programa in ipairs(programas) do
     	programa:instalar()
     end
-    -- local work = vim.loop.new_work(
-        -- Programa.instalar,
-        -- function()
-    -- end)
-    -- local queue = vim.loop.queue_work
-    -- local encode = vim.mpack.encode
-    -- for _, programa in ipairs(programas) do
-        -- queue(work, encode(programa))
-    -- end
-    -- vim.loop.run()
 end
 
 Utils.Registrador = Registrador
