@@ -50,7 +50,6 @@ Programa.extencao = function(self)
 		error('Programa: extencao: Não foi encontrado extenção para o arquivo.')
 	end
 	return ext
-    -- return self:nome_arquivo():match('%.([^._-]-)$')
 end
 
 --- Verifica se programa é um executável .exe
@@ -107,6 +106,16 @@ end
 Programa.baixar2 = function(self)
 	local diretorio = tostring(self:diretorio())
 	local handler
+    local timeout
+    if self.timeout then
+        timeout = assert(uv.new_timer())
+        timeout:start(self.timeout, 0, function()
+            if handler and not handler:is_closing() then
+                print(string.format('Tempo para download excedido. Encerrando download de %s', self.nome))
+                vim.loop.process_kill(handler, 'sigint')
+            end
+        end)
+    end
 	handler = vim.loop.spawn('curl',
 		{
 			args = {
@@ -119,8 +128,12 @@ Programa.baixar2 = function(self)
 				self.link
 			}
 		}, function(codigo, sinal)
-			handler:close()
-			self.baixado = true
+            if timeout then
+                timeout:stop()
+                timeout:close()
+            end
+                handler:close()
+                self.baixado = true
 	end)
 end
 
@@ -129,6 +142,24 @@ Programa.extrair2 = function(self)
     local arquivo = tostring(self:diretorio() / self:nome_arquivo())
     local zip = self:extencao() == 'zip'
 	local handler
+    local timeout
+    if self.timeout then
+        timeout = assert(uv.new_timer())
+        timeout:start(self.timeout, 0, function()
+            if handler and not handler:is_closing() then
+                print(string.format('Tempo para extração excedido. Encerrando extração de %s', self.nome))
+                vim.loop.process_kill(handler, 'sigint')
+            end
+        end)
+    end
+    local on_exit = function()
+        if timeout then
+            timeout:stop()
+            timeout:close()
+        end
+        handler:close()
+        self.extraido = true
+    end
     if zip then
 		handler = vim.loop.spawn('unzip', {
 			args = {
@@ -136,10 +167,7 @@ Programa.extrair2 = function(self)
 				'-d',
 				diretorio
 			}
-		}, function()
-				handler:close()
-				self.extraido = true
-		end)
+		}, on_exit)
     else
 		handler = vim.loop.spawn('tar', {
 			args = {
@@ -148,10 +176,7 @@ Programa.extrair2 = function(self)
 				'-C',
 				diretorio
 			}
-		}, function()
-				handler:close()
-				self.extraido = true
-		end)
+		}, on_exit)
     end
 end
 
