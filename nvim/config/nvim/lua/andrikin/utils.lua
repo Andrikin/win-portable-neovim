@@ -108,7 +108,7 @@ Programa.baixar2 = function(self)
 	local handler
     local timeout
     if self.timeout then
-        timeout = assert(uv.new_timer())
+        timeout = assert(vim.loop.new_timer())
         timeout:start(self.timeout, 0, function()
             if handler and not handler:is_closing() then
                 print(string.format('Tempo para download excedido. Encerrando download de %s', self.nome))
@@ -127,13 +127,13 @@ Programa.baixar2 = function(self)
 				'-O',
 				self.link
 			}
-		}, function(codigo, sinal)
+		}, function()
             if timeout then
                 timeout:stop()
                 timeout:close()
             end
-                handler:close()
-                self.baixado = true
+            handler:close()
+            self.baixado = true
 	end)
 end
 
@@ -144,7 +144,7 @@ Programa.extrair2 = function(self)
 	local handler
     local timeout
     if self.timeout then
-        timeout = assert(uv.new_timer())
+        timeout = assert(vim.loop.new_timer())
         timeout:start(self.timeout, 0, function()
             if handler and not handler:is_closing() then
                 print(string.format('Tempo para extração excedido. Encerrando extração de %s', self.nome))
