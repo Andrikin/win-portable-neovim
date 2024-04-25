@@ -12,8 +12,17 @@ if not vim.loop.fs_stat(lazypath) then
 end
 vim.opt.rtp:prepend(lazypath)
 
-local tokyonight = 'tokyonight'
-local dracula = 'dracula'
+-- Temas - interface: nome, url
+local tokyonight = {
+    nome = 'tokyonight',
+    url = 'https://github.com/folke/tokyonight.nvim.git'
+}
+-- local dracula = {
+--     nome = 'dracula',
+--     url = 'https://github.com/Mofiqul/dracula.nvim.git'
+-- }
+local tema = tokyonight
+
 local plugins = {
 	-- Fork Tim Pope vim-capslock
 	'https://github.com/Andrikin/vim-capslock',
@@ -33,23 +42,15 @@ local plugins = {
 		'https://github.com/tpope/vim-obsession.git',
 		lazy = true,
 	},
-    -- Tokyonight theme,
+    -- Theme
     {
-        'https://github.com/folke/tokyonight.nvim.git',
+        tema.url,
         priority = 1000,
         lazy = false,
 		config = function()
-			vim.cmd.colorscheme(tokyonight)
+			vim.cmd.colorscheme(tema.nome)
 		end
     },
-	-- Dracula theme,
-	-- {
-	-- 	'https://github.com/Mofiqul/dracula.nvim.git',
-        -- priority = 1000,
-	-- 	config = function()
-	-- 		vim.cmd.colorscheme(dracula)
-	-- 	end
-	-- },
 	-- Vim Cool,
 	'https://github.com/romainl/vim-cool.git',
 	-- Dirvirsh,
@@ -70,7 +71,7 @@ local plugins = {
 		config = function()
 			require('lualine').setup(
 				{
-					options = { theme = tokyonight },
+					options = { theme = tema.nome },
 					winbar = {
 						lualine_a = {},
 						lualine_b = {},
