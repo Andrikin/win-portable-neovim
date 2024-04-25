@@ -533,9 +533,7 @@ Registrador.iniciar = function(programas)
         if getmetatable(programa) ~= Utils.Programa then
             programas[i] = setmetatable(programa, Utils.Programa)
         end
-    end
-    for _, programa in ipairs(programas) do
-    	programa:instalar()
+    	programas[i]:instalar()
     end
 end
 
