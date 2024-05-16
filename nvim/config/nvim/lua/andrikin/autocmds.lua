@@ -78,6 +78,26 @@ autocmd(
 	}
 )
 
+-- 'gq' para fechar menu Harpoon
+autocmd(
+	'FileType',
+	{
+		group = Andrikin,
+		pattern = 'harpoon',
+		callback = function(args)
+			vim.keymap.set(
+				'n',
+				'gq',
+				vim.cmd.quit,
+				{
+					silent = true,
+					buffer = args.buf,
+				}
+			)
+		end,
+	}
+)
+
 -- Highlight configuração
 autocmd(
 	'TextYankPost',
