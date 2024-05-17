@@ -58,37 +58,17 @@ autocmd(
 	}
 )
 
--- 'gq' para fechar quickfix/loclist, checkhealth e help window
+-- 'gq' para fechar quickfix/loclist, checkhealth, help window, harpoon window
 autocmd(
 	'FileType',
 	{
 		group = Andrikin,
-		pattern = {'qf', 'checkhealth', 'help'},
+		pattern = {'qf', 'checkhealth', 'help', 'harpoon'},
 		callback = function(args)
 			vim.keymap.set(
 				'n',
 				'gq',
                 vim.cmd.quit,
-				{
-					silent = true,
-					buffer = args.buf,
-				}
-			)
-		end,
-	}
-)
-
--- 'gq' para fechar menu Harpoon
-autocmd(
-	'FileType',
-	{
-		group = Andrikin,
-		pattern = 'harpoon',
-		callback = function(args)
-			vim.keymap.set(
-				'n',
-				'gq',
-				vim.cmd.quit,
 				{
 					silent = true,
 					buffer = args.buf,
