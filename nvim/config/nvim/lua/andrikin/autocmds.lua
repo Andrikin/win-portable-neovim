@@ -157,13 +157,14 @@ autocmd(
             -- local client = vim.lsp.get_client_by_id(ev.data.client_id) -- remover LSP highlight 
             -- client.server_capabilities.semanticTokensProvider = nil -- remover LSP highlight 
 			local opts = {buffer = ev.buf}
+			vim.keymap.set('n', 'grn', vim.lsp.buf.rename, opts)
+			vim.keymap.set('n', 'grr', vim.lsp.buf.references, opts)
+			vim.keymap.set('n', 'gra', vim.lsp.buf.code_action, opts)
+			vim.keymap.set('n', '<c-s>', vim.lsp.buf.signature_help, opts)
 			vim.keymap.set('n', 'gd', vim.lsp.buf.definition, opts)
 			vim.keymap.set('n', 'gD', vim.lsp.buf.declaration, opts)
 			vim.keymap.set('n', 'K', vim.lsp.buf.hover, opts)
-			vim.keymap.set('n', 'gr', vim.lsp.buf.references, opts)
 			vim.keymap.set('n', 'gi', vim.lsp.buf.implementation, opts)
-			vim.keymap.set('n', '<c-k>', vim.lsp.buf.signature_help, opts)
-			vim.keymap.set('n', 'gs', vim.lsp.buf.rename, opts)
             -- nvim-cmp (force autocompletion)
             if package.loaded['cmp'] then
                 local cmp = require('cmp')
