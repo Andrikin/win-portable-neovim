@@ -57,8 +57,7 @@ autocmd(
 		end,
 	}
 )
-
--- 'gq' para fechar quickfix/loclist, checkhealth, help window, harpoon window
+-- 'gq' para fechar quickfix/loclist, checkhealth e help window
 autocmd(
 	'FileType',
 	{
@@ -68,11 +67,14 @@ autocmd(
 			vim.keymap.set(
 				'n',
 				'gq',
-                vim.cmd.quit,
-				{
-					silent = true,
-					buffer = args.buf,
-				}
+				function()
+					local id = vim.fn.gettabinfo(vim.fn.tabpagenr())[1].windows[1]
+					vim.cmd.quit()
+					if id then
+						vim.fn.win_gotoid(id) -- ir para a primeira window da tab
+					end
+				end,
+				{ silent = true, }
 			)
 		end,
 	}
