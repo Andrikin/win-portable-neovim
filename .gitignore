@@ -42,6 +42,7 @@ nvim/config/nvim-data/tree-sitter-vimdoc/
 nvim/config/nvim-data/tree-sitter-gitcommit/
 nvim/config/nvim-data/luasnip.log
 nvim/config/nvim-data/undotree/
+nvim/config/nvim-data/harpoon/
 nvim/config/configstore/
 
 nvim/bin/
