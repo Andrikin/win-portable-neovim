@@ -757,15 +757,15 @@ Utils.cursorline = {
     toggle = function(cursorlineopt)
         cursorlineopt = cursorlineopt or {'number', 'line'}
         vim.opt.cursorlineopt = cursorlineopt
-        vim.o.cursorline = not vim.o.cursorline
+        vim.wo.cursorline = not vim.wo.cursorline
     end,
     on = function(cursorlineopt)
         cursorlineopt = cursorlineopt or {'number', 'line'}
         vim.opt.cursorlineopt = cursorlineopt
-        vim.o.cursorline = true
+        vim.wo.cursorline = true
     end,
     off = function()
-        vim.o.cursorline = false
+        vim.wo.cursorline = false
     end
 
 }
