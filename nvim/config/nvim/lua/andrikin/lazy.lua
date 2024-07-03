@@ -15,13 +15,19 @@ vim.opt.rtp:prepend(lazypath)
 -- Temas - interface: nome, url
 local tokyonight = {
     nome = 'tokyonight',
-    url = 'https://github.com/folke/tokyonight.nvim.git'
+    url = 'https://github.com/folke/tokyonight.nvim.git',
+    config = function()
+        vim.api.nvim_set_hl(0, 'CursorLine', {link = 'Visual'})
+    end
 }
 -- local dracula = {
 --     nome = 'dracula',
 --     url = 'https://github.com/Mofiqul/dracula.nvim.git'
 -- }
 local tema = tokyonight
+if tema.config then
+    tema.config()
+end
 
 local plugins = {
 	-- Fork Tim Pope vim-capslock
