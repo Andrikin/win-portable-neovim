@@ -16,9 +16,9 @@ vim.opt.rtp:prepend(lazypath)
 local tokyonight = {
     nome = 'tokyonight',
     url = 'https://github.com/folke/tokyonight.nvim.git',
-    config = function()
-        vim.api.nvim_set_hl(0, 'CursorLine', {link = 'Visual'})
-    end
+    -- config = function()
+    --     vim.api.nvim_set_hl(0, 'CursorLine', {link = 'Visual'})
+    -- end
 }
 -- local dracula = {
 --     nome = 'dracula',
