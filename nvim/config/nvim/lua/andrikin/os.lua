@@ -56,6 +56,11 @@ SauceCodePro:setup()
 ---@type Diretorio
 local OPT = require('andrikin.utils').OPT
 
+---@type Diretorio
+local Projetos = require('andrikin.utils').Diretorio.new(vim.fn.fnamemodify(vim.env.HOME, ':h')) / 'projetos'
+if vim.fn.isdirectory(Projetos.diretorio) == 0 then
+    vim.fn.mkdir(Projetos.diretorio, 'p', 0700)
+end
 require('andrikin.utils'):bootstrap()
 
 local programas = {
