@@ -193,7 +193,8 @@ vim.keymap.set( -- telescope way to open buffers
 
 -- The Primeagen Harpoon2
 local harpoon2 = require('harpoon')
-vim.keymap.set("n", "gha", function() harpoon2:list():append() end)
+harpoon2:setup()
+vim.keymap.set("n", "gha", function() harpoon2:list():add() end)
 vim.keymap.set("n", "ghm", function() harpoon2.ui:toggle_quick_menu(harpoon2:list()) end)
 -- LOL mapping style
 vim.keymap.set("n", "ghq", function() harpoon2:list():select(1) end)
