@@ -93,10 +93,9 @@ local programas = {
 					do return end
 				end
                 notify('Renomeando executável Sumatra.')
-				vim.fn.system({
-					'mv',
+				vim.fn.rename({
 					executavel,
-					diretorio .. 'sumatra.exe'
+					tostring(diretorio / 'sumatra.exe')
 				})
 			else
 				notify('Não foi encontrado executável Sumatra.')
@@ -270,10 +269,9 @@ local programas = {
 					do return end
 				end
                 notify('Renomeando executável jq.')
-				vim.fn.system({
-					'mv',
+				vim.fn.rename({
 					executavel,
-					diretorio .. 'jq.exe'
+					tostring(diretorio / 'jq.exe')
 				})
 			else
 				notify('Não foi encontrado executável jq.')
@@ -282,7 +280,24 @@ local programas = {
 	},{
         nome = 'tree-sitter',
         link = 'https://github.com/tree-sitter/tree-sitter/releases/download/v0.22.6/tree-sitter-windows-x64.gz',
-        cmd = 'tree-sitter.exe',
+        cmd = {'tree-sitter.exe', 'tree-sitter-windows-x64'},
+        config = function()
+			local diretorio = OPT / 'tree-sitter'
+			local executavel = vim.fn.glob(tostring(diretorio / 'tree-sitter*'))
+			if executavel ~= '' then
+				if vim.fn.fnamemodify(executavel, ':t') == 'tree-sitter.exe' then
+					notify('Arquivo tree-sitter já renomeado.')
+					do return end
+				end
+                notify('Renomeando executável tree-sitter.')
+				vim.fn.rename(
+                    executavel,
+                    (diretorio / 'tree-sitter.exe').diretorio
+				)
+			else
+				notify('Não foi encontrado executável jq.')
+			end
+        end,
     }
 }
 
