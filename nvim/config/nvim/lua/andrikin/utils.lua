@@ -87,6 +87,12 @@ Programa.extrair = function(self)
 			'-d',
 			diretorio
 		})
+    elseif self:extencao() == 'gz' then
+        vim.fn.system({
+            'gzip',
+            '-d',
+            tostring(arquivo),
+        })
     else
 		vim.fn.system({
 			'tar',
