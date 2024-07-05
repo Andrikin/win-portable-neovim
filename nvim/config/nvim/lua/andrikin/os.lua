@@ -260,8 +260,30 @@ local programas = {
 	},{
 		nome = 'jq',
 		link = 'https://github.com/jqlang/jq/releases/download/jq-1.7.1/jq-windows-i386.exe',
-		cmd = 'jq-windows-i386.exe',
-	}
+		cmd = {'jq.exe', 'jq-windows-i386.exe'},
+        config = function()
+			local diretorio = OPT / 'jq'
+			local executavel = vim.fn.glob(tostring(diretorio / 'jq*.exe'))
+			if executavel ~= '' then
+				if vim.fn.fnamemodify(executavel, ':t') == 'jq.exe' then
+					notify('Arquivo jq já renomeado.')
+					do return end
+				end
+                notify('Renomeando executável jq.')
+				vim.fn.system({
+					'mv',
+					executavel,
+					diretorio .. 'jq.exe'
+				})
+			else
+				notify('Não foi encontrado executável jq.')
+			end
+        end,
+	},{
+        nome = 'tree-sitter',
+        link = 'https://github.com/tree-sitter/tree-sitter/releases/download/v0.22.6/tree-sitter-windows-x64.gz',
+        cmd = 'tree-sitter.exe',
+    }
 }
 
 Registrador.iniciar(programas)
