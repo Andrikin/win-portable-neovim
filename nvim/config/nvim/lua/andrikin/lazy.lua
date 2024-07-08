@@ -179,6 +179,10 @@ local opts = {
 			},
 		},
 	},
+    rocks = {
+        hererocks = false,
+        enabled = false,
+    }
 }
 
 require("lazy").setup(plugins, opts)
