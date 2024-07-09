@@ -132,3 +132,6 @@ vim.diagnostic.config({
     }
 })
 
+-- Removendo providers: Perl
+vim.g.loaded_perl_provider = 0
+
