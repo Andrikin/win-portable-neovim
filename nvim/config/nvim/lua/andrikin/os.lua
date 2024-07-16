@@ -1,5 +1,6 @@
 -- TODO: Problema com dependência de ouvidoria-latex-modelos (necessário para comando Pdflatex); como resolver a falta
 -- das pastas .ssh e .git?
+-- BOOTSTRAP: baixar neovim.zip, neovim-qt.zip, pasta .ssh, git@github.com:Andrikin/ouvidoria-latex-modelos (pasta projetos)
 -- INFO: Lista de links para download das dependências:
 -- curl: https://curl.se/windows/latest.cgi?p=win64-mingw.zip
 -- unzip: http://linorg.usp.br/CTAN/systems/win32/w32tex/unzip.exe
@@ -38,9 +39,9 @@
 -- IMPORTANT(Windows 10+): Desabilitar python.exe e python3.exe em "Gerenciar aliases de execução de aplicativo".
 -- Windows executa este alias antes de executar python declarado em PATH.
 -- ALTERNATIVE FIX: Remover WindowsApps do PATH
-local desabilitar_path = require('andrikin.utils').remover_path
+local desabilitar = require('andrikin.utils').remover_path
 for _, programa in ipairs({'WindowsApps', 'Oracle'}) do
-    desabilitar_path(programa)
+    desabilitar(programa)
 end
 
 local npcall = require('andrikin.utils').npcall
