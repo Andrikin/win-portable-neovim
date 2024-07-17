@@ -1,5 +1,3 @@
--- TODO: Problema com dependência de ouvidoria-latex-modelos (necessário para comando Pdflatex); como resolver a falta
--- das pastas .ssh e .git?
 -- BOOTSTRAP: baixar win-portable-neovim, baixar neovim.zip, baixar neovim-qt.zip, instalar pasta .ssh (script?)
 -- INFO: Lista de links para download das dependências:
 -- curl: https://curl.se/windows/latest.cgi?p=win64-mingw.zip
