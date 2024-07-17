@@ -776,5 +776,7 @@ Utils.cursorline = {
 
 }
 
+Utils.PROJETOS = Utils.Diretorio.new(vim.fn.fnamemodify(vim.env.HOME, ':h')) / 'projetos'
+
 return Utils
 

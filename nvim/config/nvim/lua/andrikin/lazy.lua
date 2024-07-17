@@ -1,3 +1,4 @@
+local notify = require('andrikin.utils').notify
 local lazypath = vim.fn.stdpath("data") .. "/lazy/lazy.nvim"
 -- Inicializando caminho para git
 if not vim.loop.fs_stat(lazypath) then
@@ -11,6 +12,31 @@ if not vim.loop.fs_stat(lazypath) then
   })
 end
 vim.opt.rtp:prepend(lazypath)
+
+-- Clonando git ouvidoria-latex-modelos
+---@type Diretorio
+local Projetos = require('andrikin.utils').PROJETOS
+if vim.fn.isdirectory((Projetos / 'ouvidoria-latex-modelos').diretorio) == 0 then
+    local diretorio_projetos = vim.fn.isdirectory(Projetos.diretorio) == 1
+    local diretorio_ssh = vim.fn.isdirectory(vim.env.HOME .. '/.diretorio_ssh') == 1
+    if diretorio_projetos and diretorio_ssh then
+        vim.fn.system({
+            "git",
+            "clone",
+            "git@github.com:Andrikin/ouvidoria-latex-modelos",
+            Projetos.diretorio,
+        })
+    else
+        if not diretorio_ssh then
+            notify("Git: não foi encontrado o diretório '.ssh'.")
+        end
+        if not diretorio_projetos then
+            notify("Git: não foi encontrado o diretório 'projetos'.")
+        end
+    end
+else
+    notify('Git: projeto com os modelos de LaTeX já está baixado!')
+end
 
 -- Temas - interface: nome, url
 local tokyonight = {
