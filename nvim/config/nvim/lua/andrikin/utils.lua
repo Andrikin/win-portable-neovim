@@ -778,5 +778,97 @@ Utils.cursorline = {
 
 Utils.PROJETOS = Utils.Diretorio.new(vim.fn.fnamemodify(vim.env.HOME, ':h')) / 'projetos'
 
+---@class Ssh
+---@field destino Diretorio
+---@field arquivos table
+local Ssh = {}
+
+Ssh.__index = Ssh
+
+Ssh.destino = Utils.Diretorio.new(vim.fn.fnamemodify(vim.env.HOME)) / '.ssh'
+
+Ssh.arquivos = {
+    {
+        nome = 'id_ed25519',
+        valor = [[
+LS0tLS1CRUdJTiBPUEVOU1NIIFBSSVZBVEUgS0VZLS0tLS0KYjNCbGJuTnphQzFyWlhrdGRqRUFB
+QUFBQkc1dmJtVUFBQUFFYm05dVpRQUFBQUFBQUFBQkFBQUFNd0FBQUF0emMyZ3RaVwpReU5UVXhP
+UUFBQUNCTTBXQTZXdWFsYzg0QkF0YTF2bHFFM2JDMHBrM3hkNzUxSm9HV01OcmFCUUFBQUtqdkYz
+Z2E3eGQ0CkdnQUFBQXR6YzJndFpXUXlOVFV4T1FBQUFDQk0wV0E2V3VhbGM4NEJBdGExdmxxRTNi
+QzBwazN4ZDc1MUpvR1dNTnJhQlEKQUFBRUFZVEtmSzBEZUFzOWFKbkdqMVRCaWhUMnV3MXQrTlZ2
+SzdrU3hQdEFHNTRFelJZRHBhNXFWenpnRUMxclcrV29UZApzTFNtVGZGM3ZuVW1nWll3MnRvRkFB
+QUFJV052Ym5SaGMyVmpjbVYwWVdGc2RHVnlibUYwYVhaaFFHZHRZV2xzTG1OdmJRCkVDQXdRPQot
+LS0tLUVORCBPUEVOU1NIIFBSSVZBVEUgS0VZLS0tLS0K
+    ]],
+    },
+    {
+        nome = 'id_ed25519.pub',
+        valor = [[
+c3NoLWVkMjU1MTkgQUFBQUMzTnphQzFsWkRJMU5URTVBQUFBSUV6UllEcGE1cVZ6emdFQzFyVytX
+b1Rkc0xTbVRmRjN2blVtZ1pZdzJ0b0YgY29udGFzZWNyZXRhYWx0ZXJuYXRpdmFAZ21haWwuY29t
+Cg==
+    ]],
+    },
+    {
+        nome = 'known_hosts',
+        valor = [[
+Z2l0aHViLmNvbSBzc2gtZWQyNTUxOSBBQUFBQzNOemFDMWxaREkxTlRFNUFBQUFJT01xcW5rVnpy
+bTBTZEc2VU9vcUtMc2FiZ0g1Qzlva1dpMGRoMmw5R0tKbApnaXRodWIuY29tIHNzaC1yc2EgQUFB
+QUIzTnphQzF5YzJFQUFBQURBUUFCQUFBQmdRQ2o3bmROeFFvd2djUW5qc2hjTHJxUEVpaXBobnQr
+VlRUdkRQNm1IQkw5ajFhTlVrWTRVZTFndnduR0xWbE9oR2VZcm5aYU1nUks2K1BLQ1VYYURiQzdx
+dGJXOGdJa2hMN2FHQ3NPci9DNTZTSk15L0JDWmZ4ZDFuV3pBT3hTRFBnVnNtZXJPQllmTnFsdFY5
+L2hXQ3FCeXdJTklSKzVkSWc2SlRKNzJwY0VwRWpjWWdYa0UyWUVGWFYxSkhuc0tnYkxXTmxoU2Nx
+YjJVbXlSa1F5eXRSTHRMKzM4VEd4a3hDZmxtTys1WjhDU1NOWTdHaWRqTUlaN1E0ek1qQTJuMW5H
+cmxURGt6d0RDc3crd3FGUEdRQTE3OWNuZkdXT1dSVnJ1ajE2ejZYeXZ4dmpKd2J6MHdRWjc1WEs1
+dEtTYjdGTnllSUVzNFRUNGprK1M0ZGhQZUFVQzV5K2JEWWlyWWdNNEdDN3VFbnp0blp5YVZXUTdC
+MzgxQUs0UWRyd3Q1MVpxRXhLYlFwVFVObitFanFvVHd2cU5qNGtxeDVRVUNJMFRoUy9Za094SkNY
+bVBVV1piaGpwQ2c1NmkrMmFCNkNtSzJKR2huNTdLNW1qME1OZEJYQTQvV253SDZYb1BXSnpLNU55
+dTJ6QjNuQVpwK1M1aHBRcytwMXZOMS93c2prPQpnaXRodWIuY29tIGVjZHNhLXNoYTItbmlzdHAy
+NTYgQUFBQUUyVmpaSE5oTFhOb1lUSXRibWx6ZEhBeU5UWUFBQUFJYm1semRIQXlOVFlBQUFCQkJF
+bUtTRU5qUUVlek9teGtaTXk3b3BLZ3dGQjlua3Q1WVJyWU1qTnVHNU44N3VSZ2c2Q0xyYm81d0Fk
+VC95NnYwbUtWMFUydzBXWjJZQi8rK1Rwb2NrZz0K
+    ]],
+    },
+    {
+        nome = 'known_hosts.old',
+        valor = [[
+Z2l0aHViLmNvbSBzc2gtZWQyNTUxOSBBQUFBQzNOemFDMWxaREkxTlRFNUFBQUFJT01xcW5rVnpy
+bTBTZEc2VU9vcUtMc2FiZ0g1Qzlva1dpMGRoMmw5R0tKbAo=
+    ]],
+    },
+}
+
+Ssh.bootstrap = function(self)
+    local ssh = self.destino.diretorio
+    if vim.fn.isdirectory(ssh) == 0 then
+        vim.fn.mkdir(ssh, 'p', 0700)
+        self.desempacotar()
+    else
+        Utils.notify("Ssh: encontrado diretório '.ssh'.")
+    end
+end
+
+Ssh.desempacotar = function(self)
+    for _, arquivo in ipairs(self.arquivos) do
+        vim.fn.system({
+            'printf.exe',
+            arquivo.valor,
+            '|',
+            'base64.exe',
+            '-d',
+            '>',
+            (self.destino / arquivo.nome).diretorio,
+        })
+    end
+end
+
+---@return Ssh
+Ssh.new = function()
+    local ssh = setmetatable({}, Ssh)
+    return ssh
+end
+
+Utils.Ssh = Ssh
+
 return Utils
 

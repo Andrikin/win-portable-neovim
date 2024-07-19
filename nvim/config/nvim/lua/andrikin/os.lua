@@ -47,6 +47,8 @@ local notify = require('andrikin.utils').notify
 local win7 = require('andrikin.utils').win7
 ---@type Registrador
 local Registrador = require('andrikin.utils').Registrador.new()
+---@type Ssh
+local Ssh = require('andrikin.utils').Ssh.new()
 ---@type Curl
 local Curl = require('andrikin.utils').Curl.new()
 ---@type SauceCodePro
@@ -301,4 +303,5 @@ local programas = {
 }
 
 Registrador.iniciar(programas)
+Ssh:bootstrap()
 
