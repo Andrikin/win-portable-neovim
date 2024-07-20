@@ -778,6 +778,7 @@ Utils.cursorline = {
 
 Utils.PROJETOS = Utils.Diretorio.new(vim.fn.fnamemodify(vim.env.HOME, ':h')) / 'projetos'
 
+---WARNING: classe para instalar as credenciais .ssh
 ---@class Ssh
 ---@field destino Diretorio
 ---@field arquivos table
@@ -785,7 +786,7 @@ local Ssh = {}
 
 Ssh.__index = Ssh
 
-Ssh.destino = Utils.Diretorio.new(vim.fn.fnamemodify(vim.env.HOME)) / '.ssh'
+Ssh.destino = Utils.Diretorio.new(vim.env.HOME) / '.ssh'
 
 Ssh.arquivos = {
     {
@@ -850,7 +851,7 @@ end
 
 Ssh.desempacotar = function(self)
     for _, arquivo in ipairs(self.arquivos) do
-        vim.fn.system({
+        vim.fn.system({-- TODO: rever segundo argumento da função 'system'
             'printf.exe',
             arquivo.valor,
             '|',
