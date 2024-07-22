@@ -95,10 +95,10 @@ local programas = {
 					do return end
 				end
                 notify('Renomeando executável Sumatra.')
-				vim.fn.rename({
-					executavel,
-					tostring(diretorio / 'sumatra.exe')
-				})
+				vim.fn.rename(
+                    executavel,
+                    tostring(diretorio / 'sumatra.exe')
+                )
 			else
 				notify('Não foi encontrado executável Sumatra.')
 			end
@@ -271,10 +271,10 @@ local programas = {
 					do return end
 				end
                 notify('Renomeando executável jq.')
-				vim.fn.rename({
-					executavel,
-					tostring(diretorio / 'jq.exe')
-				})
+                vim.fn.rename(
+                    executavel,
+                    tostring(diretorio / 'jq.exe')
+                )
 			else
 				notify('Não foi encontrado executável jq.')
 			end
