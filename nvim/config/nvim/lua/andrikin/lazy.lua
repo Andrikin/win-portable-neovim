@@ -16,9 +16,11 @@ vim.opt.rtp:prepend(lazypath)
 -- Clonando git ouvidoria-latex-modelos
 ---@type Diretorio
 local Projetos = require('andrikin.utils').PROJETOS
-if vim.fn.isdirectory((Projetos / 'ouvidoria-latex-modelos').diretorio) == 0 then
+local ModelosLatex = (Projetos / 'ouvidoria-latex-modelos').diretorio
+local Ssh = require('andrikin.utils').Ssh.destino.diretorio
+if vim.fn.isdirectory(ModelosLatex) == 0 then
     local diretorio_projetos = vim.fn.isdirectory(Projetos.diretorio) == 1
-    local diretorio_ssh = vim.fn.isdirectory(vim.env.HOME .. '/.diretorio_ssh') == 1
+    local diretorio_ssh = vim.fn.isdirectory(Ssh) == 1
     if diretorio_projetos and diretorio_ssh then
         vim.fn.system({
             "git",
