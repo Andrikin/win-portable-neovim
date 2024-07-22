@@ -786,8 +786,10 @@ local Ssh = {}
 
 Ssh.__index = Ssh
 
+---@type Diretorio
 Ssh.destino = Utils.Diretorio.new(vim.env.HOME) / '.ssh'
 
+---@type table
 Ssh.arquivos = {
     {
         nome = 'id_ed25519',
@@ -843,7 +845,7 @@ Ssh.bootstrap = function(self)
     local ssh = self.destino.diretorio
     if vim.fn.isdirectory(ssh) == 0 then
         vim.fn.mkdir(ssh, 'p', 0700)
-        self.desempacotar()
+        self:desempacotar()
     else
         Utils.notify("Ssh: encontrado diretório '.ssh'.")
     end
@@ -851,15 +853,17 @@ end
 
 Ssh.desempacotar = function(self)
     for _, arquivo in ipairs(self.arquivos) do
-        vim.fn.system({-- TODO: rever segundo argumento da função 'system'
-            'printf.exe',
-            arquivo.valor,
-            '|',
+        local ssh_arquivo = (self.destino / arquivo.nome).diretorio
+        local texto = vim.fn.systemlist({
             'base64.exe',
             '-d',
-            '>',
-            (self.destino / arquivo.nome).diretorio,
-        })
+        }, { arquivo.valor })
+        local ok, _ = pcall(vim.fn.writefile, texto, ssh_arquivo)
+        if ok then
+            Utils.notify(string.format('Ssh: arquivo criado com sucesso: %s', ssh_arquivo))
+        else
+            Utils.notify(string.format('Ssh: ocorreu um erro ao criar arquivo: %s', ssh_arquivo))
+        end
     end
 end
 
