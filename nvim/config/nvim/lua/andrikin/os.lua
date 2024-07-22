@@ -1,4 +1,10 @@
--- BOOTSTRAP: baixar win-portable-neovim, baixar neovim.zip, baixar neovim-qt.zip, instalar pasta .ssh (script?)
+-- BOOTSTRAP: baixar win-portable-neovim, baixar neovim.zip, baixar neovim-qt.zip
+
+-- WIP: Utilizar multithreads para realizar os downloads
+-- TODO: Reorganizar código para que faça as chamadas do curl de uma só vez
+-- https://teukka.tech/vimloop.html
+-- vim.loop.spawn(cmd: string, options: table, callback: fun)
+
 -- INFO: Lista de links para download das dependências:
 -- curl: https://curl.se/windows/latest.cgi?p=win64-mingw.zip
 -- unzip: http://linorg.usp.br/CTAN/systems/win32/w32tex/unzip.exe
@@ -28,11 +34,6 @@
 -- emmet: npm install -g emmet-ls
 -- python: pip install pyright | npm -g install pyright
 -- rust: TODO
-
--- WIP: Utilizar multithreads para realizar os downloads
--- TODO: Reorganizar código para que faça as chamadas do curl de uma só vez
--- https://teukka.tech/vimloop.html
--- vim.loop.spawn(cmd: string, options: table, callback: fun)
 
 -- IMPORTANT(Windows 10+): Desabilitar python.exe e python3.exe em "Gerenciar aliases de execução de aplicativo".
 -- Windows executa este alias antes de executar python declarado em PATH.
