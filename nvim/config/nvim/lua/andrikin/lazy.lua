@@ -26,7 +26,7 @@ if vim.fn.isdirectory(ModelosLatex) == 0 then
             "git",
             "clone",
             "git@github.com:Andrikin/ouvidoria-latex-modelos",
-            Projetos.diretorio,
+            ModelosLatex,
         })
     else
         if not diretorio_ssh then
