@@ -467,7 +467,7 @@ Curl.extrair = function(arquivo, diretorio)
 		diretorio = {diretorio, 'string'}
 	})
 	if arquivo == '' or diretorio == '' then
-		error('Curl: extrair: Variárvel nula.')
+		error('Curl: extrair: Variável nula.')
 	end
 	local extencao = arquivo:match('%.(tar)%.[a-z.]*$') or arquivo:match('%.([a-z]*)$')
     local extracao = false
