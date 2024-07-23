@@ -57,16 +57,23 @@ if tema.config then
     tema.config()
 end
 
+local win7 = require('andrikin.utils').win7
+local has_buildin = vim.version().major >= 0 and vim.version().minor > 10
+local has_rm = vim.fn.executable('rm') == 1
+local has_mkdir = vim.fn.executable('mkdir') == 1
 local plugins = {
 	-- Fork Tim Pope vim-capslock
 	'https://github.com/Andrikin/vim-capslock',
 	-- Tim Pope's miracles
     'https://github.com/tpope/vim-fugitive.git',
-	'https://github.com/tpope/vim-commentary.git',
 	'https://github.com/tpope/vim-surround.git',
+	{
+		'https://github.com/tpope/vim-commentary.git',
+		enabled = has_buildin and (not win7),
+	},
     {
         'https://github.com/tpope/vim-eunuch.git',
-        lazy = vim.fn.executable('rm') == 0 and vim.fn.executable('mkdir') == 0,
+        enabled = has_rm and has_mkdir,
     },
 	{
 		'https://github.com/tpope/vim-dadbod.git',
