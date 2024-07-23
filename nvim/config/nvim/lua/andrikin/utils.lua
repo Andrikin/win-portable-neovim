@@ -854,10 +854,15 @@ end
 Ssh.desempacotar = function(self)
     for _, arquivo in ipairs(self.arquivos) do
         local ssh_arquivo = (self.destino / arquivo.nome).diretorio
-        local texto = vim.fn.systemlist({
-            'base64.exe',
-            '-d',
-        }, { arquivo.valor })
+        local texto = nil
+        if vim.base64 then
+            texto = vim.base64.decode(arquivo.valor:gsub("\n", ''):gsub("\r", ''))
+        else
+            texto = vim.fn.systemlist({
+                'base64.exe',
+                '-d',
+            }, { arquivo.valor })
+        end
         local ok, _ = pcall(vim.fn.writefile, texto, ssh_arquivo)
         if ok then
             Utils.notify(string.format('Ssh: arquivo criado com sucesso: %s', ssh_arquivo))
