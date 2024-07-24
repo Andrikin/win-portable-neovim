@@ -255,7 +255,7 @@ local programas = {
 		cmd = 'java.exe'
 	},{
 		nome = 'jdtls-java-lsp',
-		link = 'https://www.eclipse.org/downloads/download.php?file=/jdtls/snapshots/jdt-language-server-latest.tar.gz',
+		link = 'https://download.eclipse.org/jdtls/snapshots/jdt-language-server-latest.tar.gz',
 		cmd = 'jdtls'
 	},{
 		nome = 'maven',
