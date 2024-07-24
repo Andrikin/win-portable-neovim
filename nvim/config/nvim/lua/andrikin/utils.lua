@@ -895,6 +895,7 @@ Git.bootstrap = function(self)
 		vim.cmd('!git commit -m "dummy commit"')
 		vim.cmd('!git checkout --track win/main')
 		vim.cmd('!git checkout --track win/registrador')
+		vim.cmd('!git branch -d master')
 	end
 end
 
