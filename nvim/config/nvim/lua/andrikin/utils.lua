@@ -880,5 +880,38 @@ end
 
 Utils.Ssh = Ssh
 
+---@class Git
+---@field destino Diretorio
+local Git = {}
+
+Git.__index = Git
+
+---@type Diretorio
+Git.destino = Utils.Diretorio.new(vim.env.HOME) / '.git'
+
+Git.bootstrap = function(self)
+	local has_git = vim.fn.isdirectory(self.destino.diretorio) == 1
+    if not has_git then
+		vim.cmd.cd(vim.env.HOME)
+		if vim.cmd.Git then
+			vim.cmd.Git('init')
+			vim.cmd.Git('remote add win git@github.com:Andrikin/win-portable-neovim')
+			vim.cmd.Git('pull')
+			do return end
+		end
+		vim.cmd('!git init')
+		vim.cmd('!git remote add win git@github.com:Andrikin/win-portable-neovim')
+		vim.cmd('!git pull')
+	end
+end
+
+---@return Git
+Git.new = function()
+    local ssh = setmetatable({}, Git)
+    return ssh
+end
+
+Utils.Git = Git
+
 return Utils
 
