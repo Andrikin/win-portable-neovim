@@ -1,5 +1,4 @@
--- BOOTSTRAP: baixar win-portable-neovim, baixar neovim.zip, baixar neovim-qt.zip
--- TODO: Como criar a pasta .git ($HOME)?
+-- BOOTSTRAP: baixar win-portable-neovim, baixar neovim.zip, baixar neovim-qt.zip, extrair tudo na mesmo diretório
 
 -- WIP: Utilizar multithreads para realizar os downloads
 -- TODO: Reorganizar código para que faça as chamadas do curl de uma só vez
