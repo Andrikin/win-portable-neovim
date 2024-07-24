@@ -854,15 +854,10 @@ end
 Ssh.desempacotar = function(self)
     for _, arquivo in ipairs(self.arquivos) do
         local ssh_arquivo = (self.destino / arquivo.nome).diretorio
-        local texto = nil
-        if vim.base64 then
-            texto = vim.base64.decode(arquivo.valor:gsub("\n", ''):gsub("\r", ''))
-        else
-            texto = vim.fn.systemlist({
-                'base64.exe',
-                '-d',
-            }, { arquivo.valor })
-        end
+        local texto = vim.fn.systemlist({
+            'base64.exe',
+            '-d',
+        }, { arquivo.valor })
         local ok, _ = pcall(vim.fn.writefile, texto, ssh_arquivo)
         if ok then
             Utils.notify(string.format('Ssh: arquivo criado com sucesso: %s', ssh_arquivo))
@@ -893,15 +888,9 @@ Git.bootstrap = function(self)
 	local has_git = vim.fn.isdirectory(self.destino.diretorio) == 1
     if not has_git then
 		vim.cmd.cd(vim.env.HOME)
-		if vim.cmd.Git then
-			vim.cmd.Git('init')
-			vim.cmd.Git('remote add win git@github.com:Andrikin/win-portable-neovim')
-			vim.cmd.Git('pull')
-			do return end
-		end
 		vim.cmd('!git init')
 		vim.cmd('!git remote add win git@github.com:Andrikin/win-portable-neovim')
-		vim.cmd('!git pull')
+		vim.cmd('!git pull win master')
 	end
 end
 
