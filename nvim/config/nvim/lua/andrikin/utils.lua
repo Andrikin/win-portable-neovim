@@ -890,7 +890,11 @@ Git.bootstrap = function(self)
 		vim.cmd.cd(vim.env.HOME)
 		vim.cmd('!git init')
 		vim.cmd('!git remote add win git@github.com:Andrikin/win-portable-neovim')
-		vim.cmd('!git pull win master')
+		vim.cmd('!git fetch')
+		vim.cmd('!git add .')
+		vim.cmd('!git commit -m "dummy commit"')
+		vim.cmd('!git checkout --track win/main')
+		vim.cmd('!git checkout --track win/registrador')
 	end
 end
 
