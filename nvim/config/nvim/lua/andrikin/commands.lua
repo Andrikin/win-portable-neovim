@@ -227,7 +227,6 @@ vim.api.nvim_create_user_command(
 				vim.fn.fnamemodify(vim.env.HOME, ':h'),
 			})
 		end
-		print(projetos)
 		vim.cmd.Dirvish(
 			vim.fs.find('projetos', {path = projetos.filename, type = 'directory'})
 		)
