@@ -302,7 +302,11 @@ local programas = {
 				notify('Não foi encontrado executável jq.')
 			end
         end,
-    }
+    },{
+		nome = 'sqlite',
+		link = 'https://www.sqlite.org/2024/sqlite-tools-win-x64-3460000.zip',
+		cmd = 'sqlite3.exe',
+	}
 }
 
 Registrador.iniciar(programas)
