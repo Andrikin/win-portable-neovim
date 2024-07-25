@@ -896,6 +896,8 @@ Git.bootstrap = function(self)
 		vim.cmd('!git checkout --track win/main')
 		vim.cmd('!git checkout --track win/registrador')
 		vim.cmd('!git branch -d master')
+    else
+        Utils.notify("Git: diretório '.git' já existe")
 	end
 end
 
