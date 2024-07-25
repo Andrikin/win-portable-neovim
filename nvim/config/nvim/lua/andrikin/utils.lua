@@ -903,8 +903,8 @@ end
 
 ---@return Git
 Git.new = function()
-    local ssh = setmetatable({}, Git)
-    return ssh
+    local git = setmetatable({}, Git)
+    return git
 end
 
 Utils.Git = Git
