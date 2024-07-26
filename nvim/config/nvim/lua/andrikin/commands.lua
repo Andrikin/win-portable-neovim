@@ -4,58 +4,154 @@
 -- config: setar diretório onde se encontra as configurações latex TEXINPUTS
 -- tratamento de erros
 
-local Path = vim.F.npcall(require, 'plenary.path')
-if not Path then
-	error('Não foi encontrado plugin Plenary. Verificar instalação do plugin')
+local notify = require('andrikin.utils').notify
+local Diretorio = require('andrikin.utils').Diretorio
+local Opt = require('andrikin.utils').OPT
+
+local Ouvidoria = {}
+
+Ouvidoria.__index = Ouvidoria
+
+Ouvidoria.tex = '.tex'
+
+Ouvidoria.ci = {}
+
+Ouvidoria.ci.diretorio = {-- diretório onde os modelos de comunicação interna estão (projeto git)
+    modelos = Diretorio.new(vim.fn.fnamemodify(vim.env.HOME, ':h')) / 'projetos' / 'ouvidoria-latex-modelos',
+    downloads = Diretorio.new(vim.loop.os_homedir()) / 'Downloads',
+    projetos = Diretorio.new(vim.fn.fnamemodify(vim.env.HOME, ':h')) / 'projetos',
+}
+
+Ouvidoria.ci.modelos = function()
+    return vim.fs.find(
+        function(name, path)
+            return name:match('.*%.tex$') and path:match('[/\\]ouvidoria.latex.modelos')
+        end,
+        {
+            path = tostring(Ouvidoria.ci.diretorio.modelos),
+            limit = math.huge,
+            type = 'file'
+        }
+    )
 end
 
-local notify = function(msg)
-	vim.notify(msg)
-	vim.cmd.redraw({bang = true})
+Ouvidoria.ci.nova = function(opts)
+	local tipo = opts.fargs[1] or 'modelo-basico'
+	local titulo = opts.fargs[2] or 'ci-modelo'
+    local modelo = vim.tbl_filter(
+		function(ci)
+			return ci:match(tipo:gsub('-', '.'))
+		end,
+        Ouvidoria.ci.modelos()
+	)
+	if tipo:match('sipe.lai') then
+		titulo = 'LAI-' .. titulo .. Ouvidoria.tex
+	elseif tipo:match('carga.gabinete') then
+        titulo = 'GAB-PREF-LAI-' .. titulo .. Ouvidoria.tex
+    else
+		titulo = 'OUV-' .. titulo .. Ouvidoria.tex
+	end
+    if modelo[1] then
+        modelo = modelo[1]
+    else
+        notify('Ouvidoria: Ci: não foi encontrado o arquivo modelo para criar nova comunicação.')
+        do return end
+    end
+    local texto = vim.fn.readfile(modelo)
+    local ci = (Ouvidoria.ci.diretorio.downloads / titulo).diretorio
+    vim.fn.writefile(texto, ci) -- Sobreescreve arquivo, se existir
+    vim.cmd.edit(ci)
 end
+
+Ouvidoria.ci.tab = function(args)-- tab completion
+	return vim.tbl_filter(
+		function(ci)
+			return ci:match(args:gsub('-', '.'))
+		end,
+		vim.tbl_map(
+			function(modelo)
+				return vim.fn.fnamemodify(modelo, ':t'):match('(.*).tex$')
+			end,
+            Ouvidoria.ci.modelos()
+		)
+	)
+end
+
+-- Clonando projeto git "git@github.com:Andrikin/ouvidoria-latex-modelos"
+Ouvidoria.ci.bootstrap = function(self)
+    local has_diretorio_modelos = vim.fn.isdirectory(tostring(self.diretorio.modelos)) == 1
+    if has_diretorio_modelos then
+        notify('Ouvidoria: bootstrap: projeto com os modelos de LaTeX já está baixado!')
+        do return end
+    end
+    local Ssh = require('andrikin.utils').Ssh.destino.diretorio
+    local has_git = vim.fn.executable('git') == 1
+    if not has_git then
+        notify('Ouvidoria: bootstrap: não foi encontrado o comando git')
+        do return end
+    end
+    local has_diretorio_projetos = vim.fn.isdirectory(self.diretorio.projetos.diretorio) == 1
+    local has_diretorio_ssh = vim.fn.isdirectory(Ssh) == 1
+    if has_diretorio_projetos and has_diretorio_ssh then
+        vim.fn.system({
+            "git",
+            "clone",
+            "git@github.com:Andrikin/ouvidoria-latex-modelos",
+            tostring(self.diretorio.modelos),
+        })
+    else
+        if not has_diretorio_ssh then
+            notify("Git: não foi encontrado o diretório '.ssh'")
+        end
+        if not has_diretorio_projetos then
+            notify("Git: não foi encontrado o diretório 'projetos'")
+        end
+    end
+end
+
+Ouvidoria.ci:bootstrap()
 
 local Latex = {}
-Latex.OUTPUT_FOLDER = vim.fs.find('Downloads', {path = vim.loop.os_homedir(), type = 'directory'})[1] -- windows 
-Latex.AUX_FOLDER = vim.env.TEMP -- windows
-Latex.PDF_READER = vim.fn.fnamemodify(vim.fn.glob(vim.env.HOME .. '/nvim/opt/sumatra/sumatra*exe'), ':t')
-Latex.not_tex_file = function()
+
+Latex.__index = Latex
+
+Latex.diretorio = {
+    opt = Opt,
+    downloads = Diretorio.new(vim.loop.os_homedir()) / 'Downloads',
+    auxiliar = Diretorio.new(vim.env.TEMP),
+}
+
+Latex.arquivo_tex = function()
     local extencao = vim.fn.expand('%'):match('%.([a-zA-Z0-9]*)$')
-    return extencao and extencao ~= 'tex'
+    return extencao and extencao == 'tex'
 end
-Latex.clear = function(arquivo)
-	-- deletar arquivos auxiliares da compilação, no linux
-	if not vim.fn.has('linux') then
-		vim.notify('Caso esteja no sistema Windows, verifique a disponibilidade da opção de comando "-aux-directory"')
-		do return end
-	end
-	local auxiliares = vim.tbl_filter(
-		function(auxiliar)
-			return auxiliar:match('aux$') or auxiliar:match('out$') or auxiliar:match('log$')
-		end,
-		vim.fn.glob(Latex.OUTPUT_FOLDER .. '/' .. arquivo .. '.*', false, true)
-	)
-	if #auxiliares == 0 then
-		do return end
-	end
-	for _, auxiliar in ipairs(auxiliares) do
-		vim.fn.delete(auxiliar)
-	end
+
+Latex.bootstrap = function()
+	vim.env.TEXINPUTS = '.;' .. Ouvidoria.ci.diretorio.modelos.diretorio .. ';'
+    if vim.fn.executable('tectonic') == 0 then
+        notify('Latex: bootstrap: não foi encontrado executável "tectonic"')
+    end
 end
-Latex.init = function() -- setando diretoria de modelos latex
-	vim.env.TEXINPUTS = '.;' .. vim.fs.find(
-		'ouvidoria-latex-modelos',
-		{
-			path = vim.fn.fnamemodify(vim.env.HOME, ':h'),
-			type = 'directory',
-		}
-	)[1] .. ';'
+
+Latex.pdf = {
+    executavel = vim.fn.fnamemodify(vim.fn.glob(tostring(Latex.diretorio.opt / 'sumatra' / 'sumatra*.exe')), ':t')
+}
+
+Latex.pdf.abrir = function(arquivo)
+    arquivo = arquivo:gsub('tex$', 'pdf')
+    notify(string.format('Abrindo arquivo %s', vim.fn.fnamemodify(arquivo, ':t')))
+    vim.fn.jobstart({
+        Latex.pdf.executavel,
+        arquivo
+    })
 end
-Latex.compile = function()
+
+Latex.compilar = function(self)
 	if vim.fn.has('linux') == 1 then
 		error('Sistema OS Linux!')
 	end
-	if Latex.not_tex_file() then
-		vim.notify('Comando executável somente para arquivos .tex!')
+	if not self.arquivo_tex() then
+		notify('Comando executável somente para arquivos .tex!')
 		do return end
 	end
 	if vim.o.modified then -- salvar arquivo que está modificado.
@@ -66,13 +162,14 @@ Latex.compile = function()
 	if not vim.fn.expand('%'):match('C%.I%.') then
 		local numero_ci = vim.fn.getline(vim.fn.search('^.Cabecalho')):match('{(%d+)}')
 		if not numero_ci then
-			numero_ci = 'NUMEROCI'
+            notify('Latex: compilar: não foi encontrado número da C.I.')
+            do return end
 		end
 		arquivo = string.format('C.I. N° %s.%s - ', numero_ci, os.date('%Y')) .. arquivo
 		local antes = vim.fn.expand('%')
 		local depois = vim.fn.expand('%:h') .. '/' .. arquivo
-		local renomeado = vim.fn.rename(antes, depois)
-		if renomeado == 0 then
+		local renomeado = vim.fn.rename(antes, depois) == 0
+		if renomeado then
 			local alternativo = vim.fn.getreg('#')
 			if alternativo == '' then
 				alternativo = depois
@@ -81,116 +178,36 @@ Latex.compile = function()
 			vim.fn.setreg('#', alternativo)
 			vim.cmd.bdelete(antes)
 		else
-			error('Não foi possível renomear o arquivo. Verifique e tente novamente.')
+			error('Latex: compilar: não foi possível renomear o arquivo.')
 		end
 	end
     arquivo = vim.fn.expand('%')
+    if not arquivo:match(self.diretorio.downloads.diretorio) then
+        notify('Latex: compilar: arquivo "tex" não está na pasta $HOMEPATH/Downloads')
+        do return end
+    end
     local comando = { -- windows
         'tectonic.exe',
         '-X',
         'compile',
         '-o',
-        Latex.OUTPUT_FOLDER,
+        self.diretorio.downloads.diretorio,
         '-k',
         '-Z',
-        'search-path=' .. vim.env.TEXINPUTS:match('^..(.+).$'),
+        'search-path=' .. Ouvidoria.ci.diretorio.modelos.diretorio,
         arquivo
     }
 	notify('Compilando arquivo!')
-	vim.print(vim.fn.system(comando))
+    local resultado = vim.fn.system(comando)
     if vim.v.shell_error > 0 then
-        notify('Erro encontrado ao compilar arquivo. Verifique com o comando "g<".')
+        notify(resultado)
         do return end
     end
 	notify('Pdf compilado!')
-    arquivo = vim.fn.fnamemodify(arquivo, ':t')
-	arquivo =  arquivo:match('(.*)%..*$') or arquivo
-    local pdf = vim.fs.find(arquivo .. '.pdf', {path = Latex.OUTPUT_FOLDER, type = 'file'})
-    if vim.tbl_isempty(pdf) then
-		notify('Latex: Não foi encontrado arquivo .pdf!')
-    else
-        pdf = pdf[1]
-		notify(string.format('Abrindo arquivo %s', vim.fn.fnamemodify(pdf, ':t')))
-		vim.fn.jobstart({
-			Latex.PDF_READER,
-			pdf
-		})
-    end
-	Latex.clear(arquivo)
+    self.pdf.abrir(arquivo)
 end
-Latex.init()
 
-local Ouvidoria = {}
-Ouvidoria.TEX = '.tex'
-Ouvidoria.CI_FOLDER = vim.env.TEXINPUTS:match('..(.*).')
-Ouvidoria.OUTPUT_FOLDER = Latex.OUTPUT_FOLDER
-Ouvidoria.listagem = function()
-	return vim.tbl_map(
-		function(diretorio)
-			return diretorio:match("[a-zA-Z-]*.tex$")
-		end,
-		vim.fs.find(
-			function(name, path)
-				return name:match('.*%.tex$') and path:match('[/\\]ouvidoria.latex.modelos')
-			end,
-			{
-				path = vim.fn.fnamemodify(vim.env.HOME, ':h') .. '/projetos',
-				limit = math.huge,
-				type = 'file'
-			}
-		)
-	)
-end
-Ouvidoria.nova_comunicacao = function(opts)
-	local tipo = opts.fargs[1] or 'modelo-basico'
-	local arquivo = opts.fargs[2] or 'ci-modelo'
-	if tipo:match('sipe.lai') then
-		arquivo = 'LAI-' .. arquivo
-	elseif tipo:match('carga.gabinete') then
-        arquivo = 'GAB-PREF-LAI-' .. arquivo
-    else
-		arquivo = 'OUV-' .. arquivo
-	end
-	local alternativo = vim.fn.expand('%')
-	local NONAME = vim.api.nvim_buf_get_name(vim.fn.bufnr('%')) == ''
-	vim.cmd.edit(Ouvidoria.CI_FOLDER .. '/' .. tipo .. Ouvidoria.TEX)
-	local ok, retorno = pcall(
-		vim.cmd.saveas,
-		Ouvidoria.OUTPUT_FOLDER .. '/' .. arquivo .. Ouvidoria.TEX
-	)
-	while not ok do
-		if retorno:match('E13:') then
-			arquivo = vim.fn.input(
-				'Arquivo com este nome já existe. Digite outro nome para arquivo: '
-			)
-			ok, retorno = pcall(
-				vim.cmd.saveas,
-				Ouvidoria.OUTPUT_FOLDER .. '/' .. arquivo .. Ouvidoria.TEX
-			)
-		else
-			vim.notify('Erro encontrado! Abortando comando Pdflatex.')
-			do return end
-		end
-	end
-	if NONAME then
-		alternativo = Ouvidoria.OUTPUT_FOLDER .. '/' .. arquivo .. Ouvidoria.TEX
-	end
-	vim.fn.setreg('#', alternativo) -- setando arquivo alternativo
-	vim.cmd.bdelete(tipo .. Ouvidoria.TEX)
-end
-Ouvidoria.complete = function(args)
-	return vim.tbl_filter(
-		function(comunicacao)
-			return comunicacao:match(args:gsub('-', '.'))
-		end,
-		vim.tbl_map(
-			function(modelo)
-				return modelo:match('(.*).tex$')
-			end,
-			Ouvidoria.listagem()
-		)
-	)
-end
+Latex:bootstrap()
 
 vim.api.nvim_create_user_command(
 	'HexEditor',
@@ -200,16 +217,20 @@ vim.api.nvim_create_user_command(
 
 vim.api.nvim_create_user_command(
 	'Pdflatex',
-	Latex.compile,
+    -- Latex.compile,
+    function()
+        Latex:compilar()
+    end,
 	{}
 )
 
 vim.api.nvim_create_user_command(
 	'Ouvidoria',
-	Ouvidoria.nova_comunicacao,
+	-- Ouvidoria.nova_comunicacao,
+	Ouvidoria.ci.nova,
 	{
 		nargs = "+",
-		complete = Ouvidoria.complete,
+		complete = Ouvidoria.ci.tab,
 	}
 )
 
@@ -218,17 +239,12 @@ vim.api.nvim_create_user_command(
 	function()
 		local projetos = nil
 		if vim.env.HOME:match('^.') == 'C' then
-			projetos = Path:new({
-				vim.loop.os_homedir(),
-				'Documents'
-			})
+			projetos = Ouvidoria.ci.diretorio.projetos.diretorio
 		else
-			projetos = Path:new({
-				vim.fn.fnamemodify(vim.env.HOME, ':h'),
-			})
+			projetos = tostring(Diretorio.new(vim.fn.fnamemodify(vim.env.HOME, ':h')))
 		end
 		vim.cmd.Dirvish(
-			vim.fs.find('projetos', {path = projetos.filename, type = 'directory'})
+			vim.fs.find('projetos', {path = projetos, type = 'directory'})
 		)
 	end,
 	{}
