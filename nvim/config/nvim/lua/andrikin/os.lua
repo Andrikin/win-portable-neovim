@@ -58,9 +58,9 @@ local Curl = require('andrikin.utils').Curl.new()
 local SauceCodePro = require('andrikin.utils').SauceCodePro.new()
 SauceCodePro:setup()
 ---@type Diretorio
-local OPT = require('andrikin.utils').OPT
+local Opt = require('andrikin.utils').Opt
 ---@type Diretorio
-local Projetos = require('andrikin.utils').PROJETOS
+local Projetos = require('andrikin.utils').Projetos
 if vim.fn.isdirectory(Projetos.diretorio) == 0 then
     vim.fn.mkdir(Projetos.diretorio, 'p', 0700)
 end
@@ -89,7 +89,7 @@ local programas = {
 		link = 'https://www.sumatrapdfreader.org/dl/rel/3.5.2/SumatraPDF-3.5.2-64.zip',
 		cmd = {'sumatra.exe', 'SumatraPDF-3.5.2-64.exe'},
 		config = function()
-			local diretorio = OPT / 'sumatra'
+			local diretorio = Opt / 'sumatra'
 			local executavel = vim.fn.glob(tostring(diretorio / 'sumatra*.exe'))
 			if executavel ~= '' then
 				if vim.fn.fnamemodify(executavel, ':t') == 'sumatra.exe' then
@@ -111,7 +111,7 @@ local programas = {
 		cmd = 'node.exe',
 		config = function()
 			local installed = function(pacote) -- checar se diretório existe
-				return not vim.tbl_isempty(vim.fs.find(pacote, {path = tostring(OPT / 'node'), type = 'directory'}))
+				return not vim.tbl_isempty(vim.fs.find(pacote, {path = tostring(Opt / 'node'), type = 'directory'}))
 			end
 			-- configurações extras
 			if win7 and vim.env.NODE_SKIP_PLATFORM_CHECK ~= 1 then
@@ -152,7 +152,7 @@ local programas = {
 			local get_pip = {}
 			get_pip.link =  'https://bootstrap.pypa.io/get-pip.py'
 			get_pip.nome = vim.fn.fnamemodify(get_pip.link, ':t')
-			get_pip.diretorio = OPT / 'python'
+			get_pip.diretorio = Opt / 'python'
 			get_pip.pth = win7 and 'python38._pth' or 'python312._pth'
 			get_pip.instalado = function(self)
 				local pip = vim.fs.find('pip.exe', {path = tostring(self.diretorio), type = 'file'})[1]
@@ -265,7 +265,7 @@ local programas = {
 		link = 'https://github.com/jqlang/jq/releases/download/jq-1.7.1/jq-windows-i386.exe',
 		cmd = {'jq.exe', 'jq-windows-i386.exe'},
         config = function()
-			local diretorio = OPT / 'jq'
+			local diretorio = Opt / 'jq'
 			local executavel = vim.fn.glob(tostring(diretorio / 'jq*.exe'))
 			if executavel ~= '' then
 				if vim.fn.fnamemodify(executavel, ':t') == 'jq.exe' then
@@ -286,7 +286,7 @@ local programas = {
         link = 'https://github.com/tree-sitter/tree-sitter/releases/download/v0.22.6/tree-sitter-windows-x64.gz',
         cmd = {'tree-sitter.exe', 'tree-sitter-windows-x64'},
         config = function()
-			local diretorio = OPT / 'tree-sitter'
+			local diretorio = Opt / 'tree-sitter'
 			local executavel = vim.fn.glob(tostring(diretorio / 'tree-sitter*'))
 			if executavel ~= '' then
 				if vim.fn.fnamemodify(executavel, ':t') == 'tree-sitter.exe' then

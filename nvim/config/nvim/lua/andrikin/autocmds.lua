@@ -1,7 +1,20 @@
 -- Autocmds goosebumps
-local autocmd = vim.api.nvim_create_autocmd
-local Andrikin = vim.api.nvim_create_augroup('Andrikin', {clear = true})
+local autocmd = require('andrikin.utils').autocmd
+local Andrikin = require('andrikin.utils').Andrikin
+local Ouvidoria = require('andrikin.utils').Ouvidoria
 local cursorline = require('andrikin.utils').cursorline
+
+-- BufWritePost: compilar tex para gerar pdf assim que salvar o arquivo
+autocmd(
+	'BufWritePost',
+	{
+		group = Andrikin,
+		pattern = '*.tex',
+		callback = function()
+			Ouvidoria.latex:compilar()
+		end,
+	}
+)
 
 -- Highlight linha quando entrar em INSERT MODE
 autocmd(
@@ -33,7 +46,7 @@ autocmd(
 	'FileType',
 	{
 		group = Andrikin,
-		pattern = {'*.html', '*.css'},
+		pattern = {'html', 'css'},
 		callback = function()
             vim.cmd.Lazy('load emmet-vim')
             vim.cmd.EmmetInstall()

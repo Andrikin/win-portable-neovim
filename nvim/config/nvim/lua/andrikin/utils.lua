@@ -3,9 +3,64 @@
 ---@field SauceCodePro SauceCodePro
 ---@field Registrador Registrador
 ---@field Curl Curl
----@field OPT Diretorio
+---@field Opt Diretorio
 ---@field win7 string | nil
 local Utils = {}
+
+--- Mostra notificação para usuário, registrando em :messages
+---@param msg string
+Utils.notify = function(msg)
+    vim.api.nvim_echo({{msg, 'DiagnosticInfo'}}, true, {})
+    vim.cmd.redraw({bang = true})
+end
+
+--- Mostra uma notificação para o usuário, mas sem registrar em :messages
+---@param msg string
+Utils.echo = function(msg)
+    vim.api.nvim_echo({{msg, 'DiagnosticInfo'}}, false, {})
+    vim.cmd.redraw({bang = true})
+end
+
+--- Remove programa da variável PATH do sistema
+---@param programa string
+Utils.remover_path = function (programa)
+    if vim.env.PATH:match(programa) then
+        local PATH = ''
+        for path in vim.env.PATH:gmatch('([^;]+)') do
+            if not path:match(programa) then
+                PATH = PATH ..  ';' .. path
+            end
+        end
+        PATH = PATH:match('^.(.*)$')
+        vim.env.PATH = PATH
+    end
+end
+
+Utils.npcall = vim.F.npcall
+
+---@type string | nil
+Utils.win7 = string.match(vim.loop.os_uname()['version'], 'Windows 7')
+
+---@type table
+Utils.cursorline = {
+    toggle = function(cursorlineopt)
+        cursorlineopt = cursorlineopt or {'number', 'line'}
+        vim.opt.cursorlineopt = cursorlineopt
+        vim.wo.cursorline = not vim.wo.cursorline
+    end,
+    on = function(cursorlineopt)
+        cursorlineopt = cursorlineopt or {'number', 'line'}
+        vim.opt.cursorlineopt = cursorlineopt
+        vim.wo.cursorline = true
+    end,
+    off = function()
+        vim.wo.cursorline = false
+    end
+}
+
+Utils.autocmd = vim.api.nvim_create_autocmd
+
+Utils.Andrikin = vim.api.nvim_create_augroup('Andrikin', {clear = true})
 
 ---@class Programa
 ---@field nome string
@@ -21,21 +76,27 @@ local Programa = {}
 
 Programa.__index = Programa
 
+---@type boolean
 Programa.baixado = false
 
+---@type boolean
 Programa.extraido = false
 
+---@type boolean
 Programa.finalizado = false
 
+---@type number
 Programa.timeout = 120 * 1000
 
+---@param self Programa
+---@return string
 Programa.__tostring = function(self)
     return self:diretorio().diretorio
 end
 
 ---@return Diretorio diretorio
 Programa.diretorio = function(self)
-    return Utils.OPT / self.nome
+    return Utils.Opt / self.nome
 end
 
 ---@return string nome
@@ -44,6 +105,7 @@ Programa.nome_arquivo = function(self)
 end
 
 ---@return string ext
+---@param self Programa
 Programa.extencao = function(self)
 	local ext = vim.fn.fnamemodify(self.link, ':e')
 	if ext == '' then
@@ -291,6 +353,7 @@ Utils.Programa = Programa
 
 ---@class Diretorio
 ---@field diretorio string Caminho completo do diretório
+---@field add function
 local Diretorio = {}
 
 Diretorio.__index = Diretorio
@@ -382,12 +445,12 @@ end
 Utils.Diretorio = Diretorio
 
 ---@type Diretorio
-Utils.OPT = Utils.Diretorio.new(vim.env.NVIM_OPT)
+Utils.Opt = Diretorio.new(vim.env.NVIM_OPT)
 
 --- Criar diretório 'opt' caso não exista
 Utils.bootstrap = function(self)
-    if vim.fn.isdirectory(self.OPT.diretorio) then
-        vim.fn.mkdir(self.OPT.diretorio, 'p', 0700)
+    if vim.fn.isdirectory(self.Opt.diretorio) then
+        vim.fn.mkdir(self.Opt.diretorio, 'p', 0700)
     end
 end
 
@@ -397,6 +460,7 @@ local Curl = {}
 
 Curl.__index = Curl
 
+---@return Curl
 Curl.new = function()
     if vim.fn.executable('curl') == 0 then -- verificar se curl está instalado no sistema
         error([[
@@ -422,8 +486,8 @@ Curl.bootstrap = function(self)
         Utils.notify('Curl: bootstrap: Sistema já possui Unzip.')
         do return end
     end
-    self.download(self.unzip_link, Utils.OPT.diretorio)
-    local unzip = vim.fs.find('unzip.exe', {path = Utils.OPT.diretorio, type = 'file'})[1]
+    self.download(self.unzip_link, Utils.Opt.diretorio)
+    local unzip = vim.fs.find('unzip.exe', {path = Utils.Opt.diretorio, type = 'file'})[1]
     if vim.v.shell_error > 0 then
         error('Curl: bootstrap: Não foi possível realizar o download do unzip.exe')
     elseif unzip == '' then
@@ -442,7 +506,7 @@ Curl.download = function(link, diretorio)
 		error('Curl: download: Variável nula')
 	end
 	local arquivo = vim.fn.fnamemodify(link, ':t')
-	diretorio = tostring(Utils.Diretorio.new(diretorio) / arquivo)
+	diretorio = tostring(Diretorio.new(diretorio) / arquivo)
 	vim.fn.system({
 		'curl',
 		'--fail',
@@ -510,7 +574,7 @@ Registrador.__index = Registrador
 ---@return Registrador
 Registrador.new = function()
     local registrador = setmetatable({
-        diretorio = Utils.OPT,
+        diretorio = Utils.Opt,
     }, Registrador)
     registrador:bootstrap()
     return registrador
@@ -536,8 +600,8 @@ end
 ---@param programas table Lista dos programas que são dependência para o nvim
 Registrador.iniciar = function(programas)
     for i, programa in ipairs(programas) do
-        if getmetatable(programa) ~= Utils.Programa then
-            programas[i] = setmetatable(programa, Utils.Programa)
+        if getmetatable(programa) ~= Programa then
+            programas[i] = setmetatable(programa, Programa)
         end
     	programas[i]:instalar()
     end
@@ -556,9 +620,9 @@ local SauceCodePro = {}
 
 SauceCodePro.__index = SauceCodePro
 
-SauceCodePro.registro = Utils.Diretorio.new('HKCU') / 'Software' / 'Microsoft' / 'Windows NT' / 'CurrentVersion' / 'Fonts'
+SauceCodePro.registro = Diretorio.new('HKCU') / 'Software' / 'Microsoft' / 'Windows NT' / 'CurrentVersion' / 'Fonts'
 
-SauceCodePro.diretorio = Utils.OPT / 'fonte'
+SauceCodePro.diretorio = Utils.Opt / 'fonte'
 
 SauceCodePro.link = 'https://github.com/ryanoasis/nerd-fonts/releases/download/v3.1.1/SourceCodePro.zip'
 
@@ -612,7 +676,7 @@ SauceCodePro.download = function(self)
         vim.fn.mkdir(tostring(self), 'p', 0700)
     end
     -- Realizar download da fonte
-    Utils.Curl.download(self.link, tostring(self))
+    Curl.download(self.link, tostring(self))
     if not self:zip_baixado() then
         error('Fonte: download: Não foi possível realizar o download do arquivo da fonte.')
     end
@@ -621,7 +685,7 @@ end
 
 ---Decompressar arquivo zip
 SauceCodePro.extrair_zip = function(self)
-    Utils.Curl.extrair(self.arquivo.diretorio, tostring(self))
+    Curl.extrair(self.arquivo.diretorio, tostring(self))
     Utils.notify('Arquivo fonte SauceCodePro.zip extraído!')
     -- remover arquivo .zip
     if vim.fn.getftype(self.arquivo.diretorio) == 'file' then
@@ -725,58 +789,7 @@ end
 
 Utils.SauceCodePro = SauceCodePro
 
---- Mostra notificação para usuário, registrando em :messages
----@param msg string
-Utils.notify = function(msg)
-    vim.api.nvim_echo({{msg, 'DiagnosticInfo'}}, true, {})
-    vim.cmd.redraw({bang = true})
-end
-
---- Mostra uma notificação para o usuário, mas sem registrar em :messages
----@param msg string
-Utils.echo = function(msg)
-    vim.api.nvim_echo({{msg, 'DiagnosticInfo'}}, false, {})
-    vim.cmd.redraw({bang = true})
-end
-
---- Remove programa da variável PATH do sistema
----@param programa string
-Utils.remover_path = function (programa)
-    if vim.env.PATH:match(programa) then
-        local PATH = ''
-        for path in vim.env.PATH:gmatch('([^;]+)') do
-            if not path:match(programa) then
-                PATH = PATH ..  ';' .. path
-            end
-        end
-        PATH = PATH:match('^.(.*)$')
-        vim.env.PATH = PATH
-    end
-end
-
-Utils.npcall = vim.F.npcall
-
----@type string | nil
-Utils.win7 = string.match(vim.loop.os_uname()['version'], 'Windows 7')
-
-Utils.cursorline = {
-    toggle = function(cursorlineopt)
-        cursorlineopt = cursorlineopt or {'number', 'line'}
-        vim.opt.cursorlineopt = cursorlineopt
-        vim.wo.cursorline = not vim.wo.cursorline
-    end,
-    on = function(cursorlineopt)
-        cursorlineopt = cursorlineopt or {'number', 'line'}
-        vim.opt.cursorlineopt = cursorlineopt
-        vim.wo.cursorline = true
-    end,
-    off = function()
-        vim.wo.cursorline = false
-    end
-
-}
-
-Utils.PROJETOS = Utils.Diretorio.new(vim.fn.fnamemodify(vim.env.HOME, ':h')) / 'projetos'
+Utils.Projetos = Diretorio.new(vim.fn.fnamemodify(vim.env.HOME, ':h')) / 'projetos'
 
 ---WARNING: classe para instalar as credenciais .ssh
 ---@class Ssh
@@ -787,7 +800,7 @@ local Ssh = {}
 Ssh.__index = Ssh
 
 ---@type Diretorio
-Ssh.destino = Utils.Diretorio.new(vim.env.HOME) / '.ssh'
+Ssh.destino = Diretorio.new(vim.env.HOME) / '.ssh'
 
 ---@type table
 Ssh.arquivos = {
@@ -869,8 +882,7 @@ end
 
 ---@return Ssh
 Ssh.new = function()
-    local ssh = setmetatable({}, Ssh)
-    return ssh
+    return setmetatable({}, Ssh)
 end
 
 Utils.Ssh = Ssh
@@ -882,7 +894,7 @@ local Git = {}
 Git.__index = Git
 
 ---@type Diretorio
-Git.destino = Utils.Diretorio.new(vim.env.HOME) / '.git'
+Git.destino = Diretorio.new(vim.env.HOME) / '.git'
 
 Git.bootstrap = function(self)
 	local has_git = vim.fn.isdirectory(self.destino.diretorio) == 1
@@ -903,11 +915,221 @@ end
 
 ---@return Git
 Git.new = function()
-    local git = setmetatable({}, Git)
-    return git
+    return setmetatable({}, Git)
 end
 
 Utils.Git = Git
+
+---@class Ouvidoria
+local Ouvidoria = {}
+
+Ouvidoria.__index = Ouvidoria
+
+---@return Ouvidoria
+Ouvidoria.new = function()
+	local ouvidoria = setmetatable({}, Ouvidoria)
+	ouvidoria.ci:bootstrap()
+	ouvidoria.latex:bootstrap()
+	return ouvidoria
+end
+
+---@type string
+Ouvidoria.tex = '.tex'
+
+---@type table
+Ouvidoria.ci = {}
+
+---@type table
+Ouvidoria.ci.diretorios = {-- diretório onde os modelos de comunicação interna estão (projeto git)
+    modelos = Diretorio.new(vim.fn.fnamemodify(vim.env.HOME, ':h')) / 'projetos' / 'ouvidoria-latex-modelos',
+    downloads = Diretorio.new(vim.loop.os_homedir()) / 'Downloads',
+    projetos = Diretorio.new(vim.fn.fnamemodify(vim.env.HOME, ':h')) / 'projetos',
+}
+
+---@return table
+Ouvidoria.ci.modelos = function()
+    return vim.fs.find(
+        function(name, path)
+            return name:match('.*%.tex$') and path:match('[/\\]ouvidoria.latex.modelos')
+        end,
+        {
+            path = tostring(Ouvidoria.ci.diretorios.modelos),
+            limit = math.huge,
+            type = 'file'
+        }
+    )
+end
+
+-- TODO: Criar input para obter Número de CI e destinatório
+Ouvidoria.ci.nova = function(opts)
+	local tipo = opts.fargs[1] or 'modelo-basico'
+	local titulo = opts.fargs[2] or 'ci-modelo'
+	local modelo = table.concat(
+		vim.tbl_filter(
+			function(ci)
+				return ci:match(tipo:gsub('-', '.'))
+			end,
+			Ouvidoria.ci.modelos()
+		)
+	)
+    if not modelo then
+        Utils.notify('Ouvidoria: Ci: não foi encontrado o arquivo modelo para criar nova comunicação.')
+        do return end
+    end
+	if tipo:match('sipe.lai') then
+		titulo = 'LAI-' .. titulo .. Ouvidoria.tex
+	elseif tipo:match('carga.gabinete') then
+        titulo = 'GAB-PREF-LAI-' .. titulo .. Ouvidoria.tex
+    else
+		titulo = 'OUV-' .. titulo .. Ouvidoria.tex
+	end
+    local ci = (Ouvidoria.ci.diretorios.downloads / titulo).diretorio
+    vim.fn.writefile(vim.fn.readfile(modelo), ci) -- Sobreescreve arquivo, se existir
+    vim.cmd.edit(ci)
+end
+
+---@return table
+Ouvidoria.ci.tab = function(args)-- tab completion
+	return vim.tbl_filter(
+		function(ci)
+			return ci:match(args:gsub('-', '.'))
+		end,
+		vim.tbl_map(
+			function(modelo)
+				return vim.fn.fnamemodify(modelo, ':t'):match('(.*).tex$')
+			end,
+            Ouvidoria.ci.modelos()
+		)
+	)
+end
+
+-- Clonando projeto git "git@github.com:Andrikin/ouvidoria-latex-modelos"
+Ouvidoria.ci.bootstrap = function(self)
+    local has_diretorio_modelos = vim.fn.isdirectory(tostring(self.diretorios.modelos)) == 1
+    if has_diretorio_modelos then
+        Utils.notify('Ouvidoria: bootstrap: projeto com os modelos de LaTeX já está baixado!')
+        do return end
+    end
+    local has_git = vim.fn.executable('git') == 1
+    if not has_git then
+        Utils.notify('Ouvidoria: bootstrap: não foi encontrado o comando git')
+        do return end
+    end
+    local has_diretorio_projetos = vim.fn.isdirectory(self.diretorios.projetos.diretorio) == 1
+    local has_diretorio_ssh = vim.fn.isdirectory(Ssh.destino.diretorio) == 1
+    if has_diretorio_projetos and has_diretorio_ssh then
+        vim.fn.system({
+            "git",
+            "clone",
+            "git@github.com:Andrikin/ouvidoria-latex-modelos",
+            tostring(self.diretorios.modelos),
+        })
+    else
+        if not has_diretorio_ssh then
+            Utils.notify("Git: não foi encontrado o diretório '.ssh'")
+        end
+        if not has_diretorio_projetos then
+            Utils.notify("Git: não foi encontrado o diretório 'projetos'")
+        end
+    end
+end
+
+Ouvidoria.latex = {}
+
+Ouvidoria.latex.diretorios = {
+    opt = Utils.Opt,
+    downloads = Ouvidoria.ci.diretorios.downloads,
+    auxiliar = Diretorio.new(vim.env.TEMP),
+}
+
+Ouvidoria.latex.arquivo_tex = function()
+    local extencao = vim.fn.expand('%'):match('%.([a-zA-Z0-9]*)$')
+    return extencao and extencao == 'tex'
+end
+
+Ouvidoria.latex.bootstrap = function()
+    if vim.fn.executable('tectonic') == 0 then
+        error('Latex: bootstrap: não foi encontrado executável "tectonic"')
+    end
+	vim.env.TEXINPUTS = '.;' .. Ouvidoria.ci.diretorios.modelos.diretorio .. ';'
+end
+
+Ouvidoria.latex.pdf = {
+    executavel = vim.fn.fnamemodify(vim.fn.glob(tostring(Ouvidoria.latex.diretorios.opt / 'sumatra' / 'sumatra*.exe')), ':t')
+}
+
+Ouvidoria.latex.pdf.abrir = function(arquivo)
+    arquivo = arquivo:gsub('tex$', 'pdf')
+	local existe = vim.fn.filereadable(arquivo) ~= 0
+	if not existe then
+		error('Ouvidoria: pdf.abrir: não foi possível encontrar arquivo "pdf"')
+	end
+    Utils.notify(string.format('Abrindo arquivo %s', vim.fn.fnamemodify(arquivo, ':t')))
+    vim.fn.jobstart({
+        Ouvidoria.latex.pdf.executavel,
+        arquivo
+    })
+end
+
+Ouvidoria.latex.compilar = function(self)
+	if not self.arquivo_tex() then
+		Utils.notify('Ouvidoria.latex: compilar: Comando executável somente para arquivos .tex!')
+		do return end
+	end
+    if not vim.fn.expand('%'):match(tostring(self.diretorios.downloads)) then
+        Utils.notify('Ouvidoria.latex: compilar: arquivo "tex" não está na pasta $HOMEPATH/Downloads')
+        do return end
+    end
+	if vim.o.modified then -- salvar arquivo que está modificado.
+		vim.cmd.write()
+		vim.cmd.redraw({bang = true})
+	end
+	local arquivo = vim.fn.expand('%:t')
+	if not vim.fn.expand('%'):match('C%.I%.') then
+		local numero_ci = vim.fn.getline(vim.fn.search('^.Cabecalho')):match('{(%d+)}')
+		if not numero_ci then
+            Utils.notify('Ouvidoria.latex: compilar: não foi encontrado número da C.I.')
+            do return end
+		end
+		arquivo = string.format('C.I. N° %s.%s - ', numero_ci, os.date('%Y')) .. arquivo
+		local antes = vim.fn.expand('%')
+		local depois = vim.fn.expand('%:h') .. '/' .. arquivo
+		local renomeado = vim.fn.rename(antes, depois) == 0
+		if renomeado then
+			local alternativo = vim.fn.getreg('#')
+			if alternativo == '' then
+				alternativo = depois
+			end
+			vim.cmd.edit(depois) -- recarregar arquivo buffer
+			vim.fn.setreg('#', alternativo)
+			vim.cmd.bdelete(antes)
+		else
+			error('Ouvidoria.latex: compilar: não foi possível renomear o arquivo.')
+		end
+	end
+    arquivo = vim.fn.expand('%')
+    local comando = {
+        'tectonic.exe',
+        '-X',
+        'compile',
+        '-o',
+        self.diretorios.downloads.diretorio,
+        '-k',
+        '-Z',
+        'search-path=' .. tostring(Ouvidoria.ci.diretorios.modelos),
+        arquivo
+    }
+	Utils.notify('Compilando arquivo...')
+    local resultado = vim.fn.system(comando)
+    if vim.v.shell_error > 0 then
+        Utils.notify(resultado)
+        do return end
+    end
+	Utils.notify('Arquivo pdf compilado!')
+	self.pdf.abrir(arquivo)
+end
+
+Utils.Ouvidoria = Ouvidoria
 
 return Utils
 
