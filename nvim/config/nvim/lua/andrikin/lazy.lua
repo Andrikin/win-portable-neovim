@@ -1,4 +1,3 @@
-local notify = require('andrikin.utils').notify
 local lazypath = vim.fn.stdpath("data") .. "/lazy/lazy.nvim"
 -- Inicializando caminho para git
 if not vim.loop.fs_stat(lazypath) then
