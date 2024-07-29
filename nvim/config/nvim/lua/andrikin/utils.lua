@@ -960,7 +960,6 @@ Ouvidoria.ci.modelos = function()
     )
 end
 
--- TODO: Criar input para obter Número de CI e destinatório
 Ouvidoria.ci.nova = function(opts)
 	local tipo = opts.fargs[1] or 'modelo-basico'
 	local modelo = table.concat(
@@ -993,9 +992,10 @@ Ouvidoria.ci.nova = function(opts)
     local ci = (Ouvidoria.ci.diretorios.downloads / titulo).diretorio
     vim.fn.writefile(vim.fn.readfile(modelo), ci) -- Sobreescreve arquivo, se existir
     vim.cmd.edit(ci)
+	vim.cmd.redraw({bang = true})
 	-- preencher dados de C.I., ocorrência e setor no arquivo tex
-	vim.cmd.substitute({string.format("/\\Ocorrencia{}/\\Ocorrencia{%s}/", ocorrencia), range = {0, vim.fn.line('$')}})
-	vim.cmd.substitute({string.format("/\\Cabecalho{}{[A-Z-]\\{-}}/\\Cabecalho{%s}{%s}/", num_ci, setor), range = {0, vim.fn.line('$')}})
+	vim.cmd.substitute({string.format("/Ocorrencia{}/Ocorrencia{%s}/I", ocorrencia), range = {0, vim.fn.line('$')}})
+	vim.cmd.substitute({string.format("/Cabecalho{}{[A-Z-]\\{-}}/Cabecalho{%s}{%s}/I", num_ci, setor), range = {0, vim.fn.line('$')}})
 end
 
 ---@return table
