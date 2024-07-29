@@ -1,10 +1,24 @@
+Utils.Ouvidoria
 ---@class Utils
 ---@field Diretorio Diretorio
 ---@field SauceCodePro SauceCodePro
 ---@field Registrador Registrador
 ---@field Curl Curl
+---@field Programa Programa
+---@field Projetos Diretorio
+---@field Ssh Ssh
+---@field Git Git
+---@field Ouvidoria Ouvidoria
 ---@field Opt Diretorio
 ---@field win7 string | nil
+---@field notify nil
+---@field echo nil
+---@field remover_path nil
+---@field npcall nil
+---@field cursorline table
+---@field autocmd function
+---@field Andrikin table
+---@field bootstrap 
 local Utils = {}
 
 --- Mostra notificação para usuário, registrando em :messages
@@ -361,6 +375,7 @@ Diretorio.__index = Diretorio
 ---@param caminho string | table
 ---@return Diretorio
 Diretorio.new = function(caminho)
+    caminho = caminho or ''
     vim.validate({caminho = {caminho, {'table', 'string'}}})
     if type(caminho) == 'table' then
         for _, valor in ipairs(caminho) do
@@ -368,18 +383,11 @@ Diretorio.new = function(caminho)
                 error('Diretorio: new: Elemento de lista diferente de "string"!')
             end
         end
+        caminho = table.concat(caminho, '/')
     end
     local diretorio = setmetatable({
-        diretorio = '',
+        diretorio = Diretorio._sanitize(caminho),
     }, Diretorio)
-    if type(caminho) == 'table' then
-        local concatenar = caminho[1]
-        for i=2, #caminho do
-            concatenar = concatenar .. diretorio._suffix(caminho[i])
-        end
-        caminho = concatenar
-    end
-    diretorio.diretorio = diretorio._sanitize(caminho)
     return diretorio
 end
 
@@ -387,10 +395,35 @@ end
 ---@param str string
 ---@return string
 Diretorio._sanitize = function(str)
-    local sanitarizado = ''
     vim.validate({ str = {str, 'string'} })
-    sanitarizado = string.gsub(str, '/', '\\')
-    return sanitarizado
+    return vim.fs.normalize(str)
+end
+
+---@private
+---@return string
+--- Realiza busca nas duas direções pelo 
+Diretorio._search = function(dir)
+    vim.validate({ dir = {str, 'string'} })
+    if dir:match('^' .. vim.env.HOMEDRIVE) then
+        error('Diretorio: _search: argumento deve ser um trecho de diretório, não deve conter "C:/" no seu início.')
+    end
+    local home = Diretorio._sanitize(vim.env.HOMEPATH)
+    local diretorio = vim.fs.find(
+        function(name, path)
+            return path:match(Diretorio._sanitize(dir):gsub('-', '.'))
+        end,{
+            path = home,
+            limit = 1,
+            type = 'directory',
+        }
+    )
+    if type(diretorio) == 'table' then
+        diretorio = diretorio[1]
+    end
+    if diretorio == '' then
+        error('Diretorio: _search: não foi encontrado o caminho do diretório informado.')
+    end
+    return Diretorio._sanitize(diretorio)
 end
 
 ---@private
@@ -398,7 +431,7 @@ end
 ---@return string
 Diretorio._suffix = function(str)
     vim.validate({ str = {str, 'string'} })
-    return (str:match('^[/\\]') or str == '') and str or '\\' .. str
+    return (str:match('^[/\\]') or str == '') and str or vim.fs.normalize('/' .. str)
 end
 
 ---@param caminho string | table
@@ -975,8 +1008,11 @@ Ouvidoria.ci.nova = function(opts)
         do return end
     end
 	local num_ci = vim.fn.input('Digite o número da C.I.: ')
-	local ocorrencia = vim.fn.input('Digite o número da ocorrência: ')
 	local setor = vim.fn.input('Digite o setor destinatário: ')
+    local ocorrencia = ''
+    if not modelo:match('modelo.basico') then
+        ocorrencia = vim.fn.input('Digite o número da ocorrência: ')
+    end
 	if num_ci == '' or ocorrencia == '' or setor == '' then -- obrigatório informar os dados
 		error('Ouvidoria.latex: compilar: não foram informados os dados ou algum deles [C.I., ocorrência, setor].')
 	end
