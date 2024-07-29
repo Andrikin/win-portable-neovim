@@ -41,15 +41,3 @@ vim.api.nvim_create_user_command(
 	{}
 )
 
-vim.api.nvim_create_user_command(
-	'WhatsAppMensagem',
-	function()
-        local fim = vim.fn.getpos('$')[2]
-        if fim < 1 then
-            fim = 1
-        end
-        vim.cmd.normal({args = {'df:df:x'}, range = {1, fim}})
-	end,
-	{}
-)
-
