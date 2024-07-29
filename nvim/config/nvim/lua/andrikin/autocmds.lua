@@ -47,6 +47,7 @@ autocmd(
 	{
 		group = Andrikin,
 		pattern = {'html', 'css'},
+        once = true,
 		callback = function()
             vim.cmd.Lazy('load emmet-vim')
             vim.cmd.EmmetInstall()
