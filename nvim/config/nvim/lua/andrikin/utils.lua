@@ -963,7 +963,6 @@ end
 -- TODO: Criar input para obter Número de CI e destinatório
 Ouvidoria.ci.nova = function(opts)
 	local tipo = opts.fargs[1] or 'modelo-basico'
-	local titulo = opts.fargs[2] or 'ci-modelo'
 	local modelo = table.concat(
 		vim.tbl_filter(
 			function(ci)
@@ -976,6 +975,13 @@ Ouvidoria.ci.nova = function(opts)
         Utils.notify('Ouvidoria: Ci: não foi encontrado o arquivo modelo para criar nova comunicação.')
         do return end
     end
+	local num_ci = vim.fn.input('Digite o número da C.I.: ')
+	local ocorrencia = vim.fn.input('Digite o número da ocorrência: ')
+	local setor = vim.fn.input('Digite o setor destinatário: ')
+	if num_ci == '' or ocorrencia == '' or setor == '' then -- obrigatório informar os dados
+		error('Ouvidoria.latex: compilar: não foram informados os dados ou algum deles [C.I., ocorrência, setor].')
+	end
+	local titulo = ocorrencia .. '-' .. setor
 	if tipo:match('sipe.lai') then
 		titulo = 'LAI-' .. titulo .. Ouvidoria.tex
 	elseif tipo:match('carga.gabinete') then
@@ -983,9 +989,13 @@ Ouvidoria.ci.nova = function(opts)
     else
 		titulo = 'OUV-' .. titulo .. Ouvidoria.tex
 	end
+	titulo = string.format('C.I. N° %s.%s - ', num_ci, os.date('%Y')) .. titulo
     local ci = (Ouvidoria.ci.diretorios.downloads / titulo).diretorio
     vim.fn.writefile(vim.fn.readfile(modelo), ci) -- Sobreescreve arquivo, se existir
     vim.cmd.edit(ci)
+	-- preencher dados de C.I., ocorrência e setor no arquivo tex
+	vim.cmd.substitute({string.format("/\\\\Ocorrencia{}/\\\\Ocorrencia{%s}/", ocorrencia), range = {0, vim.fn.line('$')}})
+	vim.cmd.substitute({string.format("/\\\\Cabecalho{}{[A-Z-]\\{-}}/\\\\Cabecalho{%s}{%s}/", num_ci, setor), range = {0, vim.fn.line('$')}})
 end
 
 ---@return table
@@ -1076,7 +1086,8 @@ Ouvidoria.latex.compilar = function(self)
 		Utils.notify('Ouvidoria.latex: compilar: Comando executável somente para arquivos .tex!')
 		do return end
 	end
-    if not vim.fn.expand('%'):match(tostring(self.diretorios.downloads)) then
+	local in_downloads = vim.fn.expand('%'):match(tostring(self.diretorios.downloads))
+    if not in_downloads then
         Utils.notify('Ouvidoria.latex: compilar: arquivo "tex" não está na pasta $HOMEPATH/Downloads')
         do return end
     end
@@ -1084,30 +1095,7 @@ Ouvidoria.latex.compilar = function(self)
 		vim.cmd.write()
 		vim.cmd.redraw({bang = true})
 	end
-	local arquivo = vim.fn.expand('%:t')
-	if not vim.fn.expand('%'):match('C%.I%.') then
-		local numero_ci = vim.fn.getline(vim.fn.search('^.Cabecalho')):match('{(%d+)}')
-		if not numero_ci then
-            Utils.notify('Ouvidoria.latex: compilar: não foi encontrado número da C.I.')
-            do return end
-		end
-		arquivo = string.format('C.I. N° %s.%s - ', numero_ci, os.date('%Y')) .. arquivo
-		local antes = vim.fn.expand('%')
-		local depois = vim.fn.expand('%:h') .. '/' .. arquivo
-		local renomeado = vim.fn.rename(antes, depois) == 0
-		if renomeado then
-			local alternativo = vim.fn.getreg('#')
-			if alternativo == '' then
-				alternativo = depois
-			end
-			vim.cmd.edit(depois) -- recarregar arquivo buffer
-			vim.fn.setreg('#', alternativo)
-			vim.cmd.bdelete(antes)
-		else
-			error('Ouvidoria.latex: compilar: não foi possível renomear o arquivo.')
-		end
-	end
-    arquivo = vim.fn.expand('%')
+	local arquivo = vim.fn.expand('%')
     local comando = {
         'tectonic.exe',
         '-X',
