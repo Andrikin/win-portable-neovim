@@ -1,11 +1,6 @@
 -- CUSTOM COMMANDS
 
--- config: verificar a existência de TEXINPUTS antes de setá-lo
--- config: setar diretório onde se encontra as configurações latex TEXINPUTS
--- tratamento de erros
-
 local Ouvidoria = require('andrikin.utils').Ouvidoria.new() -- executar bootstrap
-local Diretorio = require('andrikin.utils').Diretorio
 
 vim.api.nvim_create_user_command(
 	'HexEditor',
