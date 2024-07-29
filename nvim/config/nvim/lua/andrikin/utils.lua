@@ -993,9 +993,18 @@ Ouvidoria.ci.nova = function(opts)
     vim.fn.writefile(vim.fn.readfile(modelo), ci) -- Sobreescreve arquivo, se existir
     vim.cmd.edit(ci)
 	vim.cmd.redraw({bang = true})
+    local range = {1, vim.fn.line('$')}
 	-- preencher dados de C.I., ocorrência e setor no arquivo tex
-	vim.cmd.substitute({string.format("/Ocorrencia{}/Ocorrencia{%s}/I", ocorrencia), range = {0, vim.fn.line('$')}})
-	vim.cmd.substitute({string.format("/Cabecalho{}{[A-Z-]\\{-}}/Cabecalho{%s}{%s}/I", num_ci, setor), range = {0, vim.fn.line('$')}})
+    if modelo:match('modelo.basico') then
+        vim.cmd.substitute({string.format("/Cabecalho{}{[A-Z-]\\{-}}/Cabecalho{%s}{%s}/I", num_ci, setor), range = range})
+    elseif modelo:match('alerta.gabinete') or modelo:match('carga.gabinete') then
+        vim.cmd.substitute({string.format("/Ocorrencia{}/Ocorrencia{%s}/I", ocorrencia), range = range})
+        vim.cmd.substitute({string.format("/Secretaria{}/Secretaria{%s}/I", setor), range = range})
+        vim.cmd.substitute({string.format("/Cabecalho{}/Cabecalho{%s}/I", num_ci), range = range})
+    else
+        vim.cmd.substitute({string.format("/Ocorrencia{}/Ocorrencia{%s}/I", ocorrencia), range = range})
+        vim.cmd.substitute({string.format("/Cabecalho{}{[A-Z-]\\{-}}/Cabecalho{%s}{%s}/I", num_ci, setor), range = range})
+    end
 end
 
 ---@return table
