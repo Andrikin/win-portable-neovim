@@ -994,8 +994,8 @@ Ouvidoria.ci.nova = function(opts)
     vim.fn.writefile(vim.fn.readfile(modelo), ci) -- Sobreescreve arquivo, se existir
     vim.cmd.edit(ci)
 	-- preencher dados de C.I., ocorrência e setor no arquivo tex
-	vim.cmd.substitute({string.format("/\\\\Ocorrencia{}/\\\\Ocorrencia{%s}/", ocorrencia), range = {0, vim.fn.line('$')}})
-	vim.cmd.substitute({string.format("/\\\\Cabecalho{}{[A-Z-]\\{-}}/\\\\Cabecalho{%s}{%s}/", num_ci, setor), range = {0, vim.fn.line('$')}})
+	vim.cmd.substitute({string.format("/\\Ocorrencia{}/\\Ocorrencia{%s}/", ocorrencia), range = {0, vim.fn.line('$')}})
+	vim.cmd.substitute({string.format("/\\Cabecalho{}{[A-Z-]\\{-}}/\\Cabecalho{%s}{%s}/", num_ci, setor), range = {0, vim.fn.line('$')}})
 end
 
 ---@return table
