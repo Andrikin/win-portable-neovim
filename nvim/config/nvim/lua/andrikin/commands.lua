@@ -33,15 +33,7 @@ vim.api.nvim_create_user_command(
 vim.api.nvim_create_user_command(
 	'Projetos',
 	function()
-		local projetos = nil
-		if vim.env.HOME:match('^.') == 'C' then
-			projetos = Ouvidoria.ci.diretorios.projetos.diretorio
-		else
-			projetos = tostring(Diretorio.new(vim.fn.fnamemodify(vim.env.HOME, ':h')))
-		end
-		vim.cmd.Dirvish(
-			vim.fs.find('projetos', {path = projetos, type = 'directory'})
-		)
+		vim.cmd.Dirvish(Ouvidoria.ci.diretorios.projetos.diretorio)
 	end,
 	{}
 )
