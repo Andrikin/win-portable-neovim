@@ -401,28 +401,34 @@ end
 ---@private
 ---@return string
 --- Realiza busca nas duas direções pelo 
-Diretorio._search = function(dir)
-    vim.validate({ dir = {dir, 'string'} })
+Diretorio.buscar = function(dir, start)
+    vim.validate({ dir = {dir,{'table', 'string'}} })
+    vim.validate({ start = {start, 'string'} })
     if dir:match('^' .. vim.env.HOMEDRIVE) then
         error('Diretorio: _search: argumento deve ser um trecho de diretório, não deve conter "C:/" no seu início.')
     end
-    local home = Diretorio._sanitize(vim.env.HOMEPATH)
-    local diretorio = vim.fs.find(
-        function(name, path)
-            return path:match(Diretorio._sanitize(dir):gsub('-', '.'))
-        end,{
-            path = home,
-            limit = 1,
-            type = 'directory',
-        }
-    )
-    if type(diretorio) == 'table' then
-        diretorio = diretorio[1]
+    if type(dir) == 'table' then
+        dir = vim.fs.normalize(table.concat(dir, '/'))
+    else
+        dir = vim.fs.normalize(dir)
+    end
+    start = Diretorio._sanitize(start) or Diretorio._sanitize(vim.env.HOMEPATH)
+    local diretorio = ''
+    local diretorios = vim.fs.dir(start, {depth = math.huge})
+    for d, t in diretorios do
+        if not t == 'directory' then
+            goto continue
+        end
+        if d:match('.*' .. dir:gsub('-', '.')) then
+            diretorio = d
+            break
+        end
+        ::continue::
     end
     if diretorio == '' then
         error('Diretorio: _search: não foi encontrado o caminho do diretório informado.')
     end
-    return Diretorio._sanitize(diretorio)
+    return diretorio-- valores de vim.fs.dir já são normalizados
 end
 
 ---@private
