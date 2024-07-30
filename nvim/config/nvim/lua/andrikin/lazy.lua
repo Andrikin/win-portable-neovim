@@ -41,7 +41,7 @@ local plugins = {
 	'https://github.com/tpope/vim-surround.git',
 	{
 		'https://github.com/tpope/vim-commentary.git',
-		enabled = has_buildin and (not win7),
+		enabled = not has_buildin and win7,
 	},
     {
         'https://github.com/tpope/vim-eunuch.git',
