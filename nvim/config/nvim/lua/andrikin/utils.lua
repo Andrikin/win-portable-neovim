@@ -17,7 +17,7 @@
 ---@field cursorline table
 ---@field autocmd function
 ---@field Andrikin table
----@field bootstrap 
+---@field bootstrap function
 local Utils = {}
 
 --- Mostra notificação para usuário, registrando em :messages
@@ -402,7 +402,7 @@ end
 ---@return string
 --- Realiza busca nas duas direções pelo 
 Diretorio._search = function(dir)
-    vim.validate({ dir = {str, 'string'} })
+    vim.validate({ dir = {dir, 'string'} })
     if dir:match('^' .. vim.env.HOMEDRIVE) then
         error('Diretorio: _search: argumento deve ser um trecho de diretório, não deve conter "C:/" no seu início.')
     end
