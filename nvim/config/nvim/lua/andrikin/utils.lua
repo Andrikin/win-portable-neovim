@@ -1,4 +1,3 @@
-Utils.Ouvidoria
 ---@class Utils
 ---@field Diretorio Diretorio
 ---@field SauceCodePro SauceCodePro
