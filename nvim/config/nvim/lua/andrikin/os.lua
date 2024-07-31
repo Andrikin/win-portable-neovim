@@ -58,6 +58,8 @@ local Curl = require('andrikin.utils').Curl.new()
 local SauceCodePro = require('andrikin.utils').SauceCodePro.new()
 SauceCodePro:setup()
 ---@type Diretorio
+local Diretorio = require('andrikin.utils').Diretorio
+---@type Diretorio
 local Opt = require('andrikin.utils').Opt
 ---@type Diretorio
 local Projetos = require('andrikin.utils').Projetos
@@ -141,6 +143,18 @@ local programas = {
 					end
 				end
 			end
+            if not vim.g.node_host_prog or vim.g.node_host_prog == '' then
+                local node_neovim = (Diretorio.new()).buscar({
+                    'node_modules', 
+                    'neovim', 
+                    'bin'
+                }, Opt.diretorio)
+                if node_neovim then
+                    vim.g.node_host_prog = (node_neovim / 'cli.js').diretorio
+                else
+                    notify('Não foi possível configurar vim.g.node_host_prog')
+                end
+            end
 		end
 	},{
 		nome = 'python',
