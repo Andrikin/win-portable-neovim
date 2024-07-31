@@ -339,6 +339,9 @@ end
 --- na primeira falha. Na segunda, retorna mensagem de erro.
 Programa.instalar = function(self)
     if self:registrar() then
+		if self.config then
+			self.config()
+		end
         do return end
     end
     self:criar_diretorio()
