@@ -126,7 +126,7 @@ local programas = {
 				}
 				for _, plugin in ipairs(plugins) do
 					if not installed(plugin) then
-                        notify(string.format('Instalando pacote node: %s', plugin))
+                        notify(('Instalando pacote node: %s'):format(plugin))
 						vim.fn.system({
 							'npm',
 							'install',
@@ -134,10 +134,10 @@ local programas = {
 							plugin
 						})
                         if vim.v.shell_error ~= 0 then
-                            notify(string.format('Aconteceu um erro ao instalar o programa %s', plugin))
+                            notify(('Aconteceu um erro ao instalar o programa %s'):format(plugin))
                         end
                     else
-                        notify(string.format('Pacote node já instalado %s', plugin))
+                        notify(('Pacote node já instalado %s'):format(plugin))
 					end
 				end
 			end
@@ -185,7 +185,7 @@ local programas = {
 				end
 				-- executar get-pip.py
 				if vim.fn.executable('pip.exe') == 0 then
-					notify(string.format('Executando "%s".', self.nome))
+					notify(('Executando "%s".'):format(self.nome))
 					vim.fn.system({
 						'python.exe',
 						tostring(self.diretorio / self.nome)
@@ -210,14 +210,14 @@ local programas = {
 				local instalar = function(pacote)
 					local instalado = vim.fs.find(pacote, {path = get_pip.diretorio.diretorio, type = 'directory'})[1]
 					if not instalado then
-						notify(string.format('Instalando pacote python %s.', pacote))
+						notify(('Instalando pacote python %s.'):format(pacote))
 						vim.fn.system({
 							'pip.exe',
 							'install',
 							pacote
 						})
 					else
-						notify(string.format('Pacote python %s já instalado.', pacote))
+						notify(('Pacote python %s já instalado.'):format(pacote))
 					end
 				end
 				instalar('pyright')

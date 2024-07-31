@@ -192,7 +192,7 @@ Programa.baixar2 = function(self)
         timeout = assert(vim.loop.new_timer())
         timeout:start(self.timeout, 0, function()
             if handler and not handler:is_closing() then
-                print(string.format('Tempo para download excedido. Encerrando download de %s', self.nome))
+                print(('Tempo para download excedido. Encerrando download de %s'):format(self.nome))
                 vim.loop.process_kill(handler, 'sigint')
             end
         end)
@@ -228,7 +228,7 @@ Programa.extrair2 = function(self)
         timeout = assert(vim.loop.new_timer())
         timeout:start(self.timeout, 0, function()
             if handler and not handler:is_closing() then
-                print(string.format('Tempo para extração excedido. Encerrando extração de %s', self.nome))
+                print(('Tempo para extração excedido. Encerrando extração de %s'):format(self.nome))
                 vim.loop.process_kill(handler, 'sigint')
             end
         end)
@@ -277,11 +277,11 @@ Programa.instalar2 = function(self)
         self:extrair2()
 		coroutine.yield(self)
     else
-        Utils.notify(string.format('Programa: Algum erro ocorreu ao realizar a instalação do programa %s.', self.nome))
+        Utils.notify(('Programa: Algum erro ocorreu ao realizar a instalação do programa %s.'):format(self.nome))
         do return end
     end
     if not self:registrar() then
-        Utils.notify(string.format('Programa: instalar: Não foi possível realizar a instalação do programa %s.', self.nome))
+        Utils.notify(('Programa: instalar: Não foi possível realizar a instalação do programa %s.'):format(self.nome))
 		do return end
     else
         self.finalizado = true -- instalação concluída
@@ -297,7 +297,7 @@ end
 Programa.registrar = function(self)
     local registrado = vim.env.PATH:match(self:diretorio().diretorio:gsub('[\\-]', '.'))
     if registrado then
-        Utils.notify(string.format('Programa: registrar_path: Programa %s já registrado no sistema!', self.nome))
+        Utils.notify(('Programa: registrar_path: Programa %s já registrado no sistema!'):format(self.nome))
         return true
     end
     local limite = 1
@@ -313,7 +313,7 @@ Programa.registrar = function(self)
     for _, exe in ipairs(executaveis) do
         vim.env.PATH = vim.env.PATH .. ';' .. vim.fn.fnamemodify(exe, ':h')
     end
-    Utils.notify(string.format('Programa: registrar_path: Programa %s registrado no PATH do sistema.', self.nome))
+    Utils.notify(('Programa: registrar_path: Programa %s registrado no PATH do sistema.'):format(self.nome))
     return true
 end
 
@@ -348,11 +348,11 @@ Programa.instalar = function(self)
     elseif not self.extraido then
         self:extrair()
     else
-        Utils.notify(string.format('Programa: Algum erro ocorreu ao realizar a instalação do programa %s.', self.nome))
+        Utils.notify(('Programa: Algum erro ocorreu ao realizar a instalação do programa %s.'):format(self.nome))
         do return end
     end
     if not self:registrar() then
-        Utils.notify(string.format('Programa: instalar: Não foi possível realizar a instalação do programa %s.', self.nome))
+        Utils.notify(('Programa: instalar: Não foi possível realizar a instalação do programa %s.'):format(self.nome))
 		do return end
     else
         self.finalizado = true -- instalação concluída
@@ -555,9 +555,9 @@ Curl.download = function(link, diretorio)
 		link
 	})
 	if vim.v.shell_error == 0 then
-		Utils.notify(string.format('Curl: download: Arquivo %s baixado!', arquivo))
+		Utils.notify(('Curl: download: Arquivo %s baixado!'):format(arquivo))
 	else
-		Utils.notify(string.format('Curl: download: Não foi possível realizar o download do arquivo %s!', arquivo))
+		Utils.notify(('Curl: download: Não foi possível realizar o download do arquivo %s!'):format(arquivo))
 	end
 end
 
@@ -594,9 +594,9 @@ Curl.extrair = function(arquivo, diretorio)
     if extracao then
         local nome = arquivo:match('[/\\]([^/\\]+)$') or arquivo
         if vim.v.shell_error == 0 then
-            Utils.notify(string.format('Curl: extrair: Arquivo %s extraído com sucesso!', nome))
+            Utils.notify(('Curl: extrair: Arquivo %s extraído com sucesso!'):format(nome))
         else
-            Utils.notify(string.format('Curl: extrair: Erro encontrado! Não foi possível extrair o diretorio_arquivo %s', nome))
+            Utils.notify(('Curl: extrair: Erro encontrado! Não foi possível extrair o diretorio_arquivo %s'):format(nome))
         end
     end
 end
@@ -911,9 +911,9 @@ Ssh.desempacotar = function(self)
         }, { arquivo.valor })
         local ok, _ = pcall(vim.fn.writefile, texto, ssh_arquivo)
         if ok then
-            Utils.notify(string.format('Ssh: arquivo criado com sucesso: %s', ssh_arquivo))
+            Utils.notify(('Ssh: arquivo criado com sucesso: %s'):format(ssh_arquivo))
         else
-            Utils.notify(string.format('Ssh: ocorreu um erro ao criar arquivo: %s', ssh_arquivo))
+            Utils.notify(('Ssh: ocorreu um erro ao criar arquivo: %s'):format(ssh_arquivo))
         end
     end
 end
@@ -1029,7 +1029,7 @@ Ouvidoria.ci.nova = function(opts)
     else
 		titulo = 'OUV-' .. titulo .. Ouvidoria.tex
 	end
-	titulo = string.format('C.I. N° %s.%s - ', num_ci, os.date('%Y')) .. titulo
+	titulo = ('C.I. N° %s.%s - '):format(num_ci, os.date('%Y')) .. titulo
     local ci = (Ouvidoria.ci.diretorios.downloads / titulo).diretorio
     vim.fn.writefile(vim.fn.readfile(modelo), ci) -- Sobreescreve arquivo, se existir
     vim.cmd.edit(ci)
@@ -1037,14 +1037,14 @@ Ouvidoria.ci.nova = function(opts)
     local range = {1, vim.fn.line('$')}
 	-- preencher dados de C.I., ocorrência e setor no arquivo tex
     if modelo:match('modelo.basico') then
-        vim.cmd.substitute({string.format("/Cabecalho{}{[A-Z-]\\{-}}/Cabecalho{%s}{%s}/I", num_ci, setor), range = range})
+        vim.cmd.substitute({("/Cabecalho{}{[A-Z-]\\{-}}/Cabecalho{%s}{%s}/I"):format(num_ci, setor), range = range})
     elseif modelo:match('alerta.gabinete') or modelo:match('carga.gabinete') then
-        vim.cmd.substitute({string.format("/Ocorrencia{}/Ocorrencia{%s}/I", ocorrencia), range = range})
-        vim.cmd.substitute({string.format("/Secretaria{}/Secretaria{%s}/I", setor), range = range})
-        vim.cmd.substitute({string.format("/Cabecalho{}/Cabecalho{%s}/I", num_ci), range = range})
+        vim.cmd.substitute({("/Ocorrencia{}/Ocorrencia{%s}/I"):format(ocorrencia), range = range})
+        vim.cmd.substitute({("/Secretaria{}/Secretaria{%s}/I"):format(setor), range = range})
+        vim.cmd.substitute({("/Cabecalho{}/Cabecalho{%s}/I"):format(num_ci), range = range})
     else
-        vim.cmd.substitute({string.format("/Ocorrencia{}/Ocorrencia{%s}/I", ocorrencia), range = range})
-        vim.cmd.substitute({string.format("/Cabecalho{}{[A-Z-]\\{-}}/Cabecalho{%s}{%s}/I", num_ci, setor), range = range})
+        vim.cmd.substitute({("/Ocorrencia{}/Ocorrencia{%s}/I"):format(ocorrencia), range = range})
+        vim.cmd.substitute({("/Cabecalho{}{[A-Z-]\\{-}}/Cabecalho{%s}{%s}/I"):format(num_ci, setor), range = range})
     end
 end
 
@@ -1124,7 +1124,7 @@ Ouvidoria.latex.pdf.abrir = function(arquivo)
 	if not existe then
 		error('Ouvidoria: pdf.abrir: não foi possível encontrar arquivo "pdf"')
 	end
-    Utils.notify(string.format('Abrindo arquivo %s', vim.fn.fnamemodify(arquivo, ':t')))
+    Utils.notify(('Abrindo arquivo %s'):format(vim.fn.fnamemodify(arquivo, ':t')))
     vim.fn.jobstart({
         Ouvidoria.latex.pdf.executavel,
         arquivo
