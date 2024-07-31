@@ -385,7 +385,7 @@ Diretorio.new = function(caminho)
                 error('Diretorio: new: Elemento de lista diferente de "string"!')
             end
         end
-        caminho = table.concat(caminho, '/')
+        caminho = table.concat(caminho, '/'):gsub('//+', '/')
     end
     local diretorio = setmetatable({
         diretorio = Diretorio._sanitize(caminho),
