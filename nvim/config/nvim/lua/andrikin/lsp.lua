@@ -188,7 +188,7 @@ local servers = {
     'jsonls', -- json LSP
     'cssls', -- css LSP
     'lua_ls', -- lua LSP
-    'luau_lsp', -- lua LSP
+    'luau_lsp', -- luau LSP
     -- 'rust_analyzer', -- rust LSP
     -- { -- javascript LSP
     --     lsp = 'eslint',
