@@ -105,12 +105,10 @@ autocmd(
 		group = Andrikin,
 		pattern = '*',
 		callback = function()
-			vim.highlight.on_yank(
-				{
-					higroup = 'IncSearch',
-					timeout = 300,
-				}
-			)
+			vim.highlight.on_yank({
+                higroup = 'IncSearch',
+                timeout = 300,
+            })
 		end,
 	}
 )
@@ -308,6 +306,19 @@ autocmd(
             vim.keymap.set('n', '<cr>', function() mover:enter() end, opts)
             vim.keymap.set('n', 'i', function() mover.i() end, opts)
             -- ... adicionar mais comandos para quickfix/loclist
+		end,
+	}
+)
+
+-- Setar cwd para $HOMEPATH/Desktop
+autocmd(
+	'VimEnter',
+	{
+		group = Andrikin,
+		pattern = '*',
+        once = true,
+		callback = function()
+            vim.cmd.cd('$HOMEPATH/Desktop')
 		end,
 	}
 )
