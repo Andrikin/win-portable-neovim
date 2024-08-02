@@ -1018,13 +1018,11 @@ Ouvidoria.ci.nova = function(opts)
     end
 	local num_ci = vim.fn.input('Digite o número da C.I.: ')
 	local setor = vim.fn.input('Digite o setor destinatário: ')
-    local ocorrencia = ''
-    if not modelo:match('modelo.basico') then
-        ocorrencia = vim.fn.input('Digite o número da ocorrência: ')
-    end
-	if num_ci == '' or ocorrencia == '' or setor == '' then -- obrigatório informar os dados
-		error('Ouvidoria.latex: compilar: não foram informados os dados ou algum deles [C.I., ocorrência, setor].')
+    local ocorrencia = vim.fn.input('Digite o número da ocorrência: ')
+	if num_ci == '' or setor == '' then -- obrigatório informar os dados de C.I. e setor
+		error('Ouvidoria.latex: compilar: não foram informados os dados ou algum deles [C.I., setor]')
 	end
+    ocorrencia  = not ocorrencia == '' and ocorrencia or 'OCORRENCIA' 
 	local titulo = ocorrencia .. '-' .. setor
 	if tipo:match('sipe.lai') then
 		titulo = 'LAI-' .. titulo .. Ouvidoria.tex
