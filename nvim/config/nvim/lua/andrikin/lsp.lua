@@ -253,3 +253,4 @@ for _, server in ipairs(servers) do
     end
 end
 
+vim.lsp.set_log_level("debug")
