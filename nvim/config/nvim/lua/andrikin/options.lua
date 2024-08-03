@@ -51,7 +51,7 @@ vim.opt.mouse = ''
 if vim.fn.has('persistent_undo') then
 	local path = vim.fn.stdpath('data') .. '\\undotree'
 	if vim.fn.isdirectory(path) == 0 then
-		vim.fn.mkdir(path, 'p', 0700)
+		vim.fn.mkdir(path, 'p', 0755)
 	end
 	vim.opt.undodir = path
 	vim.opt.undofile = true

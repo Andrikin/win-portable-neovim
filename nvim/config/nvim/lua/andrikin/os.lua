@@ -64,7 +64,7 @@ local Opt = require('andrikin.utils').Opt
 ---@type Diretorio
 local Projetos = require('andrikin.utils').Projetos
 if vim.fn.isdirectory(Projetos.diretorio) == 0 then
-    vim.fn.mkdir(Projetos.diretorio, 'p', 0700)
+    vim.fn.mkdir(Projetos.diretorio, 'p', 0755)
 end
 
 require('andrikin.utils'):bootstrap()
