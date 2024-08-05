@@ -1,6 +1,6 @@
 -- CUSTOM COMMANDS
 
-local Ouvidoria = require('andrikin.utils').Ouvidoria.new() -- executar bootstrap
+local Ouvidoria = require('andrikin.utils').Ouvidoria -- executar bootstrap
 
 vim.api.nvim_create_user_command(
 	'HexEditor',
@@ -18,10 +18,12 @@ vim.api.nvim_create_user_command(
 
 vim.api.nvim_create_user_command(
 	'Ouvidoria',
-	Ouvidoria.ci.nova,
+    function(opts)
+        Ouvidoria.ci:nova(opts)
+    end,
 	{
 		nargs = "+",
-		complete = Ouvidoria.ci.tab,
+		complete = function(arg, cmd, pos) return Ouvidoria.ci:tab(arg) end,
 	}
 )
 
