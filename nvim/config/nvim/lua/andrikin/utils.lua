@@ -976,7 +976,6 @@ Latex.new = function()
         diretorios = {
             modelos = Diretorio.new(vim.fn.fnamemodify(vim.env.HOME, ':h')) / 'projetos' / 'ouvidoria-latex-modelos',
             destino = Diretorio.new(vim.loop.os_homedir()) / 'Downloads',
-            auxiliar = Diretorio.new(vim.env.TEMP),
         }
     }, Latex)
     latex:init()
@@ -1008,7 +1007,7 @@ Latex.compilar = function(self)
         vim.cmd.write()
         vim.cmd.redraw({bang = true})
     end
-    local arquivo = vim.fn.expand('%')
+    local arquivo = vim.fn.fnameescape(vim.fn.expand('%'))
     local comando = {
         'tectonic.exe',
         '-X',
