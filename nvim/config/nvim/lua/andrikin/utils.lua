@@ -401,6 +401,23 @@ Diretorio._sanitize = function(str)
     return vim.fs.normalize(str):gsub('//+', '/')
 end
 
+---@return valido boolean
+---@param dir Diretorio | string
+Diretorio.validate = function(dir)
+    local isdirectory = function(d)
+        return vim.fn.isdirectory(d) == 1
+    end
+    local valido = false
+    if type(dir) == 'Diretorio' then
+        valido = isdirectory(dir.diretorio)
+    elseif type(dir) == 'string' then
+        valido = isdirectory((Diretorio.new(dir)).diretorio)
+    else
+        error('Diretorio: validate: variável não é do tipo "Diretorio" ou "string"')
+    end
+    return valido
+end
+
 ---@private
 ---@return Diretorio
 --- Realiza busca nas duas direções pelo 
@@ -415,7 +432,7 @@ Diretorio.buscar = function(dir, start)
     if dir:match('^' .. vim.env.HOMEDRIVE) then
         error('Diretorio: buscar: argumento deve ser um trecho de diretório, não deve conter "C:/" no seu início.')
     end
-    start = Diretorio._sanitize(start) or Diretorio._sanitize(vim.env.HOMEPATH)
+    start = start and Diretorio._sanitize(start) or Diretorio._sanitize(vim.env.HOMEPATH)
     local diretorio = ''
     local diretorios = vim.fs.dir(start, {depth = math.huge})
     for d, t in diretorios do
