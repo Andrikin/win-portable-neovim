@@ -1024,7 +1024,7 @@ Latex.compilar = function(self)
         vim.cmd.write()
         vim.cmd.redraw({bang = true})
     end
-    local arquivo = vim.fn.fnameescape(vim.fn.expand('%'))
+    local arquivo = vim.fn.expand('%')
     local comando = {
         'tectonic.exe',
         '-X',
@@ -1043,7 +1043,7 @@ Latex.compilar = function(self)
         do return end
     end
     Utils.notify('Arquivo pdf compilado!')
-    self:abrir(arquivo)
+    self:abrir(vim.fs.normalize(arquivo))
 end
 
 Latex.abrir = function(self, arquivo)
