@@ -319,7 +319,7 @@ autocmd(
         once = true,
 		callback = function()
             vim.cmd.cd('$HOMEPATH/Desktop')
-            vim.cmd.redraw({bang = true})
+            vim.cmd.redrawstatus({bang = true})
 		end,
 	}
 )
