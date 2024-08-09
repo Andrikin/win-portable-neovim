@@ -55,8 +55,7 @@ local Git = require('andrikin.utils').Git.new()
 ---@type Curl
 local Curl = require('andrikin.utils').Curl.new()
 ---@type SauceCodePro
-local SauceCodePro = require('andrikin.utils').SauceCodePro.new()
-SauceCodePro:setup()
+local _ = require('andrikin.utils').SauceCodePro.new()
 ---@type Diretorio
 local Diretorio = require('andrikin.utils').Diretorio
 ---@type Diretorio

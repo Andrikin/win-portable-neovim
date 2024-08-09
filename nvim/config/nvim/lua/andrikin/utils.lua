@@ -691,6 +691,7 @@ SauceCodePro.arquivo = SauceCodePro.diretorio / vim.fn.fnamemodify(SauceCodePro.
 SauceCodePro.new = function()
     local fonte = setmetatable({}, SauceCodePro)
     fonte:bootstrap()
+    fonte:setup()
     return fonte
 end
 
