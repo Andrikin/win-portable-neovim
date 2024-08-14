@@ -319,7 +319,8 @@ autocmd(
         once = true,
 		callback = function()
             vim.cmd.cd('$HOMEPATH/Desktop')
-            vim.cmd.redrawstatus({bang = true})
+            -- BUG: lualine não redesenha o statusline. Comandos como redraw e redrawstatus também não funcionam
+            -- vim.cmd.redrawstatus({bang = true}) -- não funciona
 		end,
 	}
 )
