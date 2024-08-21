@@ -295,6 +295,7 @@ nvim/config/nvim-data/tree-sitter-yang/
 nvim/config/nvim-data/tree-sitter-yuck/
 nvim/config/nvim-data/tree-sitter-zathurarc/
 nvim/config/nvim-data/tree-sitter-zig/
+nvim/config/nvim-data/tree-sitter-latex/
 
 nvim/bin/
 nvim/opt
