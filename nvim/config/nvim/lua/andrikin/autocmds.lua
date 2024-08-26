@@ -311,6 +311,7 @@ autocmd(
 )
 
 -- Setar cwd para $HOMEPATH/Desktop
+-- Realizar Git pull no repositório win-portable-neovim\
 autocmd(
 	'VimEnter',
 	{
@@ -318,6 +319,10 @@ autocmd(
 		pattern = '*',
         once = true,
 		callback = function()
+            if vim.fn.exists('g:loaded_fugitive') then
+                vim.cmd.cd('$HOME')
+                vim.cmd.Git('pull')
+            end
             vim.cmd.cd('$HOMEPATH/Desktop')
             -- BUG: lualine não redesenha o statusline. Comandos como redraw e redrawstatus também não funcionam
             -- vim.cmd.redrawstatus({bang = true}) -- não funciona
