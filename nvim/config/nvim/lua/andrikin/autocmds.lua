@@ -320,8 +320,17 @@ autocmd(
         once = true,
 		callback = function()
             if vim.fn.exists('g:loaded_fugitive') then
-                vim.cmd.cd('$HOME')
-                vim.cmd.Git('pull')
+                vim.fn.jobstart({
+                    'git',
+                    'pull'
+                }, {
+                    cwd = vim.env.HOME,
+                    on_stdout = function(id, data, event)
+                        if data[1] == 'Already up to date.' then
+                            print('win-portable-neovim: repositório atualizado com sucesso!')
+                        end
+                    end,
+                })
             end
             vim.cmd.cd('$HOMEPATH/Desktop')
             -- BUG: lualine não redesenha o statusline. Comandos como redraw e redrawstatus também não funcionam
