@@ -655,7 +655,8 @@ Registrador.bootstrap = function(self)
     end
 end
 
--- TODO: FINALIZAR
+-- TODO: FINALIZAR - criar metodo no objeto Programa para executar vim.fn.jobstart
+-- para realizar o download e a extração do programa.
 ---@param programas table Lista dos programas que são dependência para o nvim
 Registrador.iniciar = function(programas)
     for i, programa in ipairs(programas) do
