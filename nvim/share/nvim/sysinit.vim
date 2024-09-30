@@ -17,13 +17,8 @@ lua << EOF
 	init(vim.env.NVIM_LOG_FILE)
 	local site = vim.fn.stdpath('data') .. '\\site' -- custom vim plugins
 	init(site)
-<<<<<<< HEAD
-	local applocal = vim.tbl_filter(function(opt) return opt:match('AppLocal') end, vim.opt.rtp:get())
-	vim.opt.rtp:remove(applocal) -- remove AppLocal
-=======
     local applocal = vim.tbl_filter(function(opt) return opt:match('AppLocal') end, vim.opt.rtp:get())
 	vim.opt.rtp:remove(applocal) -- remove only AppLocal from runtime
->>>>>>> registrador
 	vim.opt.rtp:append(vim.fn.stdpath('config'))
 	vim.opt.rtp:append(site)
 	vim.loader.enable()
