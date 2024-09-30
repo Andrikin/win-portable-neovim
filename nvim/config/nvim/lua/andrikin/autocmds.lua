@@ -1,7 +1,21 @@
 -- Autocmds goosebumps
-local autocmd = vim.api.nvim_create_autocmd
-local Andrikin = vim.api.nvim_create_augroup('Andrikin', {clear = true})
+local autocmd = require('andrikin.utils').autocmd
+local Andrikin = require('andrikin.utils').Andrikin
+local Ouvidoria = require('andrikin.utils').Ouvidoria
 local cursorline = require('andrikin.utils').cursorline
+local win7 = require('andrikin.utils').win7
+
+-- BufWritePost: compilar tex para gerar pdf assim que salvar o arquivo
+autocmd(
+	'BufWritePost',
+	{
+		group = Andrikin,
+		pattern = '*.tex',
+		callback = function()
+			Ouvidoria.latex:compilar()
+		end,
+	}
+)
 
 -- Highlight linha quando entrar em INSERT MODE
 autocmd(
@@ -33,8 +47,12 @@ autocmd(
 	'FileType',
 	{
 		group = Andrikin,
-		pattern = {'*.html', '*.css'},
-		callback = vim.cmd.EmmetInstall,
+		pattern = {'html', 'css'},
+        once = true,
+		callback = function()
+            vim.cmd.Lazy('load emmet-vim')
+            vim.cmd.EmmetInstall()
+        end,
 	}
 )
 
@@ -57,22 +75,24 @@ autocmd(
 		end,
 	}
 )
-
 -- 'gq' para fechar quickfix/loclist, checkhealth e help window
 autocmd(
 	'FileType',
 	{
 		group = Andrikin,
-		pattern = {'qf', 'checkhealth', 'help'},
+		pattern = {'qf', 'checkhealth', 'help', 'harpoon'},
 		callback = function(args)
 			vim.keymap.set(
 				'n',
 				'gq',
-                vim.cmd.quit,
-				{
-					silent = true,
-					buffer = args.buf,
-				}
+				function()
+					local id = vim.fn.gettabinfo(vim.fn.tabpagenr())[1].windows[1]
+					vim.cmd.quit()
+					if id then
+						vim.fn.win_gotoid(id) -- ir para a primeira window da tab
+					end
+				end,
+				{ silent = true, buffer = args.buf }
 			)
 		end,
 	}
@@ -85,12 +105,10 @@ autocmd(
 		group = Andrikin,
 		pattern = '*',
 		callback = function()
-			vim.highlight.on_yank(
-				{
-					higroup = 'IncSearch',
-					timeout = 300,
-				}
-			)
+			vim.highlight.on_yank({
+                higroup = 'IncSearch',
+                timeout = 300,
+            })
 		end,
 	}
 )
@@ -157,13 +175,16 @@ autocmd(
             -- local client = vim.lsp.get_client_by_id(ev.data.client_id) -- remover LSP highlight 
             -- client.server_capabilities.semanticTokensProvider = nil -- remover LSP highlight 
 			local opts = {buffer = ev.buf}
+            if win7 then
+                vim.keymap.set('n', 'grn', vim.lsp.buf.rename, opts) -- default neovim
+                vim.keymap.set('n', 'grr', vim.lsp.buf.references, opts) -- default neovim
+                vim.keymap.set('n', 'gra', vim.lsp.buf.code_action, opts) -- default neovim
+                vim.keymap.set('n', '<c-s>', vim.lsp.buf.signature_help, opts) -- default neovim
+            end
 			vim.keymap.set('n', 'gd', vim.lsp.buf.definition, opts)
 			vim.keymap.set('n', 'gD', vim.lsp.buf.declaration, opts)
 			vim.keymap.set('n', 'K', vim.lsp.buf.hover, opts)
-			vim.keymap.set('n', 'gr', vim.lsp.buf.references, opts)
 			vim.keymap.set('n', 'gi', vim.lsp.buf.implementation, opts)
-			vim.keymap.set('n', '<c-k>', vim.lsp.buf.signature_help, opts)
-			vim.keymap.set('n', 'gs', vim.lsp.buf.rename, opts)
             -- nvim-cmp (force autocompletion)
             if package.loaded['cmp'] then
                 local cmp = require('cmp')
@@ -279,12 +300,41 @@ autocmd(
                     self.mover(cmd)
                 end,
             }
-            local opts = { buffer = true }
+            local opts = { silent = true, buffer = ev.buf }
             vim.keymap.set('n', 'k', function() mover:k() end, opts)
             vim.keymap.set('n', 'j', function() mover:j() end, opts)
             vim.keymap.set('n', '<cr>', function() mover:enter() end, opts)
             vim.keymap.set('n', 'i', function() mover.i() end, opts)
             -- ... adicionar mais comandos para quickfix/loclist
+		end,
+	}
+)
+
+-- Setar cwd para $HOMEPATH/Desktop
+-- Realizar Git pull no repositório win-portable-neovim\
+autocmd(
+	'VimEnter',
+	{
+		group = Andrikin,
+		pattern = '*',
+        once = true,
+		callback = function()
+            if vim.fn.exists('g:loaded_fugitive') then
+                vim.fn.jobstart({
+                    'git',
+                    'pull'
+                }, {
+                    cwd = vim.env.HOME,
+                    on_stdout = function(id, data, event)
+                        if data[1] == 'Already up to date.' then
+                            print('win-portable-neovim: repositório atualizado com sucesso!')
+                        end
+                    end,
+                })
+            end
+            vim.cmd.cd('$HOMEPATH/Desktop')
+            -- BUG: lualine não redesenha o statusline. Comandos como redraw e redrawstatus também não funcionam
+            -- vim.cmd.redrawstatus({bang = true}) -- não funciona
 		end,
 	}
 )

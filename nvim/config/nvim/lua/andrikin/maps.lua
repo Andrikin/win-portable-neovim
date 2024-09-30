@@ -1,4 +1,5 @@
 local notify = require('andrikin.utils').notify
+local win7 = require('andrikin.utils').win7
 
 if not vim.g.nvy or not vim.g.neovide then
 	-- Fix ^\ (nvim-qt/windows 7)
@@ -190,10 +191,18 @@ vim.keymap.set( -- telescope way to open buffers
 		vim.cmd.Telescope('buffers')
 	end
 )
+vim.keymap.set( -- telescope way to check for help
+	'n',
+	'<leader>h',
+	function()
+		vim.cmd.Telescope('help_tags')
+	end
+)
 
 -- The Primeagen Harpoon2
 local harpoon2 = require('harpoon')
-vim.keymap.set("n", "gha", function() harpoon2:list():append() end)
+harpoon2:setup()
+vim.keymap.set("n", "gha", function() harpoon2:list():add() end)
 vim.keymap.set("n", "ghm", function() harpoon2.ui:toggle_quick_menu(harpoon2:list()) end)
 -- LOL mapping style
 vim.keymap.set("n", "ghq", function() harpoon2:list():select(1) end)
@@ -205,19 +214,21 @@ vim.keymap.set("n", "ghp", function() harpoon2:list():prev() end)
 vim.keymap.set("n", "ghn", function() harpoon2:list():next() end)
 
 -- vim.diagnostic
-local diagnostic = function(next, severity)
-	local go = next and vim.diagnostic.goto_next or vim.diagnostic.goto_prev
-	severity = severity and vim.diagnostic.severity[severity] or nil
-	return function()
-		go({ severity = severity })
-	end
+if win7 then
+    local diagnostic = function(next, severity)
+        local go = next and vim.diagnostic.goto_next or vim.diagnostic.goto_prev
+        severity = severity and vim.diagnostic.severity[severity] or nil
+        return function()
+            go({ severity = severity })
+        end
+    end
+    vim.keymap.set("n", "]d", diagnostic(true), { desc = 'Próximo Diagnóstico' }) -- default neovim
+    vim.keymap.set("n", "[d", diagnostic(false), { desc = 'Diagnóstico Anterior' }) -- default neovim
+    vim.keymap.set("n", "]e", diagnostic(true, "ERROR"), { desc = 'Próximo Erro' })
+    vim.keymap.set("n", "[e", diagnostic(false, "ERROR"), { desc = 'Erro Anterior' })
+    vim.keymap.set("n", "]w", diagnostic(true, "WARN"), { desc = 'Próximo Alerta' })
+    vim.keymap.set("n", "[w", diagnostic(false, "WARN"), { desc = 'Alerta Anterior' })
+    vim.keymap.set('n', '<leader>e', vim.diagnostic.open_float, { desc = 'Abrir erro no cursor'}) -- default neovim <c-w>d
+    vim.keymap.set('n', '<leader>d', vim.diagnostic.setloclist, { desc = 'Abrir lista de diagnósticos' })
 end
-vim.keymap.set("n", "]d", diagnostic(true), { desc = 'Próximo Diagnóstico' })
-vim.keymap.set("n", "[d", diagnostic(false), { desc = 'Diagnóstico Anterior' })
-vim.keymap.set("n", "]e", diagnostic(true, "ERROR"), { desc = 'Próximo Erro' })
-vim.keymap.set("n", "[e", diagnostic(false, "ERROR"), { desc = 'Erro Anterior' })
-vim.keymap.set("n", "]w", diagnostic(true, "WARN"), { desc = 'Próximo Alerta' })
-vim.keymap.set("n", "[w", diagnostic(false, "WARN"), { desc = 'Alerta Anterior' })
-vim.keymap.set('n', '<leader>e', vim.diagnostic.open_float, { desc = 'Abrir erro no cursor'})
-vim.keymap.set('n', '<leader>d', vim.diagnostic.setloclist, { desc = 'Abrir lista de diagnósticos' })
 

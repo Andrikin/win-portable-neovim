@@ -4,6 +4,9 @@ vim.g.maplocalleader = ' '
 -- Search recursively
 vim.opt.path:append('**')
 
+-- Sem numeração de linhas para comando TOHtml
+vim.g.html_number_lines = 0
+
 -- Indicadores - números nas linhas
 vim.opt.rnu = true
 vim.opt.nu = true
@@ -48,7 +51,7 @@ vim.opt.mouse = ''
 if vim.fn.has('persistent_undo') then
 	local path = vim.fn.stdpath('data') .. '\\undotree'
 	if vim.fn.isdirectory(path) == 0 then
-		vim.fn.mkdir(path, 'p', 0700)
+		vim.fn.mkdir(path, 'p', 0755)
 	end
 	vim.opt.undodir = path
 	vim.opt.undofile = true
@@ -128,4 +131,7 @@ vim.diagnostic.config({
         end
     }
 })
+
+-- Removendo providers: Perl
+vim.g.loaded_perl_provider = 0
 

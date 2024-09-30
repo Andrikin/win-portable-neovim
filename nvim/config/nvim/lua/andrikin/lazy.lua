@@ -12,17 +12,40 @@ if not vim.loop.fs_stat(lazypath) then
 end
 vim.opt.rtp:prepend(lazypath)
 
-local dracula = 'dracula'
+-- Temas - interface: nome, url
+local tokyonight = {
+    nome = 'tokyonight',
+    url = 'https://github.com/folke/tokyonight.nvim.git',
+    -- config = function()
+    --     vim.api.nvim_set_hl(0, 'CursorLine', {link = 'Visual'})
+    -- end
+}
+-- local dracula = {
+--     nome = 'dracula',
+--     url = 'https://github.com/Mofiqul/dracula.nvim.git'
+-- }
+local tema = tokyonight
+if tema.config then
+    tema.config()
+end
+
+local win7 = require('andrikin.utils').win7
+local has_buildin = vim.version().major >= 0 and vim.version().minor > 10
+local has_rm = vim.fn.executable('rm') == 1
+local has_mkdir = vim.fn.executable('mkdir') == 1
 local plugins = {
 	-- Fork Tim Pope vim-capslock
 	'https://github.com/Andrikin/vim-capslock',
 	-- Tim Pope's miracles
     'https://github.com/tpope/vim-fugitive.git',
-	'https://github.com/tpope/vim-commentary.git',
 	'https://github.com/tpope/vim-surround.git',
+	{
+		'https://github.com/tpope/vim-commentary.git',
+		enabled = not has_buildin and win7,
+	},
     {
         'https://github.com/tpope/vim-eunuch.git',
-        lazy = vim.fn.executable('rm') == 0 and vim.fn.executable('mkdir') == 0,
+        enabled = has_rm and has_mkdir,
     },
 	{
 		'https://github.com/tpope/vim-dadbod.git',
@@ -32,14 +55,15 @@ local plugins = {
 		'https://github.com/tpope/vim-obsession.git',
 		lazy = true,
 	},
-	-- Dracula theme,
-	{
-		'https://github.com/Mofiqul/dracula.nvim.git',
+    -- Theme
+    {
+        tema.url,
         priority = 1000,
+        lazy = false,
 		config = function()
-			vim.cmd.colorscheme(dracula)
+			vim.cmd.colorscheme(tema.nome)
 		end
-	},
+    },
 	-- Vim Cool,
 	'https://github.com/romainl/vim-cool.git',
 	-- Dirvirsh,
@@ -60,7 +84,7 @@ local plugins = {
 		config = function()
 			require('lualine').setup(
 				{
-					options = { theme = dracula },
+					options = { theme = tema.nome },
 					winbar = {
 						lualine_a = {},
 						lualine_b = {},
@@ -162,6 +186,10 @@ local opts = {
 			},
 		},
 	},
+    rocks = {
+        hererocks = false,
+        enabled = false,
+    }
 }
 
 require("lazy").setup(plugins, opts)

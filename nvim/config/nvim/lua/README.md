@@ -2,7 +2,8 @@
 
 Ainda precisa de ajustes...
 
-- [ ] arrumar plugins customizados
+- [ ] multithreads, coroutines... Instalação das dependências do neovim
+- [ ] arrumar plugins customizados (refazer para lua)
 - [x] comando customizado 'HexEditor' não funciona ('%!xxd') -> função requeria um terceiro argumento
 - [x] mapeamento '&&' não funciona -> necessitou de da função pcall() como wrapper para suprimir erros
 - [x] mapeamento '<c-l>' para vim-capslock em CommandMode não funciona -> modificado plugin para criar o mapeamento dentro do CommandMode

@@ -1,5 +1,10 @@
--- TODO: Problema com dependência de ouvidoria-latex-modelos (necessário para comando Pdflatex); como resolver a falta
--- das pastas .ssh e .git?
+-- BOOTSTRAP: baixar win-portable-neovim, baixar neovim.zip, baixar neovim-qt.zip, extrair tudo na mesmo diretório
+
+-- WIP: Utilizar multithreads para realizar os downloads
+-- TODO: Reorganizar código para que faça as chamadas do curl de uma só vez
+-- https://teukka.tech/vimloop.html
+-- vim.loop.spawn(cmd: string, options: table, callback: fun)
+
 -- INFO: Lista de links para download das dependências:
 -- curl: https://curl.se/windows/latest.cgi?p=win64-mingw.zip
 -- unzip: http://linorg.usp.br/CTAN/systems/win32/w32tex/unzip.exe
@@ -30,17 +35,12 @@
 -- python: pip install pyright | npm -g install pyright
 -- rust: TODO
 
--- WIP: Utilizar multithreads para realizar os downloads
--- TODO: Reorganizar código para que faça as chamadas do curl de uma só vez
--- https://teukka.tech/vimloop.html
--- vim.loop.spawn(cmd: string, options: table, callback: fun)
-
 -- IMPORTANT(Windows 10+): Desabilitar python.exe e python3.exe em "Gerenciar aliases de execução de aplicativo".
 -- Windows executa este alias antes de executar python declarado em PATH.
 -- ALTERNATIVE FIX: Remover WindowsApps do PATH
-local desabilitar_path = require('andrikin.utils').remover_path
+local desabilitar = require('andrikin.utils').remover_path
 for _, programa in ipairs({'WindowsApps', 'Oracle'}) do
-    desabilitar_path(programa)
+    desabilitar(programa)
 end
 
 local npcall = require('andrikin.utils').npcall
@@ -48,13 +48,23 @@ local notify = require('andrikin.utils').notify
 local win7 = require('andrikin.utils').win7
 ---@type Registrador
 local Registrador = require('andrikin.utils').Registrador.new()
+---@type Ssh
+local Ssh = require('andrikin.utils').Ssh.new()
+---@type Git
+local Git = require('andrikin.utils').Git.new()
 ---@type Curl
 local Curl = require('andrikin.utils').Curl.new()
 ---@type SauceCodePro
-local SauceCodePro = require('andrikin.utils').SauceCodePro.new()
-SauceCodePro:setup()
+local _ = require('andrikin.utils').SauceCodePro.new()
 ---@type Diretorio
-local OPT = require('andrikin.utils').OPT
+local Diretorio = require('andrikin.utils').Diretorio
+---@type Diretorio
+local Opt = require('andrikin.utils').Opt
+---@type Diretorio
+local Projetos = require('andrikin.utils').Projetos
+if vim.fn.isdirectory(Projetos.diretorio) == 0 then
+    vim.fn.mkdir(Projetos.diretorio, 'p', 0755)
+end
 
 require('andrikin.utils'):bootstrap()
 
@@ -80,7 +90,7 @@ local programas = {
 		link = 'https://www.sumatrapdfreader.org/dl/rel/3.5.2/SumatraPDF-3.5.2-64.zip',
 		cmd = {'sumatra.exe', 'SumatraPDF-3.5.2-64.exe'},
 		config = function()
-			local diretorio = OPT / 'sumatra'
+			local diretorio = Opt / 'sumatra'
 			local executavel = vim.fn.glob(tostring(diretorio / 'sumatra*.exe'))
 			if executavel ~= '' then
 				if vim.fn.fnamemodify(executavel, ':t') == 'sumatra.exe' then
@@ -88,22 +98,21 @@ local programas = {
 					do return end
 				end
                 notify('Renomeando executável Sumatra.')
-				vim.fn.system({
-					'mv',
-					executavel,
-					diretorio .. 'sumatra.exe'
-				})
+				vim.fn.rename(
+                    executavel,
+                    tostring(diretorio / 'sumatra.exe')
+                )
 			else
 				notify('Não foi encontrado executável Sumatra.')
 			end
 		end
 	},{
 		nome = 'node',
-		link = win7 and 'https://nodejs.org/download/release/latest-v12.x/node-v12.22.12-win-x64.zip' or 'https://nodejs.org/dist/v20.10.0/node-v20.10.0-win-x64.zip',
+		link = win7 and 'https://nodejs.org/dist/v13.14.0/node-v13.14.0-win-x64.zip' or 'https://nodejs.org/dist/v20.10.0/node-v20.10.0-win-x64.zip',-- v12.22.12(win7)?
 		cmd = 'node.exe',
 		config = function()
 			local installed = function(pacote) -- checar se diretório existe
-				return not vim.tbl_isempty(vim.fs.find(pacote, {path = tostring(OPT / 'node'), type = 'directory'}))
+				return not vim.tbl_isempty(vim.fs.find(pacote, {path = tostring(Opt / 'node'), type = 'directory'}))
 			end
 			-- configurações extras
 			if win7 and vim.env.NODE_SKIP_PLATFORM_CHECK ~= 1 then
@@ -118,7 +127,7 @@ local programas = {
 				}
 				for _, plugin in ipairs(plugins) do
 					if not installed(plugin) then
-                        notify(string.format('Instalando pacote node: %s', plugin))
+                        notify(('Instalando pacote node: %s'):format(plugin))
 						vim.fn.system({
 							'npm',
 							'install',
@@ -126,13 +135,25 @@ local programas = {
 							plugin
 						})
                         if vim.v.shell_error ~= 0 then
-                            notify(string.format('Aconteceu um erro ao instalar o programa %s', plugin))
+                            notify(('Aconteceu um erro ao instalar o programa %s'):format(plugin))
                         end
                     else
-                        notify(string.format('Pacote node já instalado %s', plugin))
+                        notify(('Pacote node já instalado %s'):format(plugin))
 					end
 				end
 			end
+            if not vim.g.node_host_prog or vim.g.node_host_prog == '' then
+                local node_neovim = (Diretorio.new()).buscar({
+                    'node_modules', 
+                    'neovim', 
+                    'bin'
+                }, Opt.diretorio)
+                if node_neovim then
+                    vim.g.node_host_prog = (node_neovim / 'cli.js').diretorio
+                else
+                    notify('Não foi possível configurar vim.g.node_host_prog')
+                end
+            end
 		end
 	},{
 		nome = 'python',
@@ -144,7 +165,7 @@ local programas = {
 			local get_pip = {}
 			get_pip.link =  'https://bootstrap.pypa.io/get-pip.py'
 			get_pip.nome = vim.fn.fnamemodify(get_pip.link, ':t')
-			get_pip.diretorio = OPT / 'python'
+			get_pip.diretorio = Opt / 'python'
 			get_pip.pth = win7 and 'python38._pth' or 'python312._pth'
 			get_pip.instalado = function(self)
 				local pip = vim.fs.find('pip.exe', {path = tostring(self.diretorio), type = 'file'})[1]
@@ -177,7 +198,7 @@ local programas = {
 				end
 				-- executar get-pip.py
 				if vim.fn.executable('pip.exe') == 0 then
-					notify(string.format('Executando "%s".', self.nome))
+					notify(('Executando "%s".'):format(self.nome))
 					vim.fn.system({
 						'python.exe',
 						tostring(self.diretorio / self.nome)
@@ -202,14 +223,14 @@ local programas = {
 				local instalar = function(pacote)
 					local instalado = vim.fs.find(pacote, {path = get_pip.diretorio.diretorio, type = 'directory'})[1]
 					if not instalado then
-						notify(string.format('Instalando pacote python %s.', pacote))
+						notify(('Instalando pacote python %s.'):format(pacote))
 						vim.fn.system({
 							'pip.exe',
 							'install',
 							pacote
 						})
 					else
-						notify(string.format('Pacote python %s já instalado.', pacote))
+						notify(('Pacote python %s já instalado.'):format(pacote))
 					end
 				end
 				instalar('pyright')
@@ -238,7 +259,7 @@ local programas = {
 		cmd = 'deno.exe'
 	},{
 		nome = 'lua-lsp',
-		link = 'https://github.com/LuaLS/lua-language-server/releases/download/3.7.3/lua-language-server-3.7.3-win32-x64.zip',
+		link = 'https://github.com/LuaLS/lua-language-server/releases/download/3.10.0/lua-language-server-3.10.0-win32-x64.zip',
 		cmd = 'lua-language-server.exe'
 	},{
 		nome = 'java',
@@ -246,7 +267,7 @@ local programas = {
 		cmd = 'java.exe'
 	},{
 		nome = 'jdtls-java-lsp',
-		link = 'https://www.eclipse.org/downloads/download.php?file=/jdtls/snapshots/jdt-language-server-latest.tar.gz',
+		link = 'https://download.eclipse.org/jdtls/snapshots/jdt-language-server-latest.tar.gz',
 		cmd = 'jdtls'
 	},{
 		nome = 'maven',
@@ -255,9 +276,53 @@ local programas = {
 	},{
 		nome = 'jq',
 		link = 'https://github.com/jqlang/jq/releases/download/jq-1.7.1/jq-windows-i386.exe',
-		cmd = 'jq-windows-i386.exe',
+		cmd = {'jq.exe', 'jq-windows-i386.exe'},
+        config = function()
+			local diretorio = Opt / 'jq'
+			local executavel = vim.fn.glob(tostring(diretorio / 'jq*.exe'))
+			if executavel ~= '' then
+				if vim.fn.fnamemodify(executavel, ':t') == 'jq.exe' then
+					notify('Arquivo jq já renomeado.')
+					do return end
+				end
+                notify('Renomeando executável jq.')
+                vim.fn.rename(
+                    executavel,
+                    tostring(diretorio / 'jq.exe')
+                )
+			else
+				notify('Não foi encontrado executável jq.')
+			end
+        end,
+	},{
+        nome = 'tree-sitter',
+        link = 'https://github.com/tree-sitter/tree-sitter/releases/download/v0.22.6/tree-sitter-windows-x64.gz',
+        cmd = {'tree-sitter.exe', 'tree-sitter-windows-x64'},
+        config = function()
+			local diretorio = Opt / 'tree-sitter'
+			local executavel = vim.fn.glob(tostring(diretorio / 'tree-sitter*'))
+			if executavel ~= '' then
+				if vim.fn.fnamemodify(executavel, ':t') == 'tree-sitter.exe' then
+					notify('Arquivo tree-sitter já renomeado.')
+					do return end
+				end
+                notify('Renomeando executável tree-sitter.')
+				vim.fn.rename(
+                    executavel,
+                    (diretorio / 'tree-sitter.exe').diretorio
+				)
+			else
+				notify('Não foi encontrado executável jq.')
+			end
+        end,
+    },{
+		nome = 'sqlite',
+		link = 'https://www.sqlite.org/2024/sqlite-tools-win-x64-3460000.zip',
+		cmd = 'sqlite3.exe',
 	}
 }
 
-Registrador:setup(programas)
+Registrador.iniciar(programas)
+Ssh:bootstrap()
+Git:bootstrap()
 
