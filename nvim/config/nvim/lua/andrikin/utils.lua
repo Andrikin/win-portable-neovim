@@ -75,6 +75,51 @@ Utils.autocmd = vim.api.nvim_create_autocmd
 
 Utils.Andrikin = vim.api.nvim_create_augroup('Andrikin', {clear = true})
 
+--- Wrap envolta do vim.fn.jobstart
+---@class Job
+local Job = {}
+
+Job.__index = Job
+
+Job.id = 0
+
+Job.new = function(opts)
+    local job = {
+        opts = {}
+    }
+    if opts then
+        job.opts = opts
+    end
+    if not job.opts.env then
+        job.opts.env = {
+            NVIM = vim.env.NVIM
+            NVIM_LISTEN_ADDRESS = vim.env.NVIM_LISTEN_ADDRESS
+            NVIM_LOG_FILE = vim.env.NVIM_LOG_FILE
+            VIM = vim.env.VIM
+            VIMRUNTIME = vim.env.VIMRUNTIME
+        }
+    end
+    job = setmetatable(job, Job)
+    return job
+end
+
+---@param cmd table
+---@param opts table
+Job.job = function(self, cmd, opts)
+    local id = 0
+    self.opts = vim.tbl_extend('force', {self.opts, opts})
+    id = vim.fn.jobstart(cmd, self.opts)
+    self.id = id
+end
+
+Job.wait = function(self)
+    vim.fn.jobwait({self.id})
+end
+
+Job.running = function(self)
+    return vim.fn.jobwait({self.id}, 0)[1] == -1
+end
+
 ---@class Programa
 ---@field nome string
 ---@field link string
