@@ -83,15 +83,12 @@ Job.__index = Job
 
 Job.id = 0
 
+Job.concluido = false
+
 Job.new = function(opts)
-    local job = {
-        opts = {}
-    }
-    if opts then
-        job.opts = opts
-    end
-    if not job.opts.env then
-        job.opts.env = {
+    local job = {}
+    if not job.env then
+        job.env = {
             NVIM = vim.env.NVIM
             NVIM_LISTEN_ADDRESS = vim.env.NVIM_LISTEN_ADDRESS
             NVIM_LOG_FILE = vim.env.NVIM_LOG_FILE
@@ -107,15 +104,22 @@ end
 ---@param opts table
 Job.job = function(self, cmd, opts)
     local id = 0
-    self.opts = vim.tbl_extend('force', {self.opts, opts})
-    id = vim.fn.jobstart(cmd, self.opts)
+    opts = opts or {}
+    self = vim.tbl_extend('force', {self, opts})
+    id = vim.fn.jobstart(cmd, self)
     self.id = id
 end
 
 Job.wait = function(self)
+    if self.id == 0 then
+        error('Job: argumentos inválidos', 2)
+    elseif self.id == -1 then
+        error('Job: comando não executável', 2)
+    end
     vim.fn.jobwait({self.id})
 end
 
+---@return boolean
 Job.running = function(self)
     return vim.fn.jobwait({self.id}, 0)[1] == -1
 end
@@ -178,9 +182,10 @@ Programa.executavel = function(self)
     return self:extencao() == 'exe'
 end
 
-Programa.baixar = function(self)
-	local diretorio = tostring(self:diretorio())
-	vim.fn.system({
+Programa.baixar = function(this)
+	local diretorio = tostring(this:diretorio())
+    local job = Job.new()
+	job.job({
 		'curl',
 		'--fail',
 		'--location',
@@ -188,44 +193,50 @@ Programa.baixar = function(self)
         '--output-dir',
 		diretorio,
         '-O',
-		self.link
-	})
-	if vim.v.shell_error == 0 then
-        self.baixado = true
-        self:extrair() -- realizar extração do arquivo 
-	end
+		this.link
+	}, {
+        on_exit = function()
+            this.baixado = true
+            this:extrair() -- extrair do arquivo baixado
+        end
+    })
 end
 
-Programa.extrair = function(self)
-    local diretorio = tostring(self:diretorio())
-    local arquivo = tostring(self:diretorio() / self:nome_arquivo())
-    local zip = self:extencao() == 'zip'
+Programa.extrair = function(this)
+    local diretorio = tostring(this:diretorio())
+    local arquivo = tostring(this:diretorio() / this:nome_arquivo())
+    local zip = this:extencao() == 'zip'
+    local job = Job.new()
+    local cmd = {}
+    local finalizar = {
+        on_exit = function()
+            this.extraido = true
+            vim.fn.delete(arquivo) -- remover arquivo comprimido baixado
+        end
+    }
     if zip then
-		vim.fn.system({
+		cmd = {
 			'unzip',
 			arquivo,
 			'-d',
 			diretorio
-		})
-    elseif self:extencao() == 'gz' then
-        vim.fn.system({
+		}
+    elseif this:extencao() == 'gz' then
+        cmd = {
             'gzip',
             '-d',
             tostring(arquivo),
-        })
+        }
     else
-		vim.fn.system({
+		cmd = {
 			'tar',
 			'-xf',
 			arquivo,
 			'-C',
 			diretorio
-		})
+		}
     end
-	if vim.v.shell_error == 0 then
-        self.extraido = true
-        vim.fn.delete(arquivo) -- remover arquivo comprimido baixado
-	end
+    job.job(cmd, finalizar)
 end
 
 --- Verifica se o programa já está no PATH, busca pelo executável e 
