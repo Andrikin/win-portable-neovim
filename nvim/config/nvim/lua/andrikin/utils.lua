@@ -77,32 +77,50 @@ Utils.Andrikin = vim.api.nvim_create_augroup('Andrikin', {clear = true})
 
 --- Wrap envolta do vim.fn.jobstart
 ---@class Job
+---@field clear_env boolean
+---@field cwd string
+---@field detach boolean
+---@field env table
+---@field height number
+---@field on_exit function
+---@field on_stdout function
+---@field on_stderr function
+---@field overlapped boolean
+---@field pty boolean
+---@field rpc boolean
+---@field stderr_buffered boolean
+---@field stdout_buffered boolean
+---@field stdin string
+---@field width number
+---@field new Job
+---@field id number
+---@field start function
+---@field wait function
+---@field running function
 local Job = {}
 
 Job.__index = Job
 
-Job.id = 0
-
-Job.concluido = false
-
 Job.new = function(opts)
-    local job = {}
-    if not job.env then
-        job.env = {
-            NVIM = vim.env.NVIM
-            NVIM_LISTEN_ADDRESS = vim.env.NVIM_LISTEN_ADDRESS
-            NVIM_LOG_FILE = vim.env.NVIM_LOG_FILE
-            VIM = vim.env.VIM
-            VIMRUNTIME = vim.env.VIMRUNTIME
-        }
-    end
+    opts = opts or {}
+    local job = {
+        env = {
+            NVIM = vim.env.NVIM,
+            NVIM_LISTEN_ADDRESS = vim.env.NVIM_LISTEN_ADDRESS,
+            NVIM_LOG_FILE = vim.env.NVIM_LOG_FILE,
+            VIM = vim.env.VIM,
+            VIMRUNTIME = vim.env.VIMRUNTIME,
+        },
+        id = 0
+    }
+    job = vim.tbl_extend('force', {job, opts})
     job = setmetatable(job, Job)
     return job
 end
 
 ---@param cmd table
 ---@param opts table
-Job.job = function(self, cmd, opts)
+Job.start = function(self, cmd, opts)
     local id = 0
     opts = opts or {}
     self = vim.tbl_extend('force', {self, opts})
@@ -124,6 +142,8 @@ Job.running = function(self)
     return vim.fn.jobwait({self.id}, 0)[1] == -1
 end
 
+Utils.Job = Job
+
 ---@class Programa
 ---@field nome string
 ---@field link string
@@ -131,7 +151,6 @@ end
 ---@field config function
 ---@field baixado boolean
 ---@field extraido boolean
----@field finalizado boolean
 ---@field timeout number
 ---@field processo thread
 local Programa = {}
@@ -143,9 +162,6 @@ Programa.baixado = false
 
 ---@type boolean
 Programa.extraido = false
-
----@type boolean
-Programa.finalizado = false
 
 ---@type number
 Programa.timeout = 120 * 1000
@@ -182,10 +198,14 @@ Programa.executavel = function(self)
     return self:extencao() == 'exe'
 end
 
-Programa.baixar = function(this)
-	local diretorio = tostring(this:diretorio())
+Programa.baixar = function(self)
+	local diretorio = tostring(self:diretorio())
     local job = Job.new()
-	job.job({
+    job.on_exit = function()
+        self.baixado = true
+        self:extrair() -- extrair do arquivo baixado
+    end
+	job:start({
 		'curl',
 		'--fail',
 		'--location',
@@ -193,27 +213,21 @@ Programa.baixar = function(this)
         '--output-dir',
 		diretorio,
         '-O',
-		this.link
-	}, {
-        on_exit = function()
-            this.baixado = true
-            this:extrair() -- extrair do arquivo baixado
-        end
-    })
+		self.link
+	})
 end
 
-Programa.extrair = function(this)
-    local diretorio = tostring(this:diretorio())
-    local arquivo = tostring(this:diretorio() / this:nome_arquivo())
-    local zip = this:extencao() == 'zip'
-    local job = Job.new()
+Programa.extrair = function(self)
+    local diretorio = tostring(self:diretorio())
+    local arquivo = tostring(self:diretorio() / self:nome_arquivo())
+    local zip = self:extencao() == 'zip'
+    local gz = self:extencao() == 'gz'
     local cmd = {}
-    local finalizar = {
-        on_exit = function()
-            this.extraido = true
-            vim.fn.delete(arquivo) -- remover arquivo comprimido baixado
-        end
-    }
+    local job = Job.new()
+    job.on_exit = function(...)
+        self.extraido = true
+        vim.fn.delete(arquivo) -- remover arquivo comprimido baixado
+    end
     if zip then
 		cmd = {
 			'unzip',
@@ -221,7 +235,7 @@ Programa.extrair = function(this)
 			'-d',
 			diretorio
 		}
-    elseif this:extencao() == 'gz' then
+    elseif gz then
         cmd = {
             'gzip',
             '-d',
@@ -236,7 +250,7 @@ Programa.extrair = function(this)
 			diretorio
 		}
     end
-    job.job(cmd, finalizar)
+    job:start(cmd)
 end
 
 --- Verifica se o programa já está no PATH, busca pelo executável e 
@@ -306,7 +320,6 @@ Programa.instalar = function(self)
         Utils.notify(('Programa: instalar: Não foi possível realizar a instalação do programa %s.'):format(self.nome))
 		do return end
     else
-        self.finalizado = true -- instalação concluída
 		if self.config then
 			self.config()
 		end
@@ -603,8 +616,6 @@ Registrador.bootstrap = function(self)
     end
 end
 
--- TODO: FINALIZAR - criar metodo no objeto Programa para executar vim.fn.jobstart
--- para realizar o download e a extração do programa.
 ---@param programas table Lista dos programas que são dependência para o nvim
 Registrador.iniciar = function(programas)
     for i, programa in ipairs(programas) do
