@@ -659,7 +659,7 @@ SauceCodePro.query_fontes_regedit = function(self)
     local comando = vim.fn.systemlist({
         'reg',
         'query',
-        self.registro.diretorio,
+        tostring(self.registro),
         '/s'
     })
     if comando == '' then
