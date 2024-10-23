@@ -625,19 +625,23 @@ Registrador.iniciar = function(programas)
             programas[i] = setmetatable(programa, Programa)
             programas[i].instalar = coroutine.create(programas[i].instalar)
             processos[programas[i]] = true
-            coroutine.resume(programas[i].instalar) -- iniciar instalação
+            coroutine.resume(programas[i].instalar, programas[i]) -- iniciar instalação
         end
     end
     while #processos > 0 do
-        for _, programa in ipairs(programas) do
-            local status = coroutine.status(programa.instalar)
-            if processos[programa] then
-                if status == 'dead' then
-                    processos[programa] = nil
+        for programa, _ in ipairs(programas) do
+            local status = coroutine.status(programas[programa].instalar)
+            if processos[programas[programa]] then
+                if status == 'running' then
+                elseif status == 'dead' then
+                    processos[programas[programa]] = nil
                 elseif status == 'suspended' then
-                    if programa.baixado and programa.extraido then
-                        coroutine.resume(programa.instalar)
+                    if programas[programa].baixado and programas[programa].extraido then
+                        coroutine.resume(programas[programa].instalar, programas[programa])
                     end
+                else
+                    processos[programas[programa]] = nil
+                    Utils.notify(('Registrador: iniciar: Erro ao instalar o programa %s'):format(programas[programa].nome_arquivo()))
                 end
             end
         end
