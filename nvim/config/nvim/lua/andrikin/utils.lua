@@ -316,6 +316,7 @@ Programa.instalar = function(self)
         Utils.notify(('Programa: Algum erro ocorreu ao realizar a instalação do programa %s.'):format(self.nome))
         do return end
     end
+    coroutine.yield()
     if not self:registrar() then
         Utils.notify(('Programa: instalar: Não foi possível realizar a instalação do programa %s.'):format(self.nome))
 		do return end
@@ -618,11 +619,28 @@ end
 
 ---@param programas table Lista dos programas que são dependência para o nvim
 Registrador.iniciar = function(programas)
+    local processos = {}
     for i, programa in ipairs(programas) do
         if getmetatable(programa) ~= Programa then
             programas[i] = setmetatable(programa, Programa)
+            programas[i].instalar = coroutine.create(programas[i].instalar)
+            processos[programas[i]] = true
+            coroutine.resume(programas[i].instalar) -- iniciar instalação
         end
-    	programas[i]:instalar()
+    end
+    while #processos > 0 do
+        for _, programa in ipairs(programas) do
+            local status = coroutine.status(programa.instalar)
+            if processos[programa] then
+                if status == 'dead' then
+                    processos[programa] = nil
+                elseif status == 'suspended' then
+                    if programa.baixado and programa.extraido then
+                        coroutine.resume(programa.instalar)
+                    end
+                end
+            end
+        end
     end
 end
 
