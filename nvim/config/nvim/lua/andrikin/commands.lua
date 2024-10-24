@@ -1,7 +1,6 @@
 -- CUSTOM COMMANDS
 
 local Ouvidoria = require('andrikin.utils').Ouvidoria -- executar bootstrap
-local SauceCodePro = require('andrikin.utils').SauceCodePro
 
 vim.api.nvim_create_user_command(
 	'HexEditor',
@@ -33,14 +32,6 @@ vim.api.nvim_create_user_command(
 	function()
 		vim.cmd.Dirvish(Ouvidoria.ci.diretorios.projetos.diretorio)
 	end,
-	{}
-)
-
-vim.api.nvim_create_user_command(
-	'FonteRemover',
-    function()
-        SauceCodePro:remover_regedit()
-    end,
 	{}
 )
 
