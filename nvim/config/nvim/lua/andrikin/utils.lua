@@ -659,7 +659,7 @@ SauceCodePro.query_fontes_regedit = function(self)
     local comando = vim.fn.systemlist({
         'reg',
         'query',
-        tostring(self.registro),
+        tostring(self.registro):gsub('/', '\\'),
         '/s'
     })
     if comando == '' then
@@ -687,7 +687,7 @@ SauceCodePro.regedit = function(self)
         vim.fn.system({
             'reg',
             'add',
-            tostring(self.registro),
+            tostring(self.registro):gsub('/', '\\'),
             '/v',
             nome:match('(.*)%..*$'),
             '/t',
@@ -713,7 +713,7 @@ SauceCodePro.remover_regedit = function(self)
             vim.fn.system({
                 'reg',
                 'delete',
-                tostring(self.registro),
+                tostring(self.registro):gsub('/', '\\'),
                 '/v',
                 nome,
                 '/f'
