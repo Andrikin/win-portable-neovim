@@ -590,7 +590,7 @@ end
 
 ---@return string
 SauceCodePro.__tostring = function(self)
-    return self.diretorio.diretorio
+    return tostring(self.diretorio)
 end
 
 ---@private
@@ -687,7 +687,7 @@ SauceCodePro.regedit = function(self)
         vim.fn.system({
             'reg',
             'add',
-            self.registro.diretorio,
+            tostring(self.registro),
             '/v',
             nome:match('(.*)%..*$'),
             '/t',
@@ -702,7 +702,7 @@ end
 --- Verifica se existe o arquivo SourceCodePro
 ---@return boolean
 SauceCodePro.zip_baixado = function(self)
-    return vim.fn.getftype(self.arquivo.diretorio) ~= ''
+    return vim.fn.getftype(tostring(self.arquivo)) ~= ''
 end
 
 --- Desinstala a fonte no regedit do sistema Windows.
@@ -713,7 +713,7 @@ SauceCodePro.remover_regedit = function(self)
             vim.fn.system({
                 'reg',
                 'delete',
-                self.registro.diretorio,
+                tostring(self.registro),
                 '/v',
                 nome,
                 '/f'
