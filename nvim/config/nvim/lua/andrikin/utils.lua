@@ -101,32 +101,34 @@ local Job = {}
 
 Job.__index = Job
 
+---@param opts table
 Job.new = function(opts)
+    local job = {}
     opts = opts or {}
-    local job = {
-        env = {
-            NVIM = vim.env.NVIM,
-            NVIM_LISTEN_ADDRESS = vim.env.NVIM_LISTEN_ADDRESS,
-            NVIM_LOG_FILE = vim.env.NVIM_LOG_FILE,
-            VIM = vim.env.VIM,
-            VIMRUNTIME = vim.env.VIMRUNTIME,
-            PATH = vim.env.PATH,
-            NVIM_OPT = vim.env.NVIM_OPT,
-        },
-        id = 0
+    if not vim.tbl_isempty(opts) then
+        for k, v in pairs(opts) do
+            job[k] = v
+        end
+    end
+    job.env = {
+        NVIM = vim.env.NVIM,
+        NVIM_LISTEN_ADDRESS = vim.env.NVIM_LISTEN_ADDRESS,
+        NVIM_LOG_FILE = vim.env.NVIM_LOG_FILE,
+        VIM = vim.env.VIM,
+        VIMRUNTIME = vim.env.VIMRUNTIME,
+        PATH = vim.env.PATH,
+        NVIM_OPT = vim.env.NVIM_OPT,
     }
-    job = vim.tbl_extend('force', {job, opts})
+    job.id = 0
     job = setmetatable(job, Job)
     return job
 end
 
 ---@param cmd table
 ---@param opts table
-Job.start = function(self, cmd, opts)
-    local id = 0
-    opts = opts or {}
-    self = vim.tbl_extend('force', {self, opts})
+Job.start = function(self, cmd)
     print(('Executando jobstart, comando: %s'):format(cmd)) -- REMOVER!
+    local id = 0
     id = vim.fn.jobstart(cmd, self)
     self.id = id
 end
@@ -202,11 +204,11 @@ Programa.executavel = function(self)
 end
 
 Programa.baixar = function(self)
+    print(('Programa: baixar: executar download de %s'):format(self.nome))
 	local diretorio = tostring(self:diretorio())
     local job = Job.new()
     job.on_exit = function()
         self.baixado = true
-        self:extrair() -- extrair do arquivo baixado
     end
 	job:start({
 		'curl',
@@ -312,14 +314,11 @@ Programa.instalar = function(self)
     self:criar_diretorio()
     self:checar_instalacao()
     if not self.baixado and not self.extraido then
-        print(('Baixando programa: %s'):format(self.nome))
         self:baixar()
-    elseif not self.extraido then
-        print(('Extraindo programa: %s'):format(self.nome))
+    end
+    coroutine.yield()
+    if not self.extraido then
         self:extrair()
-    else
-        Utils.notify(('Programa: Algum erro ocorreu ao realizar a instalação do programa %s.'):format(self.nome))
-        do return end
     end
     coroutine.yield()
     if not self:registrar() then
@@ -512,11 +511,13 @@ Curl.bootstrap = function(self)
         Utils.notify('Curl: bootstrap: Sistema já possui Unzip.')
         do return end
     end
-    self.download(self.unzip_link, Utils.Opt.diretorio)
     local unzip = vim.fs.find('unzip.exe', {path = Utils.Opt.diretorio, type = 'file'})[1]
+    if not unzip then
+	    self.download(self.unzip_link, Utils.Opt.diretorio)
+    end
     if vim.v.shell_error > 0 then
         error('Curl: bootstrap: Não foi possível realizar o download do unzip.exe')
-    elseif unzip == '' then
+    elseif not unzip then
         error('Curl: bootstrap: Não foi possível encontrar o executável unzip.exe.')
     end
 end
@@ -633,20 +634,18 @@ Registrador.iniciar = function(programas)
             processos[programas[i]] = true
         end
     end
-    while #processos > 0 do
+    while next(processos) do
         for i, _ in ipairs(programas) do
             local status = coroutine.status(programas[i].instalar)
             if processos[programas[i]] then
-                if status == 'running' then
-                elseif status == 'dead' then
+                if status == 'dead' then
                     processos[programas[i]] = nil
                 elseif status == 'suspended' then
-                    if programas[i].baixado and programas[i].extraido then
+                    if programas[i].baixado and not programas[i].extraido then
+                        coroutine.resume(programas[i].instalar, programas[i])
+                    elseif programas[i].baixado and programas[i].extraido then
                         coroutine.resume(programas[i].instalar, programas[i])
                     end
-                else
-                    processos[programas[i]] = nil
-                    Utils.notify(('Registrador: iniciar: Erro ao instalar o i %s'):format(programas[i].nome_arquivo()))
                 end
             end
         end
