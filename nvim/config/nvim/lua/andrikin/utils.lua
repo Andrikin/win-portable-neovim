@@ -110,6 +110,8 @@ Job.new = function(opts)
             NVIM_LOG_FILE = vim.env.NVIM_LOG_FILE,
             VIM = vim.env.VIM,
             VIMRUNTIME = vim.env.VIMRUNTIME,
+            PATH = vim.env.PATH,
+            NVIM_OPT = vim.env.NVIM_OPT,
         },
         id = 0
     }
@@ -124,6 +126,7 @@ Job.start = function(self, cmd, opts)
     local id = 0
     opts = opts or {}
     self = vim.tbl_extend('force', {self, opts})
+    print(('Executando jobstart, comando: %s'):format(cmd)) -- REMOVER!
     id = vim.fn.jobstart(cmd, self)
     self.id = id
 end
@@ -309,8 +312,10 @@ Programa.instalar = function(self)
     self:criar_diretorio()
     self:checar_instalacao()
     if not self.baixado and not self.extraido then
+        print(('Baixando programa: %s'):format(self.nome))
         self:baixar()
     elseif not self.extraido then
+        print(('Extraindo programa: %s'):format(self.nome))
         self:extrair()
     else
         Utils.notify(('Programa: Algum erro ocorreu ao realizar a instalação do programa %s.'):format(self.nome))
@@ -363,8 +368,8 @@ Diretorio._sanitize = function(str)
     return vim.fs.normalize(str):gsub('//+', '/')
 end
 
----@return valido boolean
 ---@param dir Diretorio | string
+---@return valido boolean
 Diretorio.validate = function(dir)
     local isdirectory = function(d)
         return vim.fn.isdirectory(d) == 1
@@ -623,25 +628,25 @@ Registrador.iniciar = function(programas)
     for i, programa in ipairs(programas) do
         if getmetatable(programa) ~= Programa then
             programas[i] = setmetatable(programa, Programa)
-            programas[i].instalar = coroutine.create(programas[i].instalar)
-            processos[programas[i]] = true
+            programas[i].instalar = coroutine.create(Programa.instalar)
             coroutine.resume(programas[i].instalar, programas[i]) -- iniciar instalação
+            processos[programas[i]] = true
         end
     end
     while #processos > 0 do
-        for programa, _ in ipairs(programas) do
-            local status = coroutine.status(programas[programa].instalar)
-            if processos[programas[programa]] then
+        for i, _ in ipairs(programas) do
+            local status = coroutine.status(programas[i].instalar)
+            if processos[programas[i]] then
                 if status == 'running' then
                 elseif status == 'dead' then
-                    processos[programas[programa]] = nil
+                    processos[programas[i]] = nil
                 elseif status == 'suspended' then
-                    if programas[programa].baixado and programas[programa].extraido then
-                        coroutine.resume(programas[programa].instalar, programas[programa])
+                    if programas[i].baixado and programas[i].extraido then
+                        coroutine.resume(programas[i].instalar, programas[i])
                     end
                 else
-                    processos[programas[programa]] = nil
-                    Utils.notify(('Registrador: iniciar: Erro ao instalar o programa %s'):format(programas[programa].nome_arquivo()))
+                    processos[programas[i]] = nil
+                    Utils.notify(('Registrador: iniciar: Erro ao instalar o i %s'):format(programas[i].nome_arquivo()))
                 end
             end
         end
