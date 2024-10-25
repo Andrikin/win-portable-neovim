@@ -208,7 +208,9 @@ Programa.baixar = function(self)
 	local diretorio = tostring(self:diretorio())
     local job = Job.new()
     job.on_exit = function()
+        Utils.notify(('Programa %s baixado!'):format(self.nome))
         self.baixado = true
+        self:extrair()
     end
 	job:start({
 		'curl',
@@ -223,13 +225,14 @@ Programa.baixar = function(self)
 end
 
 Programa.extrair = function(self)
+    print(('Extraindo %s'):format(self.nome))
     local diretorio = tostring(self:diretorio())
     local arquivo = tostring(self:diretorio() / self:nome_arquivo())
     local zip = self:extencao() == 'zip'
     local gz = self:extencao() == 'gz'
     local cmd = {}
     local job = Job.new()
-    job.on_exit = function(...)
+    job.on_exit = function()
         self.extraido = true
         vim.fn.delete(arquivo) -- remover arquivo comprimido baixado
     end
@@ -244,7 +247,7 @@ Programa.extrair = function(self)
         cmd = {
             'gzip',
             '-d',
-            tostring(arquivo),
+            arquivo,
         }
     else
 		cmd = {
@@ -315,9 +318,7 @@ Programa.instalar = function(self)
     self:checar_instalacao()
     if not self.baixado and not self.extraido then
         self:baixar()
-    end
-    coroutine.yield()
-    if not self.extraido then
+    elseif not self.extraido then
         self:extrair()
     end
     coroutine.yield()
@@ -635,16 +636,17 @@ Registrador.iniciar = function(programas)
         end
     end
     while next(processos) do
-        for i, _ in ipairs(programas) do
-            local status = coroutine.status(programas[i].instalar)
-            if processos[programas[i]] then
+        for programa, processo in pairs(processos) do
+            -- vim.cmd.sleep('2') -- REMOVER!
+            local status = coroutine.status(programa.instalar)
+            if processo then
                 if status == 'dead' then
-                    processos[programas[i]] = nil
+                    processos[programa] = nil
                 elseif status == 'suspended' then
-                    if programas[i].baixado and not programas[i].extraido then
-                        coroutine.resume(programas[i].instalar, programas[i])
-                    elseif programas[i].baixado and programas[i].extraido then
-                        coroutine.resume(programas[i].instalar, programas[i])
+                    -- print(('Programa suspenso: %s'):format(programa.nome))
+                    -- print(('Programa baixado: %s e extraido: %s'):format(programa.baixado, programa.extraido))
+                    if programa.baixado and programa.extraido then
+                        coroutine.resume(programa.instalar, programa)
                     end
                 end
             end
