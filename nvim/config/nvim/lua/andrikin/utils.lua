@@ -127,7 +127,6 @@ end
 ---@param cmd table
 ---@param opts table
 Job.start = function(self, cmd)
-    print(('Executando jobstart, comando: %s'):format(cmd)) -- REMOVER!
     local id = 0
     id = vim.fn.jobstart(cmd, self)
     self.id = id
@@ -203,14 +202,19 @@ Programa.executavel = function(self)
     return self:extencao() == 'exe'
 end
 
+-- FIX: verificar se arquivo baixado existe, antes 
+-- de extraí-lo
 Programa.baixar = function(self)
-    print(('Programa: baixar: executar download de %s'):format(self.nome))
+    local arquivo = tostring(self:diretorio() / self:nome_arquivo())
 	local diretorio = tostring(self:diretorio())
     local job = Job.new()
     job.on_exit = function()
-        Utils.notify(('Programa %s baixado!'):format(self.nome))
         self.baixado = true
-        self:extrair()
+        if vim.fn.filereadable(arquivo) ~= 0 then
+            self:extrair()
+        else
+            print(('Não foi possível extrair o arquivo: %s'):format(self.nome))
+        end
     end
 	job:start({
 		'curl',
@@ -225,7 +229,6 @@ Programa.baixar = function(self)
 end
 
 Programa.extrair = function(self)
-    print(('Extraindo %s'):format(self.nome))
     local diretorio = tostring(self:diretorio())
     local arquivo = tostring(self:diretorio() / self:nome_arquivo())
     local zip = self:extencao() == 'zip'
@@ -234,7 +237,17 @@ Programa.extrair = function(self)
     local job = Job.new()
     job.on_exit = function()
         self.extraido = true
-        vim.fn.delete(arquivo) -- remover arquivo comprimido baixado
+        if vim.fn.filereadable(arquivo) ~= 0 then -- arquivo existe
+            vim.fn.delete(arquivo) -- remover arquivo baixado
+        end
+        if not self:registrar() then
+            Utils.notify(('Não foi possível realizar a instalação do programa %s.'):format(self.nome))
+            do return end
+        else
+            if self.config then
+                self.config()
+            end
+        end
     end
     if zip then
 		cmd = {
@@ -322,14 +335,6 @@ Programa.instalar = function(self)
         self:extrair()
     end
     coroutine.yield()
-    if not self:registrar() then
-        Utils.notify(('Programa: instalar: Não foi possível realizar a instalação do programa %s.'):format(self.nome))
-		do return end
-    else
-		if self.config then
-			self.config()
-		end
-    end
 end
 
 Utils.Programa = Programa
@@ -637,14 +642,12 @@ Registrador.iniciar = function(programas)
     end
     while next(processos) do
         for programa, processo in pairs(processos) do
-            -- vim.cmd.sleep('2') -- REMOVER!
+            vim.cmd.sleep()
             local status = coroutine.status(programa.instalar)
             if processo then
                 if status == 'dead' then
                     processos[programa] = nil
                 elseif status == 'suspended' then
-                    -- print(('Programa suspenso: %s'):format(programa.nome))
-                    -- print(('Programa baixado: %s e extraido: %s'):format(programa.baixado, programa.extraido))
                     if programa.baixado and programa.extraido then
                         coroutine.resume(programa.instalar, programa)
                     end
