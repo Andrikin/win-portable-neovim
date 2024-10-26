@@ -210,11 +210,8 @@ Programa.baixar = function(self)
     local job = Job.new()
     job.on_exit = function()
         self.baixado = true
-        if vim.fn.filereadable(arquivo) ~= 0 then
-            self:extrair()
-        else
-            print(('Não foi possível extrair o arquivo: %s'):format(self.nome))
-        end
+        print(('Programa %s baixado!'):format(self.nome))
+        self:extrair()
     end
 	job:start({
 		'curl',
@@ -237,6 +234,7 @@ Programa.extrair = function(self)
     local job = Job.new()
     job.on_exit = function()
         self.extraido = true
+        print(('Programa %s extraído!'):format(self.nome))
         if vim.fn.filereadable(arquivo) ~= 0 then -- arquivo existe
             vim.fn.delete(arquivo) -- remover arquivo baixado
         end
@@ -642,7 +640,7 @@ Registrador.iniciar = function(programas)
     end
     while next(processos) do
         for programa, processo in pairs(processos) do
-            vim.cmd.sleep()
+            vim.cmd.sleep() -- FIX
             local status = coroutine.status(programa.instalar)
             if processo then
                 if status == 'dead' then
