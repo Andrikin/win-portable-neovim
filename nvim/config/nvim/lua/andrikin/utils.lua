@@ -332,7 +332,6 @@ Programa.instalar = function(self)
     elseif not self.extraido then
         self:extrair()
     end
-    coroutine.yield()
 end
 
 Utils.Programa = Programa
@@ -629,29 +628,11 @@ end
 
 ---@param programas table Lista dos programas que são dependência para o nvim
 Registrador.iniciar = function(programas)
-    local processos = {}
     for i, programa in ipairs(programas) do
         if getmetatable(programa) ~= Programa then
             programas[i] = setmetatable(programa, Programa)
-            programas[i].instalar = coroutine.create(Programa.instalar)
-            coroutine.resume(programas[i].instalar, programas[i]) -- iniciar instalação
-            processos[programas[i]] = true
         end
-    end
-    while next(processos) do
-        for programa, processo in pairs(processos) do
-            vim.cmd.sleep() -- FIX
-            local status = coroutine.status(programa.instalar)
-            if processo then
-                if status == 'dead' then
-                    processos[programa] = nil
-                elseif status == 'suspended' then
-                    if programa.baixado and programa.extraido then
-                        coroutine.resume(programa.instalar, programa)
-                    end
-                end
-            end
-        end
+        programas[i]:instalar()
     end
 end
 
