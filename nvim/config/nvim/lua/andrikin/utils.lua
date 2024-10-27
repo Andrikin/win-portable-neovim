@@ -75,6 +75,79 @@ Utils.autocmd = vim.api.nvim_create_autocmd
 
 Utils.Andrikin = vim.api.nvim_create_augroup('Andrikin', {clear = true})
 
+--- Wrap envolta do vim.fn.jobstart
+---@class Job
+---@field clear_env boolean
+---@field cwd string
+---@field detach boolean
+---@field env table
+---@field height number
+---@field on_exit function
+---@field on_stdout function
+---@field on_stderr function
+---@field overlapped boolean
+---@field pty boolean
+---@field rpc boolean
+---@field stderr_buffered boolean
+---@field stdout_buffered boolean
+---@field stdin string
+---@field width number
+---@field new Job
+---@field id number
+---@field start function
+---@field wait function
+---@field running function
+local Job = {}
+
+Job.__index = Job
+
+---@param opts table
+Job.new = function(opts)
+    local job = {}
+    opts = opts or {}
+    if not vim.tbl_isempty(opts) then
+        for k, v in pairs(opts) do
+            job[k] = v
+        end
+    end
+    job.env = {
+        NVIM = vim.env.NVIM,
+        NVIM_LISTEN_ADDRESS = vim.env.NVIM_LISTEN_ADDRESS,
+        NVIM_LOG_FILE = vim.env.NVIM_LOG_FILE,
+        VIM = vim.env.VIM,
+        VIMRUNTIME = vim.env.VIMRUNTIME,
+        PATH = vim.env.PATH,
+        NVIM_OPT = vim.env.NVIM_OPT,
+    }
+    job.id = 0
+    job = setmetatable(job, Job)
+    return job
+end
+
+---@param cmd table
+---@param opts table
+Job.start = function(self, cmd)
+    local id = 0
+    id = vim.fn.jobstart(cmd, self)
+    self.id = id
+end
+
+Job.wait = function(self)
+    if self.id == 0 then
+        error('Job: argumentos inválidos', 2)
+    elseif self.id == -1 then
+        error('Job: comando não executável', 2)
+    end
+    vim.fn.jobwait({self.id})
+end
+
+---@return boolean
+Job.running = function(self)
+    return vim.fn.jobwait({self.id}, 0)[1] == -1
+end
+
+Utils.Job = Job
+
 ---@class Programa
 ---@field nome string
 ---@field link string
@@ -82,7 +155,6 @@ Utils.Andrikin = vim.api.nvim_create_augroup('Andrikin', {clear = true})
 ---@field config function
 ---@field baixado boolean
 ---@field extraido boolean
----@field finalizado boolean
 ---@field timeout number
 ---@field processo thread
 local Programa = {}
@@ -94,9 +166,6 @@ Programa.baixado = false
 
 ---@type boolean
 Programa.extraido = false
-
----@type boolean
-Programa.finalizado = false
 
 ---@type number
 Programa.timeout = 120 * 1000
@@ -133,9 +202,18 @@ Programa.executavel = function(self)
     return self:extencao() == 'exe'
 end
 
+-- FIX: verificar se arquivo baixado existe, antes 
+-- de extraí-lo
 Programa.baixar = function(self)
+    local arquivo = tostring(self:diretorio() / self:nome_arquivo())
 	local diretorio = tostring(self:diretorio())
-	vim.fn.system({
+    local job = Job.new()
+    job.on_exit = function()
+        self.baixado = true
+        print(('Programa %s baixado!'):format(self.nome))
+        self:extrair()
+    end
+	job:start({
 		'curl',
 		'--fail',
 		'--location',
@@ -145,42 +223,53 @@ Programa.baixar = function(self)
         '-O',
 		self.link
 	})
-	if vim.v.shell_error == 0 then
-        self.baixado = true
-        self:extrair() -- realizar extração do arquivo 
-	end
 end
 
 Programa.extrair = function(self)
     local diretorio = tostring(self:diretorio())
     local arquivo = tostring(self:diretorio() / self:nome_arquivo())
     local zip = self:extencao() == 'zip'
+    local gz = self:extencao() == 'gz'
+    local cmd = {}
+    local job = Job.new()
+    job.on_exit = function()
+        self.extraido = true
+        print(('Programa %s extraído!'):format(self.nome))
+        if vim.fn.filereadable(arquivo) ~= 0 then -- arquivo existe
+            vim.fn.delete(arquivo) -- remover arquivo baixado
+        end
+        if not self:registrar() then
+            Utils.notify(('Não foi possível realizar a instalação do programa %s.'):format(self.nome))
+            do return end
+        else
+            if self.config then
+                self.config()
+            end
+        end
+    end
     if zip then
-		vim.fn.system({
+		cmd = {
 			'unzip',
 			arquivo,
 			'-d',
 			diretorio
-		})
-    elseif self:extencao() == 'gz' then
-        vim.fn.system({
+		}
+    elseif gz then
+        cmd = {
             'gzip',
             '-d',
-            tostring(arquivo),
-        })
+            arquivo,
+        }
     else
-		vim.fn.system({
+		cmd = {
 			'tar',
 			'-xf',
 			arquivo,
 			'-C',
 			diretorio
-		})
+		}
     end
-	if vim.v.shell_error == 0 then
-        self.extraido = true
-        vim.fn.delete(arquivo) -- remover arquivo comprimido baixado
-	end
+    job:start(cmd)
 end
 
 --- Verifica se o programa já está no PATH, busca pelo executável e 
@@ -242,18 +331,6 @@ Programa.instalar = function(self)
         self:baixar()
     elseif not self.extraido then
         self:extrair()
-    else
-        Utils.notify(('Programa: Algum erro ocorreu ao realizar a instalação do programa %s.'):format(self.nome))
-        do return end
-    end
-    if not self:registrar() then
-        Utils.notify(('Programa: instalar: Não foi possível realizar a instalação do programa %s.'):format(self.nome))
-		do return end
-    else
-        self.finalizado = true -- instalação concluída
-		if self.config then
-			self.config()
-		end
     end
 end
 
@@ -293,8 +370,8 @@ Diretorio._sanitize = function(str)
     return vim.fs.normalize(str):gsub('//+', '/')
 end
 
----@return valido boolean
 ---@param dir Diretorio | string
+---@return valido boolean
 Diretorio.validate = function(dir)
     local isdirectory = function(d)
         return vim.fn.isdirectory(d) == 1
@@ -437,11 +514,13 @@ Curl.bootstrap = function(self)
         Utils.notify('Curl: bootstrap: Sistema já possui Unzip.')
         do return end
     end
-    self.download(self.unzip_link, Utils.Opt.diretorio)
     local unzip = vim.fs.find('unzip.exe', {path = Utils.Opt.diretorio, type = 'file'})[1]
+    if not unzip then
+	    self.download(self.unzip_link, Utils.Opt.diretorio)
+    end
     if vim.v.shell_error > 0 then
         error('Curl: bootstrap: Não foi possível realizar o download do unzip.exe')
-    elseif unzip == '' then
+    elseif not unzip then
         error('Curl: bootstrap: Não foi possível encontrar o executável unzip.exe.')
     end
 end
@@ -547,15 +626,13 @@ Registrador.bootstrap = function(self)
     end
 end
 
--- TODO: FINALIZAR - criar metodo no objeto Programa para executar vim.fn.jobstart
--- para realizar o download e a extração do programa.
 ---@param programas table Lista dos programas que são dependência para o nvim
 Registrador.iniciar = function(programas)
     for i, programa in ipairs(programas) do
         if getmetatable(programa) ~= Programa then
             programas[i] = setmetatable(programa, Programa)
         end
-    	programas[i]:instalar()
+        programas[i]:instalar()
     end
 end
 
