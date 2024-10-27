@@ -179,19 +179,10 @@ local programas = {
 				)
 			end
 			get_pip.instalar = function(self)
-				if vim.fn.executable('sed') == 1 then
-					if vim.fn.executable('pip.exe') == 0 then
-						vim.fn.system({
-							'sed',
-							'-i',
-							'$s/^#\\(.*\\)$/\\1/',
-							tostring(self.diretorio / self.pth)
-						})
-					end
-				else
-					notify('"sed" não encontrado nas dependências. Abortando configuração de python.')
-					do return end
-				end
+                local pth = tostring(self.diretorio / self.pth)
+                if vim.fn.filereadable(pth) ~= 0 then
+                    vim.fn.writefile({'import site'}, pth, 'a')
+                end
 				-- download get-pip.py
 				if not vim.fs.find(self.nome, {path = self.diretorio.diretorio, type = 'file'})[1] then
 					Curl.download(self.link, self.diretorio.diretorio)
