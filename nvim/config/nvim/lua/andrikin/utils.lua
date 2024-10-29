@@ -226,6 +226,17 @@ Programa.baixar = function(self)
 end
 
 Programa.extrair = function(self)
+    if self:extencao() == 'exe' then
+        if not self:registrar() then
+            Utils.notify(('Não foi possível realizar a instalação do programa %s.'):format(self.nome))
+            do return end
+        else
+            if self.config then
+                self.config()
+            end
+        end
+        do return end
+    end
     local diretorio = tostring(self:diretorio())
     local arquivo = tostring(self:diretorio() / self:nome_arquivo())
     local zip = self:extencao() == 'zip'
@@ -480,6 +491,7 @@ Utils.bootstrap = function(self)
     if vim.fn.isdirectory(self.Opt.diretorio) then
         vim.fn.mkdir(self.Opt.diretorio, 'p', 0755)
     end
+    vim.env.PATH = vim.env.PATH .. ';' .. tostring(self.Opt.diretorio)
 end
 
 ---@class Curl
