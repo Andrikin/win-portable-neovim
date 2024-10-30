@@ -5,8 +5,8 @@ local notify = require('andrikin.utils').notify
 -- colorizer.lua
 require('colorizer').setup(nil, { css = true })
 
--- Neodev
-require('neodev').setup()
+-- Lazydev
+require('lazydev').setup()
 
 vim.defer_fn( -- kickstart.nvim
     function()
