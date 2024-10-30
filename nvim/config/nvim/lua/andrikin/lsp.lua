@@ -1,12 +1,19 @@
 -- Configuração de LSP servers
 
+local win7 = require('andrikin.utils').win7
+
 local notify = require('andrikin.utils').notify
 
 -- colorizer.lua
 require('colorizer').setup(nil, { css = true })
 
--- Lazydev
-require('lazydev').setup()
+-- Lazydev or Neodev
+if win7 then
+	require('neodev').setup()
+else
+	require('lazydev').setup()
+end
+ 
 
 vim.defer_fn( -- kickstart.nvim
     function()
