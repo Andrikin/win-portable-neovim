@@ -1,10 +1,5 @@
 -- BOOTSTRAP: baixar win-portable-neovim, baixar neovim.zip, baixar neovim-qt.zip, extrair tudo na mesmo diretório
 
--- WIP: Utilizar multithreads para realizar os downloads
--- TODO: Reorganizar código para que faça as chamadas do curl de uma só vez
--- https://teukka.tech/vimloop.html
--- vim.loop.spawn(cmd: string, options: table, callback: fun)
-
 -- INFO: Lista de links para download das dependências:
 -- curl: https://curl.se/windows/latest.cgi?p=win64-mingw.zip
 -- unzip: http://linorg.usp.br/CTAN/systems/win32/w32tex/unzip.exe
