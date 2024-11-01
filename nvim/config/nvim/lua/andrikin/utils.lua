@@ -486,12 +486,17 @@ Utils.Diretorio = Diretorio
 ---@type Diretorio
 Utils.Opt = Diretorio.new(vim.env.NVIM_OPT)
 
+-- TODO: incluir o download do executável unzip.exe
 --- Criar diretório 'opt' caso não exista
 Utils.bootstrap = function(self)
-    if vim.fn.isdirectory(self.Opt.diretorio) then
+    local projetos = (Diretorio.new(vim.fn.fnamemodify(vim.env.HOME, ':h')) / 'projetos').diretorio
+    if vim.fn.isdirectory(projetos) == 0 then
+        vim.fn.mkdir(projetos, 'p', 0755)
+    end
+    if vim.fn.isdirectory(self.Opt.diretorio) == 0 then
         vim.fn.mkdir(self.Opt.diretorio, 'p', 0755)
     end
-    vim.env.PATH = vim.env.PATH .. ';' .. tostring(self.Opt.diretorio)
+    vim.env.PATH = vim.env.PATH .. ';' .. self.Opt.diretorio
 end
 
 ---@class Curl
@@ -830,8 +835,6 @@ SauceCodePro.instalar = function(self)
 end
 
 Utils.SauceCodePro = SauceCodePro
-
-Utils.Projetos = Diretorio.new(vim.fn.fnamemodify(vim.env.HOME, ':h')) / 'projetos'
 
 ---WARNING: classe para instalar as credenciais .ssh
 ---@class Ssh
