@@ -34,7 +34,7 @@
 -- Windows executa este alias antes de executar python declarado em PATH.
 -- ALTERNATIVE FIX: Remover WindowsApps do PATH
 local desabilitar = require('andrikin.utils').remover_path
-for _, programa in ipairs({'WindowsApps', 'Oracle'}) do
+for _, programa in ipairs({'WindowsApps', 'Oracle', 'LibreOffice'}) do
     desabilitar(programa)
 end
 
