@@ -19,6 +19,7 @@
 -- Tectonic: https://github.com/tectonic-typesetting/tectonic/releases/download/tectonic%400.14.1/tectonic-0.14.1-x86_64-pc-windows-msvc.zip
 -- Java: https://download.oracle.com/java/21/latest/jdk-21_windows-x64_bin.zip -- oracle
 -- Java: https://download.java.net/java/GA/jdk21.0.1/415e3f918a1f4062a0074a2794853d0d/12/GPL/openjdk-21.0.1_windows-x64_bin.zip -- openjdk
+-- Java: https://services.gradle.org/distributions/gradle-8.10.2-bin.zip
 -- Jdtls: https://www.eclipse.org/downloads/download.php?file=/jdtls/snapshots/jdt-language-server-latest.tar.gz
 -- Maven: https://dlcdn.apache.org/maven/maven-3/3.9.6/binaries/apache-maven-3.9.6-bin.zip
 -- rust: TODO
@@ -300,7 +301,11 @@ local programas = {
 		nome = 'sqlite',
 		link = 'https://www.sqlite.org/2024/sqlite-tools-win-x64-3460000.zip',
 		cmd = 'sqlite3.exe',
-	}
+    },{
+        nome = 'gradle',
+        link = 'https://services.gradle.org/distributions/gradle-8.10.2-bin.zip',
+        cmd = 'gradle.bat',
+    }
 }
 
 Registrador.iniciar(programas)
