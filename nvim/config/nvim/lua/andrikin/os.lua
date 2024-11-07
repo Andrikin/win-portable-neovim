@@ -22,6 +22,7 @@
 -- Java: https://services.gradle.org/distributions/gradle-8.10.2-bin.zip
 -- Jdtls: https://www.eclipse.org/downloads/download.php?file=/jdtls/snapshots/jdt-language-server-latest.tar.gz
 -- Maven: https://dlcdn.apache.org/maven/maven-3/3.9.6/binaries/apache-maven-3.9.6-bin.zip
+-- Himalaya: https://github.com/pimalaya/himalaya/releases/download/v1.0.0-beta.4/himalaya.x86_64-windows.zip -- e-mail cli
 -- rust: TODO
 
 -- LSPs:
@@ -305,6 +306,10 @@ local programas = {
         nome = 'gradle',
         link = 'https://services.gradle.org/distributions/gradle-8.10.2-bin.zip',
         cmd = 'gradle.bat',
+    },{
+        nome = 'himalaya',
+        link = 'https://github.com/pimalaya/himalaya/releases/download/v1.0.0-beta.4/himalaya.x86_64-windows.zip',
+        cmd = 'himalaya.exe',
     }
 }
 
