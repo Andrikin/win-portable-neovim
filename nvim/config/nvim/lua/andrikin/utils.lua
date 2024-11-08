@@ -1195,6 +1195,8 @@ Utils.Ouvidoria = Ouvidoria.new()
 ---@field download table
 local Himalaya = {}
 
+Himalaya.executavel = (Utils.Opt / 'himalaya' / 'himalaya.exe').diretorio
+
 Himalaya.config = {
     diretorio = (Utils.Opt / 'himalaya' / 'config.toml').diretorio,
 }
@@ -1233,8 +1235,9 @@ Himalaya.init = function()
         if not Himalaya.download.existe then
             vim.fn.mkdir(Himalaya.download.diretorio, 'p', 0755)
         end
+        vim.g.himalaya_executable = Himalaya.executavel
         vim.g.himalaya_config_path = Himalaya.config.diretorio
-        vim.g.himalaya_folder_picker = 'telescope'
+        vim.g.himalaya_folder_picker = 'native'
         vim.g.himalaya_folder_picker_telescope_preview = 1
     end
 end
