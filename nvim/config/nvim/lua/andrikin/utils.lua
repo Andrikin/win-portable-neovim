@@ -1211,6 +1211,8 @@ Himalaya.init = function()
     if vim.fn.executable('himalaya.exe') == 1 then
         if not Himalaya.config.existe then
             vim.fn.writefile({
+                [[signature-delim = "--\n"]],
+                '',
                 '[accounts.andre]',
                 'default = true',
                 'email = "andre.aguiar@itajai.sc.gov.br"',
@@ -1229,6 +1231,10 @@ Himalaya.init = function()
                 'smtp.encryption = "tls"',
                 'smtp.login = "andre.aguiar@itajai.sc.gov.br"',
                 'smtp.passwd.raw = ""',
+                'envelope.list.datetime-fmt = "%d/%m/%Y - %R"',
+                'message.read.headers = ["From", "To", "Cc", "Subject"]',
+                'message.write.headers = ["From", "To", "In-Reply-To", "Cc", "Subject"]',
+                'signature = "Atenciosamente,"',
             }, Himalaya.config.diretorio)
             Utils.notify('Himalaya: adicionar senha de e-mail no arquivo config.toml!')
         end
