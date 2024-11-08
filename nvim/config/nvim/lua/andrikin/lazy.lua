@@ -176,7 +176,10 @@ local plugins = {
 		'https://github.com/nvim-treesitter/playground.git',
 		lazy = true,
 	},
-    'https://github.com/pimalaya/himalaya-vim',
+    {
+        'https://github.com/pimalaya/himalaya-vim',
+        lazy = true,
+    },
 }
 
 local opts = {
