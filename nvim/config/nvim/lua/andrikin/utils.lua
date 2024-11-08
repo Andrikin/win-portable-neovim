@@ -1201,7 +1201,7 @@ Himalaya.config = {
 Himalaya.config.existe = vim.fn.filereadable(Himalaya.config.diretorio) == 1
 
 Himalaya.download = {
-    diretorio = (Utils.Opt / 'himalaya' / 'download').diretorio,
+    diretorio = (Utils.Opt / 'himalaya' / 'downloads').diretorio,
 }
 Himalaya.download.existe = vim.fn.isdirectory(Himalaya.download.diretorio) == 1
 
