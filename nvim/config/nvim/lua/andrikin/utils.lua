@@ -1219,7 +1219,7 @@ Himalaya.init = function()
                 'display-name = "André Alexandre Aguiar"',
                 'downloads-dir = "' .. Himalaya.download.diretorio .. '"',
                 'backend = "imap"',
-                'sync.enable = true',
+                'sync.enable = false',
                 'message.send.backend = "smtp"',
                 'imap.host = "webmail.itajai.sc.gov.br"',
                 'imap.port = 143',
@@ -1234,6 +1234,10 @@ Himalaya.init = function()
                 'envelope.list.datetime-fmt = "%d/%m/%Y - %R"',
                 'message.read.headers = ["From", "To", "Cc", "Subject"]',
                 'message.write.headers = ["From", "To", "In-Reply-To", "Cc", "Subject"]',
+                'folder.alias.inbox = "Entrada"',
+                'folder.alias.sent = "Enviadas"',
+                'folder.alias.drafts = "Rascunhos"',
+                'folder.alias.trash = "Lixeira"',
                 'signature = "Atenciosamente,"',
             }, Himalaya.config.diretorio)
             Utils.notify('Himalaya: adicionar senha de e-mail no arquivo config.toml!')
