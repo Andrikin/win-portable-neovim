@@ -137,11 +137,3 @@ vim.diagnostic.config({
 -- Removendo providers: Perl
 vim.g.loaded_perl_provider = 0
 
--- Himalaya-vim CLI e-mail
-if vim.fn.executable('himalaya.exe') == 1 then
-    local diretorio = Opt / 'himalaya' / 'config.toml'
-    vim.g.himalaya_config_path = diretorio.diretorio
-    vim.g.himalaya_folder_picker = 'telescope'
-    vim.g.himalaya_folder_picker_telescope_preview = 1
-end
-

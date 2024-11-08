@@ -1188,5 +1188,58 @@ end
 
 Utils.Ouvidoria = Ouvidoria.new()
 
+-- Himalaya-vim CLI e-mail
+---@class Himalaya
+---@field init function
+---@field config table
+---@field download table
+local Himalaya = {}
+
+Himalaya.config = {
+    diretorio = (Utils.Opt / 'himalaya' / 'config.toml').diretorio,
+}
+Himalaya.config.existe = vim.fn.filereadable(Himalaya.config.diretorio) == 1
+
+Himalaya.download = {
+    diretorio = (Utils.Opt / 'himalaya' / 'download').diretorio,
+}
+Himalaya.download.existe = vim.fn.isdirectory(Himalaya.download.diretorio) == 1
+
+Himalaya.init = function()
+    if vim.fn.executable('himalaya.exe') == 1 then
+        if not Himalaya.config.existe then
+            vim.fn.writefile({
+                '[accounts.trabalho]',
+                'default = true',
+                'email = "andre.aguiar@itajai.sc.gov.br"',
+                'display-name = "André Alexandre Aguiar"',
+                'downloads-dir = "' .. Himalaya.download.diretorio .. '"',
+                'backend = "imap"',
+                'sync.enable = true',
+                'message.send.backend = "smtp"',
+                'imap.host = "webmail.itajai.sc.gov.br"',
+                'imap.port = 143',
+                'imap.encryption = "start-tls"',
+                'imap.login = "andre.aguiar@itajai.sc.gov.br"',
+                'imap.passwd.raw = ""',
+                'smtp.host = "webmail.itajai.sc.gov.br"',
+                'smtp.port = 465',
+                'smtp.encryption = "tls"',
+                'smtp.login = "andre.aguiar@itajai.sc.gov.br"',
+                'smtp.passwd.raw = ""',
+            }, Himalaya.config.diretorio)
+            Utils.notify('Himalaya: adicionar senha de e-mail no arquivo config.toml!')
+        end
+        if not Himalaya.download.existe then
+            vim.fn.mkdir(Himalaya.download.diretorio, 'p', 0755)
+        end
+        vim.g.himalaya_config_path = Himalaya.config.diretorio
+        vim.g.himalaya_folder_picker = 'telescope'
+        vim.g.himalaya_folder_picker_telescope_preview = 1
+    end
+end
+
+Utils.Himalaya = Himalaya
+
 return Utils
 

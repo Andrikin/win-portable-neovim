@@ -310,6 +310,7 @@ local programas = {
         nome = 'himalaya',
         link = 'https://github.com/pimalaya/himalaya/releases/download/v1.0.0-beta.4/himalaya.x86_64-windows.zip',
         cmd = 'himalaya.exe',
+        config = require('andrikin.utils').Himalaya.init
     }
 }
 
