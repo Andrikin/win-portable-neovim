@@ -177,7 +177,7 @@ local plugins = {
 		lazy = true,
 	},
     {
-        'https://github.com/pimalaya/himalaya-vim',
+        dir = vim.loop.os_homedir() .. '/Documents/nvim/projetos/himalaya-vim',
         lazy = true,
     },
 }
