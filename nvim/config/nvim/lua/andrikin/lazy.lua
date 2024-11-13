@@ -178,7 +178,6 @@ local plugins = {
 	},
     {
         dir = vim.loop.os_homedir() .. '/Documents/nvim/projetos/himalaya-vim',
-        lazy = true,
     },
 }
 
