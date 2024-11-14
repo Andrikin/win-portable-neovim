@@ -1235,6 +1235,7 @@ Himalaya.init = function()
                 'message.read.headers = ["From", "To", "Cc", "Subject"]',
                 'message.write.headers = ["From", "To", "In-Reply-To", "Cc", "Subject"]',
                 'signature = "Atenciosamente,\n\nAgente em Atividades Administrativas\nOuvidoria do Município de Itajaí\n0800 646 4040"',
+                'message.send.save-copy = true',
             }, Himalaya.config.diretorio)
             Utils.notify('Himalaya: adicionar senha de e-mail no arquivo config.toml!')
         end
