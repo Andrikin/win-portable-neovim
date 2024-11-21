@@ -311,6 +311,10 @@ local programas = {
         link = 'https://github.com/pimalaya/himalaya/releases/download/v1.0.0-beta.4/himalaya.x86_64-windows.zip',
         cmd = 'himalaya.exe',
         config = require('andrikin.utils').Himalaya.init
+    },{
+        nome = 'fzf',
+        link = 'https://github.com/junegunn/fzf/releases/download/v0.56.3/fzf-0.56.3-windows_amd64.zip',
+        cmd = 'fzf.exe',
     }
 }
 
