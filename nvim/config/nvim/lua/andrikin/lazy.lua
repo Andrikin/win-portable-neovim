@@ -179,6 +179,10 @@ local plugins = {
     {
         dir = vim.loop.os_homedir() .. '/Documents/nvim/projetos/himalaya-vim',
     },
+    {
+        'https://github.com/junegunn/fzf.vim.git',
+        lazy = true,
+    },
 }
 
 local opts = {
