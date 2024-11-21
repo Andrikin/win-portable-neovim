@@ -1247,7 +1247,7 @@ Himalaya.init = function()
         vim.g.himalaya_executable = Himalaya.executavel
         vim.g.himalaya_config_path = Himalaya.config.diretorio
         vim.g.himalaya_folder_picker = 'native'
-        vim.g.himalaya_folder_picker_telescope_preview = 0
+        vim.g.himalaya_folder_picker_telescope_preview = false
     end
 end
 
