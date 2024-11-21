@@ -339,3 +339,32 @@ autocmd(
 	}
 )
 
+-- Himalaya open file
+autocmd(
+	'FileType',
+	{
+		group = Andrikin,
+		pattern = 'mail',
+		callback = function(ev)
+            local opts = { buffer = ev.buf }
+            local open = function(arquivo)
+                vim.cmd('!' .. vim.fn.shellescape(arquivo))
+            end
+            if vim.version().minor > 9 then
+                open = vim.ui.open
+            end
+            vim.keymap.set('n', 'go', function() 
+                local linha = vim.fn.getline('.')
+                if not linha:match('^<#part') then
+                    print('Não foi possível obter arquivo de diretório para abrir o arquivo')
+                    do return end
+                end
+                local arquivo = linha:match('filename="(.*)"'):match('C:.*'):gsub('\\', '/')
+                if arquivo then
+                    print(('Abrindo arquivo: %s'):format(arquivo))
+                    open(arquivo)
+                end
+            end, opts)
+		end,
+	}
+)
