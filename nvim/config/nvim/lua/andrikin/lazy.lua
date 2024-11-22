@@ -30,7 +30,7 @@ if tema.config then
 end
 
 local win7 = require('andrikin.utils').win7
-local has_buildin = vim.version().major >= 0 and vim.version().minor > 10
+local has_buildin = vim.version().major >= 0 and vim.version().minor > 9
 local has_rm = vim.fn.executable('rm') == 1
 local has_mkdir = vim.fn.executable('mkdir') == 1
 local plugins = {
