@@ -347,13 +347,10 @@ autocmd(
 		pattern = 'mail',
 		callback = function(ev)
             local opts = { buffer = ev.buf }
-            local open = function(arquivo)
+            local open = vim.ui.open or function(arquivo)
                 vim.cmd('!' .. vim.fn.shellescape(arquivo))
             end
-            if vim.version().minor > 9 then
-                open = vim.ui.open
-            end
-            vim.keymap.set('n', 'go', function() 
+            vim.keymap.set('n', 'go', function()
                 local linha = vim.fn.getline('.')
                 if not linha:match('^<#part') then
                     print('Não foi possível obter arquivo de diretório para abrir o arquivo')
