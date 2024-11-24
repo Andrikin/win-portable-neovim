@@ -98,6 +98,19 @@ autocmd(
 	}
 )
 
+-- Resize windows automatically
+-- Tim Pope goodness
+autocmd(
+        'VimResized',
+        {
+            group = Andrikin,
+            pattern = '*',
+            callback = function()
+                vim.cmd.wincmd('=')
+            end,
+        }
+)
+
 -- Highlight configuração
 autocmd(
 	'TextYankPost',
@@ -125,18 +138,6 @@ autocmd(
 					enabled = false
 				}
 			)
-		end,
-	}
-)
-
--- Redimensionar janelas do Fugitive
-autocmd(
-	'FileType',
-	{
-		group = Andrikin,
-		pattern = 'fugitive',
-		callback = function()
-			vim.cmd.resize(15)
 		end,
 	}
 )

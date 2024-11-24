@@ -126,7 +126,7 @@ local toggle_list = function(modo, comando, on_error)
     end
     if not aberto then
         if modo == 'terminal' then
-            vim.cmd.split({range = {15}})
+            vim.cmd.split()
         end
         local ok, resultado = pcall(vim.cmd[comando])
         if not ok and on_error then
