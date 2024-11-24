@@ -346,7 +346,7 @@ autocmd(
 		group = Andrikin,
 		pattern = 'mail',
 		callback = function(ev)
-            local opts = { buffer = ev.buf }
+            local opts = { silent = true, buffer = ev.buf }
             local open = vim.ui.open or function(arquivo)
                 vim.cmd('!' .. vim.fn.shellescape(arquivo))
             end
@@ -361,6 +361,17 @@ autocmd(
                     print(('Abrindo arquivo: %s'):format(arquivo))
                     open(arquivo)
                 end
+            end, opts)
+            vim.keymap.set('n', 'gm', function()
+                local template = vim.g.himalaya_pandoc_template_email
+                if vim.fn.filereadable(template) == 0 then
+                    print('Pandoc: Arquivo template para e-mails não configurado!')
+                    do return end
+                end
+                vim.cmd['!']({
+                    'pandoc --template ' .. template .. ' -t html',
+                    range = {5, vim.fn.line('$')},
+                })
             end, opts)
 		end,
 	}
