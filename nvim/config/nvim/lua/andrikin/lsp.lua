@@ -194,7 +194,24 @@ local servers = {
     'html', -- html LSP
     'jsonls', -- json LSP
     'cssls', -- css LSP
-    'lua_ls', -- lua LSP
+    {
+        lsp = 'lua_ls',
+        config = {
+            settings = {
+                Lua = {
+                    runtime = {
+                        version = 'LuaJIT'
+                    },
+                    diagnostics = {
+                        globals = {
+                            'vim',
+                            'require',
+                        }
+                    }
+                }
+            }
+        },
+    }, -- lua LSP
     'luau_lsp', -- luau LSP
     -- 'rust_analyzer', -- rust LSP
     -- { -- javascript LSP
