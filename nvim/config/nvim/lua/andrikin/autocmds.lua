@@ -368,7 +368,7 @@ autocmd(
                 if conta == '' then
                     conta = 'ouvidoria'
                 end
-                local template = vim.g.himalaya_pandoc_template_email .. conta .. '.html'
+                local template = vim.g.himalaya_pandoc_template_email .. '/' .. conta .. '.html'
                 if vim.fn.filereadable(template) == 0 then
                     print('Pandoc: Arquivo template para e-mails não configurado!')
                     do return end

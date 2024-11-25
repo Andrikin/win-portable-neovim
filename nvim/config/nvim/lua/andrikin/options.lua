@@ -1,5 +1,3 @@
-local Opt = require('andrikin.utils').Opt
-
 vim.g.mapleader = ' '
 vim.g.maplocalleader = ' '
 
@@ -138,5 +136,5 @@ vim.diagnostic.config({
 vim.g.loaded_perl_provider = 0
 
 -- Himalaya template para utilizar com pandoc e gerar e-mails em html
-vim.g.himalaya_pandoc_template_email = tostring(Opt / 'himalaya' / 'template')
+vim.g.himalaya_pandoc_template_email = vim.loop.os_homedir() .. '/Downloads/himalaya/template'
 

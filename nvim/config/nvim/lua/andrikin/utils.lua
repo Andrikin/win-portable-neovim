@@ -1203,7 +1203,7 @@ Himalaya.config = {
 Himalaya.config.existe = vim.fn.filereadable(Himalaya.config.diretorio) == 1
 
 Himalaya.download = {-- Windows
-    diretorio = (Diretorio.new(vim.loop.os_homedir() .. '/Downloads') / 'himalaya' / 'andre').diretorio,
+    diretorio = (Diretorio.new(vim.loop.os_homedir() .. '/Downloads') / 'himalaya' / 'trabalho').diretorio,
 }
 Himalaya.download.existe = vim.fn.isdirectory(Himalaya.download.diretorio) == 1
 
@@ -1213,31 +1213,37 @@ Himalaya.init = function()
             vim.fn.writefile({
                 [[signature-delim = "--\n"]],
                 '',
-                '[accounts.andre]',
+                '[accounts.trabalho]',
                 'default = true',
                 'email = "andre.aguiar@itajai.sc.gov.br"',
                 'display-name = "André Alexandre Aguiar"',
-                'downloads-dir = "' .. Himalaya.download.diretorio .. '"',
-                'backend = "imap"',
+                'envelope.list.table.unseen-char = "*"',
+                'envelope.list.table.replied-char = "R"',
+                'envelope.list.table.flagged-char = "!"',
+                'envelope.list.table.attachment-char = "@"',
+                'message.send.save-copy = true',
+                'message.delete.style = "flag"',
+                'envelope.list.datetime-local-tz = true',
                 'sync.enable = false',
-                'message.send.backend = "smtp"',
-                'imap.host = "mail.itajai.sc.gov.br"',
-                'imap.port = 993',
-                'imap.encryption = "tls"',
-                'imap.login = "andre.aguiar@itajai.sc.gov.br"',
-                'imap.passwd.raw = ""',
-                'smtp.host = "mail.itajai.sc.gov.br"',
-                'smtp.port = 465',
-                'smtp.encryption = "tls"',
-                'smtp.login = "andre.aguiar@itajai.sc.gov.br"',
-                'smtp.passwd.raw = ""',
                 'envelope.list.datetime-fmt = "%d/%m/%Y - %R"',
                 'message.read.headers = ["From", "To", "Cc", "Subject"]',
                 'message.write.headers = ["From", "To", "In-Reply-To", "Cc", "Subject"]',
                 'signature = "Atenciosamente,\n\nAgente em Atividades Administrativas\nOuvidoria do Município de Itajaí\n0800 646 4040"',
-                'message.send.save-copy = true',
-                'message.delete.style = "flag"',
-                'envelope.list.datetime-local-tz = true',
+                'downloads-dir = "' .. Himalaya.download.diretorio .. '"',
+                'backend.type = "imap"',
+                'backend.host = "mail.itajai.sc.gov.br"',
+                'backend.port = 993',
+                'backend.encryption = "tls"',
+                'backend.login = "andre.aguiar@itajai.sc.gov.br"',
+                'backend.auth.type = "password"',
+                'backend.auth.raw = ""',
+                'message.send.backend.type = "smtp"',
+                'message.send.backend.host = "mail.itajai.sc.gov.br"',
+                'message.send.backend.port = 465',
+                'message.send.backend.encryption = "tls"',
+                'message.send.backend.login = "andre.aguiar@itajai.sc.gov.br"',
+                'message.send.backend.auth.type = "password"',
+                'message.send.backend.auth.raw = ""',
             }, Himalaya.config.diretorio)
             Utils.notify('Himalaya: adicionar senha de e-mail no arquivo config.toml!')
         end
