@@ -1155,6 +1155,7 @@ Comunicacao.nova = function(self, opts)
         vim.cmd.substitute({("/Ocorrencia{}/Ocorrencia{%s}/I"):format(ocorrencia), range = range})
         vim.cmd.substitute({("/Cabecalho{}{[A-Z-]\\{-}}/Cabecalho{%s}{%s}/I"):format(num_ci, setor), range = range})
     end
+    vim.bo.textwidth = 80
 end
 
 ---@return table
