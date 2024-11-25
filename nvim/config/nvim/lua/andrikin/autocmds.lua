@@ -349,7 +349,8 @@ autocmd(
 		callback = function(ev)
             local opts = { silent = true, buffer = ev.buf }
             local open = vim.ui.open or function(arquivo)
-                vim.cmd('!' .. vim.fn.shellescape(arquivo))
+                -- If {cmd} is a String it runs in the 'shell'
+                vim.fn.jobstart(vim.fn.shellescape(arquivo), {detach = true})
             end
             vim.keymap.set('n', 'go', function()
                 local linha = vim.fn.getline('.')
