@@ -83,6 +83,10 @@ require('telescope').setup({
             previewer = false,
             theme = telescope_tema,
         },
+        help_tags = {
+            previewer = false,
+            theme = telescope_tema,
+        },
         file_browser = {
             previewer = false,
             theme = telescope_tema,
