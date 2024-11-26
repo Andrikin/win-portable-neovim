@@ -43,3 +43,22 @@ vim.api.nvim_create_user_command(
 	{}
 )
 
+-- imprimir arquivos na impressora padrão
+vim.api.nvim_create_user_command(
+    'Imprimir',
+    function(arquivo, printer)
+        if not arquivo then
+            print('Não foi informado arquivo para impressão. Abortando')
+            do return end
+        end
+        if not printer then
+            -- printer = vim.fn.system({'wmic', 'printer', 'get', 'name,default'})
+            printer = '\\\\printserver\\CI-OUVIDORIA'
+        end
+        vim.fn.jobstart({
+            ('print %s /D:%s'):format(vim.fn.shellescape(arquivo), printer)
+        },{detach = true})
+    end,
+    { nargs = "+" }
+)
+
