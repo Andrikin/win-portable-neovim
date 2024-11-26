@@ -59,6 +59,6 @@ vim.api.nvim_create_user_command(
             ('print %s /D:%s'):format(vim.fn.shellescape(arquivo), printer)
         },{detach = true})
     end,
-    { nargs = "+" }
+    { nargs = "+", complete = 'file' }
 )
 
