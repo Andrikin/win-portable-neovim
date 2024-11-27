@@ -47,7 +47,9 @@ command(
 -- imprimir arquivos na impressora padrão
 command(
     'Imprimir',
-    function(arquivo, printer)
+    function(opts)
+        local arquivo = opts.fargs[1]
+        local printer = opts.fargs[2]
         if not arquivo then
             print('Não foi informado arquivo para impressão. Abortando')
             do return end
@@ -56,9 +58,9 @@ command(
             -- printer = vim.fn.system({'wmic', 'printer', 'get', 'name,default'})
             printer = '\\\\printserver\\CI-OUVIDORIA'
         end
-        vim.fn.jobstart({
-            ('print %s /D:%s'):format(vim.fn.shellescape(arquivo), printer)
-        },{detach = true})
+        vim.fn.jobstart(
+            ('print %s /D:%s'):format(vim.fn.shellescape(arquivo), printer),
+        {detach = true})
     end,
     { nargs = "+", complete = 'file' }
 )
