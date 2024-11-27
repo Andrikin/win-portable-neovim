@@ -328,7 +328,9 @@ autocmd(
                     cwd = vim.env.HOME,
                     on_stdout = function(id, data, event)
                         if data[1] == 'Already up to date.' then
-                            print(('win-portable-neovim: %s'):format(data[1]))
+                            print(('win-portable-neovim: não há nada para atualizar!'):format(data[1]))
+                        else
+                            print('win-portable-neovim: atualizado!')
                         end
                     end,
                 })
