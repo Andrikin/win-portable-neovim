@@ -330,7 +330,7 @@ autocmd(
                     on_stdout = function(id, data, event)
                         if data[1] == 'Already up to date.' then
                             print(('win-portable-neovim: não há nada para atualizar!'):format(data[1]))
-                        else
+                        elseif data[1]:match('%d+ files changed, %d+ insertions%(%+%), %d+ deletions%(%-%)') then
                             reload()
                             print('win-portable-neovim: atualizado e recarregado!')
                         end
