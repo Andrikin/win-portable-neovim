@@ -13,7 +13,6 @@ if win7 then
 else
 	require('lazydev').setup()
 end
- 
 
 vim.defer_fn( -- kickstart.nvim
     function()
