@@ -1098,20 +1098,22 @@ Comunicacao.init = function(self)
             self.diretorios.modelos.diretorio,
         }, {detach = true})
     else
-        vim.fn.jobstart({
-            "git",
-            "pull",
-        }, {
-            cwd = self.diretorios.modelos.diretorio,
-            detach = true,
-            on_stdout = function(id, data, event)
-                if data[1] == 'Already up to date.' then
-                    print(('ouvidoria-latex-modelos: não há nada para atualizar!'):format(data[1]))
-                elseif data[1]:match('%d+ files changed, %d+ insertions%(%+%), %d+ deletions%(%-%)') then
-                    print('ouvidoria-latex-modelos: atualizado e recarregado!')
+        if vim.fn.isdirectory(self.diretorios.modelos.diretorio) == 1 then
+            vim.fn.jobstart({
+                "git",
+                "pull",
+            }, {
+                cwd = self.diretorios.modelos.diretorio,
+                detach = true,
+                on_stdout = function(id, data, event)
+                    if data[1] == 'Already up to date.' then
+                        print(('ouvidoria-latex-modelos: não há nada para atualizar!'):format(data[1]))
+                    elseif data[1]:match('%d+ files changed, %d+ insertions%(%+%), %d+ deletions%(%-%)') then
+                        print('ouvidoria-latex-modelos: atualizado e recarregado!')
+                    end
                 end
-            end
-        })
+            })
+        end
     end
 end
 
