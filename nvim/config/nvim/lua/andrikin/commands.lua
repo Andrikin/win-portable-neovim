@@ -1,14 +1,15 @@
 -- CUSTOM COMMANDS
 
+local command = require('andrikin.utils').command
 local Ouvidoria = require('andrikin.utils').Ouvidoria -- executar bootstrap
 
-vim.api.nvim_create_user_command(
+command(
 	'HexEditor',
 	'%!xxd',
 	{}
 )
 
-vim.api.nvim_create_user_command(
+command(
 	'OuvidoriaCompilar',
     function()
         Ouvidoria.latex:compilar()
@@ -16,7 +17,7 @@ vim.api.nvim_create_user_command(
 	{}
 )
 
-vim.api.nvim_create_user_command(
+command(
 	'Ouvidoria',
     function(opts)
         Ouvidoria.ci:nova(opts)
@@ -27,7 +28,7 @@ vim.api.nvim_create_user_command(
 	}
 )
 
-vim.api.nvim_create_user_command(
+command(
 	'Projetos',
 	function()
 		vim.cmd.Dirvish(Ouvidoria.ci.diretorios.projetos.diretorio)
@@ -35,7 +36,7 @@ vim.api.nvim_create_user_command(
 	{}
 )
 
-vim.api.nvim_create_user_command(
+command(
 	'SysinitEdit',
 	function()
 		vim.cmd.edit('$VIM/sysinit.vim')
@@ -44,7 +45,7 @@ vim.api.nvim_create_user_command(
 )
 
 -- imprimir arquivos na impressora padrão
-vim.api.nvim_create_user_command(
+command(
     'Imprimir',
     function(arquivo, printer)
         if not arquivo then
@@ -60,5 +61,11 @@ vim.api.nvim_create_user_command(
         },{detach = true})
     end,
     { nargs = "+", complete = 'file' }
+)
+
+command(
+	'Reload',
+    require('andrikin.utils').reload,
+	{}
 )
 

@@ -81,6 +81,8 @@ Utils.reload = function()
     require('andrikin')
 end
 
+Utils.command = vim.api.nvim_create_user_command
+
 Utils.autocmd = vim.api.nvim_create_autocmd
 
 Utils.Andrikin = vim.api.nvim_create_augroup('Andrikin', {clear = true})
