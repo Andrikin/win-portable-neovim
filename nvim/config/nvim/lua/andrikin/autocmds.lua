@@ -3,6 +3,7 @@ local autocmd = require('andrikin.utils').autocmd
 local Andrikin = require('andrikin.utils').Andrikin
 local Ouvidoria = require('andrikin.utils').Ouvidoria
 local cursorline = require('andrikin.utils').cursorline
+local reload = require('andrikin.utils').reload
 local win7 = require('andrikin.utils').win7
 
 -- BufWritePost: compilar tex para gerar pdf assim que salvar o arquivo
@@ -330,7 +331,8 @@ autocmd(
                         if data[1] == 'Already up to date.' then
                             print(('win-portable-neovim: não há nada para atualizar!'):format(data[1]))
                         else
-                            print('win-portable-neovim: atualizado!')
+                            reload()
+                            print('win-portable-neovim: atualizado e recarregado!')
                         end
                     end,
                 })
