@@ -1091,12 +1091,12 @@ Comunicacao.init = function(self)
     local has_diretorio_projetos = vim.fn.isdirectory(self.diretorios.projetos.diretorio) == 1
     local has_diretorio_ssh = vim.fn.isdirectory(Ssh.destino.diretorio) == 1
     if has_diretorio_projetos and has_diretorio_ssh then
-        vim.fn.system({
+        vim.fn.jobstart({
             "git",
             "clone",
             "git@github.com:Andrikin/ouvidoria-latex-modelos",
             self.diretorios.modelos.diretorio,
-        })
+        }, {detach = true})
     else
         if not has_diretorio_ssh then
             Utils.notify("Git: não foi encontrado o diretório '.ssh'")
