@@ -1,9 +1,11 @@
 -- Autocmds goosebumps
 local autocmd = vim.api.nvim_create_autocmd
+local termcode = vim.api.nvim_replace_termcodes
+local feedkey = vim.api.nvim_feedkeys
+local reload = require('andrikin.utils').reload
 local Andrikin = require('andrikin.utils').Andrikin
 local Ouvidoria = require('andrikin.utils').Ouvidoria
 local cursorline = require('andrikin.utils').cursorline
-local reload = require('andrikin.utils').reload
 local win7 = require('andrikin.utils').win7
 
 -- BufWritePost: compilar tex para gerar pdf assim que salvar o arquivo
@@ -134,11 +136,7 @@ autocmd(
 		group = Andrikin,
 		pattern = '*',
 		callback = function()
-			require('cmp').setup(
-				{
-					enabled = false
-				}
-			)
+			require('cmp').setup({ enabled = false })
 		end,
 	}
 )
@@ -216,15 +214,13 @@ autocmd(
                 end)
                 vim.keymap.set("i", "<cr>", function() -- insert word and skip from INSERT MODE
                     cmp.confirm({select = false})
-                    local esc = vim.api.nvim_replace_termcodes("<esc>", true, false, true)
-                    vim.api.nvim_feedkeys(esc, 'n', false)
+                    feedkey(termcode("<esc>", true, false, true), 'n', false)
                 end)
 				vim.keymap.set("i", "<c-j>", function()
 					if cmp.visible() then
 						cmp.confirm({select = true})
 					else
-						local enter = vim.api.nvim_replace_termcodes("<c-j>", true, false, true)
-						vim.api.nvim_feedkeys(enter, 'n', false)
+						feedkey(termcode("<c-j>", true, false, true), 'n', false)
 					end
 				end)
                 vim.keymap.set("i", "<c-e>", function()
