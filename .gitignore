@@ -301,3 +301,4 @@ nvim/bin/
 nvim/opt
 nvim/deps/
 nvim/lib/
+nvim/config/nvim/.luarc.json
