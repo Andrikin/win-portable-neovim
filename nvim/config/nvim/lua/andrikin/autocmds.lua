@@ -219,6 +219,14 @@ autocmd(
                     local esc = vim.api.nvim_replace_termcodes("<esc>", true, false, true)
                     vim.api.nvim_feedkeys(esc, 'n', false)
                 end)
+				vim.keymap.set("i", "<c-j>", function()
+					if cmp.visible() then
+						cmp.confirm({select = true})
+					else
+						local enter = vim.api.nvim_replace_termcodes("<c-j>", true, false, true)
+						vim.api.nvim_feedkeys(enter, 'n', false)
+					end
+				end)
                 vim.keymap.set("i", "<c-e>", function()
                     cmp.abort()
                 end)
