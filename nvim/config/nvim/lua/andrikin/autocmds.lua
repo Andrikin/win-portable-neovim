@@ -1,5 +1,5 @@
 -- Autocmds goosebumps
-local autocmd = require('andrikin.utils').autocmd
+local autocmd = vim.api.nvim_create_autocmd
 local Andrikin = require('andrikin.utils').Andrikin
 local Ouvidoria = require('andrikin.utils').Ouvidoria
 local cursorline = require('andrikin.utils').cursorline

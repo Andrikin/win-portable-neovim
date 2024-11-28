@@ -1,6 +1,6 @@
 -- CUSTOM COMMANDS
 
-local command = require('andrikin.utils').command
+local command = vim.api.nvim_create_user_command
 local Ouvidoria = require('andrikin.utils').Ouvidoria -- executar bootstrap
 
 command(
