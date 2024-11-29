@@ -1078,6 +1078,21 @@ Comunicacao.init = function(self)
     local has_git = vim.fn.executable('git') == 1
     if has_diretorio_modelos then
         Utils.notify('Comunicacao: init: projeto com os modelos de LaTeX já está baixado!')
+        -- atualizar repositório
+        vim.fn.jobstart({
+            "git",
+            "pull",
+        }, {
+            cwd = self.diretorios.modelos.diretorio,
+            detach = true,
+            on_stdout = function(id, data, event)
+                if data[1] == 'Already up to date.' then
+                    print(('ouvidoria-latex-modelos: não há nada para atualizar!'):format(data[1]))
+                elseif data[1]:match('^Updating') then
+                    print('ouvidoria-latex-modelos: atualizado e recarregado!')
+                end
+            end
+        })
         do return end
     end
     if not has_git then
@@ -1093,23 +1108,7 @@ Comunicacao.init = function(self)
             "git@github.com:Andrikin/ouvidoria-latex-modelos",
             self.diretorios.modelos.diretorio,
         }, {detach = true})
-    else
-        if vim.fn.isdirectory(self.diretorios.modelos.diretorio) == 1 then
-            vim.fn.jobstart({
-                "git",
-                "pull",
-            }, {
-                cwd = self.diretorios.modelos.diretorio,
-                detach = true,
-                on_stdout = function(id, data, event)
-                    if data[1] == 'Already up to date.' then
-                        print(('ouvidoria-latex-modelos: não há nada para atualizar!'):format(data[1]))
-                    elseif data[1]:match('%d+ files changed, %d+ insertions%(%+%), %d+ deletions%(%-%)') then
-                        print('ouvidoria-latex-modelos: atualizado e recarregado!')
-                    end
-                end
-            })
-        end
+        Utils.notify('Comunicacao: init: repositório ouvidoria-latex-modelos instalado!')
     end
 end
 
