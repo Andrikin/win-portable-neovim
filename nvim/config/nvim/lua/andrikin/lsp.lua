@@ -203,16 +203,19 @@ local servers = {
             settings = {
                 Lua = {
                     runtime = {
-                        version = 'LuaJIT'
+                        version = 'LuaJIT',
                     },
                     diagnostics = {
                         globals = {
                             'vim',
                             'require',
                         }
-                    }
-                }
-            }
+                    },
+                    workspace = {
+                        library = vim.api.nvim_get_runtime_file("", true),
+                    },
+                },
+            },
         },
     }, -- lua LSP
     'luau_lsp', -- luau LSP

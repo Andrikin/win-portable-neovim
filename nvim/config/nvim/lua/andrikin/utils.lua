@@ -110,6 +110,7 @@ local Job = {}
 Job.__index = Job
 
 ---@param opts table
+---@return Job
 Job.new = function(opts)
     local job = {}
     opts = opts or {}
@@ -133,7 +134,6 @@ Job.new = function(opts)
 end
 
 ---@param cmd table
----@param opts table
 Job.start = function(self, cmd)
     local id = 0
     id = vim.fn.jobstart(cmd, self)
@@ -213,7 +213,7 @@ end
 -- FIX: verificar se arquivo baixado existe, antes 
 -- de extraí-lo
 Programa.baixar = function(self)
-    local arquivo = tostring(self:diretorio() / self:nome_arquivo())
+    -- local arquivo = tostring(self:diretorio() / self:nome_arquivo())
 	local diretorio = tostring(self:diretorio())
     local job = Job.new()
     job.on_exit = function()
@@ -384,13 +384,14 @@ end
 ---@private
 ---@param str string
 ---@return string
+---@return _
 Diretorio._sanitize = function(str)
     vim.validate({ str = {str, 'string'} })
     return vim.fs.normalize(str):gsub('//+', '/')
 end
 
 ---@param dir Diretorio | string
----@return valido boolean
+---@return boolean
 Diretorio.validate = function(dir)
     local isdirectory = function(d)
         return vim.fn.isdirectory(d) == 1
@@ -406,7 +407,6 @@ Diretorio.validate = function(dir)
     return valido
 end
 
----@private
 ---@return Diretorio
 --- Realiza busca nas duas direções pelo 
 Diretorio.buscar = function(dir, start)
@@ -1087,13 +1087,13 @@ Comunicacao.init = function(self)
                 }, {
                     cwd = self.diretorios.modelos.diretorio,
                     detach = true,
-                    on_stdout = function(id, data, event)
+                    on_stdout = function(_, data, _)
                         if data[1] == 'Already up to date.' then
-                            print(('ouvidoria-latex-modelos: não há nada para atualizar!'):format(data[1]))
+                            print('ouvidoria-latex-modelos: não há nada para atualizar!')
                         elseif data[1]:match('^Updating') then
                             print('ouvidoria-latex-modelos: atualizado e recarregado!')
                         end
-                    end
+                    end,
                 })
             end,
         3000)
@@ -1150,7 +1150,7 @@ Comunicacao.nova = function(self, opts)
 	if num_ci == '' or setor == '' then -- obrigatório informar os dados de C.I. e setor
 		error('Ouvidoria.latex: compilar: não foram informados os dados ou algum deles [C.I., setor]')
 	end
-    ocorrencia  = ocorrencia ~= '' and ocorrencia or 'OCORRENCIA' 
+    ocorrencia  = ocorrencia ~= '' and ocorrencia or 'OCORRENCIA'
 	local titulo = ocorrencia .. '-' .. setor
 	if tipo:match('sipe.lai') then
 		titulo = ('LAI-%s.tex'):format(titulo)
@@ -1195,6 +1195,8 @@ Comunicacao.tab = function(self, args)-- completion
 end
 
 ---@class Ouvidoria
+---@field ci Comunicacao
+---@field latex Latex
 local Ouvidoria = {}
 
 Ouvidoria.__index = Ouvidoria

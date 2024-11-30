@@ -136,8 +136,8 @@ local programas = {
 			end
             if not vim.g.node_host_prog or vim.g.node_host_prog == '' then
                 local node_neovim = (Diretorio.new()).buscar({
-                    'node_modules', 
-                    'neovim', 
+                    'node_modules',
+                    'neovim',
                     'bin'
                 }, Opt.diretorio)
                 if node_neovim then

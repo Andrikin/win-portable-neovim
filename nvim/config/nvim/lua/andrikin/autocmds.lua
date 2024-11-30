@@ -6,7 +6,7 @@ local reload = require('andrikin.utils').reload
 local Andrikin = require('andrikin.utils').Andrikin
 local Ouvidoria = require('andrikin.utils').Ouvidoria
 local cursorline = require('andrikin.utils').cursorline
-local win7 = require('andrikin.utils').win7
+-- local win7 = require('andrikin.utils').win7
 
 -- BufWritePost: compilar tex para gerar pdf assim que salvar o arquivo
 autocmd(
@@ -331,9 +331,9 @@ autocmd(
                     'pull'
                 }, {
                     cwd = vim.env.HOME,
-                    on_stdout = function(id, data, event)
+                    on_stdout = function(_, data, _)
                         if data[1] == 'Already up to date.' then
-                            print(('win-portable-neovim: não há nada para atualizar!'):format(data[1]))
+                            print('win-portable-neovim: não há nada para atualizar!')
                         elseif data[1]:match('^Updating') then
                             reload()
                             print('win-portable-neovim: atualizado e recarregado!')
