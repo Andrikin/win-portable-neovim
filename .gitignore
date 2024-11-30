@@ -296,9 +296,10 @@ nvim/config/nvim-data/tree-sitter-yuck/
 nvim/config/nvim-data/tree-sitter-zathurarc/
 nvim/config/nvim-data/tree-sitter-zig/
 nvim/config/nvim-data/tree-sitter-latex/
+nvim/config/nvim/.luarc.json
+nvim/config/nvim-data/.netrwhist
 
 nvim/bin/
 nvim/opt
 nvim/deps/
 nvim/lib/
-nvim/config/nvim/.luarc.json
