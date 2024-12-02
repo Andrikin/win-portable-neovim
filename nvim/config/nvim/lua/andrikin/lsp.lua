@@ -1,7 +1,6 @@
 -- Configuração de LSP servers
 
 local win7 = require('andrikin.utils').win7
-
 local notify = require('andrikin.utils').notify
 
 -- colorizer.lua
@@ -192,7 +191,7 @@ local servers = {
     'pyright', -- python LSP
     'denols', -- javascript LSP
     'texlab', -- LaTeX LSP
-    'jdtls', -- java LSP
+    -- 'jdtls', -- java LSP
     'vimls', -- vim LSP
     'html', -- html LSP
     'jsonls', -- json LSP
