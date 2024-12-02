@@ -59,6 +59,19 @@ autocmd(
 	}
 )
 
+-- Habilitar Jdtls
+autocmd(
+	'FileType',
+	{
+		group = Andrikin,
+		pattern = 'java',
+        once = true,
+		callback = function()
+            vim.cmd.Lazy('load nvim-jdtls')
+        end,
+	}
+)
+
 -- 'gq' para fechar Undotree window
 autocmd(
 	'FileType',
