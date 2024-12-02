@@ -228,7 +228,7 @@ if win7 then
     vim.keymap.set("n", "[e", diagnostic(false, "ERROR"), { desc = 'Erro Anterior' })
     vim.keymap.set("n", "]w", diagnostic(true, "WARN"), { desc = 'Próximo Alerta' })
     vim.keymap.set("n", "[w", diagnostic(false, "WARN"), { desc = 'Alerta Anterior' })
-    vim.keymap.set('n', '<leader>e', vim.diagnostic.open_float, { desc = 'Abrir erro no cursor'}) -- default neovim <c-w>d
-    vim.keymap.set('n', '<leader>d', vim.diagnostic.setloclist, { desc = 'Abrir lista de diagnósticos' })
+    vim.keymap.set('n', '<c-w>d', vim.diagnostic.open_float, { desc = 'Abrir erro no cursor'}) -- default neovim <c-w>d
+    vim.keymap.set('n', '<c-w>e', vim.diagnostic.setloclist, { desc = 'Abrir lista de diagnósticos' })
 end
 
