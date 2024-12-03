@@ -134,6 +134,7 @@ vim.diagnostic.config({
 
 -- Removendo providers: Perl
 vim.g.loaded_perl_provider = 0
+vim.g.loaded_ruby_provider = 0
 
 -- Himalaya template para utilizar com pandoc e gerar e-mails em html
 vim.g.himalaya_pandoc_template_email = vim.loop.os_homedir() .. '/Downloads/himalaya/template'
