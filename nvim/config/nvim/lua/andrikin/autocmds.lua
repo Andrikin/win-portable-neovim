@@ -403,3 +403,28 @@ autocmd(
 		end,
 	}
 )
+
+-- Dirvish mappings
+-- remover backslash, se houver
+autocmd(
+	'FileType',
+	{
+		group = Andrikin,
+		pattern = 'dirvish',
+		callback = function(ev)
+            local opts = { expr = true, buffer = ev.buf }
+            vim.keymap.set('n', '.', function()
+                local cmd = ':<c-u>! '
+                if vim.fn.empty(vim.fn.fnamemodify(vim.fn.getline("."), ":.")) == 1 then
+                    cmd = cmd .. '.'
+                else
+                    cmd = cmd .. vim.fn.shellescape(vim.fn.fnamemodify(vim.fn.getline("."), ":.:s?\\/?\\?"):gsub('\\$', ''), 1)
+                end
+                -- finalizando map
+                cmd = cmd .. '<home><c-right>'
+                return cmd
+            end, opts)
+		end,
+	}
+)
+
