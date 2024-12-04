@@ -416,7 +416,7 @@ autocmd(
             vim.keymap.set('n', '.', function()
                 local cmd = ':<c-u>! '
                 if vim.fn.empty(vim.fn.fnamemodify(vim.fn.getline("."), ":.")) == 1 then
-                    cmd = cmd .. '.'
+                    cmd = cmd .. '%:gs?\\/?\\?\\'
                 else
                     cmd = cmd .. vim.fn.shellescape(vim.fn.fnamemodify(vim.fn.getline("."), ":.:s?\\/?\\?"):gsub('\\$', ''), 1)
                 end
