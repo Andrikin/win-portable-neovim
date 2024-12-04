@@ -435,7 +435,7 @@ autocmd(
                     print('dirvish: não foi encontrado arquivo para abrir')
                     do return end
                 end
-            end, opts)
+            end, {silent = true, buffer = ev.buf})
 		end,
 	}
 )
