@@ -418,11 +418,23 @@ autocmd(
                 if vim.fn.empty(vim.fn.fnamemodify(vim.fn.getline("."), ":.")) == 1 then
                     cmd = cmd .. '%:gs?\\/?\\?\\'
                 else
-                    cmd = cmd .. vim.fn.shellescape(vim.fn.fnamemodify(vim.fn.getline("."), ":.:s?\\/?\\?"):gsub('\\$', ''), 1)
+                    cmd = cmd .. vim.fn.shellescape(vim.fn.getline('.'):gsub('\\/', '\\'):gsub('\\$', ''), 1)
                 end
                 -- finalizando map
                 cmd = cmd .. '<home><c-right>'
                 return cmd
+            end, opts)
+            vim.keymap.set('n', 'go', function()
+                local arquivo = vim.fn.getline('.'):gsub('\\', '\\/'):gsub('\\/$', ''):gsub('\\$', '')
+                if vim.fn.fnamemodify(arquivo, ':e') ~= '' and vim.fn.isdirectory(arquivo) == 0 then
+                    vim.fn.jobstart(
+                        vim.fn.shellescape(arquivo, 1),
+                        {detach = true}
+                    )
+                else
+                    print('dirvish: não foi encontrado arquivo para abrir')
+                    do return end
+                end
             end, opts)
 		end,
 	}
