@@ -88,8 +88,22 @@ vim.keymap.set('n', 'gY', '"+Y')
 vim.keymap.set('n', ']b', vim.cmd.bnext, {desc = 'Next buffer'})
 vim.keymap.set('n', '[b', vim.cmd.bprevious, {desc = 'Previous buffer'})
 -- For arglist
-vim.keymap.set('n', ']a', vim.cmd.next, {desc = 'Next arglist file'})
-vim.keymap.set('n', '[a', vim.cmd.Next, {desc = 'Previous arglist file'})
+vim.keymap.set('n', ']a', function()
+    local ok, erro = pcall(vim.cmd.next)
+    if not ok then
+        if erro:match('Vim:E165:') then
+            vim.cmd.previous({range = {vim.fn.argc() - 1 }})
+        end
+    end
+end, {desc = 'Next arglist file'})
+vim.keymap.set('n', '[a', function()
+    local ok, erro = pcall(vim.cmd.previous)
+    if not ok then
+        if erro:match('Vim:E164:') then
+            vim.cmd.next({range = {vim.fn.argc() - 1 }})
+        end
+    end
+end, {desc = 'Previous arglist file'})
 
 -- --- Mapleader Commands ---
 
