@@ -212,7 +212,7 @@ autocmd(
                     elseif not cmp.complete() then
                         fallback()
                     end
-                end)
+                end, opts)
                 vim.keymap.set("i", "<c-p>", function(fallback)
                     if cmp.visible() then
                         cmp.select_prev_item({behavior = cmp.SelectBehavior.Select})
@@ -221,24 +221,24 @@ autocmd(
                     elseif not cmp.complete() then
                         fallback()
                     end
-                end)
+                end, opts)
                 vim.keymap.set("i", "<c-y>", function()
                     cmp.confirm({select = false})
-                end)
+                end, opts)
                 vim.keymap.set("i", "<cr>", function() -- insert word and skip from INSERT MODE
                     cmp.confirm({select = false})
                     feedkey(termcode("<esc>", true, false, true), 'n', false)
-                end)
+                end, opts)
 				vim.keymap.set("i", "<c-j>", function()
 					if cmp.visible() then
 						cmp.confirm({select = true})
 					else
 						feedkey(termcode("<c-j>", true, false, true), 'n', false)
 					end
-				end)
+				end, opts)
                 vim.keymap.set("i", "<c-e>", function()
                     cmp.abort()
-                end)
+                end, opts)
             end
         end
 	}
