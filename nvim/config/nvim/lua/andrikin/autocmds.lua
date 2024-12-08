@@ -1,3 +1,4 @@
+-- TODO: mover opções de filetype para diretório ftplugin
 -- Autocmds goosebumps
 local autocmd = vim.api.nvim_create_autocmd
 local termcode = vim.api.nvim_replace_termcodes
