@@ -4,21 +4,8 @@ local termcode = vim.api.nvim_replace_termcodes
 local feedkey = vim.api.nvim_feedkeys
 local reload = require('andrikin.utils').reload
 local Andrikin = require('andrikin.utils').Andrikin
-local Ouvidoria = require('andrikin.utils').Ouvidoria
 local cursorline = require('andrikin.utils').cursorline
 -- local win7 = require('andrikin.utils').win7
-
--- BufWritePost: compilar tex para gerar pdf assim que salvar o arquivo
-autocmd(
-    'BufWritePost',
-    {
-        group = Andrikin,
-        pattern = '*.tex',
-        callback = function()
-            Ouvidoria.latex:compilar()
-        end,
-    }
-)
 
 -- Highlight linha quando entrar em INSERT MODE
 autocmd(
