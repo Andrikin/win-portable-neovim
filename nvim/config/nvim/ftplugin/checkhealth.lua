@@ -1,4 +1,4 @@
-if not vim.b.did_help then
+if not vim.b.did_checkhealth then
     vim.keymap.set('n', 'gq', function()
         local id = vim.fn.gettabinfo(vim.fn.tabpagenr())[1].windows[1]
         vim.cmd.quit()
@@ -8,6 +8,5 @@ if not vim.b.did_help then
     end,
     { silent = true, buffer = vim.api.nvim_get_current_buf()}
     )
-    vim.b.did_help = true
+    vim.b.did_checkhealth = true
 end
-vim.treesitter.start()
