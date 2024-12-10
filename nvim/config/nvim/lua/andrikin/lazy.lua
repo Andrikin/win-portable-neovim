@@ -171,7 +171,7 @@ local plugins = {
 		},
 	},
 	-- Treesitter,
-	'https://github.com/nvim-treesitter/nvim-treesitter.git',
+	{'https://github.com/nvim-treesitter/nvim-treesitter.git', cmd = 'TSUpdate'},
 	{
 		'https://github.com/nvim-treesitter/playground.git',
 		lazy = true,
