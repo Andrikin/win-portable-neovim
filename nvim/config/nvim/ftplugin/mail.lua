@@ -31,6 +31,7 @@ if not vim.b.did_mail then
             range = {5, vim.fn.line('$')},
         })
     end, opts)
+    vim.bo.textwidth = 80
     vim.b.did_mail = true
 end
 
