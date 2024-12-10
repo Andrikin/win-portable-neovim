@@ -16,8 +16,24 @@ if not vim.b.did_mail then
             open(arquivo)
         end
     end, opts)
+    -- precisa ter os templates no diretório, configurados
     vim.keymap.set('n', 'gm', function()
+        local inicio = 5
         local conta = vim.fn['himalaya#domain#account#current']()
+        local txt = vim.api.nvim_buf_get_lines(
+            vim.api.nvim_get_current_buf(),
+            0, vim.fn.line('$'),
+            false
+        ) or {}
+        -- obter início do e-mail
+        if type(txt) == 'table' then
+            for i, v in ipairs(txt) do
+                if v == '' then
+                    inicio = i + 1
+                    break
+                end
+            end
+        end
         if conta == '' then
             conta = 'ouvidoria'
         end
@@ -28,10 +44,9 @@ if not vim.b.did_mail then
         end
         vim.cmd['!']({
             'pandoc --template ' .. template .. ' -t html',
-            range = {5, vim.fn.line('$')},
+            range = {inicio, vim.fn.line('$')},
         })
     end, opts)
     vim.bo.textwidth = 80
     vim.b.did_mail = true
 end
-
