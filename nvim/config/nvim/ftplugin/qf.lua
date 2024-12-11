@@ -1,4 +1,5 @@
 if not vim.b.did_qf then
+    local cursorline = require('andrikin.utils').cursorline
     local buf = vim.api.nvim_get_current_buf()
     local qf = vim.fn.getwininfo(vim.fn.bufwinid(buf))[1]
     local mover = {
