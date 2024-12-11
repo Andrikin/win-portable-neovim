@@ -22,7 +22,10 @@
 -- Java: https://services.gradle.org/distributions/gradle-8.10.2-bin.zip
 -- Jdtls: https://www.eclipse.org/downloads/download.php?file=/jdtls/snapshots/jdt-language-server-latest.tar.gz
 -- Maven: https://dlcdn.apache.org/maven/maven-3/3.9.6/binaries/apache-maven-3.9.6-bin.zip
+-- sqlite: https://www.sqlite.org/2024/sqlite-tools-win-x64-3460000.zip
 -- Himalaya: https://github.com/pimalaya/himalaya/releases/download/v1.0.0-beta.4/himalaya.x86_64-windows.zip -- e-mail cli
+-- fzf: https://github.com/junegunn/fzf/releases/download/v0.56.3/fzf-0.56.3-windows_amd64.zip
+-- pandoc: https://github.com/jgm/pandoc/releases/download/3.5/pandoc-3.5-windows-x86_64.zip
 -- rust: TODO
 
 -- LSPs:
