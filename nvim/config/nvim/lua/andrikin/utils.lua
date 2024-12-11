@@ -1283,5 +1283,124 @@ end
 
 Utils.Himalaya = Himalaya
 
+---@class Cygwin
+---@field init function
+---@field existe boolean
+---@field diretorio Diretorio
+---@field instalador string
+---@field comando function
+local Cygwin = {}
+
+Cygwin.diretorio = (Utils.Opt / 'cygwin')
+
+Cygwin.existe = vim.fn.isdirectory(Cygwin.diretorio / 'bin') == 1
+
+Cygwin.init = function(self)
+    if self.existe then
+        Utils.notify('cygwin: já instalado. Para mais pacotes, instalar manualmente.')
+        do return end
+    end
+    local ok, executavel = pcall(vim.fn.glob, (self.diretorio / '*.exe').diretorio)
+    if not ok then
+        Utils.notify('cygwin: não foi encontrado executável. Abortando configuração.')
+        do return end
+    else
+        self.instalador = executavel
+        ok, _ = vim.fn.jobstart({
+            self.instalador,
+            '--quiet-mode',
+            '--no-admin',
+            '--download',
+            '--local-install',
+            '--local-package-dir',
+            (self.diretorio / 'packages').diretorio,
+            '--no-verify',
+            '--no-desktop',
+            '--no-shortcuts',
+            '--no-startmenu',
+            '--no-version-check',
+            '--no-warn-deprecated-windows',
+            '--root',
+            self.diretorio.diretorio,
+            '--only-site',
+            '--site',
+            'https://linorg.usp.br/cygwin/',
+            -- '--packages',
+            -- vim.fn.join({
+            -- },','),
+        },{
+            detach = true,
+            cwd = self.diretorio.diretorio,
+        })
+        if ok then
+            Utils.notify('cygwin: instalado com sucesso!')
+        else
+            Utils.notify('cygwin: algo aconteceu durante a instalação.')
+            Utils.notify('erro: ' .. _)
+        end
+    end
+end
+
+-- TODO: criar comando para gerenciar pacotes do
+-- cygwin
+Cygwin.comando = function(self, ...)
+    local args = {...}
+    local islist = vim.islist or vim.tbl_islist
+    if not islist(args) then
+        Utils.notify('cygwin: instalador: valores padrão encontrados no comando. Abortando.')
+        do return end
+    end
+    local cmd = {
+        self.instalador,
+        '--quiet-mode',
+        '--no-admin',
+        '--download',
+        '--local-package-dir',
+        (self.diretorio / 'packages').diretorio,
+        '--no-desktop',
+        '--no-shortcuts',
+        '--no-startmenu',
+        '--no-warn-deprecated-windows',
+        '--root',
+        self.diretorio.diretorio,
+        '--only-site',
+        '--site',
+        'https://linorg.usp.br/cygwin/',
+    }
+    if args[1] == 'install' then
+        table.insert(cmd, '--packages')
+    elseif args[1] == 'remove' then
+        table.insert(cmd, '--remove-packages')
+    elseif args[1] == 'update' then
+        table.insert(cmd, '--upgrade-also')
+        goto executar
+    end
+    for i=2,#args do
+        table.insert(cmd, args[i])
+    end
+    ::executar::
+    local ok, _ = pcall(vim.fn.jobstart, cmd,{
+        detach=true, cwd=self.diretorio.diretorio,
+        on_stdout = function(_, data, _)
+            for _, d in ipairs(data) do
+                if d ~= '' then
+                    print(d)
+                end
+            end
+        end,
+    })
+    if not ok then
+        Utils.notify('cygwin: instalador: erro foi encontrado.')
+    end
+end
+
+Cygwin.complete = function(arg)
+    return vim.tbl_filter(function(c)
+        return c:match(arg)
+    end, {'install', 'remove', 'upgrade'})
+end
+
+Utils.Cygwin = Cygwin
+
 return Utils
 

@@ -26,6 +26,7 @@
 -- Himalaya: https://github.com/pimalaya/himalaya/releases/download/v1.0.0-beta.4/himalaya.x86_64-windows.zip -- e-mail cli
 -- fzf: https://github.com/junegunn/fzf/releases/download/v0.56.3/fzf-0.56.3-windows_amd64.zip
 -- pandoc: https://github.com/jgm/pandoc/releases/download/3.5/pandoc-3.5-windows-x86_64.zip
+-- cygwin: https://cygwin.com/setup-x86_64.exe -- replace w64devkit?
 -- rust: TODO
 
 -- LSPs:
@@ -322,6 +323,11 @@ local programas = {
         nome = 'pandoc',
         link = 'https://github.com/jgm/pandoc/releases/download/3.5/pandoc-3.5-windows-x86_64.zip',
         cmd = 'pandoc.exe',
+    },{
+        nome = 'cygwin',
+        link = 'https://cygwin.com/setup-x86_64.exe',
+        cmd = 'mintty.exe',
+        config = require('andrikin.utils').Cygwin.init
     }
 }
 

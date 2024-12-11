@@ -2,6 +2,7 @@
 
 local command = vim.api.nvim_create_user_command
 local Ouvidoria = require('andrikin.utils').Ouvidoria -- executar bootstrap
+local Cygwin = require('andrikin.utils').Cygwin
 
 command(
 	'HexEditor',
@@ -69,5 +70,11 @@ command(
 	'Reload',
     require('andrikin.utils').reload,
 	{}
+)
+
+command(
+	'Cygwin',
+    Cygwin.comando,
+	{nargs = '+', complete = Cygwin.complete}
 )
 
