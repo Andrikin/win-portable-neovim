@@ -1,16 +1,5 @@
 if not vim.b.did_dirvish then
     local buf = vim.api.nvim_get_current_buf()
-    vim.keymap.set('n', '.', function()
-        local cmd = ':<c-u>! '
-        if vim.fn.empty(vim.fn.getline(".")) == 1 then
-            cmd = cmd .. '%:gs?\\/?\\?\\'
-        else
-            cmd = cmd .. vim.fn.shellescape(vim.fn.getline('.'):gsub('\\/', '\\'):gsub('\\$', ''), 1)
-        end
-        -- finalizando map
-        cmd = cmd .. '<home><c-right>'
-        return cmd
-    end, { expr = true, buffer = buf })
     vim.keymap.set('n', 'go', function()
         local arquivo = vim.fn.getline('.'):gsub('\\', '\\/'):gsub('\\/$', ''):gsub('\\$', '')
         local extencao = vim.fn.fnamemodify(arquivo, ':e')
