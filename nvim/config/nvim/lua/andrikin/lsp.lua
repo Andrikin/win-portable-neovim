@@ -34,6 +34,7 @@ vim.defer_fn( -- kickstart.nvim
                 'vim', 'vimdoc',
                 'latex',
                 'comment',
+                'muttrc',
             },
             highlight = {
                 enable = true,
