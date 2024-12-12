@@ -1339,7 +1339,6 @@ Cygwin.init = function(self)
     vim.env.PATH = vim.env.PATH .. ';' .. self.bin.diretorio
 end
 
--- TODO: criar comando para gerenciar pacotes do
 -- cygwin
 Cygwin.comando = function(self, opts)
     local args = opts.fargs
@@ -1353,6 +1352,7 @@ Cygwin.comando = function(self, opts)
         '--quiet-mode',
         '--no-admin',
         '--download',
+        '--local-install',
         '--local-package-dir',
         (self.diretorio / 'packages').diretorio,
         '--no-desktop',
