@@ -1297,47 +1297,42 @@ Cygwin.bin = (Cygwin.diretorio / 'bin')
 
 Cygwin.existe = vim.fn.isdirectory(Cygwin.bin.diretorio) == 1
 
+Cygwin.instalador = vim.fn.glob((Cygwin.diretorio / '*.exe').diretorio)
+
 Cygwin.init = function(self)
-    local ok, executavel = nil, nil
+    local ok = nil
     if self.existe then
         Utils.notify('cygwin: já instalado. Para mais pacotes, instalar manualmente.')
         goto cygwin_finalizar
     end
-    ok, executavel = pcall(vim.fn.glob, (self.diretorio / '*.exe').diretorio)
-    if not ok then
-        Utils.notify('cygwin: não foi encontrado executável. Abortando configuração.')
-        do return end
+    ok, _ = vim.fn.jobstart({
+        self.instalador,
+        '--quiet-mode',
+        '--no-admin',
+        '--download',
+        '--local-install',
+        '--local-package-dir',
+        (self.diretorio / 'packages').diretorio,
+        '--no-verify',
+        '--no-desktop',
+        '--no-shortcuts',
+        '--no-startmenu',
+        '--no-version-check',
+        '--no-warn-deprecated-windows',
+        '--root',
+        self.diretorio.diretorio,
+        '--only-site',
+        '--site',
+        'https://linorg.usp.br/cygwin/',
+    },{
+        detach = true,
+        cwd = self.diretorio.diretorio,
+    })
+    if ok then
+        Utils.notify('cygwin: instalado com sucesso!')
     else
-        self.instalador = executavel
-        ok, _ = vim.fn.jobstart({
-            self.instalador,
-            '--quiet-mode',
-            '--no-admin',
-            '--download',
-            '--local-install',
-            '--local-package-dir',
-            (self.diretorio / 'packages').diretorio,
-            '--no-verify',
-            '--no-desktop',
-            '--no-shortcuts',
-            '--no-startmenu',
-            '--no-version-check',
-            '--no-warn-deprecated-windows',
-            '--root',
-            self.diretorio.diretorio,
-            '--only-site',
-            '--site',
-            'https://linorg.usp.br/cygwin/',
-        },{
-            detach = true,
-            cwd = self.diretorio.diretorio,
-        })
-        if ok then
-            Utils.notify('cygwin: instalado com sucesso!')
-        else
-            Utils.notify('cygwin: algo aconteceu durante a instalação.')
-            Utils.notify('erro: ' .. _)
-        end
+        Utils.notify('cygwin: algo aconteceu durante a instalação.')
+        Utils.notify('erro: ' .. _)
     end
     ::cygwin_finalizar::
     -- adicionar diretório bin
@@ -1346,8 +1341,8 @@ end
 
 -- TODO: criar comando para gerenciar pacotes do
 -- cygwin
-Cygwin.comando = function(self, ...)
-    local args = {...}
+Cygwin.comando = function(self, opts)
+    local args = opts.fargs
     local islist = vim.islist or vim.tbl_islist
     if not islist(args) then
         Utils.notify('cygwin: instalador: valores padrão encontrados no comando. Abortando.')
