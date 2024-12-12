@@ -3,7 +3,7 @@
 -- INFO: Lista de links para download das dependências:
 -- curl: https://curl.se/windows/latest.cgi?p=win64-mingw.zip
 -- unzip: http://linorg.usp.br/CTAN/systems/win32/w32tex/unzip.exe
--- w64devkit-compiler: https://github.com/skeeto/w64devkit/releases/download/v1.21.0/w64devkit-1.21.0.zip
+-- w64devkit-compiler: https://github.com/skeeto/w64devkit/releases/download/v1.21.0/w64devkit-1.21.0.zip -- removido em favor do cygwin
 -- git: https://github.com/git-for-windows/git/releases/download/v2.43.0.windows.1/Git-2.43.0-64-bit.tar.bz2 -- Full Version
 -- git: https://github.com/git-for-windows/git/releases/download/v2.43.0.windows.1/MinGit-2.43.0-64-bit.zip -- Minimal Version
 -- fd: https://github.com/sharkdp/fd/releases/download/v8.7.1/fd-v8.7.1-x86_64-pc-windows-gnu.zip
@@ -66,10 +66,11 @@ require('andrikin.utils'):bootstrap()
 
 local programas = {
 	{
-		nome = 'w64devkit',
-		link = 'https://github.com/skeeto/w64devkit/releases/download/v1.21.0/w64devkit-1.21.0.zip',
-		cmd = 'gcc.exe'
-	},{
+        nome = 'cygwin',
+        link = 'https://cygwin.com/setup-x86_64.exe',
+        cmd = 'setup-x86_64.exe',
+        config = function() require('andrikin.utils').Cygwin:init() end,
+    },{
 		nome = 'git',
 		link = 'https://github.com/git-for-windows/git/releases/download/v2.43.0.windows.1/MinGit-2.43.0-64-bit.zip',
 		cmd = 'git.exe'
@@ -323,12 +324,7 @@ local programas = {
         nome = 'pandoc',
         link = 'https://github.com/jgm/pandoc/releases/download/3.5/pandoc-3.5-windows-x86_64.zip',
         cmd = 'pandoc.exe',
-    },{
-        nome = 'cygwin',
-        link = 'https://cygwin.com/setup-x86_64.exe',
-        cmd = 'setup-x86_64.exe',
-        config = function() require('andrikin.utils').Cygwin:init() end,
-    }
+    },
 }
 
 Registrador.iniciar(programas)
