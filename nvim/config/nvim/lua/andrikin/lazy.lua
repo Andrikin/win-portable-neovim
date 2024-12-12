@@ -85,6 +85,9 @@ local plugins = {
 			require('lualine').setup(
 				{
 					options = { theme = tema.nome },
+                    sections = {
+						lualine_a = {'mode', 'CapsLockStatusline'},
+                    },
 					winbar = {
 						lualine_a = {},
 						lualine_b = {},
