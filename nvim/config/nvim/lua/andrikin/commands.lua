@@ -74,7 +74,7 @@ command(
 
 command(
 	'Cygwin',
-    Cygwin.comando,
+    function(opts) Cygwin:comando(opts.fargs) end,
 	{nargs = '+', complete = Cygwin.complete}
 )
 

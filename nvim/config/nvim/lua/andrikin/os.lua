@@ -326,8 +326,8 @@ local programas = {
     },{
         nome = 'cygwin',
         link = 'https://cygwin.com/setup-x86_64.exe',
-        cmd = 'mintty.exe',
-        config = require('andrikin.utils').Cygwin.init
+        cmd = 'setup-x86_64.exe',
+        config = function() require('andrikin.utils').Cygwin:init() end,
     }
 }
 

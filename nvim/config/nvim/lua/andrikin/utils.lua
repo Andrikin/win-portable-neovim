@@ -1293,14 +1293,17 @@ local Cygwin = {}
 
 Cygwin.diretorio = (Utils.Opt / 'cygwin')
 
-Cygwin.existe = vim.fn.isdirectory(Cygwin.diretorio / 'bin') == 1
+Cygwin.bin = (Cygwin.diretorio / 'bin')
+
+Cygwin.existe = vim.fn.isdirectory(Cygwin.bin.diretorio) == 1
 
 Cygwin.init = function(self)
+    local ok, executavel = nil, nil
     if self.existe then
         Utils.notify('cygwin: já instalado. Para mais pacotes, instalar manualmente.')
-        do return end
+        goto cygwin_finalizar
     end
-    local ok, executavel = pcall(vim.fn.glob, (self.diretorio / '*.exe').diretorio)
+    ok, executavel = pcall(vim.fn.glob, (self.diretorio / '*.exe').diretorio)
     if not ok then
         Utils.notify('cygwin: não foi encontrado executável. Abortando configuração.')
         do return end
@@ -1325,9 +1328,6 @@ Cygwin.init = function(self)
             '--only-site',
             '--site',
             'https://linorg.usp.br/cygwin/',
-            -- '--packages',
-            -- vim.fn.join({
-            -- },','),
         },{
             detach = true,
             cwd = self.diretorio.diretorio,
@@ -1339,6 +1339,9 @@ Cygwin.init = function(self)
             Utils.notify('erro: ' .. _)
         end
     end
+    ::cygwin_finalizar::
+    -- adicionar diretório bin
+    vim.env.PATH = vim.env.PATH .. ';' .. self.bin.diretorio
 end
 
 -- TODO: criar comando para gerenciar pacotes do
@@ -1394,7 +1397,7 @@ Cygwin.comando = function(self, ...)
     end
 end
 
-Cygwin.complete = function(arg)
+Cygwin.complete = function(arg, _, _)
     return vim.tbl_filter(function(c)
         return c:match(arg)
     end, {'install', 'remove', 'upgrade'})
