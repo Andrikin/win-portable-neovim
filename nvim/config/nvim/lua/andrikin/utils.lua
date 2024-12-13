@@ -1297,7 +1297,7 @@ Cygwin.bin = (Cygwin.diretorio / 'bin')
 
 Cygwin.existe = vim.fn.isdirectory(Cygwin.bin.diretorio) == 1
 
-Cygwin.instalador = vim.fn.glob((Cygwin.diretorio / '*.exe').diretorio)
+Cygwin.instalador = vim.fn.glob((Cygwin.diretorio / 'setup*.exe').diretorio)
 
 Cygwin.init = function(self)
     local ok = nil
