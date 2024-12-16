@@ -125,10 +125,6 @@ autocmd(
                 vim.keymap.set("i", "<c-n>", function(fallback)
                     if cmp.visible() then
                         cmp.select_next_item({behavior = cmp.SelectBehavior.Select})
-                        -- You could replace the expand_or_jumpable() calls with expand_or_locally_jumpable() 
-                        -- that way you will only jump inside the snippet region
-                    elseif luasnip.expand_or_jumpable() then
-                        luasnip.expand_or_jump()
                     elseif not cmp.complete() then
                         fallback()
                     end
@@ -136,22 +132,32 @@ autocmd(
                 vim.keymap.set("i", "<c-p>", function(fallback)
                     if cmp.visible() then
                         cmp.select_prev_item({behavior = cmp.SelectBehavior.Select})
-                    elseif luasnip.jumpable(-1) then
-                        luasnip.jump(-1)
                     elseif not cmp.complete() then
                         fallback()
                     end
                 end, opts)
                 vim.keymap.set("i", "<c-y>", function()
-                    cmp.confirm({select = false})
+                    cmp.mapping.confirm({
+                        behavior = cmp.ConfirmBehavior.Insert,
+                        select = true,
+                    })
                 end, opts)
                 vim.keymap.set("i", "<cr>", function() -- insert word and skip from INSERT MODE
                     cmp.confirm({select = false})
                     feedkey(termcode("<esc>", true, false, true), 'n', false)
                 end, opts)
+                vim.keymap.set("i", "<c-k>", function()
+                    if luasnip.expand_or_jumpable() then
+                        luasnip.expand_or_jump()
+                    else
+                        feedkey(termcode("<c-k>", true, false, true), 'n', false)
+                    end
+                end, opts)
                 vim.keymap.set("i", "<c-j>", function()
                     if cmp.visible() then
                         cmp.confirm({select = true})
+                    elseif luasnip.jumpable(-1) then
+                        luasnip.jump(-1)
                     else
                         feedkey(termcode("<c-j>", true, false, true), 'n', false)
                     end
