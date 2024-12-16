@@ -5,6 +5,7 @@ if vim.b.did_tex then
     do return end
 end
 local autocmd = vim.api.nvim_create_autocmd
+local Andrikin = require('andrikin.utils').Andrikin
 local Ouvidoria = require('andrikin.utils').Ouvidoria
 autocmd(
     'BufWritePost',
