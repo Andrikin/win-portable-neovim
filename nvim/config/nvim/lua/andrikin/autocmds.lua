@@ -114,6 +114,7 @@ autocmd(
                 vim.keymap.set('n', '<c-s>', vim.lsp.buf.signature_help, opts) -- default neovim
                 vim.keymap.set('n', 'K', vim.lsp.buf.hover, opts) -- default neovim
                 vim.keymap.set('n', 'gri', vim.lsp.buf.implementation, opts) -- default neovim
+                vim.keymap.set('n', 'gO', vim.lsp.buf.document_symbol, opts) -- default neovim
             end
             vim.keymap.set('n', 'grd', vim.lsp.buf.definition, opts)
             vim.keymap.set('n', 'grD', vim.lsp.buf.declaration, opts)
