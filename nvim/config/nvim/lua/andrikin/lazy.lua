@@ -1,5 +1,6 @@
 local lazypath = vim.fn.stdpath("data") .. "/lazy/lazy.nvim"
 -- Inicializando caminho para git
+---@diagnostic disable-next-line: undefined-field
 if not vim.loop.fs_stat(lazypath) then
   vim.fn.system({
     "git",
@@ -180,6 +181,7 @@ local plugins = {
 		lazy = true,
 	},
     {
+---@diagnostic disable-next-line: undefined-field
         dir = vim.loop.os_homedir() .. '/Documents/nvim/projetos/himalaya-vim',
     },
     {

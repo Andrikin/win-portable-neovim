@@ -1,3 +1,4 @@
+---@diagnostic disable: need-check-nil
 -- BOOTSTRAP: baixar win-portable-neovim, baixar neovim.zip, baixar neovim-qt.zip, extrair tudo na mesmo diretório
 
 -- INFO: Lista de links para download das dependências:
@@ -140,6 +141,7 @@ local programas = {
 				end
 			end
             if not vim.g.node_host_prog or vim.g.node_host_prog == '' then
+---@diagnostic disable-next-line: missing-parameter
                 local node_neovim = (Diretorio.new()).buscar({
                     'node_modules',
                     'neovim',

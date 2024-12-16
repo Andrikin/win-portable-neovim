@@ -52,6 +52,7 @@ end
 Utils.npcall = vim.F.npcall
 
 ---@type string | nil
+---@diagnostic disable-next-line: undefined-field
 Utils.win7 = string.match(vim.loop.os_uname()['version'], 'Windows 7')
 
 ---@type table
@@ -111,6 +112,7 @@ Job.__index = Job
 
 ---@param opts table
 ---@return Job
+---@diagnostic disable-next-line: assign-type-mismatch
 Job.new = function(opts)
     local job = {}
     opts = opts or {}
@@ -986,6 +988,7 @@ Latex.new = function()
         executavel = vim.fn.fnamemodify(vim.fn.glob(tostring(Utils.Opt / 'sumatra' / 'sumatra*.exe')), ':t'),
         diretorios = {
             modelos = Diretorio.new(vim.fn.fnamemodify(vim.env.HOME, ':h')) / 'projetos' / 'ouvidoria-latex-modelos',
+---@diagnostic disable-next-line: undefined-field
             destino = Diretorio.new(vim.loop.os_homedir()) / 'Downloads',
         }
     }, Latex)
@@ -1064,6 +1067,7 @@ Comunicacao.new = function()
     local ci = setmetatable({
         diretorios = {
             modelos = Diretorio.new(vim.fn.fnamemodify(vim.env.HOME, ':h')) / 'projetos' / 'ouvidoria-latex-modelos',
+---@diagnostic disable-next-line: undefined-field
             destino = Diretorio.new(vim.loop.os_homedir()) / 'Downloads',
             projetos = Diretorio.new(vim.fn.fnamemodify(vim.env.HOME, ':h')) / 'projetos',
         },
@@ -1227,6 +1231,7 @@ Himalaya.config = {
 Himalaya.config.existe = vim.fn.filereadable(Himalaya.config.diretorio) == 1
 
 Himalaya.download = {-- Windows
+---@diagnostic disable-next-line: undefined-field
     diretorio = (Diretorio.new(vim.loop.os_homedir() .. '/Downloads') / 'himalaya' / 'trabalho').diretorio,
 }
 Himalaya.download.existe = vim.fn.isdirectory(Himalaya.download.diretorio) == 1
@@ -1342,6 +1347,7 @@ end
 -- cygwin
 Cygwin.comando = function(self, opts)
     local args = opts.fargs
+---@diagnostic disable-next-line: deprecated
     local islist = vim.islist or vim.tbl_islist
     if not islist(args) then
         Utils.notify('cygwin: instalador: valores padrão encontrados no comando. Abortando.')

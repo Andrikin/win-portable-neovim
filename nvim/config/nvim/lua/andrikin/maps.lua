@@ -1,3 +1,4 @@
+---@diagnostic disable: need-check-nil
 local notify = require('andrikin.utils').notify
 local win7 = require('andrikin.utils').win7
 

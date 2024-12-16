@@ -221,6 +221,7 @@ autocmd(
                         end,
                     })
             end
+---@diagnostic disable-next-line: undefined-field
             vim.cmd.cd(vim.loop.os_homedir() .. '/Desktop')
             -- BUG: lualine não redesenha o statusline. Comandos como redraw e redrawstatus também não funcionam
             -- vim.cmd.redrawstatus({bang = true}) -- não funciona

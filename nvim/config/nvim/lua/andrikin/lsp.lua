@@ -1,3 +1,4 @@
+---@diagnostic disable: need-check-nil
 -- Configuração de LSP servers
 
 local win7 = require('andrikin.utils').win7
@@ -233,9 +234,12 @@ local servers = {
     -- },
 }
 for _, server in ipairs(servers) do
+---@diagnostic disable-next-line: undefined-field
     if server.config then
+---@diagnostic disable-next-line: undefined-field
         lsp[server.lsp].setup({
             capabilities = capabilities,
+---@diagnostic disable-next-line: undefined-field
             unpack(server.config)
         })
     else
