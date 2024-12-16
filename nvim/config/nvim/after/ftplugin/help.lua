@@ -10,5 +10,5 @@ vim.keymap.set('n', 'gq', function()
 end,
     { silent = true, buffer = vim.api.nvim_get_current_buf()}
 )
-vim.b.did_help = true
 vim.treesitter.start()
+vim.b.did_help = true

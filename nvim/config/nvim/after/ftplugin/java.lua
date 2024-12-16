@@ -2,7 +2,6 @@ if vim.b.did_java then
     do return end
 end
 vim.cmd.Lazy('load nvim-jdtls')
-vim.b.did_java = true
 
 -- Eclipse Java development tools (JDT) Language Server downloaded from:
 -- https://www.eclipse.org/downloads/download.php?file=/jdtls/milestones/1.21.0/jdt-language-server-1.21.0-202303161431.tar.gz
@@ -86,3 +85,4 @@ local config = {
 }
 
 jdtls.start_or_attach(config)
+vim.b.did_java = true
