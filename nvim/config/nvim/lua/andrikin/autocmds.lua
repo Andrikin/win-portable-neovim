@@ -5,7 +5,7 @@ local feedkey = vim.api.nvim_feedkeys
 local reload = require('andrikin.utils').reload
 local Andrikin = require('andrikin.utils').Andrikin
 local cursorline = require('andrikin.utils').cursorline
--- local win7 = require('andrikin.utils').win7
+local win7 = require('andrikin.utils').win7
 
 -- Highlight linha quando entrar em INSERT MODE
 autocmd(
@@ -103,19 +103,20 @@ autocmd(
     {
         group = Andrikin,
         callback = function(ev)
+            local anterior92 = vim.version().major <= 0 and vim.version().minor <= 9 and vim.version().patch <= 2
             -- local client = vim.lsp.get_client_by_id(ev.data.client_id) -- remover LSP highlight 
             -- client.server_capabilities.semanticTokensProvider = nil -- remover LSP highlight 
             local opts = {buffer = ev.buf}
-            -- if win7 then -- Prováveis comandos padrão para neovim, após 0.10
-            vim.keymap.set('n', 'grn', vim.lsp.buf.rename, opts) -- default neovim
-            vim.keymap.set('n', 'grr', vim.lsp.buf.references, opts) -- default neovim
-            vim.keymap.set('n', 'gra', vim.lsp.buf.code_action, opts) -- default neovim
-            vim.keymap.set('n', '<c-s>', vim.lsp.buf.signature_help, opts) -- default neovim
-            -- end
-            vim.keymap.set('n', 'gd', vim.lsp.buf.definition, opts)
-            vim.keymap.set('n', 'gD', vim.lsp.buf.declaration, opts)
-            vim.keymap.set('n', 'K', vim.lsp.buf.hover, opts)
-            vim.keymap.set('n', 'gi', vim.lsp.buf.implementation, opts)
+            if win7 and anterior92 then -- Prováveis comandos padrão para neovim, após 0.11 dev only
+                vim.keymap.set('n', 'grn', vim.lsp.buf.rename, opts) -- default neovim
+                vim.keymap.set('n', 'grr', vim.lsp.buf.references, opts) -- default neovim
+                vim.keymap.set('n', 'gra', vim.lsp.buf.code_action, opts) -- default neovim
+                vim.keymap.set('n', '<c-s>', vim.lsp.buf.signature_help, opts) -- default neovim
+                vim.keymap.set('n', 'K', vim.lsp.buf.hover, opts) -- default neovim
+                vim.keymap.set('n', 'gri', vim.lsp.buf.implementation, opts) -- default neovim
+            end
+            vim.keymap.set('n', 'grd', vim.lsp.buf.definition, opts)
+            vim.keymap.set('n', 'grD', vim.lsp.buf.declaration, opts)
             -- nvim-cmp (force autocompletion)
             if package.loaded['cmp'] then
                 local cmp = require('cmp')
