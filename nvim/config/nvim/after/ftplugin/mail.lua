@@ -1,6 +1,3 @@
-if vim.b.did_mail then
-    do return end
-end
 local opts = { silent = true, buffer = vim.api.nvim_get_current_buf() }
 local open = vim.ui.open or function(arquivo)
     -- If {cmd} is a String it runs in the 'shell'
@@ -50,4 +47,3 @@ vim.keymap.set('n', 'gm', function()
     })
 end, opts)
 vim.bo.textwidth = 80
-vim.b.did_mail = true

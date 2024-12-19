@@ -1,6 +1,3 @@
-if vim.b.did_dirvish then
-    do return end
-end
 local buf = vim.api.nvim_get_current_buf()
 local open = vim.ui.open or function(arquivo)
     vim.fn.jobstart(
@@ -18,4 +15,3 @@ vim.keymap.set('n', 'go', function()
         do return end
     end
 end, {silent = true, buffer = buf})
-vim.b.did_dirvish = true

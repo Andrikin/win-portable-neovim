@@ -1,7 +1,4 @@
 -- TODO: verificar se comportamento muda com o uso
-if vim.b.did_harpoon then
-    do return end
-end
 vim.keymap.set('n', 'gq', function()
     -- local id = vim.fn.gettabinfo(vim.fn.tabpagenr())[1].windows[1]
     vim.cmd.quit()
@@ -12,4 +9,3 @@ vim.keymap.set('n', 'gq', function()
 end,
     { silent = true, buffer = vim.api.nvim_get_current_buf()}
 )
-vim.b.did_harpoon = true

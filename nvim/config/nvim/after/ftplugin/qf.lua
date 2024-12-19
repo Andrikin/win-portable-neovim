@@ -1,6 +1,3 @@
-if vim.b.did_qf then
-    do return end
-end
 local cursorline = require('andrikin.utils').cursorline
 local buf = vim.api.nvim_get_current_buf()
 local qf = vim.fn.getwininfo(vim.fn.bufwinid(buf))[1]
@@ -50,4 +47,3 @@ vim.keymap.set('n', 'gq', function()
         vim.fn.win_gotoid(id)
     end
 end, opts)
-vim.b.did_qf = true
