@@ -997,7 +997,7 @@ Latex.new = function()
 end
 
 Latex.is_tex = function()
-    local extencao = vim.fn.expand('%'):match('%.([a-zA-Z0-9]*)$')
+    local extencao = vim.fn.expand('%:e')
     return extencao and extencao == 'tex'
 end
 
@@ -1012,7 +1012,7 @@ Latex.compilar = function(self)
         Utils.notify('Latex: compilar: Comando executável somente para arquivos .tex!')
         do return end
     end
-    local in_downloads = vim.fs.normalize(vim.fn.expand('%')):match(tostring(self.diretorios.destino))
+    local in_downloads = vim.fs.normalize(vim.fn.expand('%:p')):match(tostring(self.diretorios.destino))
     if not in_downloads then
         Utils.notify('Latex: compilar: arquivo "tex" não está na pasta $HOMEPATH/Downloads')
         do return end
@@ -1021,7 +1021,7 @@ Latex.compilar = function(self)
         vim.cmd.write()
         vim.cmd.redraw({bang = true})
     end
-    local arquivo = vim.fn.expand('%')
+    local arquivo = vim.fn.expand('%:p')
     local comando = {
         'tectonic.exe',
         '-X',
