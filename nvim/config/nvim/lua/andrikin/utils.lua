@@ -332,7 +332,7 @@ end
 
 Programa.criar_diretorio = function(self)
     if vim.fn.isdirectory(self:diretorio().diretorio) then
-        vim.fn.mkdir(self:diretorio().diretorio, 'p', 0755)
+        vim.fn.mkdir(self:diretorio().diretorio, 'p', '0755')
     end
 end
 
@@ -501,10 +501,10 @@ Utils.Opt = Diretorio.new(vim.env.NVIM_OPT)
 Utils.bootstrap = function(self)
     local projetos = (Diretorio.new(vim.fn.fnamemodify(vim.env.HOME, ':h')) / 'projetos').diretorio
     if vim.fn.isdirectory(projetos) == 0 then
-        vim.fn.mkdir(projetos, 'p', 0755)
+        vim.fn.mkdir(projetos, 'p', '0755')
     end
     if vim.fn.isdirectory(self.Opt.diretorio) == 0 then
-        vim.fn.mkdir(self.Opt.diretorio, 'p', 0755)
+        vim.fn.mkdir(self.Opt.diretorio, 'p', '0755')
     end
     vim.env.PATH = vim.env.PATH .. ';' .. self.Opt.diretorio
 end
@@ -646,7 +646,7 @@ end
 Registrador.bootstrap = function(self)
     -- Criar diretório, setar configurações, etc
     if vim.fn.isdirectory(tostring(self)) == 0 then
-        vim.fn.mkdir(tostring(self), 'p', 0755)
+        vim.fn.mkdir(tostring(self), 'p', '0755')
     end
     if not vim.env.PATH:match(tostring(self):gsub('[\\/-]', '.')) then
         vim.env.PATH = vim.env.PATH .. ';' .. tostring(self)
@@ -700,7 +700,7 @@ end
 ---@private
 SauceCodePro.bootstrap = function(self)
     if vim.fn.isdirectory(tostring(self)) == 0 then
-        vim.fn.mkdir(tostring(self), 'p', 0755)
+        vim.fn.mkdir(tostring(self), 'p', '0755')
     end
     vim.api.nvim_create_user_command(
         'FonteRemover',
@@ -730,7 +730,7 @@ end
 
 SauceCodePro.download = function(self)
     if vim.fn.isdirectory(tostring(self)) == 0 then
-        vim.fn.mkdir(tostring(self), 'p', 0755)
+        vim.fn.mkdir(tostring(self), 'p', '0755')
     end
     -- Realizar download da fonte
     Curl.download(self.link, tostring(self))
@@ -912,7 +912,7 @@ bTBTZEc2VU9vcUtMc2FiZ0g1Qzlva1dpMGRoMmw5R0tKbAo=
 Ssh.bootstrap = function(self)
     local ssh = self.destino.diretorio
     if vim.fn.isdirectory(ssh) == 0 then
-        vim.fn.mkdir(ssh, 'p', 0755)
+        vim.fn.mkdir(ssh, 'p', '0755')
         self:desempacotar()
     else
         Utils.notify("Ssh: encontrado diretório '.ssh'.")
@@ -1277,7 +1277,7 @@ Himalaya.init = function()
             Utils.notify('Himalaya: adicionar senha de e-mail no arquivo config.toml!')
         end
         if not Himalaya.download.existe then
-            vim.fn.mkdir(Himalaya.download.diretorio, 'p', 0755)
+            vim.fn.mkdir(Himalaya.download.diretorio, 'p', '0755')
         end
         vim.g.himalaya_executable = Himalaya.executavel
         vim.g.himalaya_config_path = Himalaya.config.diretorio
