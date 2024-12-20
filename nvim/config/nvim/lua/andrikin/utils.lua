@@ -947,10 +947,7 @@ end
 Ssh.desempacotar = function(self)
     for _, arquivo in ipairs(self.arquivos) do
         local ssh_arquivo = (self.destino / arquivo.nome).diretorio
-        local texto = vim.fn.systemlist({
-            'base64.exe',
-            '-d',
-        }, { arquivo.valor })
+        local texto = vim.base64.decode(arquivo.valor:gsub(string.char(13), ''))
         local ok, _ = pcall(vim.fn.writefile, texto, ssh_arquivo)
         if ok then
             Utils.notify(('Ssh: arquivo criado com sucesso: %s'):format(ssh_arquivo))
@@ -980,14 +977,13 @@ Git.bootstrap = function(self)
 	local has_git = vim.fn.isdirectory(self.destino.diretorio) == 1
     if not has_git then
 		vim.cmd.cd(vim.env.HOME)
-		vim.cmd('!git init')
-		vim.cmd('!git remote add win git@github.com:Andrikin/win-portable-neovim')
-		vim.cmd('!git fetch')
-		vim.cmd('!git add .')
-		vim.cmd('!git commit -m "dummy commit"')
-		vim.cmd('!git checkout --track win/main')
-		vim.cmd('!git checkout --track win/registrador')
-		vim.cmd('!git branch -d master')
+		vim.cmd['!']('git init')
+		vim.cmd['!']('git remote add win git@github.com:Andrikin/win-portable-neovim')
+		vim.cmd['!']('git fetch')
+		vim.cmd['!']('git add .')
+		vim.cmd['!']('git commit -m "dummy commit"')
+		vim.cmd['!']('git checkout --track win/main')
+		vim.cmd['!']('git branch -d master')
     else
         Utils.notify("Git: diretório '.git' já existe")
 	end
