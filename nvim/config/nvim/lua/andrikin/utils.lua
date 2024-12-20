@@ -267,9 +267,12 @@ Programa.extrair = function(self)
     end
     local diretorio = tostring(self:diretorio())
     local arquivo = tostring(self:diretorio() / self:nome_arquivo())
-    local zip = self:extencao() == 'zip'
-    local gz = self:extencao() == 'gz'
-    local cmd = {}
+    local cmd = {
+        '7za',
+        'x',
+        arquivo,
+        '-o' .. diretorio,
+    }
     local job = Job.new()
     job.on_exit = function()
         self.extraido = true
@@ -285,28 +288,6 @@ Programa.extrair = function(self)
                 self.config()
             end
         end
-    end
-    if zip then
-		cmd = {
-			'unzip',
-			arquivo,
-			'-d',
-			diretorio
-		}
-    elseif gz then
-        cmd = {
-            'gzip',
-            '-d',
-            arquivo,
-        }
-    else
-		cmd = {
-			'tar',
-			'-xf',
-			arquivo,
-			'-C',
-			diretorio
-		}
     end
     job:start(cmd)
 end
@@ -514,9 +495,9 @@ Utils.Diretorio = Diretorio
 ---@type Diretorio
 Utils.Opt = Diretorio.new(vim.env.NVIM_OPT)
 
--- TODO: incluir o download do executável unzip.exe
 --- Criar diretório 'opt' caso não exista
 Utils.bootstrap = function(self)
+    -- extrator padrão 7zip Packing / unpacking: 7z, XZ, BZIP2, GZIP, TAR, ZIP and WIM
     local projetos = (Diretorio.new(vim.fn.fnamemodify(vim.env.HOME, ':h')) / 'projetos').diretorio
     if vim.fn.isdirectory(projetos) == 0 then
         vim.fn.mkdir(projetos, 'p', '0755')
@@ -525,6 +506,39 @@ Utils.bootstrap = function(self)
         vim.fn.mkdir(self.Opt.diretorio, 'p', '0755')
     end
     vim.env.PATH = vim.env.PATH .. ';' .. self.Opt.diretorio
+    local link_7zr = 'https://7-zip.org/a/7zr.exe'
+    local link_7za = 'https://7-zip.org/a/7z2409-extra.7z'
+    local has_7zip = vim.fn.executable('7zr.exe') == 0 and vim.fn.executable('7za.exe') == 0
+    local diretorio = (Utils.Opt / '7zip')
+    if not has_7zip then
+        local job = Utils.Job.new({detach = true})
+        job:start({
+            'curl',
+            '--fail',
+            '--location',
+            '--silent',
+            '--output',
+            tostring(diretorio),
+            link_7zr,
+        }):wait()
+        job:start({
+            'curl',
+            '--fail',
+            '--location',
+            '--silent',
+            '--output',
+            tostring(diretorio),
+            link_7za,
+        }):wait()
+        job:start({
+            '7zr.exe',
+            'x',
+            tostring(diretorio / vim.fn.fnamemodify(link_7za, ':t'))
+            '-o' .. tostring(diretorio),
+        }):wait()
+    end
+    -- adicionar 7za.exe no PATH
+    vim.env.PATH = vim.env.PATH .. ';' .. tostring(Utils.Opt / '7zip' / 'x64')
 end
 
 ---@class Registrador
@@ -653,7 +667,7 @@ SauceCodePro.download = function(self)
         end
         Utils.notify('Arquivo fonte .zip baixado!')
     end
-    job.start({
+    job:start({
         'curl',
         '--fail',
         '--location',
@@ -675,12 +689,11 @@ SauceCodePro.extrair_zip = function(self)
             vim.fn.delete(self.arquivo.diretorio)
         end
     end
-    job.start({
-        '7zr',
+    job:start({
+        '7za',
         'x',
         self.arquivo.diretorio,
-        '-o',
-        tostring(self),
+        '-o' .. tostring(self),
     })
 end
 
@@ -1343,22 +1356,23 @@ Python.instalar_get_pip = function(self)
     if vim.fn.filereadable(pth) ~= 0 then
         vim.fn.writefile({'import site'}, pth, 'a')
     end
+	local diretorio = tostring(Diretorio.new(self.diretorio.diretorio) / vim.fn.fnamemodify(self.link_get_pip, ':t'))
     -- download get-pip.py
     if not vim.fs.find(self.get_pip, {path = self.diretorio.diretorio, type = 'file'})[1] then
-        job.start({
+        job:start({
             'curl',
             '--fail',
             '--location',
             '--silent',
             '--output',
-            self.diretorio.diretorio,
+            diretorio,
             self.link_get_pip,
         })
     end
     -- executar get-pip.py
     if vim.fn.executable('pip.exe') == 0 then
         Utils.notify(('Executando "%s".'):format(self.get_pip))
-        job.start({
+        job:start({
             'python.exe',
             tostring(self.diretorio / self.get_pip)
         })
@@ -1396,7 +1410,7 @@ Python.init = function(self)
             local instalado = vim.fs.find(pacote, {path = self.diretorio.diretorio, type = 'directory'})[1]
             if not instalado then
                 Utils.notify(('Instalando pacote python %s.'):format(pacote))
-                job.start({
+                job:start({
                     'pip.exe',
                     'install',
                     pacote
@@ -1459,7 +1473,7 @@ Node.init = function()
         for _, plugin in ipairs(plugins) do
             if not instalado(plugin) then
                 Utils.notify(('Instalando pacote node: %s'):format(plugin))
-                job.start({
+                job:start({
                     'npm',
                     'install',
                     '-g',
