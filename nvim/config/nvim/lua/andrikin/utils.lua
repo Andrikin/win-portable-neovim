@@ -2,7 +2,6 @@
 ---@field Diretorio Diretorio
 ---@field SauceCodePro SauceCodePro
 ---@field Registrador Registrador
----@field Curl Curl
 ---@field Programa Programa
 ---@field Projetos Diretorio
 ---@field Ssh Ssh
@@ -528,119 +527,6 @@ Utils.bootstrap = function(self)
     vim.env.PATH = vim.env.PATH .. ';' .. self.Opt.diretorio
 end
 
----@class Curl
----@field unzip_link string Url para download de unzip.exe
-local Curl = {}
-
-Curl.__index = Curl
-
----@return Curl
-Curl.new = function()
-    if vim.fn.executable('curl') == 0 then -- verificar se curl está instalado no sistema
-        error([[
-        curl: instalado: Não foi encontrado curl no sistema. Verificar e realizar a instalação do curl neste computador!
-        Link para download: https://curl.se/windows/latest.cgi?p=win64-mingw.zip
-        ]])
-    end
-    local curl = setmetatable({
-        unzip_link = 'http://linorg.usp.br/CTAN/systems/win32/w32tex/unzip.exe'
-    }, Curl)
-    curl:bootstrap()
-    return curl
-end
-
--- FATO: Windows 10 build 17063 or later is bundled with tar.exe which is capable of working with ZIP files 
----@private
-Curl.bootstrap = function(self)
-    -- Realizar o download da ferramenta unzip
-    if Utils.win7 and vim.fn.executable('tar') == 0 then
-        Utils.notify('Curl: bootstrap: Sistema não possui tar.exe!')
-    end
-    if vim.fn.executable('unzip') == 1 then
-        Utils.notify('Curl: bootstrap: Sistema já possui Unzip.')
-        do return end
-    end
-    local unzip = vim.fs.find('unzip.exe', {path = Utils.Opt.diretorio, type = 'file'})[1]
-    if not unzip then
-	    self.download(self.unzip_link, Utils.Opt.diretorio)
-    end
-    if vim.v.shell_error > 0 then
-        error('Curl: bootstrap: Não foi possível realizar o download do unzip.exe')
-    elseif not unzip then
-        error('Curl: bootstrap: Não foi possível encontrar o executável unzip.exe.')
-    end
-end
-
----@param link string
----@param diretorio string
-Curl.download = function(link, diretorio)
-	vim.validate({
-		link = {link, 'string'},
-		diretorio = {diretorio, 'string'}
-	})
-	if link == '' or diretorio == '' then
-		error('Curl: download: Variável nula')
-	end
-	local arquivo = vim.fn.fnamemodify(link, ':t')
-	diretorio = tostring(Diretorio.new(diretorio) / arquivo)
-	vim.fn.system({
-		'curl',
-		'--fail',
-		'--location',
-		'--silent',
-		'--output',
-		diretorio,
-		link
-	})
-	if vim.v.shell_error == 0 then
-		Utils.notify(('Curl: download: Arquivo %s baixado!'):format(arquivo))
-	else
-		Utils.notify(('Curl: download: Não foi possível realizar o download do arquivo %s!'):format(arquivo))
-	end
-end
-
----@param arquivo string
----@param diretorio string
-Curl.extrair = function(arquivo, diretorio)
-	vim.validate({
-		arquivo = {arquivo, 'string'},
-		diretorio = {diretorio, 'string'}
-	})
-	if arquivo == '' or diretorio == '' then
-		error('Curl: extrair: Variável nula.')
-	end
-	local extencao = arquivo:match('%.(tar)%.[a-z.]*$') or arquivo:match('%.([a-z]*)$')
-    local extracao = false
-	if extencao == 'zip' then
-		vim.fn.system({
-			'unzip',
-			arquivo,
-			'-d',
-			diretorio
-		})
-        extracao = true
-	elseif extencao == 'tar' then
-		vim.fn.system({
-			'tar',
-			'-xf',
-			arquivo,
-			'-C',
-			diretorio
-		})
-        extracao = true
-	end
-    if extracao then
-        local nome = arquivo:match('[/\\]([^/\\]+)$') or arquivo
-        if vim.v.shell_error == 0 then
-            Utils.notify(('Curl: extrair: Arquivo %s extraído com sucesso!'):format(nome))
-        else
-            Utils.notify(('Curl: extrair: Erro encontrado! Não foi possível extrair o diretorio_arquivo %s'):format(nome))
-        end
-    end
-end
-
-Utils.Curl = Curl
-
 ---@class Registrador
 ---@field diretorio Diretorio Onde as dependências ficaram instaladas
 local Registrador = {}
@@ -758,21 +644,44 @@ SauceCodePro.download = function(self)
         vim.fn.mkdir(tostring(self), 'p', '0755')
     end
     -- Realizar download da fonte
-    Curl.download(self.link, tostring(self))
-    if not self:zip_baixado() then
-        error('Fonte: download: Não foi possível realizar o download do arquivo da fonte.')
+	local diretorio = tostring(Diretorio.new(tostring(self)) / vim.fn.fnamemodify(self.link, ':t'))
+    local job = Utils.Job.new()
+    job.detach = true
+    job.on_exit = function()
+        if not self:zip_baixado() then
+            error('Fonte: download: Não foi possível realizar o download do arquivo da fonte.')
+        end
+        Utils.notify('Arquivo fonte .zip baixado!')
     end
-    Utils.notify('Arquivo fonte .zip baixado!')
+    job.start({
+        'curl',
+        '--fail',
+        '--location',
+        '--silent',
+        '--output',
+        diretorio,
+        self.link,
+    })
 end
 
 ---Decompressar arquivo zip
 SauceCodePro.extrair_zip = function(self)
-    Curl.extrair(self.arquivo.diretorio, tostring(self))
-    Utils.notify('Arquivo fonte SauceCodePro.zip extraído!')
-    -- remover arquivo .zip
-    if vim.fn.getftype(self.arquivo.diretorio) == 'file' then
-        vim.fn.delete(self.arquivo.diretorio)
+    local job = Utils.Job.new()
+    job.detach = true
+    job.on_exit = function()
+        Utils.notify('Arquivo fonte SauceCodePro.zip extraído!')
+        -- remover arquivo .zip
+        if vim.fn.getftype(self.arquivo.diretorio) == 'file' then
+            vim.fn.delete(self.arquivo.diretorio)
+        end
     end
+    job.start({
+        '7zr',
+        'x',
+        self.arquivo.diretorio,
+        '-o',
+        tostring(self),
+    })
 end
 
 ---Verificando se a fonte está intalada no computador
