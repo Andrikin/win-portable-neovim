@@ -84,6 +84,25 @@ end
 
 Utils.Andrikin = vim.api.nvim_create_augroup('Andrikin', {clear = true})
 
+Utils.renomear_executavel = function(programa)
+    local nome = programa.nome
+    local diretorio = Utils.Opt / nome
+    local executavel = vim.fn.glob(tostring(diretorio / nome .. '*.exe'))
+    if executavel ~= '' then
+        if vim.fn.filereadable(executavel) == 1 then
+            Utils.notify(('Arquivo %s já renomeado.'):format(nome))
+            do return end
+        end
+        Utils.notify(('Renomeando executável %s.'):format(nome))
+        vim.fn.rename(
+            executavel,
+            tostring(diretorio / nome .. '.exe')
+        )
+    else
+        Utils.notify(('Não foi encontrado executável %s.'):format(nome))
+    end
+end
+
 --- Wrap envolta do vim.fn.jobstart
 ---@class Job
 ---@field clear_env boolean
@@ -1223,6 +1242,8 @@ Utils.Ouvidoria = Ouvidoria.new()
 ---@field download table
 local Himalaya = {}
 
+Himalaya.__index = Himalaya
+
 Himalaya.executavel = (Utils.Opt / 'himalaya' / 'himalaya.exe').diretorio
 
 Himalaya.config = {
@@ -1295,6 +1316,8 @@ Utils.Himalaya = Himalaya
 ---@field instalador string
 ---@field comando function
 local Cygwin = {}
+
+Cygwin.__index = Cygwin
 
 Cygwin.diretorio = (Utils.Opt / 'cygwin')
 
@@ -1405,6 +1428,216 @@ Cygwin.complete = function(arg, _, _)
 end
 
 Utils.Cygwin = Cygwin
+
+---@class Python
+---@field init function
+---@field link_get_pip string
+---@field get_pip string
+---@field diretorio Diretorio
+---@field pth string
+---@field get_pip_instalado function
+---@field instalar_get_pip function
+local Python = {}
+
+Python.__index = Python
+
+Python.link_get_pip =  'https://bootstrap.pypa.io/get-pip.py'
+Python.get_pip = vim.fn.fnamemodify(Python.link_get_pip, ':t')
+Python.diretorio = Utils.Opt / 'python'
+Python.pth = Utils.win7 and 'python38._pth' or 'python312._pth'
+
+Python.get_pip_instalado = function(self)
+    local pip = vim.fs.find('pip.exe', {path = tostring(self.diretorio), type = 'file'})[1]
+    if not pip then
+        return nil
+    end
+    return Utils.npcall(
+        vim.fn.fnamemodify,
+        pip, ':h'
+    )
+end
+
+Python.instalar_get_pip = function(self)
+    local pth = tostring(self.diretorio / self.pth)
+    local job = Utils.Job.new()
+    job.detach = true
+    if vim.fn.filereadable(pth) ~= 0 then
+        vim.fn.writefile({'import site'}, pth, 'a')
+    end
+    -- download get-pip.py
+    if not vim.fs.find(self.get_pip, {path = self.diretorio.diretorio, type = 'file'})[1] then
+        job.start({
+            'curl',
+            '--fail',
+            '--location',
+            '--silent',
+            '--output',
+            self.diretorio.diretorio,
+            self.link_get_pip,
+        })
+    end
+    -- executar get-pip.py
+    if vim.fn.executable('pip.exe') == 0 then
+        Utils.notify(('Executando "%s".'):format(self.get_pip))
+        job.start({
+            'python.exe',
+            tostring(self.diretorio / self.get_pip)
+        })
+    else
+        error('Python: instalação de "pip.exe" encontrou um erro.')
+    end
+end
+
+Python.init = function(self)
+    -- INFO: Na primeira instalação, baixar get-pip.py e modificar o arquivo python38._pth
+    if not self:get_pip_instalado() then
+        local ok, _ = pcall(self.instalar_get_pip, self)
+        if not ok then
+            Utils.notify(_)
+            do return end
+        end
+        -- registrar pip no PATH
+        local pip = vim.fn.fnamemodify(vim.fs.find('pip.exe', {path = self.diretorio.diretorio, type = 'file'})[1], ':h')
+        if pip then
+            vim.env.PATH = vim.env.PATH .. ';' .. pip
+        else
+            Utils.notify('Erro ao registrar "pip.exe" na variável de ambiente PATH.')
+            do return end
+        end
+    end
+    if vim.fn.executable('pip.exe') == 1 then
+        local job = Utils.Job.new()
+        job.detach = true
+        local pacotes = {
+            'pyright',
+            'pynvim',
+            'greenlet',
+        }
+        for _, pacote in ipairs(pacotes) do
+            local instalado = vim.fs.find(pacote, {path = self.diretorio.diretorio, type = 'directory'})[1]
+            if not instalado then
+                Utils.notify(('Instalando pacote python %s.'):format(pacote))
+                job.start({
+                    'pip.exe',
+                    'install',
+                    pacote
+                })
+            else
+                Utils.notify(('Pacote python %s já instalado.'):format(pacote))
+            end
+        end
+    else
+        Utils.notify('"pip.exe" não encontrado. Falha na instalação.')
+        do return end
+    end
+    vim.g.python3_host_prog = vim.fs.find('python.exe', {path = self.diretorio.diretorio, type = 'file'})[1]
+    if not vim.g.python3_host_prog or vim.g.python3_host_prog == '' then
+        Utils.notify('Variável python3_host_prog não configurado.')
+    end
+end
+
+Utils.Python = Python
+
+---@class Sumatra
+---@field nome string
+---@field init function
+local Sumatra = {}
+
+Sumatra.__index = Sumatra
+
+Sumatra.nome = 'sumatra'
+
+Sumatra.init = function(self)
+    Utils.renomear_executavel(self)
+end
+
+Utils.Sumatra = Sumatra
+
+---@class Node
+---@field init function
+local Node = {}
+
+Node.__index = Node
+
+Node.init = function()
+    -- checa se node está instalado
+    local instalado = function(pacote)
+        return not vim.tbl_isempty(vim.fs.find(pacote, {path = tostring(Utils.Opt / 'node'), type = 'directory'}))
+    end
+    -- configurações extras
+    if Utils.win7 and vim.env.NODE_SKIP_PLATFORM_CHECK ~= 1 then
+        vim.env.NODE_SKIP_PLATFORM_CHECK = 1
+    end
+    if vim.fn.executable('npm') == 1 then
+        local job = Utils.Job.new()
+        job.detach = true
+        local plugins = {
+            'neovim',
+            'emmet-ls',
+            'vim-language-server',
+            'vscode-langservers-extracted',
+        }
+        for _, plugin in ipairs(plugins) do
+            if not instalado(plugin) then
+                Utils.notify(('Instalando pacote node: %s'):format(plugin))
+                job.start({
+                    'npm',
+                    'install',
+                    '-g',
+                    plugin
+                })
+            else
+                Utils.notify(('Pacote node já instalado %s'):format(plugin))
+            end
+        end
+    end
+    if not vim.g.node_host_prog or vim.g.node_host_prog == '' then
+        ---@diagnostic disable-next-line: missing-parameter
+        local node_neovim = (Diretorio.new()).buscar({
+            'node_modules',
+            'neovim',
+            'bin'
+        }, Utils.Opt.diretorio)
+        if node_neovim then
+            -- https://github.com/neovim/neovim/issues/15308
+            vim.g.node_host_prog = (node_neovim / 'cli.js').diretorio
+        else
+            Utils.notify('Não foi possível configurar vim.g.node_host_prog')
+        end
+    end
+end
+
+Utils.Node = Node
+
+---@class Jq
+---@field nome string
+---@field init function
+local Jq = {}
+
+Jq.__index = Jq
+
+Jq.nome = 'jq'
+
+Jq.init = function(self)
+    Utils.renomear_executavel(self)
+end
+
+Utils.Jq = Jq
+
+---@class TreeSitter
+---@field nome string
+---@field init function
+local TreeSitter = {}
+
+TreeSitter.__index = TreeSitter
+
+TreeSitter.nome = 'tree-sitter'
+
+TreeSitter.init = function(self)
+    Utils.renomear_executavel(self)
+end
+
+Utils.TreeSitter = TreeSitter
 
 return Utils
 
