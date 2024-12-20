@@ -107,7 +107,7 @@ autocmd(
             -- local client = vim.lsp.get_client_by_id(ev.data.client_id) -- remover LSP highlight 
             -- client.server_capabilities.semanticTokensProvider = nil -- remover LSP highlight 
             local opts = {buffer = ev.buf}
-            if win7 and (anterior92 or (vim.version().minor < 11 and vim.version().major == 0)) then -- Prováveis comandos padrão para neovim, após 0.11 dev only
+            if win7 or (anterior92 or (vim.version().minor < 11 and vim.version().major == 0)) then -- Prováveis comandos padrão para neovim, após 0.11 dev only
                 vim.keymap.set('n', 'grn', vim.lsp.buf.rename, opts) -- default neovim
                 vim.keymap.set('n', 'grr', vim.lsp.buf.references, opts) -- default neovim
                 vim.keymap.set('n', 'gra', vim.lsp.buf.code_action, opts) -- default neovim
