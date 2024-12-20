@@ -156,9 +156,7 @@ end
 
 ---@param cmd table
 Job.start = function(self, cmd)
-    local id = 0
-    id = vim.fn.jobstart(cmd, self)
-    self.id = id
+    self.id = vim.fn.jobstart(cmd, self)
 end
 
 Job.wait = function(self)
@@ -186,6 +184,7 @@ Utils.Job = Job
 ---@field extraido boolean
 ---@field timeout number
 ---@field processo thread
+---@field job_id number
 local Programa = {}
 
 Programa.__index = Programa
@@ -252,6 +251,7 @@ Programa.baixar = function(self)
         '-O',
 		self.link
 	})
+    self.job_id = job.id
 end
 
 Programa.extrair = function(self)
@@ -674,11 +674,17 @@ end
 
 ---@param programas table Lista dos programas que são dependência para o nvim
 Registrador.iniciar = function(programas)
+    local downloads = {}
     for i, programa in ipairs(programas) do
         if getmetatable(programa) ~= Programa then
             programas[i] = setmetatable(programa, Programa)
         end
         programas[i]:instalar()
+        table.insert(downloads, programas[i].job_id)
+    end
+    -- esperar downloads acabarem
+    if not vim.tbl_isempty(downloads) then
+        vim.fn.jobwait(downloads)
     end
 end
 
