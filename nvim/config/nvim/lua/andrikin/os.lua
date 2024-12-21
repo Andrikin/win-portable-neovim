@@ -55,7 +55,7 @@ local Git = require('andrikin.utils').Git.new()
 ---@type SauceCodePro
 local _ = require('andrikin.utils').SauceCodePro.new()
 
-require('andrikin.utils'):bootstrap()
+require('andrikin.utils').init()
 
 local programas = {
 	{

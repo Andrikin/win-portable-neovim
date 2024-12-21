@@ -16,7 +16,7 @@
 ---@field cursorline table
 ---@field autocmd function
 ---@field Andrikin number
----@field bootstrap function
+---@field init function
 local Utils = {}
 
 --- Mostra notificação para usuário, registrando em :messages
@@ -121,6 +121,7 @@ end
 ---@field width number
 ---@field new Job
 ---@field id number
+---@field ids table
 ---@field start function
 ---@field wait function
 ---@field running function
@@ -148,16 +149,21 @@ Job.new = function(opts)
         PATH = vim.env.PATH,
         NVIM_OPT = vim.env.NVIM_OPT,
     }
-    job.id = 0
+    job.id = 0 -- last created job
+    job.ids = {} -- list of ids jobs
     job = setmetatable(job, Job)
     return job
 end
 
 ---@param cmd table
+---@return Job
 Job.start = function(self, cmd)
-    self.id = vim.fn.jobstart(cmd, self)
+	self.id = vim.fn.jobstart(cmd, self)
+    table.insert(self.ids, self.id)
+    return self
 end
 
+--- Espera a execução do último job
 Job.wait = function(self)
     if self.id == 0 then
         error('Job: argumentos inválidos', 2)
@@ -165,6 +171,15 @@ Job.wait = function(self)
         error('Job: comando não executável', 2)
     end
     vim.fn.jobwait({self.id})
+end
+
+Job.wait_all = function(self)
+	local status_job = {}
+	if not vim.tbl_isempty(self.ids) then
+		status_job = vim.fn.jobwait(self.ids)
+		self.ids = {}
+	end
+	return status_job
 end
 
 ---@return boolean
@@ -232,7 +247,6 @@ end
 -- FIX: verificar se arquivo baixado existe, antes 
 -- de extraí-lo
 Programa.baixar = function(self)
-    -- local arquivo = tostring(self:diretorio() / self:nome_arquivo())
 	local diretorio = tostring(self:diretorio())
     local job = Job.new()
     job.on_exit = function()
@@ -496,44 +510,62 @@ Utils.Diretorio = Diretorio
 Utils.Opt = Diretorio.new(vim.env.NVIM_OPT)
 
 --- Criar diretório 'opt' caso não exista
-Utils.bootstrap = function(self)
-    -- extrator padrão 7zip Packing / unpacking: 7z, XZ, BZIP2, GZIP, TAR, ZIP and WIM
+Utils.init = function()
     local projetos = (Diretorio.new(vim.fn.fnamemodify(vim.env.HOME, ':h')) / 'projetos').diretorio
     if vim.fn.isdirectory(projetos) == 0 then
         vim.fn.mkdir(projetos, 'p', '0755')
     end
-    if vim.fn.isdirectory(self.Opt.diretorio) == 0 then
-        vim.fn.mkdir(self.Opt.diretorio, 'p', '0755')
+    if vim.fn.isdirectory(Utils.Opt.diretorio) == 0 then
+        vim.fn.mkdir(Utils.Opt.diretorio, 'p', '0755')
     end
-    vim.env.PATH = vim.env.PATH .. ';' .. self.Opt.diretorio
+    vim.env.PATH = vim.env.PATH .. ';' .. Utils.Opt.diretorio
+    -- extrator padrão 7zip Packing / unpacking: 7z, XZ, BZIP2, GZIP, TAR, ZIP and WIM
     local link_7zr = 'https://7-zip.org/a/7zr.exe'
     local link_7za = 'https://7-zip.org/a/7z2409-extra.7z'
-    local has_7zip = vim.fn.executable('7zr.exe') == 0 and vim.fn.executable('7za.exe') == 0
+    local has_7zip = vim.fn.executable('7zr.exe') == 1 and vim.fn.executable('7za.exe') == 1
     local diretorio = (Utils.Opt / '7zip')
+    if vim.fn.isdirectory(tostring(diretorio)) == 0 then
+        vim.fn.mkdir(tostring(diretorio), 'p', '0755')
+    end
     if not has_7zip then
-        local job = Utils.Job.new({detach = true})
-        job:start({
+		local job = Utils.Job.new({detach = true})
+---@diagnostic disable-next-line: duplicate-set-field
+        job.on_exit = function()
+            vim.env.PATH = vim.env.PATH .. ';' .. tostring(Utils.Opt / '7zip')
+        end
+		job:start({
             'curl',
             '--fail',
             '--location',
             '--silent',
-            '--output',
+            '--output-dir',
             tostring(diretorio),
+            '-O',
             link_7zr,
-        }):wait()
-        job:start({
+        })
+        job.on_exit = nil
+		job:start({
             'curl',
             '--fail',
             '--location',
             '--silent',
-            '--output',
+            '--output-dir',
             tostring(diretorio),
+            '-O',
             link_7za,
-        }):wait()
+        })
+		job:wait_all()
+---@diagnostic disable-next-line: duplicate-set-field
+        job.on_exit = function()
+            local arquivo = tostring(diretorio / vim.fn.fnamemodify(link_7za, ':t'))
+            if vim.fn.getftype(arquivo) == 'file' then
+                vim.fn.delete(arquivo)
+            end
+        end
         job:start({
             '7zr.exe',
             'x',
-            tostring(diretorio / vim.fn.fnamemodify(link_7za, ':t'))
+            tostring(diretorio / vim.fn.fnamemodify(link_7za, ':t')),
             '-o' .. tostring(diretorio),
         }):wait()
     end
@@ -672,8 +704,9 @@ SauceCodePro.download = function(self)
         '--fail',
         '--location',
         '--silent',
-        '--output',
+        '--output-dir',
         diretorio,
+        '-O',
         self.link,
     })
 end
@@ -1364,8 +1397,9 @@ Python.instalar_get_pip = function(self)
             '--fail',
             '--location',
             '--silent',
-            '--output',
+            '--output-dir',
             diretorio,
+            '-O',
             self.link_get_pip,
         })
     end
