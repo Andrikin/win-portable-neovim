@@ -520,19 +520,16 @@ Utils.init = function()
     end
     vim.env.PATH = vim.env.PATH .. ';' .. Utils.Opt.diretorio
     -- extrator padrão 7zip Packing / unpacking: 7z, XZ, BZIP2, GZIP, TAR, ZIP and WIM
-    local link_7zr = 'https://7-zip.org/a/7zr.exe'
-    local link_7za = 'https://7-zip.org/a/7z2409-extra.7z'
-    local has_7zip = vim.fn.executable('7zr.exe') == 1 and vim.fn.executable('7za.exe') == 1
     local diretorio = (Utils.Opt / '7zip')
     if vim.fn.isdirectory(tostring(diretorio)) == 0 then
         vim.fn.mkdir(tostring(diretorio), 'p', '0755')
     end
+    vim.env.PATH = vim.env.PATH .. ';' .. tostring(Utils.Opt / '7zip')
+    local link_7zr = 'https://7-zip.org/a/7zr.exe'
+    local link_7za = 'https://7-zip.org/a/7z2409-extra.7z'
+    local has_7zip = vim.fn.executable('7zr.exe') == 1 and vim.fn.executable('7za.exe') == 1
     if not has_7zip then
 		local job = Utils.Job.new({detach = true})
----@diagnostic disable-next-line: duplicate-set-field
-        job.on_exit = function()
-            vim.env.PATH = vim.env.PATH .. ';' .. tostring(Utils.Opt / '7zip')
-        end
 		job:start({
             'curl',
             '--fail',
@@ -543,7 +540,6 @@ Utils.init = function()
             '-O',
             link_7zr,
         })
-        job.on_exit = nil
 		job:start({
             'curl',
             '--fail',
@@ -555,7 +551,6 @@ Utils.init = function()
             link_7za,
         })
 		job:wait_all()
----@diagnostic disable-next-line: duplicate-set-field
         job.on_exit = function()
             local arquivo = tostring(diretorio / vim.fn.fnamemodify(link_7za, ':t'))
             if vim.fn.getftype(arquivo) == 'file' then
