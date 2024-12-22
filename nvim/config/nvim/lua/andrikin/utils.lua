@@ -1232,28 +1232,45 @@ Utils.Himalaya = Himalaya
 ---@class Cygwin
 ---@field init function
 ---@field existe boolean
+---@field bin Diretorio
 ---@field diretorio Diretorio
 ---@field instalador string
 ---@field comando function
+---@field _job Job
 local Cygwin = {}
 
 Cygwin.__index = Cygwin
 
+---@type Diretorio
 Cygwin.diretorio = (Utils.Opt / 'cygwin')
 
+---@type Diretorio
 Cygwin.bin = (Cygwin.diretorio / 'bin')
 
+---@type boolean
 Cygwin.existe = vim.fn.isdirectory(Cygwin.bin.diretorio) == 1
 
+---@type string
 Cygwin.instalador = vim.fn.glob((Cygwin.diretorio / 'setup*.exe').diretorio)
 
+---@type Job
+Cygwin._job = Utils.Job.new()
+
 Cygwin.init = function(self)
-    local ok = nil
     if self.existe then
         Utils.notify('cygwin: já instalado. Para mais pacotes, instalar manualmente.')
         goto cygwin_finalizar
     end
-    ok, _ = vim.fn.jobstart({
+    Utils.notify('cygwin: instalando.')
+    local ok = false
+    self._job.detach = true
+    self._job.cwd = self.diretorio.diretorio
+    self._job.on_exit = function()
+        ok = true
+        Utils.notify('cygwin: instalado com sucesso!')
+        self._job.on_exit = nil
+    end
+    self._job:start({
         self.instalador,
         '--quiet-mode',
         '--no-admin',
@@ -1272,15 +1289,9 @@ Cygwin.init = function(self)
         '--only-site',
         '--site',
         'https://linorg.usp.br/cygwin/',
-    },{
-        detach = true,
-        cwd = self.diretorio.diretorio,
-    })
-    if ok then
-        Utils.notify('cygwin: instalado com sucesso!')
-    else
-        Utils.notify('cygwin: algo aconteceu durante a instalação.')
-        Utils.notify('erro: ' .. _)
+    }):wait()
+    if not ok then
+        Utils.notify('cygwin: erro encontrado, verificar cygwin.init')
     end
     ::cygwin_finalizar::
     -- adicionar diretório bin
@@ -1326,16 +1337,21 @@ Cygwin.comando = function(self, opts)
         table.insert(cmd, args[i])
     end
     ::executar::
-    local ok, _ = pcall(vim.fn.jobstart, cmd,{
-        detach=true, cwd=self.diretorio.diretorio,
-        on_stdout = function(_, data, _)
-            for _, d in ipairs(data) do
-                if d ~= '' then
-                    print(d:sub(1, -2)) -- remover ^M
-                end
+    local ok = false
+    self._job.on_exit = function()
+        ok = true
+        self._job.on_exit = nil
+    end
+    self._job.on_stdout = function(_, data, _)
+        for _, d in ipairs(data) do
+            if d ~= '' then
+                print(d:sub(1, -2)) -- remover ^M
             end
-        end,
-    })
+        end
+        self._job.on_stdout = nil
+    end,
+---@diagnostic disable-next-line: redundant-value
+    self._job:start(cmd)
     if not ok then
         Utils.notify('cygwin: instalador: erro foi encontrado.')
     end
