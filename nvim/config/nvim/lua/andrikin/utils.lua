@@ -196,21 +196,20 @@ Utils.Job = Job
 ---@field config function
 ---@field baixado boolean
 ---@field extraido boolean
----@field timeout number
 ---@field processo thread
----@field job_id number
+---@field jobs table
 local Programa = {}
 
 Programa.__index = Programa
+
+---@type table
+Programa.jobs = {}
 
 ---@type boolean
 Programa.baixado = false
 
 ---@type boolean
 Programa.extraido = false
-
----@type number
-Programa.timeout = 120 * 1000
 
 ---@param self Programa
 ---@return string
@@ -264,10 +263,11 @@ Programa.baixar = function(self)
         '-O',
 		self.link
 	})
-    self.job_id = job.id
+    table.insert(self.jobs, job.id)
 end
 
 Programa.extrair = function(self)
+     -- arquivo extraído já é um executável
     if self:extencao() == 'exe' then
         if not self:registrar() then
             Utils.notify(('Não foi possível realizar a instalação do programa %s.'):format(self.nome))
@@ -304,6 +304,7 @@ Programa.extrair = function(self)
         end
     end
     job:start(cmd)
+    table.insert(self.jobs, job.id)
 end
 
 --- Verifica se o programa já está no PATH, busca pelo executável e 
@@ -607,7 +608,9 @@ Registrador.iniciar = function(programas)
             programas[i] = setmetatable(programa, Programa)
         end
         programas[i]:instalar()
-        table.insert(downloads, programas[i].job_id)
+        for _, job in ipairs(programas[i].jobs) do
+            table.insert(downloads, job)
+        end
     end
     -- esperar downloads acabarem
     if not vim.tbl_isempty(downloads) then
