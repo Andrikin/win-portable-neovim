@@ -120,7 +120,6 @@ if not ok then
 else
     notify('Telescope: extenção fzf carregada com sucesso')
 end
-
 local cmp = require('cmp')
 local luasnip = require('luasnip')
 require('luasnip.loaders.from_vscode').lazy_load() -- carregar snippets (templates)
@@ -139,6 +138,18 @@ cmp.setup({
         expandable_indicator = true,
         fields = { 'abbr', 'kind', 'menu' },
         format = function(entry, vim_item)
+            --- truncando itens muito grandes
+            local ELLIPSIS_CHAR = '…'
+            local MAX_LABEL_WIDTH = 20
+            local MIN_LABEL_WIDTH = 20
+            local label = vim_item.abbr
+            local truncated_label = vim.fn.strcharpart(label, 0, MAX_LABEL_WIDTH)
+            if truncated_label ~= label then
+                vim_item.abbr = truncated_label .. ELLIPSIS_CHAR
+            elseif string.len(label) < MIN_LABEL_WIDTH then
+                local padding = string.rep(' ', MIN_LABEL_WIDTH - string.len(label))
+                vim_item.abbr = label .. padding
+            end
             -- Source
             vim_item.menu = ({
                 buffer = "[BUFFER]",
