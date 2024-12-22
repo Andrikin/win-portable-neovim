@@ -825,6 +825,7 @@ end
 Utils.SauceCodePro = SauceCodePro
 
 ---WARNING: classe para instalar as credenciais .ssh
+---TODO: como resolver esta questão de proteção
 ---@class Ssh
 ---@field destino Diretorio
 ---@field arquivos table
