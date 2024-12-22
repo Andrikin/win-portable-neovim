@@ -1331,7 +1331,7 @@ Cygwin.comando = function(self, opts)
         on_stdout = function(_, data, _)
             for _, d in ipairs(data) do
                 if d ~= '' then
-                    print(d)
+                    print(d:sub(1, -2)) -- remover ^M
                 end
             end
         end,
