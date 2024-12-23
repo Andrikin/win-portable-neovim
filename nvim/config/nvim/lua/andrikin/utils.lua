@@ -1261,12 +1261,12 @@ Cygwin.instalador = vim.fn.glob((Cygwin.diretorio / 'setup*.exe').diretorio)
 Cygwin._job = Utils.Job.new()
 
 Cygwin.init = function(self)
+	local ok = false
     if self.existe then
         Utils.notify('cygwin: já instalado. Para mais pacotes, instalar manualmente.')
         goto cygwin_finalizar
     end
     Utils.notify('cygwin: instalando.')
-    local ok = false
     self._job.detach = true
     self._job.cwd = self.diretorio.diretorio
     self._job.on_exit = function()
