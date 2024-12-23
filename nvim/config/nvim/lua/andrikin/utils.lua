@@ -86,7 +86,7 @@ Utils.Andrikin = vim.api.nvim_create_augroup('Andrikin', {clear = true})
 Utils.renomear_executavel = function(programa)
     local nome = programa.nome
     local diretorio = Utils.Opt / nome
-    local executavel = vim.fn.glob(tostring(diretorio / nome .. '*.exe'))
+    local executavel = vim.fn.glob(tostring(diretorio / ('%s*.exe'):format(nome)))
     if executavel ~= '' then
         if vim.fn.filereadable(executavel) == 1 then
             Utils.notify(('Arquivo %s já renomeado.'):format(nome))
@@ -95,7 +95,7 @@ Utils.renomear_executavel = function(programa)
         Utils.notify(('Renomeando executável %s.'):format(nome))
         vim.fn.rename(
             executavel,
-            tostring(diretorio / nome .. '.exe')
+            tostring(diretorio / ('%s.exe'):format(nome))
         )
     else
         Utils.notify(('Não foi encontrado executável %s.'):format(nome))
@@ -1255,7 +1255,7 @@ Utils.Himalaya = Himalaya
 ---@field diretorio Diretorio
 ---@field instalador string
 ---@field comando function
----@field _job Job
+---@field job Job
 local Cygwin = {}
 
 Cygwin.__index = Cygwin
@@ -1273,30 +1273,33 @@ Cygwin.existe = vim.fn.isdirectory(Cygwin.bin.diretorio) == 1
 Cygwin.instalador = vim.fn.glob((Cygwin.diretorio / 'setup*.exe').diretorio)
 
 ---@type Job
-Cygwin._job = Utils.Job.new()
+Cygwin.job = Utils.Job.new()
 
 Cygwin.init = function(self)
+    if not self.instalador or self.instalador == '' then
+        self.instalador = vim.fn.glob((Cygwin.diretorio / 'setup*.exe').diretorio)
+    end
 	local ok = false
     if self.existe then
         Utils.notify('cygwin: já instalado. Para mais pacotes, instalar manualmente.')
         goto cygwin_finalizar
     end
     Utils.notify('cygwin: instalando.')
-    self._job.detach = true
-    self._job.cwd = self.diretorio.diretorio
-    self._job.on_exit = function()
+    self.job.detach = true
+    self.job.cwd = self.diretorio.diretorio
+    self.job.on_exit = function()
         ok = true
         Utils.notify('cygwin: instalado com sucesso!')
-        self._job.on_exit = nil
+        self.job.on_exit = nil -- resetar
     end
-    self._job:start({
+    self.job:start({
         self.instalador,
         '--quiet-mode',
         '--no-admin',
         '--download',
         '--local-install',
         '--local-package-dir',
-        (self.diretorio / 'packages').diretorio,
+        tostring(self.diretorio / 'packages'),
         '--no-verify',
         '--no-desktop',
         '--no-shortcuts',
@@ -1304,7 +1307,7 @@ Cygwin.init = function(self)
         '--no-version-check',
         '--no-warn-deprecated-windows',
         '--root',
-        self.diretorio.diretorio,
+        tostring(self.diretorio),
         '--only-site',
         '--site',
         'https://linorg.usp.br/cygwin/',
@@ -1357,20 +1360,20 @@ Cygwin.comando = function(self, opts)
     end
     ::executar::
     local ok = false
-    self._job.on_exit = function()
+    self.job.on_exit = function()
         ok = true
-        self._job.on_exit = nil
+        self.job.on_exit = nil
     end
-    self._job.on_stdout = function(_, data, _)
+    self.job.on_stdout = function(_, data, _)
         for _, d in ipairs(data) do
             if d ~= '' then
                 print(d:sub(1, -2)) -- remover ^M
             end
         end
-        self._job.on_stdout = nil
+        self.job.on_stdout = nil
     end,
 ---@diagnostic disable-next-line: redundant-value
-    self._job:start(cmd)
+    self.job:start(cmd)
     if not ok then
         Utils.notify('cygwin: instalador: erro foi encontrado.')
     end
