@@ -576,11 +576,6 @@ Utils.init = function()
             tostring(diretorio / vim.fn.fnamemodify(link_7za, ':t')),
             '-o' .. vim.fn.shellescape(tostring(diretorio)),
         }):wait()
-        -- deletar arquivo baixado
-        local arquivo = tostring(diretorio / vim.fn.fnamemodify(link_7za, ':t'))
-        if vim.fn.getftype(arquivo) == 'file' then
-            vim.fn.delete(arquivo)
-        end
     end
     -- adicionar 7za.exe no PATH
     vim.env.PATH = vim.env.PATH .. ';' .. tostring(Utils.Opt / '7zip' / 'x64')
