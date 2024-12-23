@@ -1309,7 +1309,7 @@ Cygwin.init = function(self)
         '--only-site',
         '--site',
         'https://linorg.usp.br/cygwin/',
-    }):wait()
+    })
     if not ok then
         Utils.notify('cygwin: erro encontrado, verificar cygwin.init')
     end
