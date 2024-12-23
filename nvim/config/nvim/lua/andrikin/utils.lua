@@ -1417,6 +1417,19 @@ Python.instalar_get_pip = function(self)
     local pth = tostring(self.diretorio / self.pth)
     local job = Utils.Job.new()
     job.detach = true
+    job.on_exit = function()
+        -- executar get-pip.py
+        if vim.fn.executable('pip.exe') == 0 then
+            Utils.notify(('Executando "%s".'):format(self.get_pip))
+            job:start({
+                'python.exe',
+                tostring(self.diretorio / self.get_pip)
+            })
+        else
+            error('Python: instalação de "pip.exe" encontrou um erro.')
+        end
+        job.on_exit = nil
+    end
     if vim.fn.filereadable(pth) ~= 0 then
         vim.fn.writefile({'import site'}, pth, 'a')
     end
@@ -1432,26 +1445,16 @@ Python.instalar_get_pip = function(self)
             diretorio,
             '-O',
             self.link_get_pip,
-        })
-    end
-    -- executar get-pip.py
-    if vim.fn.executable('pip.exe') == 0 then
-        Utils.notify(('Executando "%s".'):format(self.get_pip))
-        job:start({
-            'python.exe',
-            tostring(self.diretorio / self.get_pip)
-        })
-    else
-        error('Python: instalação de "pip.exe" encontrou um erro.')
+        }):wait()
     end
 end
 
 Python.init = function(self)
     -- INFO: Na primeira instalação, baixar get-pip.py e modificar o arquivo python38._pth
     if not self:get_pip_instalado() then
-        local ok, _ = pcall(self.instalar_get_pip, self)
+        local ok, erro = pcall(self.instalar_get_pip, self)
         if not ok then
-            Utils.notify(_)
+            Utils.notify(erro)
             do return end
         end
         -- registrar pip no PATH
