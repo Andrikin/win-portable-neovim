@@ -86,17 +86,15 @@ Utils.Andrikin = vim.api.nvim_create_augroup('Andrikin', {clear = true})
 Utils.renomear_executavel = function(programa)
     local nome = programa.nome
     local diretorio = Utils.Opt / nome
-    local executavel = vim.fn.glob(tostring(diretorio / ('%s*.exe'):format(nome)))
-    if executavel ~= '' then
-        if vim.fn.filereadable(executavel) == 1 then
+    local antigo = vim.fn.glob(tostring(diretorio / ('%s*.exe'):format(nome)))
+    local novo = tostring(diretorio / ('%s.exe'):format(nome))
+    if antigo ~= '' then
+        if vim.fn.filereadable(novo) == 1 then
             Utils.notify(('Arquivo %s já renomeado.'):format(nome))
             do return end
         end
         Utils.notify(('Renomeando executável %s.'):format(nome))
-        vim.fn.rename(
-            executavel,
-            tostring(diretorio / ('%s.exe'):format(nome))
-        )
+        vim.fn.rename(antigo, novo)
     else
         Utils.notify(('Não foi encontrado executável %s.'):format(nome))
     end
