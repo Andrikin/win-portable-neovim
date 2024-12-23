@@ -45,6 +45,8 @@ for _, programa in ipairs({'WindowsApps', 'Oracle', 'LibreOffice'}) do
     desabilitar(programa)
 end
 
+require('andrikin.utils').init()
+
 local win7 = require('andrikin.utils').win7
 ---@type Registrador
 local Registrador = require('andrikin.utils').Registrador.new()
@@ -54,8 +56,6 @@ local Ssh = require('andrikin.utils').Ssh.new()
 local Git = require('andrikin.utils').Git.new()
 ---@type SauceCodePro
 local _ = require('andrikin.utils').SauceCodePro.new()
-
-require('andrikin.utils').init()
 
 local programas = {
 	{
