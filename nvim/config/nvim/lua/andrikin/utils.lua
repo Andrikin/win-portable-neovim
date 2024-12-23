@@ -285,8 +285,26 @@ Programa.extrair = function(self)
         '7za',
         'x',
         arquivo,
-        '-o' .. diretorio,
+        '-o' .. vim.fn.shellescape(diretorio),
     }
+    -- se tar.gz, extrair duas vezes
+    local extensao = vim.fn.fnamemodify(self.link, ':e:e')
+    if extensao == 'tar.gz' then
+        -- https://superuser.com/questions/80019/how-can-i-unzip-a-tar-gz-in-one-step-using-7-zip
+        cmd = {
+            '7za',
+            'x',
+            arquivo,
+            '-so',
+            '|',
+            '7za',
+            'x',
+            '-aoa',
+            '-si',
+            '-ttar',
+            '-o' .. vim.fn.shellescape(diretorio),
+        }
+    end
     local job = Job.new()
     job.on_exit = function()
         self.extraido = true
@@ -562,7 +580,7 @@ Utils.init = function()
             '7zr.exe',
             'x',
             tostring(diretorio / vim.fn.fnamemodify(link_7za, ':t')),
-            '-o' .. tostring(diretorio),
+            '-o' .. vim.fn.shellescape(tostring(diretorio)),
         }):wait()
     end
     -- adicionar 7za.exe no PATH
@@ -724,7 +742,7 @@ SauceCodePro.extrair_zip = function(self)
         '7za',
         'x',
         self.arquivo.diretorio,
-        '-o' .. tostring(self),
+        '-o' .. vim.fn.shellescape(tostring(self)),
     })
 end
 
