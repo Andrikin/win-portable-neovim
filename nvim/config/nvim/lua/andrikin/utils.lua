@@ -285,7 +285,7 @@ Programa.extrair = function(self)
         '7za',
         'x',
         arquivo,
-        '-o' .. vim.fn.shellescape(diretorio),
+        '-o' .. diretorio,
     }
     -- se tar.gz, extrair duas vezes
     local extensao = vim.fn.fnamemodify(self.link, ':e:e')
@@ -302,7 +302,7 @@ Programa.extrair = function(self)
             '-aoa',
             '-si',
             '-ttar',
-            '-o' .. vim.fn.shellescape(diretorio),
+            '-o' .. diretorio,
         }
     end
     local job = Job.new()
@@ -559,6 +559,15 @@ Utils.init = function()
             '-O',
             link_7zr,
         })
+        job.on_exit = function()
+            job.on_exit = nil
+            job:start({
+                '7zr.exe',
+                'x',
+                tostring(diretorio / vim.fn.fnamemodify(link_7za, ':t')),
+                '-o' .. tostring(diretorio),
+            })
+        end
 		job:start({
             'curl',
             '--fail',
@@ -569,13 +578,7 @@ Utils.init = function()
             '-O',
             link_7za,
         })
-		job:wait_all()
-        job:start({
-            '7zr.exe',
-            'x',
-            tostring(diretorio / vim.fn.fnamemodify(link_7za, ':t')),
-            '-o' .. vim.fn.shellescape(tostring(diretorio)),
-        }):wait()
+        job:wait_all()
     end
     -- adicionar 7za.exe no PATH
     vim.env.PATH = vim.env.PATH .. ';' .. tostring(Utils.Opt / '7zip' / 'x64')
@@ -736,7 +739,7 @@ SauceCodePro.extrair_zip = function(self)
         '7za',
         'x',
         self.arquivo.diretorio,
-        '-o' .. vim.fn.shellescape(tostring(self)),
+        '-o' .. tostring(self),
     })
 end
 
