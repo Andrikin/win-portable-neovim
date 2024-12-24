@@ -156,8 +156,9 @@ end
 ---@param cmd table
 ---@return Job
 Job.start = function(self, cmd)
-	self.id = vim.fn.jobstart(cmd, self)
-    table.insert(self.ids, self.id)
+    local id = vim.fn.jobstart(cmd, self)
+	self.id = id
+    table.insert(self.ids, id)
     return self
 end
 
@@ -175,7 +176,6 @@ Job.wait_all = function(self)
 	local status_job = {}
 	if not vim.tbl_isempty(self.ids) then
 		status_job = vim.fn.jobwait(self.ids)
-		self.ids = {}
 	end
 	return status_job
 end
@@ -187,6 +187,10 @@ end
 
 Utils.Job = Job
 
+local this_job = Utils.Job.new({detach = true})
+
+Utils.jobs = this_job
+
 ---@class Programa
 ---@field nome string
 ---@field link string
@@ -195,13 +199,9 @@ Utils.Job = Job
 ---@field baixado boolean
 ---@field extraido boolean
 ---@field processo thread
----@field jobs table
 local Programa = {}
 
 Programa.__index = Programa
-
----@type table
-Programa.jobs = {}
 
 ---@type boolean
 Programa.baixado = false
@@ -245,13 +245,13 @@ end
 -- de extraí-lo
 Programa.baixar = function(self)
 	local diretorio = tostring(self:diretorio())
-    local job = Job.new()
-    job.on_exit = function()
+    this_job.on_exit = function()
         self.baixado = true
-        print(('Programa %s baixado!'):format(self.nome))
+        Utils.notify(('Programa %s baixado!'):format(self.nome))
         self:extrair()
+        this_job.on_exit = nil
     end
-	job:start({
+	this_job:start({
 		'curl',
 		'--fail',
 		'--location',
@@ -261,7 +261,6 @@ Programa.baixar = function(self)
         '-O',
 		self.link
 	})
-    table.insert(self.jobs, job.id)
 end
 
 Programa.extrair = function(self)
@@ -303,10 +302,9 @@ Programa.extrair = function(self)
             '-o' .. diretorio,
         }
     end
-    local job = Job.new()
-    job.on_exit = function()
+    this_job.on_exit = function()
         self.extraido = true
-        print(('Programa %s extraído!'):format(self.nome))
+        Utils.notify(('Programa %s extraído!'):format(self.nome))
         if vim.fn.filereadable(arquivo) ~= 0 then -- arquivo existe
             vim.fn.delete(arquivo) -- remover arquivo baixado
         end
@@ -318,9 +316,9 @@ Programa.extrair = function(self)
                 self.config()
             end
         end
+        this_job.on_exit = nil
     end
-    job:start(cmd)
-    table.insert(self.jobs, job.id)
+    this_job:start(cmd)
 end
 
 --- Verifica se o programa já está no PATH, busca pelo executável e 
@@ -546,8 +544,7 @@ Utils.init = function()
     local link_7za = 'https://7-zip.org/a/7z2409-extra.7z'
     local has_7zip = vim.fn.executable('7zr.exe') == 1 and vim.fn.executable('7za.exe') == 1
     if not has_7zip then
-		local job = Utils.Job.new({detach = true})
-		job:start({
+		this_job:start({
             'curl',
             '--fail',
             '--location',
@@ -557,16 +554,16 @@ Utils.init = function()
             '-O',
             link_7zr,
         })
-        job.on_exit = function()
-            job.on_exit = nil
-            job:start({
+        this_job.on_exit = function()
+            this_job.on_exit = nil
+            this_job:start({
                 '7zr.exe',
                 'x',
                 tostring(diretorio / vim.fn.fnamemodify(link_7za, ':t')),
                 '-o' .. tostring(diretorio),
             })
         end
-		job:start({
+		this_job:start({
             'curl',
             '--fail',
             '--location',
@@ -576,7 +573,7 @@ Utils.init = function()
             '-O',
             link_7za,
         })
-        job:wait_all()
+        this_job:wait_all()
     end
     -- adicionar 7za.exe no PATH
     vim.env.PATH = vim.env.PATH .. ';' .. tostring(Utils.Opt / '7zip' / 'x64')
@@ -615,19 +612,11 @@ end
 
 ---@param programas table Lista dos programas que são dependência para o nvim
 Registrador.iniciar = function(programas)
-    local downloads = {}
     for i, programa in ipairs(programas) do
         if getmetatable(programa) ~= Programa then
             programas[i] = setmetatable(programa, Programa)
         end
         programas[i]:instalar()
-        for _, job in ipairs(programas[i].jobs) do
-            table.insert(downloads, job)
-        end
-    end
-    -- esperar downloads acabarem
-    if not vim.tbl_isempty(downloads) then
-        vim.fn.jobwait(downloads)
     end
 end
 
@@ -702,15 +691,13 @@ SauceCodePro.download = function(self)
     end
     -- Realizar download da fonte
 	local diretorio = tostring(Diretorio.new(tostring(self)) / vim.fn.fnamemodify(self.link, ':t'))
-    local job = Utils.Job.new()
-    job.detach = true
-    job.on_exit = function()
+    this_job.on_exit = function()
         if not self:zip_baixado() then
             error('Fonte: download: Não foi possível realizar o download do arquivo da fonte.')
         end
         Utils.notify('Arquivo fonte .zip baixado!')
     end
-    job:start({
+    this_job:start({
         'curl',
         '--fail',
         '--location',
@@ -724,16 +711,14 @@ end
 
 ---Decompressar arquivo zip
 SauceCodePro.extrair_zip = function(self)
-    local job = Utils.Job.new()
-    job.detach = true
-    job.on_exit = function()
+    this_job.on_exit = function()
         Utils.notify('Arquivo fonte SauceCodePro.zip extraído!')
         -- remover arquivo .zip
         if vim.fn.getftype(self.arquivo.diretorio) == 'file' then
             vim.fn.delete(self.arquivo.diretorio)
         end
     end
-    job:start({
+    this_job:start({
         '7za',
         'x',
         self.arquivo.diretorio,
@@ -1036,7 +1021,8 @@ end
 Comunicacao.init = function(self)
     local has_diretorio_modelos = vim.fn.isdirectory(tostring(self.diretorios.modelos)) == 1
     local has_git = vim.fn.executable('git') == 1
-    if has_diretorio_modelos then
+    -- se tem os modelos e o git, atualizar
+    if has_diretorio_modelos and has_git then
         Utils.notify('Comunicacao: init: projeto com os modelos de LaTeX já está baixado!')
         -- atualizar repositório
         vim.defer_fn(
@@ -1065,7 +1051,8 @@ Comunicacao.init = function(self)
     end
     local has_diretorio_projetos = vim.fn.isdirectory(self.diretorios.projetos.diretorio) == 1
     local has_diretorio_ssh = vim.fn.isdirectory(Ssh.destino.diretorio) == 1
-    if has_diretorio_projetos and has_diretorio_ssh then
+    -- se tiver tudo configurado, baixar projeto
+    if has_diretorio_projetos and has_diretorio_ssh and has_git then
         vim.fn.jobstart({
             "git",
             "clone",
@@ -1253,7 +1240,6 @@ Utils.Himalaya = Himalaya
 ---@field diretorio Diretorio
 ---@field instalador string
 ---@field comando function
----@field job Job
 local Cygwin = {}
 
 Cygwin.__index = Cygwin
@@ -1270,27 +1256,20 @@ Cygwin.existe = vim.fn.isdirectory(Cygwin.bin.diretorio) == 1
 ---@type string
 Cygwin.instalador = vim.fn.glob((Cygwin.diretorio / 'setup*.exe').diretorio)
 
----@type Job
-Cygwin.job = Utils.Job.new()
-
 Cygwin.init = function(self)
     if not self.instalador or self.instalador == '' then
         self.instalador = vim.fn.glob((Cygwin.diretorio / 'setup*.exe').diretorio)
     end
-	local ok = false
     if self.existe then
         Utils.notify('cygwin: já instalado. Para mais pacotes, instalar manualmente.')
         goto cygwin_finalizar
     end
     Utils.notify('cygwin: instalando.')
-    self.job.detach = true
-    self.job.cwd = self.diretorio.diretorio
-    self.job.on_exit = function()
-        ok = true
+    this_job.on_exit = function()
         Utils.notify('cygwin: instalado com sucesso!')
-        self.job.on_exit = nil -- resetar
+        this_job.on_exit = nil -- resetar
     end
-    self.job:start({
+    this_job:start({
         self.instalador,
         '--quiet-mode',
         '--no-admin',
@@ -1309,13 +1288,13 @@ Cygwin.init = function(self)
         '--only-site',
         '--site',
         'https://linorg.usp.br/cygwin/',
-    })
-    if not ok then
-        Utils.notify('cygwin: erro encontrado, verificar cygwin.init')
-    end
+    }):wait()
     ::cygwin_finalizar::
     -- adicionar diretório bin
     vim.env.PATH = vim.env.PATH .. ';' .. self.bin.diretorio
+    if vim.fn.executable('cygwin') == 1 then
+        self:comando({'install', 'gcc-core', 'clang'})
+    end
 end
 
 -- cygwin
@@ -1358,20 +1337,20 @@ Cygwin.comando = function(self, opts)
     end
     ::executar::
     local ok = false
-    self.job.on_exit = function()
+    this_job.on_exit = function()
         ok = true
-        self.job.on_exit = nil
+        this_job.on_exit = nil
     end
-    self.job.on_stdout = function(_, data, _)
+    this_job.on_stdout = function(_, data, _)
         for _, d in ipairs(data) do
             if d ~= '' then
-                print(d:sub(1, -2)) -- remover ^M
+                Utils.notify(d:sub(1, -2)) -- remover ^M
             end
         end
-        self.job.on_stdout = nil
+        this_job.on_stdout = nil
     end,
 ---@diagnostic disable-next-line: redundant-value
-    self.job:start(cmd)
+    this_job:start(cmd)
     if not ok then
         Utils.notify('cygwin: instalador: erro foi encontrado.')
     end
@@ -1415,20 +1394,18 @@ end
 
 Python.instalar_get_pip = function(self)
     local pth = tostring(self.diretorio / self.pth)
-    local job = Utils.Job.new()
-    job.detach = true
-    job.on_exit = function()
+    this_job.on_exit = function()
         -- executar get-pip.py
         if vim.fn.executable('pip.exe') == 0 then
             Utils.notify(('Executando "%s".'):format(self.get_pip))
-            job:start({
+            this_job.on_exit = nil
+            this_job:start({
                 'python.exe',
                 tostring(self.diretorio / self.get_pip)
             })
         else
             error('Python: instalação de "pip.exe" encontrou um erro.')
         end
-        job.on_exit = nil
     end
     if vim.fn.filereadable(pth) ~= 0 then
         vim.fn.writefile({'import site'}, pth, 'a')
@@ -1436,7 +1413,7 @@ Python.instalar_get_pip = function(self)
 	local diretorio = tostring(Diretorio.new(self.diretorio.diretorio) / vim.fn.fnamemodify(self.link_get_pip, ':t'))
     -- download get-pip.py
     if not vim.fs.find(self.get_pip, {path = self.diretorio.diretorio, type = 'file'})[1] then
-        job:start({
+        this_job:start({
             'curl',
             '--fail',
             '--location',
@@ -1467,8 +1444,6 @@ Python.init = function(self)
         end
     end
     if vim.fn.executable('pip.exe') == 1 then
-        local job = Utils.Job.new()
-        job.detach = true
         local pacotes = {
             'pyright',
             'pynvim',
@@ -1478,7 +1453,7 @@ Python.init = function(self)
             local instalado = vim.fs.find(pacote, {path = self.diretorio.diretorio, type = 'directory'})[1]
             if not instalado then
                 Utils.notify(('Instalando pacote python %s.'):format(pacote))
-                job:start({
+                this_job:start({
                     'pip.exe',
                     'install',
                     pacote
@@ -1530,8 +1505,6 @@ Node.init = function()
         vim.env.NODE_SKIP_PLATFORM_CHECK = 1
     end
     if vim.fn.executable('npm') == 1 then
-        local job = Utils.Job.new()
-        job.detach = true
         local plugins = {
             'neovim',
             'emmet-ls',
@@ -1541,7 +1514,7 @@ Node.init = function()
         for _, plugin in ipairs(plugins) do
             if not instalado(plugin) then
                 Utils.notify(('Instalando pacote node: %s'):format(plugin))
-                job:start({
+                this_job:start({
                     'npm',
                     'install',
                     '-g',
