@@ -1344,13 +1344,13 @@ Cygwin.comando = function(self, opts)
     this_job.on_stdout = function(_, data, _)
         for _, d in ipairs(data) do
             if d ~= '' then
-                Utils.notify(d:sub(1, -2)) -- remover ^M
+                print(d:sub(1, -2)) -- remover ^M
             end
         end
         this_job.on_stdout = nil
     end,
 ---@diagnostic disable-next-line: redundant-value
-    this_job:start(cmd)
+    this_job:start(cmd):wait()
     if not ok then
         Utils.notify('cygwin: instalador: erro foi encontrado.')
     end
