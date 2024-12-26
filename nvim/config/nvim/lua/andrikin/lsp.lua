@@ -16,7 +16,7 @@ end
 
 vim.defer_fn( -- kickstart.nvim
     function()
-        require('nvim-treesitter.install').compilers = {'gcc', 'cc', 'clang'}
+        require('nvim-treesitter.install').compilers = {'x86_64-w64-mingw32-gcc', 'x86_64-w64-mingw32-clang', 'gcc', 'cc', 'clang'}
         require('nvim-treesitter.configs').setup({
             modules = {}, -- padrao
             ignore_install = {}, -- padrao
