@@ -1,3 +1,7 @@
+-- TODO: resolver node cli.js path, criar observer para continuar código quando
+-- somente todos os downloads acabarem, executando 3 vezes a compilação de arquivos
+-- tex
+
 ---@class Utils
 ---@field Diretorio Diretorio
 ---@field SauceCodePro SauceCodePro
