@@ -1,5 +1,3 @@
--- esperar downloads acabarem
-require('andrikin.utils').jobs:wait_all()
 local lazypath = vim.fn.stdpath("data") .. "/lazy/lazy.nvim"
 -- Inicializando caminho para git
 ---@diagnostic disable-next-line: undefined-field

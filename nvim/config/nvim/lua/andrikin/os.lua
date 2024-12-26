@@ -153,6 +153,8 @@ local programas = {
 }
 
 Registrador.iniciar(programas)
+-- esperar downloads acabarem
+require('andrikin.utils').jobs:wait_all()
 Ssh:bootstrap()
 Git:bootstrap()
 
