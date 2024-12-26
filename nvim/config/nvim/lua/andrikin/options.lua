@@ -47,7 +47,7 @@ end
 vim.opt.complete:remove('t')
 vim.opt.title = true
 vim.opt.hidden = true
-vim.opt.mouse = nil
+vim.opt.mouse = ''
 vim.opt.mousemodel = 'extend'
 if vim.fn.has('persistent_undo') then
 	local path = vim.fn.stdpath('data') .. '\\undotree'
@@ -76,7 +76,7 @@ vim.opt.guifont = 'SauceCodePro NFM:h11'
 if vim.g.nvy or vim.g.neovide then
 	vim.opt.guifont = 'SauceCodePro Nerd Font Mono:h11'
 end
-vim.opt.inccommand = nil -- conflict with traces.vim
+vim.opt.inccommand = '' -- conflict with traces.vim
 vim.opt.fillchars = 'vert:|,fold:*,foldclose:+,diff:-'
 
 -- Using ripgrep populate quickfix/localfix lists ([cf]open; [cf]do {cmd} | update)
