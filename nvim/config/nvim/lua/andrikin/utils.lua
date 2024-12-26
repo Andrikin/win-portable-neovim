@@ -1293,7 +1293,7 @@ Cygwin.init = function(self)
     -- adicionar diretório bin
     vim.env.PATH = vim.env.PATH .. ';' .. self.bin.diretorio
     if vim.fn.executable('cygwin') == 1 then
-        self:comando({'install', 'gcc-core', 'clang'})
+        self:comando({'install', 'mingw64-x86_64-gcc-core', 'mingw64-x86_64-clang'})
     end
 end
 
