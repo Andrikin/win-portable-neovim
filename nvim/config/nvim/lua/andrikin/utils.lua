@@ -294,8 +294,8 @@ Programa.extrair = function(self)
         '-o' .. diretorio,
     }
     -- se tar.gz, extrair duas vezes
-    local extensao = vim.fn.fnamemodify(self.link, ':e:e')
-    if extensao == 'tar.gz' then
+    local tar_gz = vim.fn.fnamemodify(self.link, ':e:e') == 'tar.gz' or vim.fn.fnamemodify(self.link, ':e') == 'tgz'
+    if tar_gz then
         -- https://superuser.com/questions/80019/how-can-i-unzip-a-tar-gz-in-one-step-using-7-zip
         cmd = {
             '7za',
@@ -326,6 +326,7 @@ Programa.extrair = function(self)
             end
         end
         this_job.on_exit = nil
+        self.concluido = true
     end
     this_job:start(cmd)
 end
@@ -391,7 +392,6 @@ Programa.instalar = function(self)
     elseif not self.extraido then
         self:extrair()
     end
-    self.concluido = true
 end
 
 Utils.Programa = Programa
@@ -572,7 +572,7 @@ Utils.init = function()
                 'x',
                 tostring(diretorio / vim.fn.fnamemodify(link_7za, ':t')),
                 '-o' .. tostring(diretorio),
-            })
+            }):wait()
         end
 		this_job:start({
             'curl',
