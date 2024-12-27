@@ -1017,7 +1017,6 @@ Comunicacao.new = function()
             projetos = Diretorio.new(vim.fn.fnamemodify(vim.env.HOME, ':h')) / 'projetos',
         },
     }, Comunicacao)
-    ci:init()
     return ci
 end
 

@@ -66,7 +66,8 @@ local programas = {
     },{
 		nome = 'git',
 		link = 'https://github.com/git-for-windows/git/releases/download/v2.43.0.windows.1/MinGit-2.43.0-64-bit.zip',
-		cmd = 'git.exe'
+		cmd = 'git.exe',
+        config = function() require('andrikin.utils').Ouvidoria.ci:init() end,
 	},{
 		nome = 'fd',
 		link = 'https://github.com/sharkdp/fd/releases/download/v8.7.1/fd-v8.7.1-x86_64-pc-windows-gnu.zip',
