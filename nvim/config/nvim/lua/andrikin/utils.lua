@@ -1,5 +1,6 @@
--- TODO: resolver node cli.js path, criar observer para continuar código quando
--- somente todos os downloads acabarem, executando 3 vezes a compilação de arquivos
+-- TODO: criar observer para continuar código quando
+-- somente todos os downloads acabarem,
+-- resolver node cli.js path, executando 3 vezes a compilação de arquivos
 -- tex
 
 ---@class Utils
@@ -203,6 +204,7 @@ Utils.jobs = this_job
 ---@field baixado boolean
 ---@field extraido boolean
 ---@field processo thread
+---@field concluido boolean
 local Programa = {}
 
 Programa.__index = Programa
@@ -212,6 +214,9 @@ Programa.baixado = false
 
 ---@type boolean
 Programa.extraido = false
+
+---@type boolean
+Programa.concluido = false
 
 ---@param self Programa
 ---@return string
@@ -376,6 +381,7 @@ Programa.instalar = function(self)
 		if self.config then
 			self.config()
 		end
+        self.concluido = true
         do return end
     end
     self:criar_diretorio()
@@ -385,6 +391,7 @@ Programa.instalar = function(self)
     elseif not self.extraido then
         self:extrair()
     end
+    self.concluido = true
 end
 
 Utils.Programa = Programa
@@ -589,6 +596,8 @@ local Registrador = {}
 
 Registrador.__index = Registrador
 
+Registrador.running = {}
+
 ---@return Registrador
 Registrador.new = function()
     local registrador = setmetatable({
@@ -615,12 +624,21 @@ Registrador.bootstrap = function(self)
 end
 
 ---@param programas table Lista dos programas que são dependência para o nvim
-Registrador.iniciar = function(programas)
+Registrador.iniciar = function(self, programas)
     for i, programa in ipairs(programas) do
         if getmetatable(programa) ~= Programa then
             programas[i] = setmetatable(programa, Programa)
         end
         programas[i]:instalar()
+        self.running[programas[i]] = true
+    end
+    while not vim.tbl_isempty(self.running) do
+        vim.cmd.sleep('200m')
+        for _, programa in ipairs(programas) do
+            if programa.concluido then
+                self.running[programa] = nil
+            end
+        end
     end
 end
 
@@ -1291,18 +1309,19 @@ Cygwin.init = function(self)
         '--only-site',
         '--site',
         'https://linorg.usp.br/cygwin/',
-    }):wait()
+    })
     ::cygwin_finalizar::
     -- adicionar diretório bin
     vim.env.PATH = vim.env.PATH .. ';' .. self.bin.diretorio
-    if vim.fn.executable('cygwin') == 1 then
+    if vim.fn.executable('cygwin') == 1 and vim.fn.executable('x86_64-w64-mingw32-gcc') == 0  then
         self:comando({'install', 'mingw64-x86_64-gcc-core', 'mingw64-x86_64-clang'})
     end
 end
 
 -- cygwin
 Cygwin.comando = function(self, opts)
-    local args = opts.fargs
+    opts = opts or {}
+    local args = opts.fargs or opts
 ---@diagnostic disable-next-line: deprecated
     local islist = vim.islist or vim.tbl_islist
     if not islist(args) then
