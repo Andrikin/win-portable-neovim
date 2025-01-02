@@ -186,6 +186,7 @@ local plugins = {
     },
     {
         'https://github.com/junegunn/fzf.vim.git',
+        dependencies = {'https://github.com/junegunn/fzf.git'},
         lazy = true,
     },
 }

@@ -141,3 +141,8 @@ vim.g.loaded_ruby_provider = 0
 ---@diagnostic disable-next-line: undefined-field
 vim.g.himalaya_pandoc_template_email = vim.loop.os_homedir() .. '/Downloads/himalaya/template'
 
+-- Fzf configuração
+vim.g.fzf_vim = {
+    preview_window = {}
+}
+
