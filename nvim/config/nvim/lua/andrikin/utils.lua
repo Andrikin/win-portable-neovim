@@ -1415,6 +1415,7 @@ Python.get_pip_instalado = function(self)
 end
 
 Python.instalar_get_pip = function(self)
+    local get_pip = tostring(self.diretorio / self.get_pip)
     local pth = tostring(self.diretorio / self.pth)
     this_job.on_exit = function()
         -- executar get-pip.py
@@ -1423,28 +1424,33 @@ Python.instalar_get_pip = function(self)
             this_job.on_exit = nil
             this_job:start({
                 'python.exe',
-                tostring(self.diretorio / self.get_pip)
+                get_pip
             })
         else
-            error('Python: instalação de "pip.exe" encontrou um erro.')
+            if vim.fn.filereadable(get_pip) == 0 then
+                error('Python: não foi encontrado get-pip.py')
+            else
+                error('Python: instalação de "pip.exe" encontrou um erro.')
+            end
         end
+        this_job.on_exit = nil
     end
+    -- TODO: utilizar :grep para checar texto no arquivo
     if vim.fn.filereadable(pth) ~= 0 then
         vim.fn.writefile({'import site'}, pth, 'a')
     end
-	local diretorio = tostring(Diretorio.new(self.diretorio.diretorio) / vim.fn.fnamemodify(self.link_get_pip, ':t'))
     -- download get-pip.py
-    if not vim.fs.find(self.get_pip, {path = self.diretorio.diretorio, type = 'file'})[1] then
+    if vim.fn.filereadable(get_pip) == 0 then
         this_job:start({
             'curl',
             '--fail',
             '--location',
             '--silent',
             '--output-dir',
-            diretorio,
+            tostring(self.diretorio),
             '-O',
             self.link_get_pip,
-        }):wait()
+        })
     end
 end
 
