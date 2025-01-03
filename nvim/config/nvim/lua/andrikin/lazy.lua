@@ -175,7 +175,13 @@ local plugins = {
 		},
 	},
 	-- Treesitter,
-	{'https://github.com/nvim-treesitter/nvim-treesitter.git', build = ':TSUpdate'},
+    {
+        'https://github.com/nvim-treesitter/nvim-treesitter.git',
+        build = ':TSUpdate',
+        cond = function()
+            return vim.fn.executable('x86_64-w64-mingw32-gcc') == 1
+        end
+    },
 	{
 		'https://github.com/nvim-treesitter/playground.git',
 		lazy = true,
