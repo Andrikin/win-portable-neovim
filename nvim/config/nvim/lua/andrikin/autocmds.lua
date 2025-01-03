@@ -137,10 +137,9 @@ autocmd(
                     end
                 end, opts)
                 vim.keymap.set("i", "<c-y>", function()
-                    cmp.mapping.confirm({
-                        behavior = cmp.ConfirmBehavior.Insert,
-                        select = true,
-                    })
+                    if luasnip.jumpable(-1) then
+                        luasnip.jump(-1)
+                    end
                 end, opts)
                 vim.keymap.set("i", "<cr>", function() -- insert word and skip from INSERT MODE
                     cmp.confirm({select = false})
@@ -156,8 +155,6 @@ autocmd(
                 vim.keymap.set("i", "<c-j>", function()
                     if cmp.visible() then
                         cmp.confirm({select = true})
-                    elseif luasnip.jumpable(-1) then
-                        luasnip.jump(-1)
                     else
                         feedkey(termcode("<c-j>", true, false, true), 'n', false)
                     end
