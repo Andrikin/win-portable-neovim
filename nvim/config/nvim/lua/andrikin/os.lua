@@ -153,7 +153,7 @@ local programas = {
     },
 }
 
-Registrador:iniciar(programas)
+Registrador.iniciar(programas)
 Ssh:bootstrap()
 Git:bootstrap()
 
