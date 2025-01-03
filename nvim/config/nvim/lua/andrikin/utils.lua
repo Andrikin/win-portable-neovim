@@ -1435,9 +1435,15 @@ Python.instalar_get_pip = function(self)
         end
         this_job.on_exit = nil
     end
-    -- TODO: utilizar :grep para checar texto no arquivo
     if vim.fn.filereadable(pth) ~= 0 then
-        vim.fn.writefile({'import site'}, pth, 'a')
+        local read_pth = vim.fn.readfile(pth)
+        local checked = false
+        if read_pth[#read_pth] == 'import site' then -- checar última linha
+            checked = true
+        end
+        if not checked then
+            vim.fn.writefile({'import site'}, pth, 'a')
+        end
     end
     -- download get-pip.py
     if vim.fn.filereadable(get_pip) == 0 then
