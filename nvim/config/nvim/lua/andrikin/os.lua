@@ -67,7 +67,10 @@ local programas = {
 		nome = 'git',
 		link = 'https://github.com/git-for-windows/git/releases/download/v2.43.0.windows.1/MinGit-2.43.0-64-bit.zip',
 		cmd = 'git.exe',
-        config = function() require('andrikin.utils').Ouvidoria.ci:init() end,
+        config = function()
+            require('andrikin.utils').Ouvidoria.ci:init() -- modelos latex
+            require('andrikin.lazy') -- plugins neovim
+        end,
 	},{
 		nome = 'fd',
 		link = 'https://github.com/sharkdp/fd/releases/download/v8.7.1/fd-v8.7.1-x86_64-pc-windows-gnu.zip',
@@ -85,7 +88,7 @@ local programas = {
 		nome = 'node',
 		link = win7 and 'https://nodejs.org/dist/v13.14.0/node-v13.14.0-win-x64.zip' or 'https://nodejs.org/dist/v20.10.0/node-v20.10.0-win-x64.zip',-- v12.22.12(win7)?
 		cmd = 'node.exe',
-		config = require('andrikin.utils').Node.init,
+		config = function() require('andrikin.utils').Node:init() end,
 	},{
 		nome = 'python',
 		link = win7 and 'https://www.python.org/ftp/python/3.8.9/python-3.8.9-embed-amd64.zip' or 'https://www.python.org/ftp/python/3.12.2/python-3.12.2-embed-amd64.zip',

@@ -1535,7 +1535,7 @@ local Node = {}
 
 Node.__index = Node
 
-Node.init = function()
+Node.init = function(self)
     -- checa se node está instalado
     local instalado = function(pacote)
         return not vim.tbl_isempty(vim.fs.find(pacote, {path = tostring(Utils.Opt / 'node'), type = 'directory'}))
