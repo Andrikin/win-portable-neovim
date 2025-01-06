@@ -37,6 +37,8 @@
 -- python: pip install pyright | npm -g install pyright
 -- rust: TODO
 
+if vim.loader then vim.loader.enable() end
+
 -- IMPORTANT(Windows 10+): Desabilitar python.exe e python3.exe em "Gerenciar aliases de execução de aplicativo".
 -- Windows executa este alias antes de executar python declarado em PATH.
 -- ALTERNATIVE FIX: Remover WindowsApps do PATH
