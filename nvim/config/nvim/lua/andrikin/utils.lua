@@ -1,7 +1,5 @@
 -- TODO: 
--- criar observer para continuar código quando somente todos os downloads acabarem,
 -- resolver node cli.js path,
--- executando 3 vezes a compilação de arquivos tex
 
 ---@class Utils
 ---@field Diretorio Diretorio
