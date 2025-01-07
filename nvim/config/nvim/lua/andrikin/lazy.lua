@@ -189,6 +189,7 @@ local plugins = {
     {
 ---@diagnostic disable-next-line: undefined-field
         dir = vim.loop.os_homedir() .. '/Documents/nvim/projetos/himalaya-vim',
+        enabled = function() return vim.fn.executable('himalaya') == 1 end,
     },
     {
         'https://github.com/junegunn/fzf.vim.git',
