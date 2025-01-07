@@ -215,16 +215,16 @@ autocmd(
                     'git',
                     'pull'
                 }, {
-                        cwd = vim.env.HOME,
-                        on_stdout = function(_, data, _)
-                            if data[1] == 'Already up to date.' then
-                                print('win-portable-neovim: não há nada para atualizar!')
-                            elseif data[1]:match('^Updating') then
-                                reload()
-                                print('win-portable-neovim: atualizado e recarregado!')
-                            end
-                        end,
-                    })
+                    cwd = vim.env.HOME,
+                    on_stdout = function(_, data, _)
+                        if data[1] == 'Already up to date.' then
+                            print('win-portable-neovim: não há nada para atualizar!')
+                        elseif data[1]:match('^Updating') then
+                            reload()
+                            print('win-portable-neovim: atualizado e recarregado!')
+                        end
+                    end,
+                })
             end
 ---@diagnostic disable-next-line: undefined-field
             vim.cmd.cd(vim.loop.os_homedir() .. '/Desktop')
