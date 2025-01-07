@@ -977,11 +977,6 @@ Latex.compilar = function(self)
         Utils.notify('Latex: compilar: Comando executável somente para arquivos .tex!')
         do return end
     end
-    local in_downloads = vim.fs.normalize(vim.fn.expand('%:p')):match(tostring(self.diretorios.destino))
-    if not in_downloads then
-        Utils.notify('Latex: compilar: arquivo "tex" não está na pasta $HOMEPATH/Downloads')
-        do return end
-    end
     if vim.o.modified then -- salvar arquivo que está modificado.
         vim.cmd.write()
         vim.cmd.redraw({bang = true})
