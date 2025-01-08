@@ -3,6 +3,7 @@
 -- compilados
 local Andrikin = require('andrikin.utils').Andrikin
 local Ouvidoria = require('andrikin.utils').Ouvidoria
+local buf = vim.api.nvim_get_current_buf()
 vim.api.nvim_create_autocmd(
     'BufWritePost',
     {
@@ -12,6 +13,7 @@ vim.api.nvim_create_autocmd(
                 Ouvidoria.latex:compilar()
             end
         end,
-        buffer = vim.api.nvim_get_current_buf(),
+        buffer = buf,
     }
 )
+vim.bo[buf].textwidth = 80
