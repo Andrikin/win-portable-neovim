@@ -34,7 +34,8 @@ vim.defer_fn( -- kickstart.nvim
                 'python',
                 'vim', 'vimdoc',
                 'latex',
-                'comment',
+                -- https://github.com/folke/dot/blob/master/nvim/lua/plugins/treesitter.lua -- folke saying that comment slow TS
+                -- 'comment',
                 'muttrc',
             },
             highlight = {
