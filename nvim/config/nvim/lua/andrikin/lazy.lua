@@ -16,7 +16,7 @@ vim.opt.rtp:prepend(lazypath)
 -- Temas - interface: nome, url
 local tokyonight = {
     nome = 'tokyonight',
-    url = 'https://github.com/folke/tokyonight.nvim.git',
+    link = 'https://github.com/folke/tokyonight.nvim.git',
     -- config = function()
     --     vim.api.nvim_set_hl(0, 'CursorLine', {link = 'Visual'})
     -- end
@@ -43,7 +43,7 @@ local plugins = {
 	{
 		'https://github.com/tpope/vim-commentary.git',
 		enabled = not has_buildin and win7,
-	},
+    },
     {
         'https://github.com/tpope/vim-eunuch.git',
         enabled = has_rm and has_mkdir,
@@ -58,7 +58,7 @@ local plugins = {
 	},
     -- Theme
     {
-        tema.url,
+        tema.link,
         priority = 1000,
         lazy = false,
 		config = function()
@@ -82,6 +82,8 @@ local plugins = {
 	-- Lualine,
 	{
 		'https://github.com/nvim-lualine/lualine.nvim',
+        priority = 1000,
+        lazy = false,
 		config = function()
 			require('lualine').setup(
 				{
@@ -150,6 +152,7 @@ local plugins = {
 	-- Nim-cmp,
 	{
 		'https://github.com/hrsh7th/nvim-cmp.git',
+        lazy = true,
 		dependencies = {
 			'https://github.com/hrsh7th/cmp-nvim-lsp.git',
 			'https://github.com/hrsh7th/cmp-buffer.git',
@@ -177,6 +180,7 @@ local plugins = {
 	-- Treesitter,
     {
         'https://github.com/nvim-treesitter/nvim-treesitter.git',
+        lazy = true,
         build = ':TSUpdate',
         cond = function()
             return vim.fn.executable('x86_64-w64-mingw32-gcc') == 1
@@ -189,6 +193,7 @@ local plugins = {
     {
 ---@diagnostic disable-next-line: undefined-field
         dir = vim.loop.os_homedir() .. '/Documents/nvim/projetos/himalaya-vim',
+        lazy = true,
         enabled = function() return vim.fn.executable('himalaya') == 1 end,
     },
     {
