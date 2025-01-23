@@ -34,6 +34,7 @@ local win7 = require('andrikin.utils').win7
 local has_buildin = vim.version().major >= 0 and vim.version().minor > 9
 local has_rm = vim.fn.executable('rm') == 1
 local has_mkdir = vim.fn.executable('mkdir') == 1
+local has_sqlite = vim.fn.executable('sqlite3') == 1
 local plugins = {
 	-- Fork Tim Pope vim-capslock
 	'https://github.com/Andrikin/vim-capslock',
@@ -51,10 +52,7 @@ local plugins = {
 	{
 		'https://github.com/tpope/vim-dadbod.git',
 		lazy = true,
-	},
-	{
-		'https://github.com/tpope/vim-obsession.git',
-		lazy = true,
+        enabled = has_sqlite,
 	},
     -- Theme
     {
@@ -73,6 +71,7 @@ local plugins = {
 	{
 		'https://github.com/mattn/emmet-vim.git',
 		lazy = true,
+        ft = {'css', 'html'},
 	},
 	-- Harpoon2 - The Primeagen,
 	{
@@ -82,8 +81,7 @@ local plugins = {
 	-- Lualine,
 	{
 		'https://github.com/nvim-lualine/lualine.nvim',
-        priority = 1000,
-        lazy = false,
+        lazy = true,
 		config = function()
 			require('lualine').setup(
 				{
@@ -116,6 +114,7 @@ local plugins = {
 	{
 		'https://github.com/norcalli/nvim-colorizer.lua.git',
 		lazy = true,
+        ft = {'css', 'html'},
 	},
 	-- Nvim Lspconfig,
 	{
@@ -144,12 +143,13 @@ local plugins = {
 	{
 		'https://github.com/mfussenegger/nvim-jdtls.git',
 		lazy = true,
+        ft = {'java'},
 	},
 	-- Traces.vim,
 	'https://github.com/markonm/traces.vim.git',
 	-- Undotree,
 	'https://github.com/mbbill/undotree.git',
-	-- Nim-cmp,
+	-- Nvim-cmp,
 	{
 		'https://github.com/hrsh7th/nvim-cmp.git',
         lazy = true,
@@ -180,26 +180,24 @@ local plugins = {
 	-- Treesitter,
     {
         'https://github.com/nvim-treesitter/nvim-treesitter.git',
-        lazy = true,
         build = ':TSUpdate',
+		dependencies = {'https://github.com/nvim-treesitter/playground.git'},
         cond = function()
             return vim.fn.executable('x86_64-w64-mingw32-gcc') == 1
         end
     },
-	{
-		'https://github.com/nvim-treesitter/playground.git',
-		lazy = true,
-	},
     {
 ---@diagnostic disable-next-line: undefined-field
         dir = vim.loop.os_homedir() .. '/Documents/nvim/projetos/himalaya-vim',
         lazy = true,
+        dev = true,
         enabled = function() return vim.fn.executable('himalaya') == 1 end,
     },
     {
         'https://github.com/junegunn/fzf.vim.git',
         dependencies = {'https://github.com/junegunn/fzf.git'},
         lazy = true,
+        enabled = false,
     },
 }
 
