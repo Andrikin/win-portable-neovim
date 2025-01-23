@@ -81,7 +81,6 @@ local plugins = {
 	-- Lualine,
 	{
 		'https://github.com/nvim-lualine/lualine.nvim',
-        lazy = true,
 		config = function()
 			require('lualine').setup(
 				{
