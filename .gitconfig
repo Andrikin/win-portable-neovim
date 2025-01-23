@@ -5,3 +5,5 @@
 [user]
 	email = contasecretaalternativa@gmail.com
 	name = Andrikin
+[init]
+	defaultBranch = main
