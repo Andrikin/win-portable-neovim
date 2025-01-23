@@ -34,7 +34,6 @@ local win7 = require('andrikin.utils').win7
 local has_buildin = vim.version().major >= 0 and vim.version().minor > 9
 local has_rm = vim.fn.executable('rm') == 1
 local has_mkdir = vim.fn.executable('mkdir') == 1
-local has_sqlite = vim.fn.executable('sqlite3') == 1
 local plugins = {
 	-- Fork Tim Pope vim-capslock
 	'https://github.com/Andrikin/vim-capslock',
@@ -52,7 +51,6 @@ local plugins = {
 	{
 		'https://github.com/tpope/vim-dadbod.git',
 		lazy = true,
-        enabled = has_sqlite,
 	},
     -- Theme
     {
