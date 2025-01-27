@@ -8,7 +8,6 @@ vim.api.nvim_create_autocmd(
     'BufWritePost',
     {
         group = Andrikin,
-        once = true,
         callback = function(env)
             if env.file:match('C%.I%. N°') then
                 Ouvidoria.latex:compilar()
