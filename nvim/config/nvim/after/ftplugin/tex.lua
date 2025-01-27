@@ -4,7 +4,11 @@
 local Andrikin = require('andrikin.utils').Andrikin
 local Ouvidoria = require('andrikin.utils').Ouvidoria
 local buf = vim.api.nvim_get_current_buf()
-vim.api.nvim_create_autocmd(
+local id = nil
+if vim.b[buf].autocmd_id then
+    goto configuracoes
+end
+id = vim.api.nvim_create_autocmd(
     'BufWritePost',
     {
         group = Andrikin,
@@ -16,4 +20,6 @@ vim.api.nvim_create_autocmd(
         buffer = buf,
     }
 )
+vim.b[buf].autocmd_id = id
+::configuracoes::
 vim.bo[buf].textwidth = 80
