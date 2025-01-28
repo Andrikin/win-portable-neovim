@@ -4,22 +4,25 @@
 local Andrikin = require('andrikin.utils').Andrikin
 local Ouvidoria = require('andrikin.utils').Ouvidoria
 local buf = vim.api.nvim_get_current_buf()
-local id = nil
-if vim.b[buf].autocmd_id then
-    goto configuracoes
+local has_autocmd = false
+local autocmds = vim.api.nvim_get_autocmds({
+    group = Andrikin,
+    event = 'BufWritePost',
+    buffer = buf,
+})
+has_autocmd = autocmds[1].group_name == "Andrikin"
+if not has_autocmd then
+    vim.api.nvim_create_autocmd(
+        'BufWritePost',
+        {
+            group = Andrikin,
+            callback = function(env)
+                if env.file:match('C%.I%. N°') then
+                    Ouvidoria.latex:compilar()
+                end
+            end,
+            buffer = buf,
+        }
+    )
 end
-id = vim.api.nvim_create_autocmd(
-    'BufWritePost',
-    {
-        group = Andrikin,
-        callback = function(env)
-            if env.file:match('C%.I%. N°') then
-                Ouvidoria.latex:compilar()
-            end
-        end,
-        buffer = buf,
-    }
-)
-vim.b[buf].autocmd_id = id
-::configuracoes::
 vim.bo[buf].textwidth = 80
