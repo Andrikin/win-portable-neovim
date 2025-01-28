@@ -998,19 +998,21 @@ Latex.compilar = function(self)
         do return end
     end
     Utils.notify('Arquivo pdf compilado!')
-    self:abrir(vim.fs.normalize(arquivo))
+    local pdf = tostring(self.diretorios.destino / vim.fn.fnamemodify(arquivo, ':t')):gsub('tex$', 'pdf')
+    self:abrir(pdf)
 end
 
-Latex.abrir = function(self, arquivo)
-    arquivo = arquivo:gsub('tex$', 'pdf')
-	local existe = vim.fn.filereadable(arquivo) ~= 0
+---@param pdf string
+Latex.abrir = function(self, pdf)
+    pdf = vim.fs.normalize(pdf)
+	local existe = vim.fn.filereadable(pdf) ~= 0
 	if not existe then
 		error('Latex: abrir: não foi possível encontrar arquivo "pdf"')
 	end
-    Utils.notify(('Abrindo arquivo %s'):format(vim.fn.fnamemodify(arquivo, ':t')))
+    Utils.notify(('Abrindo arquivo %s'):format(vim.fn.fnamemodify(pdf, ':t')))
     vim.fn.jobstart({
         self.executavel,
-        arquivo
+        pdf
     })
 end
 
