@@ -10,7 +10,12 @@ local autocmds = vim.api.nvim_get_autocmds({
     event = 'BufWritePost',
     buffer = buf,
 })
-has_autocmd = autocmds[1].group_name == "Andrikin"
+for _, au in ipairs(autocmds) do
+    if au.group_name == "Andrikin" then
+        has_autocmd = true
+        break
+    end
+end
 if not has_autocmd then
     vim.api.nvim_create_autocmd(
         'BufWritePost',
