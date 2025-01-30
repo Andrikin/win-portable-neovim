@@ -155,10 +155,6 @@ local programas = {
         nome = 'pandoc',
         link = 'https://github.com/jgm/pandoc/releases/download/3.5/pandoc-3.5-windows-x86_64.zip',
         cmd = 'pandoc.exe',
-    },{
-        nome = 'gs',
-        link = 'https://github.com/ArtifexSoftware/ghostpdl-downloads/releases/download/gs10040/ghostpcl-10.04.0-win64.zip',
-        cmd = 'gpcl6win64.exe',
     }
 }
 
