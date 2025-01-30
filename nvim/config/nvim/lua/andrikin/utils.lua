@@ -366,10 +366,11 @@ Programa.checar_instalacao = function(self)
     end
 end
 
+-- TODO: verificar quando utilizar esta método
 Programa.resetar = function(self)
     local concluido = nil
     local diretorio = self:diretorio().diretorio
-    if vim.fn.isdirectory(diretorio) then
+    if vim.fn.isdirectory(diretorio) == 1 then
         concluido = vim.fn.delete(diretorio) == 0
     end
     if not concluido then
@@ -395,7 +396,6 @@ Programa.instalar = function(self)
         do return end
     end
     self:criar_diretorio()
-    self:resetar()
     self:baixar()
 end
 

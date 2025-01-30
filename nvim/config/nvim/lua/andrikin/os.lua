@@ -156,7 +156,7 @@ local programas = {
         link = 'https://github.com/jgm/pandoc/releases/download/3.5/pandoc-3.5-windows-x86_64.zip',
         cmd = 'pandoc.exe',
     },{
-        nome = 'ghostscript',
+        nome = 'gs',
         link = 'https://github.com/ArtifexSoftware/ghostpdl-downloads/releases/download/gs10040/gs10040w64.exe',
         cmd = {'gs.exe', 'gs10040w64.exe'},
         config = function() require('andrikin.utils').Gs:init() end,
