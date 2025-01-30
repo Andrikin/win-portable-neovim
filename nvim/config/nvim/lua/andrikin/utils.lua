@@ -1607,5 +1607,20 @@ end
 
 Utils.TreeSitter = TreeSitter
 
+---@class Gs
+---@field nome string
+---@field init function
+local Gs = {}
+
+Gs.__index = Gs
+
+Gs.nome = 'gs'
+
+Gs.init = function(self)
+    Utils.renomear_executavel(self)
+end
+
+Utils.Gs = Gs
+
 return Utils
 
