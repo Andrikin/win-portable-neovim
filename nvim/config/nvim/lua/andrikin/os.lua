@@ -157,9 +157,8 @@ local programas = {
         cmd = 'pandoc.exe',
     },{
         nome = 'gs',
-        link = 'https://github.com/ArtifexSoftware/ghostpdl-downloads/releases/download/gs10040/gs10040w64.exe',
-        cmd = {'gs.exe', 'gs10040w64.exe'},
-        config = function() require('andrikin.utils').Gs:init() end,
+        link = 'https://github.com/ArtifexSoftware/ghostpdl-downloads/releases/download/gs10040/ghostpcl-10.04.0-win64.zip',
+        cmd = 'gpcl6win64.exe',
     }
 }
 
