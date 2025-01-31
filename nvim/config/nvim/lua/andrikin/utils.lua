@@ -977,6 +977,7 @@ end
 -- criar pdf original na pasta Temp
 -- comprimir pdf original e colocar pdf comprimido na pasta Downloads
 Latex.compilar = function(self)
+    local has_gs = vim.fn.executable('gs.exe') == 1
     if not self.is_tex() then
         Utils.notify('Latex: compilar: Comando executável somente para arquivos .tex!')
         do return end
@@ -997,14 +998,16 @@ Latex.compilar = function(self)
         'search-path=' .. self.diretorios.modelos.diretorio,
         tex
     }
-    local nome_arquivo = vim.fn.fnamemodify(tex, ':t'):gsub('tex$', 'pdf')
+    local nome = vim.fn.fnamemodify(tex, ':t'):gsub('tex$', 'pdf')
+    local arquivo_destino = (self.diretorios.destino / nome).diretorio
+    local arquivo_temp = (self.diretorios.temp / nome).diretorio
     local comprimir = { -- ghostscript para compressão
         'gs.exe',
         '-sDEVICE=pdfwrite',
         '-q',
         '-o',
-        (self.diretorios.destino / nome_arquivo).diretorio,
-        (self.diretorios.temp / nome_arquivo).diretorio,
+        arquivo_destino,
+        arquivo_temp,
     }
     Utils.notify('Compilando arquivo...')
     local resultado = vim.fn.system(compilar)
@@ -1013,14 +1016,24 @@ Latex.compilar = function(self)
         Utils.notify(resultado)
         do return end
     end
-    resultado = vim.fn.system(comprimir)
-    -- erro ao comprimir
-    if vim.v.shell_error > 0 then
-        Utils.notify(resultado)
-        do return end
+    -- comprimir arquivo somente se ghostscript
+    -- estiver instalado
+    if has_gs then
+        Utils.notify('Comprimindo arquivo...')
+        resultado = vim.fn.system(comprimir)
+        -- erro ao comprimir
+        if vim.v.shell_error > 0 then
+            Utils.notify(resultado)
+            do return end
+        end
+    else
+        vim.fn.rename( -- mover arquivo temp para pasta Downloads
+            arquivo_temp,
+            arquivo_destino
+        )
     end
-    Utils.notify('Arquivo pdf compilado!')
-    self:abrir(tostring(self.diretorios.destino / nome_arquivo))
+    Utils.notify('Arquivo pdf gerado!')
+    self:abrir(arquivo_destino)
 end
 
 ---@param pdf string
