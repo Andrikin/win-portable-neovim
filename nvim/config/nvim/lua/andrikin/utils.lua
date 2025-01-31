@@ -953,6 +953,7 @@ Latex.new = function()
             modelos = Diretorio.new(vim.fn.fnamemodify(vim.env.HOME, ':h')) / 'projetos' / 'ouvidoria-latex-modelos',
 ---@diagnostic disable-next-line: undefined-field
             destino = Diretorio.new(vim.loop.os_homedir()) / 'Downloads',
+            temp = Diretorio.new(vim.env.TEMP),
         }
     }, Latex)
     latex:init()
@@ -968,8 +969,13 @@ Latex.init = function(self)
     if not vim.env.TEXINPUTS then
         vim.env.TEXINPUTS = '.;' .. self.diretorios.modelos.diretorio .. ';' -- não é necessário para Windows
     end
+    if vim.fn.executable('gs.exe') == 0 then
+        Utils.notify('Latex: realizar instalação de GhostScript com o comando Cygwin')
+    end
 end
 
+-- criar pdf original na pasta Temp
+-- comprimir pdf original e colocar pdf comprimido na pasta Downloads
 Latex.compilar = function(self)
     if not self.is_tex() then
         Utils.notify('Latex: compilar: Comando executável somente para arquivos .tex!')
@@ -979,27 +985,42 @@ Latex.compilar = function(self)
         vim.cmd.write()
         vim.cmd.redraw({bang = true})
     end
-    local arquivo = vim.fn.expand('%:p')
-    local comando = {
+    local tex = vim.fn.expand('%:p')
+    local compilar = {
         'tectonic.exe',
         '-X',
         'compile',
         '-o',
-        self.diretorios.destino.diretorio,
+        self.diretorios.temp.diretorio,
         '-k',
         '-Z',
         'search-path=' .. self.diretorios.modelos.diretorio,
-        arquivo
+        tex
+    }
+    local nome_arquivo = vim.fn.fnamemodify(tex, ':t'):gsub('tex$', 'pdf')
+    local comprimir = { -- ghostscript para compressão
+        'gs.exe',
+        '-sDEVICE=pdfwrite',
+        '-q',
+        '-o',
+        (self.diretorios.destino / nome_arquivo).diretorio,
+        (self.diretorios.temp / nome_arquivo).diretorio,
     }
     Utils.notify('Compilando arquivo...')
-    local resultado = vim.fn.system(comando)
+    local resultado = vim.fn.system(compilar)
+    -- erro ao compilar
+    if vim.v.shell_error > 0 then
+        Utils.notify(resultado)
+        do return end
+    end
+    resultado = vim.fn.system(comprimir)
+    -- erro ao comprimir
     if vim.v.shell_error > 0 then
         Utils.notify(resultado)
         do return end
     end
     Utils.notify('Arquivo pdf compilado!')
-    local pdf = tostring(self.diretorios.destino / vim.fn.fnamemodify(arquivo, ':t')):gsub('tex$', 'pdf')
-    self:abrir(pdf)
+    self:abrir(tostring(self.diretorios.destino / nome_arquivo))
 end
 
 ---@param pdf string
