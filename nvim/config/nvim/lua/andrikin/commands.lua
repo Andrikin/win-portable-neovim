@@ -38,6 +38,17 @@ command(
 )
 
 command(
+	'Andre',
+	function()
+        local andre = 'T:/16-Diretoria de Ouvidoria/Andre Aguiar'
+        if vim.fn.isdirectory(andre) == 1 then
+            vim.cmd.Dirvish(andre)
+        end
+	end,
+	{}
+)
+
+command(
 	'SysinitEdit',
 	function()
 		vim.cmd.edit('$VIM/sysinit.vim')
