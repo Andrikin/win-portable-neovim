@@ -1009,6 +1009,14 @@ Latex.compilar = function(self)
         arquivo_destino,
         arquivo_temp,
     }
+    local gerar_pdf = vim.fn.confirm(
+        'Deseja gerar arquivo pdf?',
+        '&Sim\n&Não',
+        2
+    ) == 1
+    if not gerar_pdf then
+        goto finalizar
+    end
     Utils.notify('Compilando arquivo...')
     local resultado = vim.fn.system(compilar)
     -- erro ao compilar
@@ -1034,6 +1042,7 @@ Latex.compilar = function(self)
     end
     Utils.notify('Arquivo pdf gerado!')
     self:abrir(arquivo_destino)
+    ::finalizar::
 end
 
 ---@param pdf string
