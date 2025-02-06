@@ -954,6 +954,7 @@ Latex.new = function()
 ---@diagnostic disable-next-line: undefined-field
             destino = Diretorio.new(vim.loop.os_homedir()) / 'Downloads',
             temp = Diretorio.new(vim.env.TEMP),
+            redelocal = Diretorio.new('T:') / '1-Comunicação Interna - C.I' / os.date('%Y'),
         }
     }, Latex)
     latex:init()
@@ -999,7 +1000,7 @@ Latex.compilar = function(self)
         tex
     }
     local nome = vim.fn.fnamemodify(tex, ':t'):gsub('tex$', 'pdf')
-    local arquivo_destino = (self.diretorios.destino / nome).diretorio
+    local arquivo_destino = (self.diretorios.redelocal / nome).diretorio
     local arquivo_temp = (self.diretorios.temp / nome).diretorio
     local comprimir = { -- ghostscript para compressão
         'gs.exe',
