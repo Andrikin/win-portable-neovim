@@ -38,7 +38,7 @@ command(
 )
 
 command(
-	'Andre',
+	'RedeLocal',
 	function()
         local andre = 'T:/16-Diretoria de Ouvidoria/Andre Aguiar'
         if vim.fn.isdirectory(andre) == 1 then
