@@ -270,6 +270,9 @@ Programa.baixar = function(self)
 	})
 end
 
+-- TODO: refazer lógica de extração
+-- ideia: continuar extração até não haver mais
+-- arquivos compactados.
 Programa.extrair = function(self)
      -- arquivo extraído já é um executável
     if self:extencao() == 'exe' then
@@ -1176,14 +1179,16 @@ Comunicacao.nova = function(self, opts)
     local range = {1, vim.fn.line('$')}
 	-- preencher dados de C.I., ocorrência e setor no arquivo tex
     if modelo:match('modelo.basico') then
-        vim.cmd.substitute({("/Cabecalho{}{[A-Z-]\\{-}}/Cabecalho{%s}{%s}/I"):format(num_ci, setor), range = range})
+        vim.cmd.substitute({("/<numero>/%s/I"):format(num_ci), range = range})
+        vim.cmd.substitute({("/<setor>/%s/I"):format(setor), range = range})
     elseif modelo:match('alerta.gabinete') or modelo:match('carga.gabinete') then
-        vim.cmd.substitute({("/Ocorrencia{}/Ocorrencia{%s}/I"):format(ocorrencia), range = range})
-        vim.cmd.substitute({("/Secretaria{}/Secretaria{%s}/I"):format(setor), range = range})
-        vim.cmd.substitute({("/Cabecalho{}/Cabecalho{%s}/I"):format(num_ci), range = range})
+        vim.cmd.substitute({("/<ocorrencia>/%s/I"):format(ocorrencia), range = range})
+        vim.cmd.substitute({("/<secretaria>/%s/I"):format(setor), range = range})
+        vim.cmd.substitute({("/<numero>/%s/I"):format(num_ci), range = range})
     else
-        vim.cmd.substitute({("/Ocorrencia{}/Ocorrencia{%s}/I"):format(ocorrencia), range = range})
-        vim.cmd.substitute({("/Cabecalho{}{[A-Z-]\\{-}}/Cabecalho{%s}{%s}/I"):format(num_ci, setor), range = range})
+        vim.cmd.substitute({("/<ocorrencia>/%s/I"):format(ocorrencia), range = range})
+        vim.cmd.substitute({("/<numero>/%s/I"):format(num_ci), range = range})
+        vim.cmd.substitute({("/<setor>/%s/I"):format(setor), range = range})
     end
 end
 
