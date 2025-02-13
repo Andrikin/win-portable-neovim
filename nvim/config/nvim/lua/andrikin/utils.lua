@@ -955,7 +955,7 @@ Latex.new = function()
         diretorios = {
             modelos = Diretorio.new(vim.fn.fnamemodify(vim.env.HOME, ':h')) / 'projetos' / 'ouvidoria-latex-modelos',
 ---@diagnostic disable-next-line: undefined-field
-            destino = Diretorio.new(vim.loop.os_homedir()) / 'Downloads',
+            download = Diretorio.new(vim.loop.os_homedir()) / 'Downloads',
             temp = Diretorio.new(vim.env.TEMP),
             redelocal = Diretorio.new('T:') / '1-Comunicação Interna - C.I' / os.date('%Y'),
         }
@@ -996,7 +996,7 @@ Latex.compilar = function(self)
         '-X',
         'compile',
         '-o',
-        self.diretorios.temp.diretorio,
+        self.diretorios.download.diretorio,
         '-k',
         '-Z',
         'search-path=' .. self.diretorios.modelos.diretorio,
@@ -1004,7 +1004,7 @@ Latex.compilar = function(self)
     }
     local nome = vim.fn.fnamemodify(tex, ':t'):gsub('tex$', 'pdf')
     local arquivo_destino = (self.diretorios.redelocal / nome).diretorio
-    local arquivo_temp = (self.diretorios.temp / nome).diretorio
+    local arquivo_temp = (self.diretorios.download / nome).diretorio
     local comprimir = { -- ghostscript para compressão
         'gs.exe',
         '-sDEVICE=pdfwrite',
