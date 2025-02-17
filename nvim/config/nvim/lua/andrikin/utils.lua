@@ -1158,7 +1158,7 @@ Comunicacao.nova = function(self, opts)
     end
 	local num_ci = vim.fn.input('Digite o número da C.I.: ')
 	local setor = vim.fn.input('Digite o setor destinatário: ')
-    local ocorrencia = vim.fn.input('Digite o número da ocorrência: ')
+    local ocorrencia = vim.fn.input('Digite o número da ocorrência/assunto: ')
 	if num_ci == '' or setor == '' then -- obrigatório informar os dados de C.I. e setor
 		error('Ouvidoria.latex: compilar: não foram informados os dados ou algum deles [C.I., setor]')
 	end
