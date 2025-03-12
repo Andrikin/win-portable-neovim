@@ -1032,10 +1032,11 @@ Latex.compilar = function(self, destino, temp)
         do return end
     else
         if vim.fn.filereadable(arquivo_temp) ~= 0 then -- arquivo existe
-            vim.fn.filecopy( -- copiar arquivo temp para pasta Downloads
-                arquivo_temp,
-                (self.diretorios.download / arquivo).diretorio
-            )
+            -- copiar arquivo temp para pasta Downloads
+            vim.cmd['!']({
+                args = {'cp', vim.fn.shellescape(arquivo_temp), vim.fn.shellescape((self.diretorios.download / arquivo).diretorio)},
+                mods = {silent = true}
+            })
         end
     end
     -- comprimir arquivo somente se ghostscript
