@@ -2,7 +2,6 @@
 -- TODO: comando somente para arquivos de comunicação que precisam ser 
 -- compilados
 local Andrikin = require('andrikin.utils').Andrikin
-local Ouvidoria = require('andrikin.utils').Ouvidoria
 local buf = vim.api.nvim_get_current_buf()
 local has_autocmd = false
 local autocmds = vim.api.nvim_get_autocmds({
@@ -23,7 +22,7 @@ if not has_autocmd then
             group = Andrikin,
             callback = function(env)
                 if env.file:match('C%.I%. N°') then
-                    Ouvidoria.latex:compilar()
+                    vim.cmd.CompilarOuvidoria()
                 end
             end,
             buffer = buf,
