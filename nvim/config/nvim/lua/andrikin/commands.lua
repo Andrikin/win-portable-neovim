@@ -3,6 +3,7 @@
 local command = vim.api.nvim_create_user_command
 local Ouvidoria = require('andrikin.utils').Ouvidoria -- executar bootstrap
 local Cygwin = require('andrikin.utils').Cygwin
+local Diretorio = require('andrikin.utils').Diretorio
 
 command(
 	'HexEditor',
@@ -11,9 +12,18 @@ command(
 )
 
 command(
-	'OuvidoriaCompilar',
+	'CompilarOuvidoria',
     function()
         Ouvidoria.latex:compilar()
+    end,
+	{}
+)
+
+command(
+	'CompilarLatex',
+    function()
+        local destino = Diretorio.new(vim.loop.os_homedir()) / 'Downloads'
+        Ouvidoria.latex:compilar(destino)
     end,
 	{}
 )

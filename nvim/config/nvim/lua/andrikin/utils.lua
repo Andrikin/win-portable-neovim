@@ -980,31 +980,43 @@ end
 
 -- criar pdf original na pasta Temp
 -- comprimir pdf original e colocar pdf comprimido na pasta Downloads
-Latex.compilar = function(self)
-    local has_gs = vim.fn.executable('gs.exe') == 1
+---@param temp Diretorio
+---@param destino Diretorio
+Latex.compilar = function(self, destino, temp)
     if not self.is_tex() then
         Utils.notify('Latex: compilar: Comando executável somente para arquivos .tex!')
+        do return end
+    end
+    local gerar_pdf = vim.fn.confirm(
+        'Deseja gerar arquivo pdf?',
+        '&Sim\n&Não',
+        2
+    ) == 1
+    if not gerar_pdf then
         do return end
     end
     if vim.o.modified then -- salvar arquivo que está modificado.
         vim.cmd.write()
         vim.cmd.redraw({bang = true})
     end
+    temp = temp or self.diretorios.temp
+    destino = destino or self.diretorios.redelocal
+    local has_gs = vim.fn.executable('gs.exe') == 1
     local tex = vim.fn.expand('%:p')
+    local arquivo = vim.fn.fnamemodify(tex, ':t'):gsub('tex$', 'pdf')
+    local arquivo_destino = (destino / arquivo).diretorio
+    local arquivo_temp = (temp / arquivo).diretorio
     local compilar = {
         'tectonic.exe',
         '-X',
         'compile',
         '-o',
-        self.diretorios.download.diretorio,
+        temp.diretorio,
         '-k',
         '-Z',
         'search-path=' .. self.diretorios.modelos.diretorio,
         tex
     }
-    local nome = vim.fn.fnamemodify(tex, ':t'):gsub('tex$', 'pdf')
-    local arquivo_destino = (self.diretorios.redelocal / nome).diretorio
-    local arquivo_temp = (self.diretorios.download / nome).diretorio
     local comprimir = { -- ghostscript para compressão
         'gs.exe',
         '-sDEVICE=pdfwrite',
@@ -1013,20 +1025,18 @@ Latex.compilar = function(self)
         arquivo_destino,
         arquivo_temp,
     }
-    local gerar_pdf = vim.fn.confirm(
-        'Deseja gerar arquivo pdf?',
-        '&Sim\n&Não',
-        2
-    ) == 1
-    if not gerar_pdf then
-        goto finalizar
-    end
     Utils.notify('Compilando arquivo...')
     local resultado = vim.fn.system(compilar)
-    -- erro ao compilar
-    if vim.v.shell_error > 0 then
+    if vim.v.shell_error > 0 then -- erro ao compilar
         Utils.notify(resultado)
         do return end
+    else
+        if vim.fn.filereadable(arquivo_temp) ~= 0 then -- arquivo existe
+            vim.fn.filecopy( -- copiar arquivo temp para pasta Downloads
+                arquivo_temp,
+                (self.diretorios.download / arquivo).diretorio
+            )
+        end
     end
     -- comprimir arquivo somente se ghostscript
     -- estiver instalado
@@ -1038,15 +1048,9 @@ Latex.compilar = function(self)
             Utils.notify(resultado)
             do return end
         end
-    else
-        vim.fn.rename( -- mover arquivo temp para pasta Downloads
-            arquivo_temp,
-            arquivo_destino
-        )
     end
     Utils.notify('Arquivo pdf gerado!')
     self:abrir(arquivo_destino)
-    ::finalizar::
 end
 
 ---@param pdf string
