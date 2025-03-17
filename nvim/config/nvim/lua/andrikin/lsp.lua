@@ -14,39 +14,44 @@ else
 	require('lazydev').setup()
 end
 
-vim.defer_fn( -- kickstart.nvim
-    function()
-        require('nvim-treesitter.install').compilers = {'x86_64-w64-mingw32-gcc', 'x86_64-w64-mingw32-clang', 'gcc', 'cc', 'clang'}
-        require('nvim-treesitter.configs').setup({
-            modules = {}, -- padrao
-            ignore_install = {}, -- padrao
-            auto_install = false, -- padrao
-            sync_install = false, -- padrao
-            ensure_installed = { -- parsers para highlight - treesitter
-                'css', 'html', 'javascript', 'vue',
-                'diff',
-                'git_config', 'git_rebase', 'gitattributes', 'gitcommit', 'gitignore',
-                'jsdoc', 'json', 'json5', 'java',
-                'lua', 'luadoc', 'luap', 'luau',
-                'markdown', 'markdown_inline',
-                'regex',
-                'xml',
-                'python',
-                'vim', 'vimdoc',
-                'latex',
-                -- https://github.com/folke/dot/blob/master/nvim/lua/plugins/treesitter.lua -- folke saying that comment slow TS
-                -- 'comment',
-                'muttrc',
-            },
-            highlight = {
-                enable = true,
-                additional_vim_regex_highlighting = true,
-            },
-            indent = { enable = true },
-        })
-    end,
-    0
-)
+-- TODO: Verificar se é possí
+if vim.fn.executable('x86_64-w64-mingw32-gcc') == 1 then
+    vim.defer_fn( -- kickstart.nvim
+        function()
+            require('nvim-treesitter.install').compilers = {'x86_64-w64-mingw32-gcc', 'x86_64-w64-mingw32-clang', 'gcc', 'cc', 'clang'}
+            require('nvim-treesitter.configs').setup({
+                modules = {}, -- padrao
+                ignore_install = {}, -- padrao
+                auto_install = false, -- padrao
+                sync_install = false, -- padrao
+                ensure_installed = { -- parsers para highlight - treesitter
+                    'css', 'html', 'javascript', 'vue',
+                    'diff',
+                    'git_config', 'git_rebase', 'gitattributes', 'gitcommit', 'gitignore',
+                    'jsdoc', 'json', 'json5', 'java',
+                    'lua', 'luadoc', 'luap', 'luau',
+                    'markdown', 'markdown_inline',
+                    'regex',
+                    'xml',
+                    'python',
+                    'vim', 'vimdoc',
+                    'latex',
+                    -- https://github.com/folke/dot/blob/master/nvim/lua/plugins/treesitter.lua -- folke saying that comment slow TS
+                    -- 'comment',
+                    'muttrc',
+                },
+                highlight = {
+                    enable = true,
+                    additional_vim_regex_highlighting = true,
+                },
+                indent = { enable = true },
+            })
+        end,
+        0
+    )
+else
+    notify('Instalar x86_64-w64-mingw32-gcc para utilizar nvim-treesitter!')
+end
 
 local telescope_tema = 'dropdown'
 local telescope_actions = require('telescope.actions')
