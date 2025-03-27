@@ -102,7 +102,7 @@ local programas = {
 		cmd = 'tectonic.exe',
 	},{
 		nome = 'texlab-latex-lsp',
-		link = 'https://github.com/latex-lsp/texlab/releases/download/v5.12.1/texlab-x86_64-windows.zip',
+		link = 'https://github.com/latex-lsp/texlab/releases/download/v5.22.1/texlab-x86_64-windows.zip',
 		cmd = 'texlab.exe'
 	},{
 		nome = 'deno-javascript-lsp',
