@@ -125,48 +125,6 @@ vim.keymap.set(
 	end
 )
 
--- --- Quickfix window ---
-local toggle_list = function(modo, comando, on_error)
-    local aberto = false
-    local windows = vim.fn.getwininfo()
-    for _, win in ipairs(windows) do
-        aberto = win[modo] == 1
-        if aberto then
-            if vim.fn.tabpagenr() ~= win.tabnr then
-                vim.fn.win_gotoid(win.winid)
-            end
-            vim.cmd.windo({args = {'normal', 'ZQ'}, range = {win.winnr}})
-            do return end
-        end
-    end
-    if not aberto then
-        if modo == 'terminal' then
-            vim.cmd.split()
-        end
-        local ok, resultado = pcall(vim.cmd[comando])
-        if not ok and on_error then
-            on_error(resultado)
-        end
-    end
-end
--- Toggle quickfix window
-vim.keymap.set('n', '<leader>q',
-    function()
-        toggle_list('quickfix', 'copen')
-    end
-)
-vim.keymap.set('n', '<leader>l',
-    function()
-        toggle_list('loclist', 'lopen',
-            function(resposta)
-                if resposta and resposta:match('E776:') then
-                    notify('loclist: Sem itens para listar.')
-                end
-            end
-        )
-    end
-)
-
 -- --- Terminal ---
 
 vim.keymap.set('t', '<esc>', '<C-\\><C-n>')

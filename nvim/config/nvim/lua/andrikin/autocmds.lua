@@ -96,40 +96,6 @@ autocmd(
     }
 )
 
---- Quando quickfix/loclist for para estado hidden, resetar configurações
-autocmd(
-    'User',
-    {
-        group = Andrikin,
-        pattern = 'AndrikinQuickFixHidden',
-        callback = function(ev)
-            local qf_winid = vim.fn.bufwinid(ev.buf)
-            local windows = vim.fn.gettabinfo(vim.fn.tabpagenr())[1].windows
-            windows = vim.tbl_filter(function(winid)
-                return winid ~= qf_winid
-            end, windows)
-            for _, id in ipairs(windows) do
-                vim.wo[id].cursorline = false
-            end
-        end
-    }
-)
-autocmd(
-    {'BufHidden', 'BufLeave'},
-    {
-        group = Andrikin,
-        pattern = '*',
-        callback = function()
-            if vim.o.buftype == 'quickfix' then
-                vim.api.nvim_exec_autocmds('User', {
-                    group = Andrikin,
-                    pattern = 'AndrikinQuickFixHidden',
-                })
-            end
-        end
-    }
-)
-
 -- Setar cwd para $HOMEPATH/Desktop
 -- Realizar Git pull no repositório win-portable-neovim\
 autocmd(
