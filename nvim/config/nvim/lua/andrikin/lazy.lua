@@ -146,20 +146,10 @@ local plugins = {
 	'https://github.com/markonm/traces.vim.git',
 	-- Undotree,
 	'https://github.com/mbbill/undotree.git',
-	-- Nvim-cmp,
-	{
-		'https://github.com/hrsh7th/nvim-cmp.git',
-        lazy = true,
-		dependencies = {
-			'https://github.com/hrsh7th/cmp-nvim-lsp.git',
-			'https://github.com/hrsh7th/cmp-buffer.git',
-			'https://github.com/hrsh7th/cmp-path.git',
-			'https://github.com/L3MON4D3/LuaSnip.git',
-            'https://github.com/saadparwaiz1/cmp_luasnip.git',
-            'https://github.com/rafamadriz/friendly-snippets.git',
-		},
-	},
-	-- Telescope,
+    -- Snipets
+    'https://github.com/L3MON4D3/LuaSnip.git',
+    'https://github.com/rafamadriz/friendly-snippets.git',
+    -- Telescope
 	{
 		'https://github.com/nvim-telescope/telescope.nvim.git',
         lazy = true,

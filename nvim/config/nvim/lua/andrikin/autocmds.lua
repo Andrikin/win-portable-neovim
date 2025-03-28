@@ -1,11 +1,8 @@
 -- Autocmds goosebumps
 local autocmd = vim.api.nvim_create_autocmd
-local termcode = vim.api.nvim_replace_termcodes
-local feedkey = vim.api.nvim_feedkeys
 local reload = require('andrikin.utils').reload
 local Andrikin = require('andrikin.utils').Andrikin
 local cursorline = require('andrikin.utils').cursorline
-local win7 = require('andrikin.utils').win7
 
 -- Highlight linha quando entrar em INSERT MODE
 autocmd(
@@ -60,18 +57,6 @@ autocmd(
     }
 )
 
--- Desabilitar cmp quando em CommandMode
-autocmd(
-    'CmdlineEnter',
-    {
-        group = Andrikin,
-        pattern = '*',
-        callback = function()
-            require('cmp').setup({ enabled = false })
-        end,
-    }
-)
-
 -- Remover fonte do regedit (Windows)
 autocmd(
     'VimLeave',
@@ -103,65 +88,9 @@ autocmd(
     {
         group = Andrikin,
         callback = function(ev)
-            local anterior92 = vim.version().major <= 0 and vim.version().minor <= 9 and vim.version().patch <= 2
-            -- local client = vim.lsp.get_client_by_id(ev.data.client_id) -- remover LSP highlight 
-            -- client.server_capabilities.semanticTokensProvider = nil -- remover LSP highlight 
-            local opts = {buffer = ev.buf}
-            if win7 or (anterior92 or (vim.version().minor < 11 and vim.version().major == 0)) then -- Prováveis comandos padrão para neovim, após 0.11 dev only
-                vim.keymap.set('n', 'grn', vim.lsp.buf.rename, opts) -- default neovim
-                vim.keymap.set('n', 'grr', vim.lsp.buf.references, opts) -- default neovim
-                vim.keymap.set('n', 'gra', vim.lsp.buf.code_action, opts) -- default neovim
-                vim.keymap.set('n', '<c-s>', vim.lsp.buf.signature_help, opts) -- default neovim
-                vim.keymap.set('n', 'K', vim.lsp.buf.hover, opts) -- default neovim
-                vim.keymap.set('n', 'gri', vim.lsp.buf.implementation, opts) -- default neovim
-                vim.keymap.set('n', 'gO', vim.lsp.buf.document_symbol, opts) -- default neovim
-            end
-            vim.keymap.set('n', 'grd', vim.lsp.buf.definition, opts)
-            vim.keymap.set('n', 'grD', vim.lsp.buf.declaration, opts)
-            -- nvim-cmp (force autocompletion)
-            if package.loaded['cmp'] then
-                local cmp = require('cmp')
-                local luasnip = require('luasnip')
-                vim.keymap.set("i", "<c-n>", function(fallback)
-                    if cmp.visible() then
-                        cmp.select_next_item({behavior = cmp.SelectBehavior.Select})
-                    elseif not cmp.complete() then
-                        fallback()
-                    end
-                end, opts)
-                vim.keymap.set("i", "<c-p>", function(fallback)
-                    if cmp.visible() then
-                        cmp.select_prev_item({behavior = cmp.SelectBehavior.Select})
-                    elseif not cmp.complete() then
-                        fallback()
-                    end
-                end, opts)
-                vim.keymap.set("i", "<c-y>", function()
-                    if luasnip.jumpable(-1) then
-                        luasnip.jump(-1)
-                    end
-                end, opts)
-                vim.keymap.set("i", "<cr>", function() -- insert word and skip from INSERT MODE
-                    cmp.confirm({select = false})
-                    feedkey(termcode("<esc>", true, false, true), 'n', false)
-                end, opts)
-                vim.keymap.set("i", "<c-k>", function()
-                    if luasnip.expand_or_jumpable() then
-                        luasnip.expand_or_jump()
-                    else
-                        feedkey(termcode("<c-k>", true, false, true), 'n', false)
-                    end
-                end, opts)
-                vim.keymap.set("i", "<c-j>", function()
-                    if cmp.visible() then
-                        cmp.confirm({select = true})
-                    else
-                        feedkey(termcode("<c-j>", true, false, true), 'n', false)
-                    end
-                end, opts)
-                vim.keymap.set("i", "<c-e>", function()
-                    cmp.abort()
-                end, opts)
+            local client = vim.lsp.get_client_by_id(ev.data.client_id)
+            if client and client:supports_method('textDocument/completion') then
+                vim.lsp.completion.enable(true, client.id, ev.buf, { autotrigger = true })
             end
         end
     }
