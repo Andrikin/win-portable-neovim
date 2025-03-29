@@ -1,6 +1,5 @@
 ---@diagnostic disable: need-check-nil
 local notify = require('andrikin.utils').notify
-local win7 = require('andrikin.utils').win7
 
 if not vim.g.nvy or not vim.g.neovide then
 	-- Fix ^\ (nvim-qt/windows 7)
@@ -37,9 +36,7 @@ vim.keymap.set('i', '.', '.<c-g>u')
 -- nnoremap <expr> k v:count == 0 ? 'gk' : 'k'
 -- nnoremap <expr> j v:count == 0 ? 'gj' : 'j'
 -- Adding jumps to jumplist - The Primeagen gold apple with gk and gj (screen cursor up/down)
-vim.keymap.set(
-	'n',
-	'k',
+vim.keymap.set( 'n', 'k',
 	function()
 		local count = vim.v.count
 		local marcador = ''
@@ -53,9 +50,7 @@ vim.keymap.set(
 	end,
 	{ expr = true }
 )
-vim.keymap.set(
-	'n',
-	'j',
+vim.keymap.set( 'n', 'j',
 	function()
 		local count = vim.v.count
 		local marcador = ''
@@ -85,10 +80,10 @@ vim.keymap.set({'n', 'v'}, 'gy', '"+y')
 vim.keymap.set('n', 'gY', '"+Y')
 
 -- Bracket maps
--- For buffers
-vim.keymap.set('n', ']b', vim.cmd.bnext, {desc = 'Next buffer'})
-vim.keymap.set('n', '[b', vim.cmd.bprevious, {desc = 'Previous buffer'})
--- For arglist
+-- For buffers -- default neovim 0.11
+-- vim.keymap.set('n', ']b', vim.cmd.bnext, {desc = 'Next buffer'})
+-- vim.keymap.set('n', '[b', vim.cmd.bprevious, {desc = 'Previous buffer'})
+-- For arglist -- default neovim 0.11, better my way
 vim.keymap.set('n', ']a', function()
     local ok, erro = pcall(vim.cmd.next)
     if not ok then
@@ -210,22 +205,12 @@ vim.keymap.set("n", "ghr", function() harpoon2:list():select(4) end)
 vim.keymap.set("n", "ghp", function() harpoon2:list():prev() end)
 vim.keymap.set("n", "ghn", function() harpoon2:list():next() end)
 
--- vim.diagnostic
-if win7 then
-    local diagnostic = function(next, severity)
-        local go = next and vim.diagnostic.goto_next or vim.diagnostic.goto_prev
-        severity = severity and vim.diagnostic.severity[severity] or nil
-        return function()
-            go({ severity = severity })
-        end
-    end
-    vim.keymap.set("n", "]d", diagnostic(true), { desc = 'Próximo Diagnóstico' }) -- default neovim
-    vim.keymap.set("n", "[d", diagnostic(false), { desc = 'Diagnóstico Anterior' }) -- default neovim
-    vim.keymap.set("n", "]e", diagnostic(true, "ERROR"), { desc = 'Próximo Erro' })
-    vim.keymap.set("n", "[e", diagnostic(false, "ERROR"), { desc = 'Erro Anterior' })
-    vim.keymap.set("n", "]w", diagnostic(true, "WARN"), { desc = 'Próximo Alerta' })
-    vim.keymap.set("n", "[w", diagnostic(false, "WARN"), { desc = 'Alerta Anterior' })
-    vim.keymap.set('n', '<c-w>d', vim.diagnostic.open_float, { desc = 'Abrir erro no cursor'}) -- default neovim <c-w>d
-    vim.keymap.set('n', '<c-w>e', vim.diagnostic.setloclist, { desc = 'Abrir lista de diagnósticos' })
-end
+-- autocompletion LSP neovim 0.11
+vim.keymap.set('i', '<c-space>',
+	vim.lsp.completion.get
+)
+vim.keymap.set('i', '<c-j>',
+	'pumvisible() ? "<c-y>" : "<c-j>"',
+	{expr = true}
+)
 

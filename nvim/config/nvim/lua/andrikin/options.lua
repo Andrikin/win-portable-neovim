@@ -37,7 +37,8 @@ vim.opt.encoding = 'utf-8'
 vim.opt.autoread = true
 vim.opt.tabpagemax = 50
 vim.opt.wildmenu = true
-vim.opt.completeopt = 'menu,menuone,noselect'
+-- vim.opt.completeopt = 'menu,menuone,noselect'
+vim.opt.completeopt = 'menuone,noinsert,noselect,popup'
 if vim.fn.has('win32') then
 	vim.g.shell = vim.env.COMSPEC
 else
@@ -73,6 +74,7 @@ vim.opt.termguicolors = true
 -- NeoVim configurations
 vim.opt.guicursor = 'i-n-v-c:block'
 vim.opt.guifont = 'SauceCodePro NFM:h11'
+vim.opt.winborder = 'rounded'
 if vim.g.nvy or vim.g.neovide then
 	vim.opt.guifont = 'SauceCodePro Nerd Font Mono:h11'
 end
