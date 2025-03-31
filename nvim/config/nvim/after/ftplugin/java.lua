@@ -3,8 +3,6 @@ vim.cmd.Lazy('load nvim-jdtls')
 -- Eclipse Java development tools (JDT) Language Server downloaded from:
 -- https://www.eclipse.org/downloads/download.php?file=/jdtls/milestones/1.21.0/jdt-language-server-1.21.0-202303161431.tar.gz
 local jdtls = require('jdtls')
--- Change or delete this if you don't depend on nvim-cmp for completions.
-local cmp_nvim_lsp = require('cmp_nvim_lsp')
 
 -- Change jdtls_path to wherever you have your Eclipse Java development tools (JDT) Language Server downloaded to.
 local jdtls_path = vim.env.NVIM_OPT .. '/jdtls-java-lsp'
@@ -13,10 +11,6 @@ local workspace_dir = vim.fn.fnamemodify(vim.fn.getcwd(), ':p:h:t')
 
 vim.o.tabstop = 4
 vim.o.shiftwidth = 0
-
--- for completions
-local client_capabilities = vim.lsp.protocol.make_client_capabilities()
-local capabilities = cmp_nvim_lsp.default_capabilities(client_capabilities)
 
 local function get_config_dir()
   -- Unlike some other programming languages (e.g. JavaScript)
@@ -38,7 +32,6 @@ java = vim.fn.fnamemodify(java, ':r')
 
 -- See `:help vim.lsp.start_client` for an overview of the supported `config` options.
 local config = {
-  capabilities = capabilities,
   cmd = {
     -- This sample path was tested on Cygwin, a "unix-like" Windows environment.
     -- Please contribute to this Wiki if this doesn't work for another Windows

@@ -1,17 +1,12 @@
 -- Configuração de LSP servers
 
-local win7 = require('andrikin.utils').win7
 local notify = require('andrikin.utils').notify
 
 -- colorizer.lua
 require('colorizer').setup(nil, { css = true })
 
--- Lazydev or Neodev
-if win7 then
-	require('neodev').setup()
-else
-	require('lazydev').setup()
-end
+-- Lazydev -- Neovim 0.11
+require('lazydev').setup()
 
 if vim.fn.executable('x86_64-w64-mingw32-gcc') == 1 then
     vim.defer_fn( -- kickstart.nvim
@@ -132,67 +127,16 @@ local luasnip = require('luasnip')
 require('luasnip.loaders.from_vscode').lazy_load() -- carregar snippets (templates)
 luasnip.config.setup({})
 
--- LSP CONFIGURATION
-local lsp = require('lspconfig')
-local servers = {
-    'emmet_ls', -- emmet LSP
-    'pyright', -- python LSP
-    'denols', -- javascript LSP
-    'texlab', -- LaTeX LSP
-    -- 'jdtls', -- java LSP
-    'vimls', -- vim LSP
-    'html', -- html LSP
-    'jsonls', -- json LSP
-    'cssls', -- css LSP
-    -- {
-    --     lsp = 'lua_ls',
-    --     config = {
-    --         settings = {
-    --             Lua = {
-    --                 runtime = {
-    --                     version = 'LuaJIT',
-    --                 },
-    --                 diagnostics = {
-    --                     globals = {
-    --                         'vim',
-    --                         'require',
-    --                     }
-    --                 },
-    --                 workspace = {
-    --                     library = vim.api.nvim_get_runtime_file("", true),
-    --                 },
-    --             },
-    --         },
-    --     },
-    -- }, -- lua LSP
-    -- 'luau_lsp', -- luau LSP -- https://luau.org/
-    -- 'rust_analyzer', -- rust LSP
-    -- { -- javascript LSP
-    --     lsp = 'eslint',
-    --     config = {
-    --         on_attach = function(_, bufnr)
-    --             vim.api.nvim_create_autocmd('BufWritePre', {
-    --                 buffer = bufnr,
-    --                 command = 'EslintFixAll',
-    --             })
-    --         end,
-    --     }
-    -- },
-}
-for _, server in ipairs(servers) do
----@diagnostic disable-next-line: undefined-field
-    if server.config then
----@diagnostic disable-next-line: undefined-field
-        lsp[server.lsp].setup({
----@diagnostic disable-next-line: undefined-field
-            unpack(server.config)
-        })
-    else
-        lsp[server].setup({})
-    end
-end
-
--- vim.lsp.set_log_level("debug")
-
 -- Ativar LSP nos buffers, automaticamente -- Neovim 0.11
-vim.lsp.enable({'luals'})
+vim.lsp.enable({
+    'luals',
+    'texlab',
+    'emmetls',
+    'pyright',
+    'denols',
+    'vimls',
+    'html',
+    'jsonls',
+    'cssls',
+})
+-- vim.lsp.set_log_level("debug")
