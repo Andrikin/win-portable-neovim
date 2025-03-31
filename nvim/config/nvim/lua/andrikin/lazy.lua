@@ -161,7 +161,6 @@ local plugins = {
     {
         'https://github.com/nvim-treesitter/nvim-treesitter.git',
         build = ':TSUpdate',
-		dependencies = {'https://github.com/nvim-treesitter/playground.git'},
         cond = function()
             return vim.fn.executable('x86_64-w64-mingw32-gcc') == 1
         end
