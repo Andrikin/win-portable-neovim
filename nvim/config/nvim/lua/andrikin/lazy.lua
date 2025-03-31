@@ -168,12 +168,6 @@ local plugins = {
         dev = true,
         enabled = function() return vim.fn.executable('himalaya') == 1 end,
     },
-    {
-        'https://github.com/junegunn/fzf.vim.git',
-        dependencies = {'https://github.com/junegunn/fzf.git'},
-        lazy = true,
-        enabled = false,
-    },
 }
 
 local opts = {
