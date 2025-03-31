@@ -139,9 +139,11 @@ local plugins = {
 	'https://github.com/markonm/traces.vim.git',
 	-- Undotree,
 	'https://github.com/mbbill/undotree.git',
-    -- Snipets
-    'https://github.com/L3MON4D3/LuaSnip.git',
-    'https://github.com/rafamadriz/friendly-snippets.git',
+    -- Snippets
+    {
+        'https://github.com/L3MON4D3/LuaSnip.git',
+        dependencies = 'https://github.com/rafamadriz/friendly-snippets.git',
+    },
     -- Telescope
 	{
 		'https://github.com/nvim-telescope/telescope.nvim.git',
