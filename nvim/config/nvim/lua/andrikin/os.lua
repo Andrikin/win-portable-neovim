@@ -148,10 +148,6 @@ local programas = {
         cmd = 'himalaya.exe',
         config = require('andrikin.utils').Himalaya.init,
     },{
-        nome = 'fzf',
-        link = 'https://github.com/junegunn/fzf/releases/download/v0.56.3/fzf-0.56.3-windows_amd64.zip',
-        cmd = 'fzf.exe',
-    },{
         nome = 'pandoc',
         link = 'https://github.com/jgm/pandoc/releases/download/3.5/pandoc-3.5-windows-x86_64.zip',
         cmd = 'pandoc.exe',
