@@ -117,14 +117,7 @@ local plugins = {
 	{
         'https://github.com/neovim/nvim-lspconfig.git',
         dependencies = {
-            {
-                -- WARNING: neodev é um projeto arquivado! EOL
-                'https://github.com/folke/neodev.nvim.git', -- signature help, docs and completion for nvim lua API
-                enable = win7,
-            },{
-                'https://github.com/folke/lazydev.nvim.git', -- signature help, docs and completion for nvim lua API
-                enable = not win7,
-            },
+            'https://github.com/folke/lazydev.nvim.git', -- signature help, docs and completion for nvim lua API
             { 'https://github.com/j-hui/fidget.nvim.git',
                 opts = {
                     progress = {
