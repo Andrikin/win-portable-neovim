@@ -1,4 +1,3 @@
----@diagnostic disable: need-check-nil
 -- Configuração de LSP servers
 
 local win7 = require('andrikin.utils').win7
@@ -49,6 +48,7 @@ if vim.fn.executable('x86_64-w64-mingw32-gcc') == 1 then
         0
     )
 else
+---@diagnostic disable-next-line: need-check-nil
     notify('Instalar x86_64-w64-mingw32-gcc para utilizar nvim-treesitter!')
 end
 
@@ -121,8 +121,10 @@ require('telescope').setup({
 })
 local ok, _ = pcall(require('telescope').load_extension, 'fzf')
 if not ok then
+---@diagnostic disable-next-line: need-check-nil
     notify('Telescope: não foi possível carregar a extenção fzf.')
 else
+---@diagnostic disable-next-line: need-check-nil
     notify('Telescope: extenção fzf carregada com sucesso')
 end
 
@@ -142,28 +144,28 @@ local servers = {
     'html', -- html LSP
     'jsonls', -- json LSP
     'cssls', -- css LSP
-    {
-        lsp = 'lua_ls',
-        config = {
-            settings = {
-                Lua = {
-                    runtime = {
-                        version = 'LuaJIT',
-                    },
-                    diagnostics = {
-                        globals = {
-                            'vim',
-                            'require',
-                        }
-                    },
-                    workspace = {
-                        library = vim.api.nvim_get_runtime_file("", true),
-                    },
-                },
-            },
-        },
-    }, -- lua LSP
-    'luau_lsp', -- luau LSP
+    -- {
+    --     lsp = 'lua_ls',
+    --     config = {
+    --         settings = {
+    --             Lua = {
+    --                 runtime = {
+    --                     version = 'LuaJIT',
+    --                 },
+    --                 diagnostics = {
+    --                     globals = {
+    --                         'vim',
+    --                         'require',
+    --                     }
+    --                 },
+    --                 workspace = {
+    --                     library = vim.api.nvim_get_runtime_file("", true),
+    --                 },
+    --             },
+    --         },
+    --     },
+    -- }, -- lua LSP
+    -- 'luau_lsp', -- luau LSP -- https://luau.org/
     -- 'rust_analyzer', -- rust LSP
     -- { -- javascript LSP
     --     lsp = 'eslint',
@@ -191,4 +193,6 @@ for _, server in ipairs(servers) do
 end
 
 -- vim.lsp.set_log_level("debug")
---
+
+-- Ativar LSP nos buffers, automaticamente -- Neovim 0.11
+vim.lsp.enable({'luals'})
