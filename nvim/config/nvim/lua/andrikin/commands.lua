@@ -24,7 +24,7 @@ command(
 	'CompilarLatex',
     function()
 ---@diagnostic disable-next-line: param-type-mismatch
-        local destino = Diretorio.new(vim.loop.os_homedir()) / 'Downloads'
+        local destino = Diretorio.new(vim.uv.os_homedir()) / 'Downloads'
 ---@diagnostic disable-next-line: missing-parameter
         Ouvidoria.latex:compilar(destino)
     end,

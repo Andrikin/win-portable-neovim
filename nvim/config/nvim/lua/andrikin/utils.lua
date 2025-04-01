@@ -55,7 +55,7 @@ Utils.npcall = vim.F.npcall
 
 ---@type string | nil
 ---@diagnostic disable-next-line: undefined-field
-Utils.win7 = string.match(vim.loop.os_uname()['version'], 'Windows 7')
+Utils.win7 = string.match(vim.uv.os_uname()['version'], 'Windows 7')
 
 ---@type table
 Utils.cursorline = {
@@ -955,7 +955,7 @@ Latex.new = function()
         diretorios = {
             modelos = Diretorio.new(vim.fn.fnamemodify(vim.env.HOME, ':h')) / 'projetos' / 'ouvidoria-latex-modelos',
 ---@diagnostic disable-next-line: undefined-field
-            download = Diretorio.new(vim.loop.os_homedir()) / 'Downloads',
+            download = Diretorio.new(vim.uv.os_homedir()) / 'Downloads',
             temp = Diretorio.new(vim.env.TEMP),
             redelocal = Diretorio.new('T:') / '1-Comunicação Interna - C.I' / os.date('%Y'),
         }
@@ -1080,7 +1080,7 @@ Comunicacao.new = function()
         diretorios = {
             modelos = Diretorio.new(vim.fn.fnamemodify(vim.env.HOME, ':h')) / 'projetos' / 'ouvidoria-latex-modelos',
 ---@diagnostic disable-next-line: undefined-field
-            destino = Diretorio.new(vim.loop.os_homedir()) / 'Downloads',
+            destino = Diretorio.new(vim.uv.os_homedir()) / 'Downloads',
             projetos = Diretorio.new(vim.fn.fnamemodify(vim.env.HOME, ':h')) / 'projetos',
         },
     }, Comunicacao)
@@ -1248,7 +1248,7 @@ Himalaya.config.existe = vim.fn.filereadable(Himalaya.config.diretorio) == 1
 
 Himalaya.download = {-- Windows
 ---@diagnostic disable-next-line: undefined-field
-    diretorio = (Diretorio.new(vim.loop.os_homedir() .. '/Downloads') / 'himalaya' / 'trabalho').diretorio,
+    diretorio = (Diretorio.new(vim.uv.os_homedir() .. '/Downloads') / 'himalaya' / 'trabalho').diretorio,
 }
 Himalaya.download.existe = vim.fn.isdirectory(Himalaya.download.diretorio) == 1
 

@@ -49,7 +49,7 @@ autocmd(
         group = Andrikin,
         pattern = '*',
         callback = function()
-            vim.highlight.on_yank({
+            vim.hl.on_yank({
                 higroup = 'IncSearch',
                 timeout = 300,
             })
@@ -122,7 +122,7 @@ autocmd(
                 })
             end
 ---@diagnostic disable-next-line: undefined-field
-            vim.cmd.cd(vim.loop.os_homedir() .. '/Desktop')
+            vim.cmd.cd(vim.uv.os_homedir() .. '/Desktop')
             -- BUG: lualine não redesenha o statusline. Comandos como redraw e redrawstatus também não funcionam
             -- vim.cmd.redrawstatus({bang = true}) -- não funciona
         end,
