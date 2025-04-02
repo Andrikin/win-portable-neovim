@@ -112,15 +112,6 @@ local plugins = {
         'https://github.com/neovim/nvim-lspconfig.git',
         dependencies = {
             'https://github.com/folke/lazydev.nvim.git', -- signature help, docs and completion for nvim lua API
-            { 'https://github.com/j-hui/fidget.nvim.git',
-                opts = {
-                    progress = {
-                        display = {
-                            skip_history = false,
-                        }
-                    }
-                }
-            },
         }
     },
     -- Java LSP
