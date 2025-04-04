@@ -125,6 +125,7 @@ end
 
 -- Mensagem de erro mais curta
 vim.diagnostic.config({
+    virtual_lines = true,
     virtual_text = {
         format = function(diag)
             if diag.severity == vim.diagnostic.severity.ERROR then
