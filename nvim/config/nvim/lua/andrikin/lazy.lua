@@ -76,7 +76,9 @@ local plugins = {
 		config = function()
 			require('lualine').setup(
 				{
-					options = { theme = tema.nome },
+					options = { theme = tema.nome,
+						always_show_tabline = false,
+					},
                     sections = {
 						lualine_a = {'mode', 'CapsLockStatusline'},
                     },
