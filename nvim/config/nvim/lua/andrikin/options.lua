@@ -50,8 +50,12 @@ vim.opt.title = true
 vim.opt.hidden = true
 vim.opt.mouse = ''
 vim.opt.mousemodel = 'extend'
-if vim.fn.has('persistent_undo') then
-	local path = vim.fn.stdpath('data') .. '\\undotree'
+if vim.fn.has('persistent_undo') == 1 then
+    local path = vim.fs.joinpath(
+---@diagnostic disable-next-line: param-type-mismatch
+        vim.fn.stdpath('data'),
+        'undotree'
+    )
 	if vim.fn.isdirectory(path) == 0 then
 		vim.fn.mkdir(path, 'p', '0755')
 	end
