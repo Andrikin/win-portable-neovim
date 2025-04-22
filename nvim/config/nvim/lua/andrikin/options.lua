@@ -72,9 +72,6 @@ vim.opt.laststatus = 3
 vim.opt.showtabline = 1
 vim.opt.showmode = false
 
--- st (simple terminal - suckless) tem um problema com o cursor. Ele não muda de acordo com as cores da fonte que ele está sobre. Dessa forma, com o patch de Jules Maselbas (https://git.suckless.org/st/commit/5535c1f04c665c05faff2a65d5558246b7748d49.html), é possível obter o cursor com a cor do texto (truecolor)
-vim.opt.termguicolors = true
-
 -- NeoVim configurations
 vim.opt.guicursor = 'i-n-v-c:block'
 vim.opt.guifont = 'SauceCodePro NFM:h11'
