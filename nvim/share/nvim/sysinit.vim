@@ -5,7 +5,7 @@ lua << EOF
 	local init = function(path)
 		-- check for directory and create it if not found
 		if vim.fn.isdirectory(path) == 0 then
-			vim.fn.mkdir(path, 'p', 0700)
+			vim.fn.mkdir(path, 'p', '0755')
 		end
 	end
 	vim.env.HOME = string.match(vim.env.VIMRUNTIME, '^(.*win.portable.neovim).*$')
