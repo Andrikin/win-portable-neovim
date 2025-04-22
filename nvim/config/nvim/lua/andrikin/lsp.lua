@@ -134,6 +134,14 @@ end
 
 local luasnip = require('luasnip')
 require('luasnip.loaders.from_vscode').lazy_load() -- carregar snippets (templates)
+require('luasnip.loaders.from_lua').load({
+---@diagnostic disable-next-line: assign-type-mismatch
+    paths = vim.fs.joinpath(
+        ---@diagnostic disable-next-line: param-type-mismatch
+        vim.fn.stdpath('config'),
+        'snippets/'
+    )
+}) -- carregar snippets (templates)
 luasnip.config.setup({})
 
 -- Ativar LSP nos buffers, automaticamente -- Neovim 0.11
