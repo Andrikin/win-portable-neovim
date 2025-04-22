@@ -69,6 +69,14 @@ command(
 	{}
 )
 
+command(
+	'Config',
+	function()
+		vim.cmd.edit('$XDG_CONFIG_HOME')
+	end,
+	{}
+)
+
 -- imprimir arquivos na impressora padrão
 command(
     'Imprimir',
