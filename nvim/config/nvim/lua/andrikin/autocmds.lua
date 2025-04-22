@@ -129,3 +129,14 @@ autocmd(
     }
 )
 
+autocmd(
+    'WinNew',
+    {
+        group = Andrikin,
+        pattern = 'checkhealth',
+        callback = function()
+            vim.cmd.LualineRenameTab('CheckHealth')
+        end,
+    }
+)
+
