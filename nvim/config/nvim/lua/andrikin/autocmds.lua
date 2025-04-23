@@ -130,7 +130,7 @@ autocmd(
 )
 
 autocmd(
-    'WinNew',
+    'FileType',
     {
         group = Andrikin,
         pattern = 'checkhealth',
