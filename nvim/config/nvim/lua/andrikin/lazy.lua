@@ -157,13 +157,13 @@ local plugins = {
             return vim.fn.executable('x86_64-w64-mingw32-gcc') == 1
         end
     },
-    {
----@diagnostic disable-next-line: undefined-field
-        dir = vim.uv.os_homedir() .. '/Documents/nvim/projetos/himalaya-vim',
-        lazy = true,
-        dev = true,
-        enabled = function() return vim.fn.executable('himalaya') == 1 end,
-    },
+--     {
+-- ---@diagnostic disable-next-line: undefined-field
+--         dir = vim.uv.os_homedir() .. '/Documents/nvim/projetos/himalaya-vim',
+--         lazy = true,
+--         dev = true,
+--         enabled = function() return vim.fn.executable('himalaya') == 1 end,
+--     },
 }
 
 local opts = {
