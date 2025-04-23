@@ -116,6 +116,7 @@ local plugins = {
 	{
         'https://github.com/neovim/nvim-lspconfig.git',
         dependencies = {
+            ft = 'lua',
             'https://github.com/folke/lazydev.nvim.git', -- signature help, docs and completion for nvim lua API
         }
     },
