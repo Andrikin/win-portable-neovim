@@ -131,11 +131,8 @@ local plugins = {
 	-- Undotree,
 	'https://github.com/mbbill/undotree.git',
     -- Snippets
-     'https://github.com/rafamadriz/friendly-snippets.git',
-    -- {
-    --     'https://github.com/L3MON4D3/LuaSnip.git',
-    --     dependencies = 'https://github.com/rafamadriz/friendly-snippets.git',
-    -- },
+    -- 'https://github.com/rafamadriz/friendly-snippets.git',
+    -- 'https://github.com/L3MON4D3/LuaSnip.git',
     -- Telescope
 	{
 		'https://github.com/nvim-telescope/telescope.nvim.git',
@@ -178,7 +175,7 @@ local opts = {
 				"netrwPlugin",
 				-- "tarPlugin",
 				-- "tohtml",
-				-- "tutor",
+				"tutor",
 				-- "zipPlugin",
 			},
 		},
