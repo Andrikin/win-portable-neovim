@@ -298,6 +298,7 @@ nvim/config/nvim-data/tree-sitter-zig/
 nvim/config/nvim-data/tree-sitter-latex/
 nvim/config/nvim/.luarc.json
 nvim/config/nvim-data/.netrwhist
+nvim/config/nvim-data/blink/
 
 nvim/bin/
 nvim/opt
