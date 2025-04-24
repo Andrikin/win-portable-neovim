@@ -1,6 +1,9 @@
 -- Configuração de LSP servers
 
 local notify = require('andrikin.utils').notify
+if not notify then
+    notify = print
+end
 
 -- colorizer.lua
 require('colorizer').setup(nil, { css = true })
@@ -52,7 +55,6 @@ if vim.fn.executable('x86_64-w64-mingw32-gcc') == 1 then
         0
     )
 else
----@diagnostic disable-next-line: need-check-nil
     notify('Instalar x86_64-w64-mingw32-gcc para utilizar nvim-treesitter!')
 end
 
@@ -106,10 +108,8 @@ require('telescope').setup({
 })
 local ok, _ = pcall(require('telescope').load_extension, 'fzf')
 if not ok then
----@diagnostic disable-next-line: need-check-nil
     notify('Telescope: não foi possível carregar a extenção fzf.')
 else
----@diagnostic disable-next-line: need-check-nil
     notify('Telescope: extenção fzf carregada com sucesso')
 end
 
