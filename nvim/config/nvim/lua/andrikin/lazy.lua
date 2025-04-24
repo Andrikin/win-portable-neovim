@@ -130,6 +130,27 @@ local plugins = {
 	'https://github.com/markonm/traces.vim.git',
 	-- Undotree,
 	'https://github.com/mbbill/undotree.git',
+    -- autocompletion engine
+    {
+        'https://github.com/Saghen/blink.cmp.git',
+        version = '1.*',
+        opts = {
+            cmdline = {enabled = false},
+            snippets = { preset = 'luasnip' },
+            keymap = { preset = 'default' },
+            -- (Default) Only show the documentation popup when manually triggered
+            completion = { documentation = { auto_show = false } },
+            -- Default list of enabled providers defined so that you can extend it
+            -- elsewhere in your config, without redefining it, due to `opts_extend`
+            sources = {
+                default = { 'lsp', 'snippets', 'buffer', 'path' },
+            },
+        },
+        dependencies = {
+            'https://github.com/rafamadriz/friendly-snippets.git',
+            'https://github.com/L3MON4D3/LuaSnip.git',
+        },
+    },
     -- Snippets
     -- 'https://github.com/rafamadriz/friendly-snippets.git',
     -- 'https://github.com/L3MON4D3/LuaSnip.git',
