@@ -58,35 +58,37 @@ else
     notify('Instalar x86_64-w64-mingw32-gcc para utilizar nvim-treesitter!')
 end
 
-local telescope_tema = 'dropdown'
-local telescope_actions = require('telescope.actions')
+local _telescope = {
+    tema = 'dropdown',
+    actions = require('telescope.actions')
+}
 require('telescope').setup({
     pickers = {
         buffers = {
             previewer = false,
-            theme = telescope_tema,
+            theme = _telescope.tema,
             mappings = {
                 n = {
-                    ['dd'] = telescope_actions.delete_buffer,
+                    ['dd'] = _telescope.actions.delete_buffer,
                 },
             },
         },
         find_files = {
             previewer = false,
-            theme = telescope_tema,
+            theme = _telescope.tema,
         },
         help_tags = {
             previewer = false,
-            theme = telescope_tema,
+            theme = _telescope.tema,
         },
         file_browser = {
             previewer = false,
-            theme = telescope_tema,
+            theme = _telescope.tema,
         },
     },
     defaults = {
         layout_config = {
-            width = 0.5,
+           width = 0.5,
             height = 0.70,
         },
         path_display = {
@@ -94,19 +96,19 @@ require('telescope').setup({
         },
         mappings = {
             i = {
-                ['<NL>'] = telescope_actions.select_default + telescope_actions.center,
-                ['gq'] = telescope_actions.close, -- ruim para as buscas que precisarem de "gq"
+                ['<NL>'] = _telescope.actions.select_default + _telescope.actions.center,
+                ['gq'] = _telescope.actions.close, -- ruim para as buscas que precisarem de "gq"
                 ['<c-u>'] = {'<c-u>', type = 'command'},
                 ['<esc>'] = {'<esc>', type = 'command'},
             },
             n = {
-                ['<NL>'] = telescope_actions.select_default + telescope_actions.center,
-                ['gq'] = telescope_actions.close,
+                ['<NL>'] = _telescope.actions.select_default + _telescope.actions.center,
+                ['gq'] = _telescope.actions.close,
             },
         },
     }
 })
-local ok, _ = pcall(require('telescope').load_extension, 'fzf')
+local ok, _ = pcall(require('_telescope').load_extension, 'fzf')
 if not ok then
     notify('Telescope: não foi possível carregar a extenção fzf.')
 else
