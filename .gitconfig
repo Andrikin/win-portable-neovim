@@ -7,3 +7,5 @@
 	name = Andrikin
 [init]
 	defaultBranch = main
+[core]
+	editor = nvim
