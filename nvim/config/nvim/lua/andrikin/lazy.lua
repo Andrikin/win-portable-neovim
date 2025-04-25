@@ -135,7 +135,7 @@ local plugins = {
         'https://github.com/Saghen/blink.cmp.git',
         version = '1.*',
         opts = {
-            cmdline = {enabled = false},
+            cmdline = { enabled = false },
             snippets = { preset = 'luasnip' },
             keymap = {
                 preset = 'default',
@@ -145,9 +145,15 @@ local plugins = {
             -- (Default) Only show the documentation popup when manually triggered
             completion = {
                 menu = {
+                    -- auto_show = false,
                     border = 'none',
                     draw = {
                         columns = { { "label", "label_description", gap = 1 }, { "kind" } },
+                    }
+                },
+                list = {
+                    selection = {
+                        preselect = false, auto_insert = true
                     }
                 },
                 documentation = { auto_show = false }
