@@ -173,13 +173,13 @@ local plugins = {
         lazy = true,
 		dependencies = {
 			'https://github.com/nvim-lua/plenary.nvim.git',
-            {
-                'nvim-telescope/telescope-fzf-native.nvim',
-                build = 'make',
-                cond = function()
-                    return vim.fn.executable('make') == 1
-                end,
-            },
+            -- {
+            --     'nvim-telescope/telescope-fzf-native.nvim',
+            --     build = 'make',
+            --     cond = function()
+            --         return vim.fn.executable('make') == 1
+            --     end,
+            -- },
 		},
 	},
 	-- Treesitter,
