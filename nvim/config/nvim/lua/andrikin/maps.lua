@@ -177,15 +177,13 @@ vim.keymap.set(
 
 -- --- Telescope ---
 vim.keymap.set( -- telescope way to open buffers
-	'n',
-	'<leader><space>',
+	'n', '<leader><space>',
 	function()
 		vim.cmd.Telescope('buffers')
 	end
 )
 vim.keymap.set( -- telescope way to check for help
-	'n',
-	'<leader>h',
+	'n', '<leader>h',
 	function()
 		vim.cmd.Telescope('help_tags')
 	end

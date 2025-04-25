@@ -38,7 +38,7 @@ vim.opt.autoread = true
 vim.opt.tabpagemax = 50
 vim.opt.wildmenu = true
 -- vim.opt.completeopt = 'menu,menuone,noselect'
-vim.opt.completeopt = 'menuone,noinsert,noselect,popup,fuzzy'
+vim.opt.completeopt = 'menu,noinsert,noselect,popup,fuzzy'
 if vim.fn.has('win32') then
 	vim.g.shell = vim.env.COMSPEC
 else
