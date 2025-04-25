@@ -114,6 +114,9 @@ else
 end
 
 -- carregar snippets (LuaSnip)
+require('luasnip').config.set_config({
+	history = true,
+})
 require('luasnip.loaders.from_vscode').lazy_load() -- carregar snippets (templates)
 require('luasnip.loaders.from_lua').lazy_load({
 ---@diagnostic disable-next-line: assign-type-mismatch

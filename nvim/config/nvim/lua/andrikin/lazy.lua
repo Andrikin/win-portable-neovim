@@ -137,15 +137,28 @@ local plugins = {
         opts = {
             cmdline = {enabled = false},
             snippets = { preset = 'luasnip' },
-            keymap = { preset = 'default' },
+            keymap = {
+                preset = 'default',
+                ['<c-space>'] = {},
+                ['<c-j>'] = {'select_and_accept', 'fallback'},
+            },
             -- (Default) Only show the documentation popup when manually triggered
-            completion = { documentation = { auto_show = false } },
+            completion = {
+                menu = {
+                    border = 'none',
+                    draw = {
+                        columns = { { "label", "label_description", gap = 1 }, { "kind" } },
+                    }
+                },
+                documentation = { auto_show = false }
+            },
             -- Default list of enabled providers defined so that you can extend it
             -- elsewhere in your config, without redefining it, due to `opts_extend`
             sources = {
                 default = { 'lsp', 'snippets', 'buffer', 'path' },
             },
         },
+        -- Snippets
         dependencies = {
             'https://github.com/rafamadriz/friendly-snippets.git',
             'https://github.com/L3MON4D3/LuaSnip.git',
