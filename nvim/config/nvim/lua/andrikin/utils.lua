@@ -106,13 +106,19 @@ end
 --- Wrap envolta do vim.fn.jobstart
 ---@class Job
 ---@field clear_env boolean
+---@diagnostic disable-next-line: duplicate-doc-field
 ---@field cwd string
 ---@field detach boolean
+---@diagnostic disable-next-line: duplicate-doc-field
 ---@field env table
 ---@field height number
+---@diagnostic disable-next-line: duplicate-doc-field
 ---@field on_exit function
+---@diagnostic disable-next-line: duplicate-doc-field
 ---@field on_stdout function
+---@diagnostic disable-next-line: duplicate-doc-field
 ---@field on_stderr function
+---@diagnostic disable-next-line: duplicate-doc-field
 ---@field overlapped boolean
 ---@field pty boolean
 ---@field rpc boolean
@@ -1418,6 +1424,7 @@ Cygwin.comando = function(self, opts)
         self.job.on_exit = nil
     end
     self.job.on_stdout = function(_, data, _)
+        ---@diagnostic disable-next-line: param-type-mismatch
         for _, d in ipairs(data) do
             if d ~= '' then
                 print(d:sub(1, -2)) -- remover ^M
