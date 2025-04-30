@@ -37,6 +37,8 @@ local tema = tokyonight
 local has_rm = vim.fn.executable('rm') == 1
 local has_mkdir = vim.fn.executable('mkdir') == 1
 local plugins = {
+	'https://github.com/Andrikin/awesome-pairing',
+	'https://github.com/Andrikin/awesome-substitute',
 	-- Fork Tim Pope vim-capslock
 	'https://github.com/Andrikin/vim-capslock',
 	-- Tim Pope's miracles
