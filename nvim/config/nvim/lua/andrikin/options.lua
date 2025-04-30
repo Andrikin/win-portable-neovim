@@ -126,7 +126,7 @@ end
 
 -- Mensagem de erro mais curta
 vim.diagnostic.config({
-    virtual_lines = true,
+    underline = true,
 })
 
 -- Removendo providers: Perl
