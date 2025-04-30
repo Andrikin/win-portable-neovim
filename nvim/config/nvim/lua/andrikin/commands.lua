@@ -77,6 +77,18 @@ command(
 	{}
 )
 
+command(
+	'Snippets',
+	function()
+		vim.cmd.edit(vim.fs.joinpath(
+            ---@diagnostic disable-next-line: param-type-mismatch
+            vim.fn.stdpath('config'),
+            'snippets'
+        ))
+	end,
+	{}
+)
+
 -- imprimir arquivos na impressora padrão
 command(
     'Imprimir',
