@@ -48,7 +48,7 @@ vim.keymap.set( 'n', 'k',
 		end
 		return marcador .. 'k'
 	end,
-	{ expr = true }
+	{ expr = true, silent = true }
 )
 vim.keymap.set( 'n', 'j',
 	function()
@@ -62,7 +62,7 @@ vim.keymap.set( 'n', 'j',
 		end
 		return marcador .. 'j'
 	end,
-	{ expr = true }
+	{ expr = true, silent = true }
 )
 
 -- Moving lines up and down - The Primeagen knowledge word
