@@ -96,13 +96,13 @@ require('telescope').setup({
         },
         mappings = {
             i = {
-                ['<NL>'] = _telescope.actions.select_default + _telescope.actions.center,
+                ['<c-j>'] = _telescope.actions.select_default + _telescope.actions.center,
                 ['gq'] = _telescope.actions.close, -- ruim para as buscas que precisarem de "gq"
                 ['<c-u>'] = {'<c-u>', type = 'command'},
                 ['<esc>'] = {'<esc>', type = 'command'},
             },
             n = {
-                ['<NL>'] = _telescope.actions.select_default + _telescope.actions.center,
+                ['<c-j>'] = _telescope.actions.select_default + _telescope.actions.center,
                 ['gq'] = _telescope.actions.close,
             },
         },
