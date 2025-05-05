@@ -31,6 +31,9 @@ return {
     s({trig = 'Email'},
         {t("\\Email{"), i(1), t("}")}
     ),
+    s({trig = 'Secretaria'},
+        {t("\\Secretaria{"), i(1), t("}")}
+    ),
     s({trig = 'Assinaturas'},
         fmta(
 [[
