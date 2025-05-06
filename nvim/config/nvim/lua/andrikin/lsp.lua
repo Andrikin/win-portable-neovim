@@ -5,6 +5,11 @@ if not notify then
     notify = print
 end
 
+-- lsp.diagnostic: Mensagem de erro mais curta
+vim.diagnostic.config({
+    underline = true,
+})
+
 -- colorizer.lua
 require('colorizer').setup(nil, { css = true })
 
@@ -88,7 +93,7 @@ require('telescope').setup({
     },
     defaults = {
         layout_config = {
-           width = 0.5,
+            width = 0.5,
             height = 0.70,
         },
         path_display = {

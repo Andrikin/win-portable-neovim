@@ -52,7 +52,7 @@ vim.opt.mouse = ''
 vim.opt.mousemodel = 'extend'
 if vim.fn.has('persistent_undo') == 1 then
     local path = vim.fs.joinpath(
----@diagnostic disable-next-line: param-type-mismatch
+        ---@diagnostic disable-next-line: param-type-mismatch
         vim.fn.stdpath('data'),
         'undotree'
     )
@@ -123,11 +123,6 @@ if vim.g.neovide then
 	vim.g.neovide_cursor_animate_command_line = false
 	vim.g.neovide_cursor_vfx_mode = ""
 end
-
--- Mensagem de erro mais curta
-vim.diagnostic.config({
-    underline = true,
-})
 
 -- Removendo providers: Perl
 vim.g.loaded_perl_provider = 0
