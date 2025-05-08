@@ -77,7 +77,7 @@ vim.opt.guicursor = 'i-n-v-c:block'
 vim.opt.guifont = 'SauceCodePro NFM:h11'
 vim.opt.winborder = 'rounded'
 if vim.g.nvy or vim.g.neovide then
-	vim.opt.guifont = 'SauceCodePro Nerd Font Mono:h11'
+	vim.opt.guifont = 'SauceCodePro Nerd Font Mono:h12'
 end
 vim.opt.inccommand = '' -- conflict with traces.vim
 vim.opt.fillchars = 'vert:|,fold:*,foldclose:+,diff:-'
