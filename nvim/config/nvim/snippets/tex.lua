@@ -25,6 +25,9 @@ return {
     s({trig = 'Associados'},
         {t("{\\Associados}")}
     ),
+    s({trig = 'textdegree'},
+        {t("{\\textdegree}")}
+    ),
     s({trig = 'Considerando'},
         {t("{\\Considerando}")}
     ),
