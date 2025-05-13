@@ -29,6 +29,7 @@
 -- pandoc: https://github.com/jgm/pandoc/releases/download/3.5/pandoc-3.5-windows-x86_64.zip
 -- cygwin: https://cygwin.com/setup-x86_64.exe -- replace w64devkit?
 -- rust: TODO
+-- cmail: https://www.inveigle.net/downloads/CMail_0.8.11_x86.zip
 
 -- LSPs:
 -- javascript: (deno 1.27.0 Windows 7) https://github.com/denoland/deno/releases/download/v1.27.0/deno-x86_64-pc-windows-msvc.zip
@@ -146,6 +147,10 @@ local programas = {
         nome = 'pandoc',
         link = 'https://github.com/jgm/pandoc/releases/download/3.5/pandoc-3.5-windows-x86_64.zip',
         cmd = 'pandoc.exe',
+    },{
+        nome = 'cmail',
+        link = 'https://www.inveigle.net/downloads/CMail_0.8.11_x86.zip',
+        cmd = 'cmail.exe',
     }
 }
 
