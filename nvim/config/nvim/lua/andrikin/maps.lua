@@ -214,31 +214,31 @@ vim.keymap.set('i', '<c-j>',
 
 -- Removendo cliques do mouse em todos os modos - Nvy
 if vim.g.nvy then
-    vim.keymap.set({ 'n', 'v', 'i', 'c', 's', 'o', 't', 'l' }, 
+    vim.keymap.set({ 'n', 'v', 'i', 'c', 's', 'o', 't', 'l' },
     '<LeftMouse>',
     '<Nop>', { silent = true })
-    vim.keymap.set({ 'n', 'v', 'i', 'c', 's', 'o', 't', 'l' }, 
+    vim.keymap.set({ 'n', 'v', 'i', 'c', 's', 'o', 't', 'l' },
     '<LeftDrag>',
     '<Nop>', { silent = true })
-    vim.keymap.set({ 'n', 'v', 'i', 'c', 's', 'o', 't', 'l' }, 
+    vim.keymap.set({ 'n', 'v', 'i', 'c', 's', 'o', 't', 'l' },
     '<LeftRelease>',
     '<Nop>', { silent = true })
-    vim.keymap.set({ 'n', 'v', 'i', 'c', 's', 'o', 't', 'l' }, 
+    vim.keymap.set({ 'n', 'v', 'i', 'c', 's', 'o', 't', 'l' },
     '<MiddleRelease>',
     '<Nop>', { silent = true })
-    vim.keymap.set({ 'n', 'v', 'i', 'c', 's', 'o', 't', 'l' }, 
+    vim.keymap.set({ 'n', 'v', 'i', 'c', 's', 'o', 't', 'l' },
     '<RightRelease>',
     '<Nop>', { silent = true })
-    vim.keymap.set({ 'n', 'v', 'i', 'c', 's', 'o', 't', 'l' }, 
+    vim.keymap.set({ 'n', 'v', 'i', 'c', 's', 'o', 't', 'l' },
     '<RightDrag>',
     '<Nop>', { silent = true })
-    vim.keymap.set({ 'n', 'v', 'i', 'c', 's', 'o', 't', 'l' }, 
+    vim.keymap.set({ 'n', 'v', 'i', 'c', 's', 'o', 't', 'l' },
     '<RightMouse>',
     '<Nop>', { silent = true })
-    vim.keymap.set({ 'n', 'v', 'i', 'c', 's', 'o', 't', 'l' }, 
+    vim.keymap.set({ 'n', 'v', 'i', 'c', 's', 'o', 't', 'l' },
     '<MiddleDrag>',
     '<Nop>', { silent = true })
-    vim.keymap.set({ 'n', 'v', 'i', 'c', 's', 'o', 't', 'l' }, 
+    vim.keymap.set({ 'n', 'v', 'i', 'c', 's', 'o', 't', 'l' },
     '<MiddleMouse>',
     '<Nop>', { silent = true })
 end
