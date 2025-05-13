@@ -128,12 +128,3 @@ end
 vim.g.loaded_perl_provider = 0
 vim.g.loaded_ruby_provider = 0
 
--- Himalaya template para utilizar com pandoc e gerar e-mails em html
----@diagnostic disable-next-line: undefined-field
-vim.g.himalaya_pandoc_template_email = vim.uv.os_homedir() .. '/Downloads/himalaya/template'
-
--- Fzf configuração
-vim.g.fzf_vim = {
-    preview_window = {}
-}
-

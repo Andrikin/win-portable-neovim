@@ -143,11 +143,6 @@ local programas = {
         link = 'https://services.gradle.org/distributions/gradle-8.10.2-bin.zip',
         cmd = 'gradle.bat',
     },{
-        nome = 'himalaya',
-        link = win7 and 'https://github.com/pimalaya/himalaya/releases/download/v1.0.0-beta.4/himalaya.x86_64-windows.zip' or 'https://github.com/pimalaya/himalaya/releases/download/v1.0.0/himalaya.x86_64-windows.tgz',
-        cmd = 'himalaya.exe',
-        config = require('andrikin.utils').Himalaya.init,
-    },{
         nome = 'pandoc',
         link = 'https://github.com/jgm/pandoc/releases/download/3.5/pandoc-3.5-windows-x86_64.zip',
         cmd = 'pandoc.exe',

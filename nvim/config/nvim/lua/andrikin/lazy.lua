@@ -19,7 +19,11 @@ local tokyonight = {
     link = 'https://github.com/folke/tokyonight.nvim.git',
     opts = {},
     config = function()
-        -- st (simple terminal - suckless) tem um problema com o cursor. Ele não muda de acordo com as cores da fonte que ele está sobre. Dessa forma, com o patch de Jules Maselbas (https://git.suckless.org/st/commit/5535c1f04c665c05faff2a65d5558246b7748d49.html), é possível obter o cursor com a cor do texto (truecolor)
+        -- st (simple terminal - suckless) tem um problema com o cursor.
+        -- Ele não muda de acordo com as cores da fonte que ele está sobre.
+        -- Dessa forma, com o patch de Jules Maselbas 
+        -- (https://git.suckless.org/st/commit/5535c1f04c665c05faff2a65d5558246b7748d49.html),
+        -- é possível obter o cursor com a cor do texto (truecolor)
         vim.opt.termguicolors = true
         vim.cmd.colorscheme('tokyonight')
     end
@@ -119,7 +123,8 @@ local plugins = {
         'https://github.com/neovim/nvim-lspconfig.git',
         dependencies = {
             ft = 'lua',
-            'https://github.com/folke/lazydev.nvim.git', -- signature help, docs and completion for nvim lua API
+            -- signature help, docs and completion for nvim lua API
+            'https://github.com/folke/lazydev.nvim.git',
         }
     },
     -- Java LSP
@@ -172,9 +177,6 @@ local plugins = {
             'https://github.com/L3MON4D3/LuaSnip.git',
         },
     },
-    -- Snippets
-    -- 'https://github.com/rafamadriz/friendly-snippets.git',
-    -- 'https://github.com/L3MON4D3/LuaSnip.git',
     -- Telescope
 	{
 		'https://github.com/nvim-telescope/telescope.nvim.git',
@@ -198,13 +200,6 @@ local plugins = {
             return vim.fn.executable('x86_64-w64-mingw32-gcc') == 1
         end
     },
---     {
--- ---@diagnostic disable-next-line: undefined-field
---         dir = vim.uv.os_homedir() .. '/Documents/nvim/projetos/himalaya-vim',
---         lazy = true,
---         dev = true,
---         enabled = function() return vim.fn.executable('himalaya') == 1 end,
---     },
 }
 
 local opts = {
