@@ -28,8 +28,8 @@
 -- fzf: https://github.com/junegunn/fzf/releases/download/v0.56.3/fzf-0.56.3-windows_amd64.zip
 -- pandoc: https://github.com/jgm/pandoc/releases/download/3.5/pandoc-3.5-windows-x86_64.zip
 -- cygwin: https://cygwin.com/setup-x86_64.exe -- replace w64devkit?
--- rust: TODO
 -- cmail: https://www.inveigle.net/downloads/CMail_0.8.11_x86.zip
+-- rust: TODO
 
 -- LSPs:
 -- javascript: (deno 1.27.0 Windows 7) https://github.com/denoland/deno/releases/download/v1.27.0/deno-x86_64-pc-windows-msvc.zip
@@ -37,6 +37,9 @@
 -- emmet: npm install -g emmet-ls
 -- python: pip install pyright | npm -g install pyright
 -- rust: TODO
+
+-- TODO: Para downloads no github, utilizar API para baixar o arquivo mais recente:
+-- https://api.github.com/repos/<usuario>/<repositorio>/releases/latest
 
 if vim.loader then vim.loader.enable() end
 
@@ -50,7 +53,6 @@ end
 
 require('andrikin.utils').init()
 
-local win7 = require('andrikin.utils').win7
 ---@type Registrador
 local Registrador = require('andrikin.utils').Registrador.new()
 ---@type Ssh
@@ -89,12 +91,12 @@ local programas = {
 		config = function() require('andrikin.utils').Sumatra:init() end,
 	},{
 		nome = 'node',
-		link = win7 and 'https://nodejs.org/dist/v13.14.0/node-v13.14.0-win-x64.zip' or 'https://nodejs.org/dist/v20.10.0/node-v20.10.0-win-x64.zip',-- v12.22.12(win7)?
+		link = 'https://nodejs.org/dist/v20.10.0/node-v20.10.0-win-x64.zip',
 		cmd = 'node.exe',
 		config = function() require('andrikin.utils').Node:init() end,
 	},{
 		nome = 'python',
-		link = win7 and 'https://www.python.org/ftp/python/3.8.9/python-3.8.9-embed-amd64.zip' or 'https://www.python.org/ftp/python/3.12.2/python-3.12.2-embed-amd64.zip',
+		link = 'https://www.python.org/ftp/python/3.12.2/python-3.12.2-embed-amd64.zip',
 		cmd = {'python.exe', 'pip.exe'},
 		config = function() require('andrikin.utils').Python:init() end,
     },{
@@ -107,7 +109,7 @@ local programas = {
 		cmd = 'texlab.exe'
 	},{
 		nome = 'deno-javascript-lsp',
-		link = win7 and 'https://github.com/denoland/deno/releases/download/v1.27.0/deno-x86_64-pc-windows-msvc.zip' or 'https://github.com/denoland/deno/releases/download/v2.1.3/deno-x86_64-pc-windows-msvc.zip',
+		link = 'https://github.com/denoland/deno/releases/download/v2.1.3/deno-x86_64-pc-windows-msvc.zip',
 		cmd = 'deno.exe'
 	},{
 		nome = 'lua-lsp',
