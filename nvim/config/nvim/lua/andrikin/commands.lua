@@ -6,12 +6,6 @@ local Cygwin = require('andrikin.utils').Cygwin
 local Diretorio = require('andrikin.utils').Diretorio
 
 command(
-	'HexEditor',
-	'%!xxd',
-	{}
-)
-
-command(
 	'CompilarOuvidoria',
     function()
 ---@diagnostic disable-next-line: missing-parameter
@@ -46,6 +40,28 @@ command(
 	'Projetos',
 	function()
 		vim.cmd.Dirvish(Ouvidoria.ci.diretorios.projetos.diretorio)
+	end,
+	{}
+)
+
+command(
+	'Desktop',
+	function()
+		vim.cmd.Dirvish(vim.fs.joinpath(
+            vim.env.HOMEPATH,
+            'Desktop'
+        ))
+	end,
+	{}
+)
+
+command(
+	'Downloads',
+	function()
+		vim.cmd.Dirvish(vim.fs.joinpath(
+            vim.env.HOMEPATH,
+            'Downloads'
+        ))
 	end,
 	{}
 )
