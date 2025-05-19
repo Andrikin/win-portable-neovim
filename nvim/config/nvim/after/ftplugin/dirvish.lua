@@ -16,7 +16,3 @@ vim.keymap.set('n', 'go', function()
         do return end
     end
 end, {silent = true, buffer = buf})
-
--- Fix alternate file in Windows
-vim.fn.setreg('%', vim.fn.getreg('%'):gsub('/', '\\'))
-vim.fn.setreg('#', vim.fn.getreg('#'):gsub('/', '\\'))
