@@ -1,6 +1,6 @@
 local buf = vim.api.nvim_get_current_buf()
--- local open = vim.ui.open or function(arquivo)
-local open = function(arquivo)
+local open = vim.ui.open or function(arquivo)
+-- local open = function(arquivo)
     vim.fn.jobstart(
         vim.fn.shellescape(arquivo, true),
         {detach = true}
