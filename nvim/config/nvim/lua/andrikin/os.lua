@@ -134,7 +134,7 @@ local programas = {
         config = function() require('andrikin.utils').Jq:init() end,
 	},{
         nome = 'tree-sitter',
-        link = 'https://github.com/tree-sitter/tree-sitter/releases/download/v0.25.3/tree-sitter-windows-x64.gz',
+        link = 'https://github.com/tree-sitter/tree-sitter/releases/download/v0.25.5/tree-sitter-windows-x64.gz',
         cmd = {'tree-sitter.exe', 'tree-sitter-windows-x64'},
         config = function() require('andrikin.utils').TreeSitter:init() end,
     },{
