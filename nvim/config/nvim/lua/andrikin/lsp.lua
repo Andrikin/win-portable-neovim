@@ -39,7 +39,7 @@ if vim.fn.executable('x86_64-w64-mingw32-gcc') == 1 then
                     'latex',
                     -- https://github.com/folke/dot/blob/master/nvim/lua/plugins/treesitter.lua -- folke saying that comment slow TS
                     -- 'comment',
-                    'muttrc',
+                    -- 'muttrc',
                 },
                 highlight = {
                     enable = true,
