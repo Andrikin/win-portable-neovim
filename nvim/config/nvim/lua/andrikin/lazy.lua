@@ -146,6 +146,14 @@ local plugins = {
         opts = {
             cmdline = { enabled = false },
             snippets = { preset = 'luasnip' },
+            fuzzy = {
+                sorts = {
+                    'exact',
+                    -- defaults
+                    'score',
+                    'sort_text',
+                },
+            },
             keymap = {
                 preset = 'default',
                 ['<c-space>'] = {},
