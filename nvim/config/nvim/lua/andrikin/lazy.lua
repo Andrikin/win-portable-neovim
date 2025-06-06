@@ -149,7 +149,6 @@ local plugins = {
             keymap = {
                 preset = 'default',
                 ['<c-space>'] = {},
-                ['<c-j>'] = {'select_and_accept', 'fallback'},
             },
             -- (Default) Only show the documentation popup when manually triggered
             completion = {
