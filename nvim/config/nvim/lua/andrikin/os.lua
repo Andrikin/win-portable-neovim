@@ -38,6 +38,8 @@
 -- python: pip install pyright | npm -g install pyright
 -- rust: TODO
 
+-- WINDOWS: programa para extrair arquivos de ".msi": https://github.com/activescott/lessmsi/releases/download/v2.7.3/lessmsi-v2.7.3.zip
+
 -- TODO: Para downloads no github, utilizar API para baixar o arquivo mais recente:
 -- https://api.github.com/repos/<usuario>/<repositorio>/releases/latest
 
@@ -153,6 +155,10 @@ local programas = {
         nome = 'cmail',
         link = 'https://www.inveigle.net/downloads/CMail_0.8.11_x86.zip',
         cmd = 'cmail.exe',
+    },{
+        nome = 'lessmsi', -- Utilizar o lessmsi-gui.exe
+        link = 'https://github.com/activescott/lessmsi/releases/download/v2.7.3/lessmsi-v2.7.3.zip',
+        cmd = 'lessmsi.exe',
     }
 }
 
