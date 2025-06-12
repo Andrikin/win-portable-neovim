@@ -1002,6 +1002,9 @@ Latex.compilar = function(self, destino, temp)
         do return end
     end
     if vim.o.modified then -- salvar arquivo que está modificado.
+        local range = {1, vim.fn.line('$')}
+        vim.cmd.substitute({"/º/{\\\\textdegree}/ge", range = range})
+        vim.cmd.substitute({"/§/\\\\S/ge", range = range})
         vim.cmd.write()
         vim.cmd.redraw({bang = true})
     end
@@ -1190,16 +1193,16 @@ Comunicacao.nova = function(self, opts)
     local range = {1, vim.fn.line('$')}
 	-- preencher dados de C.I., ocorrência e setor no arquivo tex
     if modelo:match('modelo.basico') then
-        vim.cmd.substitute({("/<numero>/%s/I"):format(num_ci), range = range})
-        vim.cmd.substitute({("/<setor>/%s/I"):format(setor), range = range})
+        vim.cmd.substitute({("/<numero>/%s/Ie"):format(num_ci), range = range})
+        vim.cmd.substitute({("/<setor>/%s/Ie"):format(setor), range = range})
     elseif modelo:match('alerta.gabinete') or modelo:match('carga.gabinete') then
-        vim.cmd.substitute({("/<ocorrencia>/%s/I"):format(ocorrencia), range = range})
-        vim.cmd.substitute({("/<secretaria>/%s/I"):format(setor), range = range})
-        vim.cmd.substitute({("/<numero>/%s/I"):format(num_ci), range = range})
+        vim.cmd.substitute({("/<ocorrencia>/%s/Ie"):format(ocorrencia), range = range})
+        vim.cmd.substitute({("/<secretaria>/%s/Ie"):format(setor), range = range})
+        vim.cmd.substitute({("/<numero>/%s/Ie"):format(num_ci), range = range})
     else
-        vim.cmd.substitute({("/<ocorrencia>/%s/I"):format(ocorrencia), range = range})
-        vim.cmd.substitute({("/<numero>/%s/I"):format(num_ci), range = range})
-        vim.cmd.substitute({("/<setor>/%s/I"):format(setor), range = range})
+        vim.cmd.substitute({("/<ocorrencia>/%s/Ie"):format(ocorrencia), range = range})
+        vim.cmd.substitute({("/<numero>/%s/Ie"):format(num_ci), range = range})
+        vim.cmd.substitute({("/<setor>/%s/Ie"):format(setor), range = range})
     end
 end
 
