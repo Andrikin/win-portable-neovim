@@ -206,7 +206,11 @@ local plugins = {
         'https://github.com/nvim-treesitter/nvim-treesitter.git',
         build = ':TSUpdate',
         cond = function()
-            return vim.fn.executable('x86_64-w64-mingw32-gcc') == 1
+            local gcc_ok = vim.fn.executable('x86_64-w64-mingw32-gcc') == 1
+            if not gcc_ok then
+                vim.notify('Treesitter: Não foi possível encontrar compilador executável "gcc".')
+            end
+            return gcc_ok
         end
     },
 }
