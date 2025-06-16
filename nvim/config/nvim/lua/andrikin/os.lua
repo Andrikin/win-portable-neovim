@@ -38,7 +38,12 @@
 -- python: pip install pyright | npm -g install pyright
 -- rust: TODO
 
--- WINDOWS: programa para extrair arquivos de ".msi": https://github.com/activescott/lessmsi/releases/download/v2.7.3/lessmsi-v2.7.3.zip
+-- WINDOWS: 
+-- Programa para extrair arquivos de ".msi": 
+-- https://github.com/activescott/lessmsi/releases/download/v2.7.3/lessmsi-v2.7.3.zip
+--
+-- Programa para alternar rapidamente entre desktops:
+-- https://learn.microsoft.com/en-us/sysinternals/downloads/desktops
 
 -- TODO: Para downloads no github, utilizar API para baixar o arquivo mais recente:
 -- https://api.github.com/repos/<usuario>/<repositorio>/releases/latest
