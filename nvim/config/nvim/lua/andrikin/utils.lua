@@ -1001,12 +1001,13 @@ Latex.compilar = function(self, destino, temp)
     if not gerar_pdf then
         do return end
     end
+    -- substituir caracteres
+    local range = {1, vim.fn.line('$')}
+    vim.cmd.substitute({"/[ºª]/{\\\\textdegree}/ge", range = range})
+    vim.cmd.substitute({"/§/\\\\S/ge", range = range})
+    -- substituir caracteres
     if vim.o.modified then -- salvar arquivo que está modificado.
-        local range = {1, vim.fn.line('$')}
-        vim.cmd.substitute({"/º/{\\\\textdegree}/ge", range = range})
-        vim.cmd.substitute({"/§/\\\\S/ge", range = range})
         vim.cmd.write()
-        vim.cmd.redraw({bang = true})
     end
     temp = temp or self.diretorios.temp
     destino = destino or self.diretorios.redelocal
