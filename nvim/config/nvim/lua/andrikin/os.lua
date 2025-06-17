@@ -44,6 +44,9 @@
 --
 -- Programa para alternar rapidamente entre desktops:
 -- https://learn.microsoft.com/en-us/sysinternals/downloads/desktops
+--
+-- Programa para alternar rapidamente entre desktops: <escolhido>
+-- https://github.com/dankrusi/WindowsVirtualDesktopHelper/releases/download/v2.0/WindowsVirtualDesktopHelper.Executable.v2.0.zip
 
 -- TODO: Para downloads no github, utilizar API para baixar o arquivo mais recente:
 -- https://api.github.com/repos/<usuario>/<repositorio>/releases/latest
