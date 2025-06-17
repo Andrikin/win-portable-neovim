@@ -47,6 +47,9 @@
 --
 -- Programa para alternar rapidamente entre desktops: <escolhido>
 -- https://github.com/dankrusi/WindowsVirtualDesktopHelper/releases/download/v2.0/WindowsVirtualDesktopHelper.Executable.v2.0.zip
+--
+-- AltSnap
+-- https://github.com/RamonUnch/AltSnap/releases/download/1.65/AltSnap1.65bin_x64.zip
 
 -- TODO: Para downloads no github, utilizar API para baixar o arquivo mais recente:
 -- https://api.github.com/repos/<usuario>/<repositorio>/releases/latest
