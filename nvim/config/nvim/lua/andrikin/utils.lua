@@ -1003,8 +1003,9 @@ Latex.compilar = function(self, destino, temp)
     end
     -- substituir caracteres
     local range = {1, vim.fn.line('$')}
-    vim.cmd.substitute({"/[ºª]/{\\\\textdegree}/ge", range = range})
+    vim.cmd.substitute({"/[º°ª]/{\\\\textdegree}/ge", range = range})
     vim.cmd.substitute({"/§/\\\\S/ge", range = range})
+    vim.cmd.substitute({"/\\$/\\\\$/ge", range = range})
     -- substituir caracteres
     if vim.o.modified then -- salvar arquivo que está modificado.
         vim.cmd.write()
