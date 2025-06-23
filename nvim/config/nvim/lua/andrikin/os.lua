@@ -42,11 +42,11 @@
 -- Programa para extrair arquivos de ".msi": 
 -- https://github.com/activescott/lessmsi/releases/download/v2.7.3/lessmsi-v2.7.3.zip
 --
--- Programa para alternar rapidamente entre desktops:
+-- Programa para alternar rapidamente entre desktops: <historico>
 -- https://learn.microsoft.com/en-us/sysinternals/downloads/desktops
 --
 -- Programa para alternar rapidamente entre desktops: <escolhido>
--- https://github.com/dankrusi/WindowsVirtualDesktopHelper/releases/download/v2.0/WindowsVirtualDesktopHelper.Executable.v2.0.zip
+-- https://github.com/nadimkobeissi/binkybox/releases/download/v0.2.1/binkybox-0.2.1.rar
 --
 -- AltSnap
 -- https://github.com/RamonUnch/AltSnap/releases/download/1.65/AltSnap1.65bin_x64.zip
