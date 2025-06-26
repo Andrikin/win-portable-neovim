@@ -72,6 +72,8 @@ vim.keymap.set( 'n', 'j',
 -- nnoremap <leader>j <cmd>m.+1<cr>
 vim.keymap.set('v', 'K', ":m'<-2<cr>gv", {silent = true})
 vim.keymap.set('v', 'J', ":m'>+1<cr>gv", {silent = true})
+-- gJ com o mesmo comportamento de J (juntar linhas removendo espaços)
+vim.keymap.set('v', 'gJ', ":<c-u>'<,'>join<cr>", {silent = true})
 
 -- Copy and paste from clipboard (* -> selection register/+ -> primary register)
 vim.keymap.set('n', 'gP', '"+P')
