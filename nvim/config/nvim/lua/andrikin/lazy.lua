@@ -14,6 +14,15 @@ end
 vim.opt.rtp:prepend(lazypath)
 
 -- Temas - interface: nome, url
+local blackhole = {
+	nome = 'auto', -- Lualine não reconhece 'blackhole'
+	link = 'https://github.com/biisal/blackhole',
+	opts = {},
+	config = function ()
+		vim.opt.termguicolors = true
+		vim.cmd.colorscheme('blackhole')
+	end
+}
 local tokyonight = {
     nome = 'tokyonight',
     link = 'https://github.com/folke/tokyonight.nvim.git',
@@ -28,15 +37,8 @@ local tokyonight = {
         vim.cmd.colorscheme('tokyonight')
     end
 }
--- local dracula = {
---     nome = 'dracula',
---     url = 'https://github.com/Mofiqul/dracula.nvim.git'
---     opts = {},
-    -- config = function()
-    --     vim.cmd.colorscheme('dracula')
-    -- end
--- }
-local tema = tokyonight
+-- local tema = tokyonight
+local tema = blackhole
 
 local has_rm = vim.fn.executable('rm') == 1
 local has_mkdir = vim.fn.executable('mkdir') == 1
