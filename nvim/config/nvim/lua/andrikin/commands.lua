@@ -4,6 +4,17 @@ local command = vim.api.nvim_create_user_command
 local Ouvidoria = require('andrikin.utils').Ouvidoria -- executar bootstrap
 local Cygwin = require('andrikin.utils').Cygwin
 local Diretorio = require('andrikin.utils').Diretorio
+local Copyq = require('andrikin.utils').Copyq
+
+command(
+	'Clipboard',
+    function(opts)
+        Copyq.clipboard(opts)
+    end,
+	{
+		nargs = "?",
+	}
+)
 
 command(
 	'CompilarOuvidoria',

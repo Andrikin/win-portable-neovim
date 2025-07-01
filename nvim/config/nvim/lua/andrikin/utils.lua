@@ -1005,6 +1005,7 @@ Latex.compilar = function(self, destino, temp)
     local range = {1, vim.fn.line('$')}
     vim.cmd.substitute({"/[º°ª]/{\\\\textdegree}/ge", range = range})
     vim.cmd.substitute({"/§/\\\\S/ge", range = range})
+    vim.cmd.substitute({'/[“”]/\\"/ge', range = range})
     vim.cmd.substitute({"/[^\\\\]\\@<=\\$/\\\\$/ge", range = range})
     -- substituir caracteres
     if vim.o.modified then -- salvar arquivo que está modificado.
@@ -1240,6 +1241,56 @@ Ouvidoria.new = function()
 end
 
 Utils.Ouvidoria = Ouvidoria.new()
+
+---@class Copyq
+---@field clipboard function
+local Copyq = {}
+
+Copyq.__index = Copyq
+
+-- https://copyq.readthedocs.io/en/latest/known-issues.html
+-- On Windows, CopyQ does not print anything on console
+-- Use Action dialog in CopyQ (F5 shortcut) and set "Store standard output" to "text/plain" to save the output as new item in current tab.
+-- selecionar qual tab - default 'clipboard'
+Copyq.clipboard = function(tab)
+    tab = tab.args == "" and nil or 'clipboard'
+    if vim.fn.executable('copyq') ~= 1 then
+        Utils.notify('copyq: Não foi encontrado "copyq". Por gentileza, realize a instalação.')
+        do return end
+    end
+    local clipboard = vim.fn.system({"copyq","eval","--",([[
+            let indent = 4;
+            tab('%s');
+            let c = [];
+            for(i=0;i<20;i++) c.push(str(read(i)));
+            // for(i=0;i<size();i++) c.push(str(read(i)));
+            print(JSON.stringify(c, null, indent));
+        ]]):format(tab)}
+    )
+    -- transformar JSON
+    clipboard = vim.json.decode(clipboard)
+    local temp = {}
+    local index = 1
+    for i, _ in ipairs(clipboard) do -- remover strings vazias
+        if clipboard[i] ~= "" then
+            temp[index] = clipboard[i]
+            index = index + 1
+        end
+    end
+    ---@diagnostic disable-next-line: cast-local-type
+    clipboard = temp
+    vim.ui.select(clipboard, {
+        prompt = 'Selecione uma entrado do clipboard:',
+        format_item = function(item)
+            return item
+        end,
+    }, function(choice)
+            vim.fn.setreg('"', choice)
+        end
+    )
+end
+
+Utils.Copyq = Copyq
 
 ---@class Cygwin
 ---@field init function

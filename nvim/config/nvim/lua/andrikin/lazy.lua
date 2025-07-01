@@ -191,7 +191,7 @@ local plugins = {
     -- Telescope
 	{
 		'https://github.com/nvim-telescope/telescope.nvim.git',
-        lazy = true,
+		lazy = true,
 		dependencies = {
 			'https://github.com/nvim-lua/plenary.nvim.git',
             -- {
@@ -202,7 +202,10 @@ local plugins = {
             --     end,
             -- },
 		},
-	},
+    },{ -- change how vim.ui.select works (telescope)
+        'https://github.com/nvim-telescope/telescope-ui-select.nvim',
+        lazy = true
+    },
 	-- Treesitter,
     {
         'https://github.com/nvim-treesitter/nvim-treesitter.git',

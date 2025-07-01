@@ -68,6 +68,11 @@ local _telescope = {
     actions = require('telescope.actions')
 }
 require('telescope').setup({
+    extensions = { -- configurando extenções
+        ["ui-select"] = {
+            require("telescope.themes").get_dropdown()
+        }
+    },
     pickers = {
         buffers = {
             previewer = false,
@@ -113,12 +118,17 @@ require('telescope').setup({
         },
     }
 })
-local ok, _ = pcall(require('telescope').load_extension, 'fzf')
-if not ok then
-    notify('Telescope: não foi possível carregar a extenção fzf.')
-else
-    notify('Telescope: extenção fzf carregada com sucesso')
+-- Carregando extenções do telescope
+local carregar = function (extencao)
+    local ok, _ = pcall(require('telescope').load_extension, extencao)
+    if not ok then
+        notify(('Telescope: não foi possível carregar a extenção %s.'):format(extencao))
+    else
+        notify(('Telescope: extenção %s carregada com sucesso'):format(extencao))
+    end
 end
+carregar('fzf')
+carregar('ui-select')
 
 -- carregar snippets (LuaSnip)
 require('luasnip').config.set_config({
