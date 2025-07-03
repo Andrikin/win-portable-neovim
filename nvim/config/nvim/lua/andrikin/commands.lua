@@ -13,6 +13,7 @@ command(
     end,
 	{
 		nargs = "?",
+		complete = function(arg, _, _) return Copyq:tab_complete(arg) end,
 	}
 )
 

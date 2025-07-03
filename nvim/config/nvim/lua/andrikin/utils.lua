@@ -1244,6 +1244,8 @@ Utils.Ouvidoria = Ouvidoria.new()
 
 ---@class Copyq
 ---@field clipboard function
+---@field copyq_tab_list function
+---@field tab_complete function
 local Copyq = {}
 
 Copyq.__index = Copyq
@@ -1253,7 +1255,7 @@ Copyq.__index = Copyq
 -- Use Action dialog in CopyQ (F5 shortcut) and set "Store standard output" to "text/plain" to save the output as new item in current tab.
 -- selecionar qual tab - default 'clipboard'
 Copyq.clipboard = function(tab)
-    tab = tab.args == "" and nil or 'clipboard'
+    tab = tab.args == "" and 'clipboard' or tab.args
     if vim.fn.executable('copyq') ~= 1 then
         Utils.notify('copyq: Não foi encontrado "copyq". Por gentileza, realize a instalação.')
         do return end
@@ -1288,6 +1290,31 @@ Copyq.clipboard = function(tab)
             vim.fn.setreg('"', choice)
         end
     )
+end
+
+---@return table
+Copyq.copyq_tab_list = function()
+    local lista = vim.fn.system({"copyq", "eval", "--", [[
+        let indent = 4;
+        let tabs = tab();
+        print(JSON.stringify(tabs, null, indent));
+    ]]})
+    local ok = nil
+    ok, lista = pcall(vim.json.decode, lista)
+    if not ok then
+        return {}
+    end
+    return lista
+end
+
+---@return table
+Copyq.tab_complete = function(self, args)-- completion
+	return vim.tbl_filter(
+		function(tab)
+			return tab:lower():match(args:gsub('-', '.'):lower())
+		end,
+        self.copyq_tab_list()
+	)
 end
 
 Utils.Copyq = Copyq
