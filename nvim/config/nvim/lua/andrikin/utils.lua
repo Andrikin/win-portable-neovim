@@ -1288,6 +1288,7 @@ Copyq.clipboard = function(tab)
         end,
     }, function(choice)
             vim.fn.setreg('"', choice)
+            vim.cmd.normal('P')
         end
     )
 end
