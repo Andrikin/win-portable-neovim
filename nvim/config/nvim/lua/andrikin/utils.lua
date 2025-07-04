@@ -1262,10 +1262,10 @@ Copyq.clipboard = function(tab)
     end
     local clipboard = vim.fn.system({"copyq","eval","--",([[
             let indent = 4;
+            let tamanho = size() <= 50 && size() || 50;
             tab('%s');
             let c = [];
-            for(i=0;i<20;i++) c.push(str(read(i)));
-            // for(i=0;i<size();i++) c.push(str(read(i)));
+            for(i=0;i<tamanho;i++) c.push(str(read(i)));
             print(JSON.stringify(c, null, indent));
         ]]):format(tab)}
     )
@@ -1287,8 +1287,10 @@ Copyq.clipboard = function(tab)
             return item
         end,
     }, function(choice)
-            vim.fn.setreg('"', choice)
-            vim.cmd.normal('P')
+            if choice then
+                vim.fn.setreg('"', choice)
+                vim.cmd.normal('P')
+            end
         end
     )
 end
