@@ -1284,7 +1284,10 @@ Copyq.clipboard = function(tab)
     vim.ui.select(clipboard, {
         prompt = 'Selecione uma entrado do clipboard:',
         format_item = function(item)
-            return item
+            if #item <= 75 then
+                return item
+            end
+            return item:sub(1, 75)
         end,
     }, function(choice)
             if choice then
