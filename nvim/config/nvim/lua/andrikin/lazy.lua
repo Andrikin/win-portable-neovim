@@ -219,6 +219,7 @@ local plugins = {
 	-- Treesitter,
     {
         'https://github.com/nvim-treesitter/nvim-treesitter.git',
+        lazy = false,
         branch = 'main',
         build = ':TSUpdate',
         cond = function()

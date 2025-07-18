@@ -1,6 +1,7 @@
 -- BufWritePost: compilar tex para gerar pdf assim que salvar o arquivo
 -- TODO: comando somente para arquivos de comunicação que precisam ser 
 -- compilados
+vim.treesitter.start()
 local Andrikin = require('andrikin.utils').Andrikin
 local buf = vim.api.nvim_get_current_buf()
 local has_autocmd = false
