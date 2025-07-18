@@ -50,6 +50,9 @@
 --
 -- AltSnap
 -- https://github.com/RamonUnch/AltSnap/releases/download/1.65/AltSnap1.65bin_x64.zip
+--
+-- Shutdown Timer Classic
+-- https://github.com/lukaslangrock/ShutdownTimerClassic/releases/download/v1.3.1/ShutdownTimerClassic_v1.3.1.zip
 
 -- TODO: Para downloads no github, utilizar API para baixar o arquivo mais recente:
 -- https://api.github.com/repos/<usuario>/<repositorio>/releases/latest
