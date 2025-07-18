@@ -20,7 +20,7 @@ if vim.fn.executable('x86_64-w64-mingw32-gcc') == 1 then
     vim.defer_fn( -- kickstart.nvim
         function()
             require('nvim-treesitter.install').compilers = {'x86_64-w64-mingw32-gcc', 'x86_64-w64-mingw32-clang', 'gcc', 'cc', 'clang'}
-            require('nvim-treesitter.configs').setup({
+            require('nvim-treesitter.config').setup({
                 modules = {}, -- padrao
                 ignore_install = {}, -- padrao
                 auto_install = false, -- padrao
@@ -30,7 +30,8 @@ if vim.fn.executable('x86_64-w64-mingw32-gcc') == 1 then
                     'diff',
                     'git_config', 'git_rebase', 'gitattributes', 'gitcommit', 'gitignore',
                     'jsdoc', 'json', 'json5', 'java',
-                    'lua', 'luadoc', 'luap', 'luau',
+                    'lua', 'luadoc',
+                    -- 'luap', 'luau',
                     'markdown', 'markdown_inline',
                     'regex',
                     'xml',

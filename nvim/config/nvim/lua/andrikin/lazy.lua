@@ -146,6 +146,13 @@ local plugins = {
         'https://github.com/Saghen/blink.cmp.git',
         version = '1.*',
         opts = {
+            enabled = function ()
+                return not vim.tbl_contains(
+                    {
+                        "vim",
+                    },
+                    vim.bo.filetype)
+            end,
             cmdline = { enabled = false },
             snippets = { preset = 'luasnip' },
             fuzzy = {
@@ -179,6 +186,9 @@ local plugins = {
             -- Default list of enabled providers defined so that you can extend it
             -- elsewhere in your config, without redefining it, due to `opts_extend`
             sources = {
+                providers = {
+                    cmdline = { enabled = false }
+                },
                 default = { 'lsp', 'snippets', 'buffer', 'path' },
             },
         },
@@ -203,12 +213,13 @@ local plugins = {
             -- },
 		},
     },{ -- change how vim.ui.select works (telescope)
-        'https://github.com/nvim-telescope/telescope-ui-select.nvim',
+'https://github.com/nvim-telescope/telescope-ui-select.nvim',
         lazy = true
     },
 	-- Treesitter,
     {
         'https://github.com/nvim-treesitter/nvim-treesitter.git',
+        branch = 'main',
         build = ':TSUpdate',
         cond = function()
             local gcc_ok = vim.fn.executable('x86_64-w64-mingw32-gcc') == 1
