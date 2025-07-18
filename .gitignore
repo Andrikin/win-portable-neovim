@@ -19,8 +19,7 @@ nvim/share/man/
 nvim/share/nvim-qt/
 nvim/share/nvim/runtime/
 
-nvim/config/nvim/plugged/
-nvim/config/nvim/lazy-lock.json
+nvim/config/nvim-data/
 nvim/config/nvim-data/lazy/
 nvim/config/nvim-data/telescope_history
 nvim/config/nvim-data/lsp.log.ssh/
@@ -43,8 +42,6 @@ nvim/config/nvim-data/tree-sitter-gitcommit/
 nvim/config/nvim-data/luasnip.log
 nvim/config/nvim-data/undotree/
 nvim/config/nvim-data/harpoon/
-nvim/config/configstore/
-
 nvim/config/nvim-data/tree-sitter-ada/
 nvim/config/nvim-data/tree-sitter-agda/
 nvim/config/nvim-data/tree-sitter-angular/
@@ -296,9 +293,15 @@ nvim/config/nvim-data/tree-sitter-yuck/
 nvim/config/nvim-data/tree-sitter-zathurarc/
 nvim/config/nvim-data/tree-sitter-zig/
 nvim/config/nvim-data/tree-sitter-latex/
-nvim/config/nvim/.luarc.json
 nvim/config/nvim-data/.netrwhist
 nvim/config/nvim-data/blink/
+
+nvim/config/nvim/plugged/
+
+nvim/config/nvim/lazy-lock.json
+nvim/config/nvim/.luarc.json
+
+nvim/config/configstore/
 
 nvim/bin/
 nvim/opt
