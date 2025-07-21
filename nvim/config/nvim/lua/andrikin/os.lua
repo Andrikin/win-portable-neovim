@@ -59,6 +59,10 @@
 --
 -- Esconder mouse enquanto digita
 -- https://github.com/Stefan-Z-Camilleri-zz/Windows-Cursor-Hider
+--
+-- Download VS Build Tools
+-- https://gist.github.com/mmozeiko/7f3162ec2988e81e56d5c4e22cde9977
+-- OBS: incluir diretórios nas variáveis de ambiente: PATH, LIB, INCLUDE
 
 -- TODO: Para downloads no github, utilizar API para baixar o arquivo mais recente:
 -- https://api.github.com/repos/<usuario>/<repositorio>/releases/latest

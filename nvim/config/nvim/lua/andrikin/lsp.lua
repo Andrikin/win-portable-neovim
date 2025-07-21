@@ -25,57 +25,19 @@ if vim.fn.executable('x86_64-w64-mingw32-gcc') == 1 then
                     'diff',
                     'git_config', 'git_rebase', 'gitattributes', 'gitcommit', 'gitignore',
                     'jsdoc', 'json', 'json5', 'java',
-                    'lua', 'luadoc',
-                    -- 'luap', 'luau',
-                    'markdown', 'markdown_inline',
+                    'luadoc',
                     'regex',
                     'xml',
-                    'python',
-                    'vim', 'vimdoc',
                     'latex',
                     -- https://github.com/folke/dot/blob/master/nvim/lua/plugins/treesitter.lua -- folke saying that comment slow TS
                     -- 'comment',
                     -- 'muttrc',
+                    -- DEFAULT Neovim 0.11:
+                    -- 'python',
+                    -- 'lua',
+                    -- 'markdown', 'markdown_inline',
+                    -- 'vim', 'vimdoc',
             }) 
-            -- require('nvim-treesitter.config').setup({
-            --     ---@diagnostic disable-next-line: param-type-mismatch
-            --     install_dir = vim.fs.joinpath(vim.fn.stdpath('data'), 'site'),
-            --     modules = {}, -- padrao
-            --     ignore_install = {}, -- padrao
-            --     auto_install = false, -- padrao
-            --     sync_install = false, -- padrao
-            --     ensure_installed = { -- parsers para highlight - treesitter
-            --         'css', 'html', 'javascript', 'vue',
-            --         'diff',
-            --         'git_config', 'git_rebase', 'gitattributes', 'gitcommit', 'gitignore',
-            --         'jsdoc', 'json', 'json5', 'java',
-            --         'lua', 'luadoc',
-            --         -- 'luap', 'luau',
-            --         'markdown', 'markdown_inline',
-            --         'regex',
-            --         'xml',
-            --         'python',
-            --         'vim', 'vimdoc',
-            --         'latex',
-            --         -- https://github.com/folke/dot/blob/master/nvim/lua/plugins/treesitter.lua -- folke saying that comment slow TS
-            --         -- 'comment',
-            --         -- 'muttrc',
-            --     },
-            --     highlight = {
-            --         enable = true,
-            --         ---@diagnostic disable-next-line: unused-local
-            --         disable = function(lang, buf)
-            --             local max_filesize = 100 * 1024 -- 100 KB
-            --             ---@diagnostic disable-next-line: undefined-field
-            --             local ok, stats = pcall(vim.uv.fs_stat, vim.api.nvim_buf_get_name(buf))
-            --             if ok and stats and stats.size > max_filesize then
-            --                 return true
-            --             end
-            --         end,
-            --         additional_vim_regex_highlighting = true,
-            --     },
-            --     indent = { enable = true },
-            -- })
         end,
         0
     )
