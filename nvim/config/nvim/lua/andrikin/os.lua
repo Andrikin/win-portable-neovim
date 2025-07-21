@@ -51,17 +51,14 @@
 -- AltSnap
 -- https://github.com/RamonUnch/AltSnap/releases/download/1.65/AltSnap1.65bin_x64.zip
 --
-<<<<<<< Updated upstream
 -- Shutdown Timer Classic
 -- https://github.com/lukaslangrock/ShutdownTimerClassic/releases/download/v1.3.1/ShutdownTimerClassic_v1.3.1.zip
-=======
 -- Ativar janela ao mover mouse sobre
 -- https://www.elevenforum.com/t/turn-on-or-off-activate-window-by-hovering-over-with-mouse-pointer-in-windows-11.6104/
 -- https://www.elevenforum.com/t/change-time-to-activate-window-by-hovering-over-with-mouse-pointer-in-windows-11.6105/
 --
 -- Esconder mouse enquanto digita
 -- https://github.com/Stefan-Z-Camilleri-zz/Windows-Cursor-Hider
->>>>>>> Stashed changes
 
 -- TODO: Para downloads no github, utilizar API para baixar o arquivo mais recente:
 -- https://api.github.com/repos/<usuario>/<repositorio>/releases/latest
