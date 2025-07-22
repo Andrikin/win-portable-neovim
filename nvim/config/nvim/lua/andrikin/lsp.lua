@@ -21,7 +21,7 @@ if vim.fn.executable('x86_64-w64-mingw32-gcc') == 1 then
         function()
             require('nvim-treesitter.install').compilers = {'x86_64-w64-mingw32-gcc', 'x86_64-w64-mingw32-clang', 'gcc', 'cc', 'clang'}
             require('nvim-treesitter').install({
-                    'css', 'html', 'javascript', 'vue',
+                    'css', 'html', 'javascript', 'vue', 'typescript',
                     'diff',
                     'git_config', 'git_rebase', 'gitattributes', 'gitcommit', 'gitignore',
                     'jsdoc', 'json', 'json5', 'java',
@@ -29,14 +29,17 @@ if vim.fn.executable('x86_64-w64-mingw32-gcc') == 1 then
                     'regex',
                     'xml',
                     'latex',
+                    'sql',
+                    'powershell',
+                    'jq',
+                    'ini',
                     -- https://github.com/folke/dot/blob/master/nvim/lua/plugins/treesitter.lua -- folke saying that comment slow TS
                     -- 'comment',
-                    -- 'muttrc',
                     -- DEFAULT Neovim 0.11:
-                    -- 'python',
-                    -- 'lua',
-                    -- 'markdown', 'markdown_inline',
-                    -- 'vim', 'vimdoc',
+                    'python',
+                    'lua',
+                    'markdown', 'markdown_inline',
+                    'vim', 'vimdoc',
             }) 
         end,
         0
