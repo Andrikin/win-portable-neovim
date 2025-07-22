@@ -1,5 +1,4 @@
-local util = require 'lspconfig.util'
-local root_files = {
+local roots = {
   '.luarc.json',
   '.luarc.jsonc',
   '.luacheckrc',
@@ -13,7 +12,7 @@ return {
     -- cmd = {'lua-language-server', '--force-accept-workspace'},
     cmd = {'lua-language-server'},
     filetypes = { 'lua' },
-    root_markers = util.root_pattern(root_files),
+    root_markers = roots,
     single_file_support = true,
     log_level = vim.lsp.protocol.MessageType.Warning,
     settings = {

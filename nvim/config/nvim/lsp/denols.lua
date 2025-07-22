@@ -1,4 +1,3 @@
-local util = require 'lspconfig.util'
 local lsp = vim.lsp
 
 local function virtual_text_document_handler(uri, res, client)
@@ -55,7 +54,7 @@ return {
         'typescriptreact',
         'typescript.tsx',
     },
-    root_markers = util.root_pattern('deno.json', 'deno.jsonc', '.git'),
+    root_markers = { 'deno.json', 'deno.jsonc', '.git' },
     settings = {
         deno = {
             enable = true,
@@ -73,4 +72,20 @@ return {
         ['textDocument/typeDefinition'] = denols_handler,
         ['textDocument/references'] = denols_handler,
     },
+    on_attach = function(client, bufnr)
+        vim.api.nvim_buf_create_user_command(bufnr, 'LspDenolsCache', function()
+            client:exec_cmd({
+                command = 'deno.cache',
+                arguments = { {}, vim.uri_from_bufnr(bufnr) },
+            }, { bufnr = bufnr }, function(err, _result, ctx)
+                if err then
+                    local uri = ctx.params.arguments[2]
+                    ---@diagnostic disable-next-line: param-type-mismatch
+                    vim.api.nvim_echo('cache command failed for ' .. vim.uri_to_fname(uri), true, {err=true})
+                end
+            end)
+        end, {
+        desc = 'Cache a module and all of its dependencies.',
+    })
+end,
 }
