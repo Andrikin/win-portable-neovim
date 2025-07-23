@@ -1,4 +1,5 @@
 vim.treesitter.start()
+vim.bo.indentexpr = "v:lua.require'nvim-treesitter'.indentexpr()"
 vim.cmd.Lazy('load nvim-jdtls')
 
 -- Eclipse Java development tools (JDT) Language Server downloaded from:

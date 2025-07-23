@@ -2,6 +2,7 @@
 -- TODO: comando somente para arquivos de comunicação que precisam ser 
 -- compilados
 vim.treesitter.start()
+vim.bo.indentexpr = "v:lua.require'nvim-treesitter'.indentexpr()"
 local Andrikin = require('andrikin.utils').Andrikin
 local buf = vim.api.nvim_get_current_buf()
 local has_autocmd = false
