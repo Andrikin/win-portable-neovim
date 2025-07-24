@@ -11,7 +11,7 @@ local fmta = require("luasnip.extras.fmt").fmta
 return {
     -- Comandos padrão Latex
     s('href',
-        {t("\\href{"), i(1, 'url_site'), t("}"), t("{"), i(2, 'inserir_texto'), t("}")}
+        {t("\\href{"), i(1, 'url'), t("}"), t("{"), i(2, 'descricao'), t("}")}
     ),
     s('textbf', {t("\\textbf{"), i(1), t("}")}),
     s('textit', {t("\\textit{"), i(1), t("}")}),
@@ -25,9 +25,7 @@ return {
     s({trig = 'Associados'},
         {t("{\\Associados}")}
     ),
-    s({trig = 'textdegree'},
-        {t("{\\textdegree}")}
-    ),
+    s('textdegree', {i(1, 'n'), t("{\\textdegree}")}),
     s({trig = 'Considerando'},
         {t("{\\Considerando}")}
     ),
