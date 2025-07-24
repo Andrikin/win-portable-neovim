@@ -19,7 +19,6 @@ local blackhole = {
 	link = 'https://github.com/biisal/blackhole',
 	opts = {},
 	config = function ()
-		vim.opt.termguicolors = true
 		vim.cmd.colorscheme('blackhole')
 	end
 }
@@ -28,17 +27,19 @@ local tokyonight = {
     link = 'https://github.com/folke/tokyonight.nvim.git',
     opts = {},
     config = function()
-        -- st (simple terminal - suckless) tem um problema com o cursor.
-        -- Ele não muda de acordo com as cores da fonte que ele está sobre.
-        -- Dessa forma, com o patch de Jules Maselbas 
-        -- (https://git.suckless.org/st/commit/5535c1f04c665c05faff2a65d5558246b7748d49.html),
-        -- é possível obter o cursor com a cor do texto (truecolor)
-        vim.opt.termguicolors = true
         vim.cmd.colorscheme('tokyonight')
     end
 }
 -- local tema = tokyonight
 local tema = blackhole
+tema.init = function ()
+    -- st (simple terminal - suckless) tem um problema com o cursor.
+    -- Ele não muda de acordo com as cores da fonte que ele está sobre.
+    -- Dessa forma, com o patch de Jules Maselbas 
+    -- (https://git.suckless.org/st/commit/5535c1f04c665c05faff2a65d5558246b7748d49.html),
+    -- é possível obter o cursor com a cor do texto (truecolor)
+    vim.opt.termguicolors = true
+end
 
 local has_rm = vim.fn.executable('rm') == 1
 local has_mkdir = vim.fn.executable('mkdir') == 1
@@ -65,6 +66,7 @@ local plugins = {
         lazy = false,
 		config = tema.config,
         opts = tema.opts,
+        init = tema.init,
     },
 	-- Vim Cool,
 	'https://github.com/romainl/vim-cool.git',
