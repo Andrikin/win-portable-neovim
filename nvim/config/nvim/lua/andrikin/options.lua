@@ -37,6 +37,8 @@ vim.opt.encoding = 'utf-8'
 vim.opt.autoread = true
 vim.opt.tabpagemax = 50
 vim.opt.wildmenu = true
+-- usar <tab> para cmdline completion em macros
+vim.opt.wildcharm = 9
 -- vim.opt.completeopt = 'menu,menuone,noselect'
 vim.opt.completeopt = 'menu,noinsert,noselect,popup,fuzzy'
 if vim.fn.has('win32') then
