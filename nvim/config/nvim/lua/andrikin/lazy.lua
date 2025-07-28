@@ -246,6 +246,7 @@ local opts = {
 				-- "tohtml",
 				"tutor",
 				-- "zipPlugin",
+                "man", -- man.lua
 			},
 		},
 	},
