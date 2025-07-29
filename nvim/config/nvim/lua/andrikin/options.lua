@@ -38,7 +38,9 @@ vim.opt.autoread = true
 vim.opt.tabpagemax = 50
 vim.opt.wildmenu = true
 -- usar <tab> para cmdline completion em macros
-vim.opt.wildcharm = 9
+if vim.o.wildcharm ~= 9 then
+    vim.opt.wildcharm = 9
+end
 -- vim.opt.completeopt = 'menu,menuone,noselect'
 vim.opt.completeopt = 'menu,noinsert,noselect,popup,fuzzy'
 if vim.fn.has('win32') then
