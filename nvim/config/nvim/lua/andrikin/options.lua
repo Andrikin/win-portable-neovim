@@ -93,6 +93,10 @@ else
 	vim.g.grepprg = 'grep -R'
 end
 
+-- Vim-Surround (Tim Pope)
+-- Latex
+vim.g['surround_' .. vim.fn.char2nr('l')] = "\\\1\\\1{\r}"
+
 -- Matchit
 -- TODO: Criar arquivos ftplugin para cada linguagem, definindo b:match_words
 vim.opt.matchpairs:append('<:>')
