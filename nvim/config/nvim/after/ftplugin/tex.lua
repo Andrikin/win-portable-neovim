@@ -32,3 +32,8 @@ if not has_autocmd then
     )
 end
 vim.bo[buf].textwidth = 80
+
+-- Vim-Surround (Tim Pope)
+-- Latex
+vim.b[buf]['surround_' .. vim.fn.char2nr('l')] = "\\\1\\\1{\r}"
+
