@@ -36,4 +36,5 @@ vim.bo[buf].textwidth = 80
 -- Vim-Surround (Tim Pope)
 -- Latex
 vim.b[buf]['surround_' .. vim.fn.char2nr('l')] = "\\\1\\\1{\r}"
+vim.b[buf]['surround_' .. vim.fn.char2nr('\\')] = "\\\1\\\1{\r}"
 

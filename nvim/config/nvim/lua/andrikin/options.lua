@@ -93,6 +93,13 @@ else
 	vim.g.grepprg = 'grep -R'
 end
 
+-- Vim-Surround (Tim Pope)
+-- Latex
+vim.g['surround_' .. vim.fn.char2nr('\\')] = nil
+vim.g['surround_' .. vim.fn.char2nr('l')] = nil
+-- Html
+vim.g['surround_' .. vim.fn.char2nr('t')] = nil
+
 -- Matchit
 -- TODO: Criar arquivos ftplugin para cada linguagem, definindo b:match_words
 vim.opt.matchpairs:append('<:>')
