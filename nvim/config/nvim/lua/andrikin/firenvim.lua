@@ -231,3 +231,6 @@ vim.api.nvim_create_autocmd({'BufEnter'}, {
     command = 'norm i'
 })
 
+-- CUSTOM COMMANDS AND AUTOCOMMANDS --
+require('andrikin.commands')
+require('andrikin.autocmds')
