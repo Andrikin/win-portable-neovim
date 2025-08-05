@@ -7,6 +7,9 @@ if not vim.g.nvy or not vim.g.neovide then
 	vim.keymap.set('n', '<c-\\>', '<c-]>')
 end
 
+-- CTRL-BACKSPACE para apagar palavras
+vim.keymap.set({'i', 'c'}, '<c-backspace>', '<c-w>')
+
 -- Remover <space> dos modos: NORMAL e VISUAL (em conjunto com mapleader)
 vim.keymap.set({ 'n', 'v' }, '<Space>', '<Nop>', { silent = true })
 
