@@ -105,7 +105,7 @@ autocmd(
         pattern = '*',
         once = true,
         callback = function()
-            if vim.fn.exists('g:loaded_fugitive') and not vim.g.started_by_firenvim then
+            if vim.g.loaded_fugitive then
                 vim.fn.jobstart({
                     'git',
                     'pull'
@@ -121,7 +121,7 @@ autocmd(
                     end,
                 })
             end
----@diagnostic disable-next-line: undefined-field
+            ---@diagnostic disable-next-line: undefined-field
             vim.cmd.cd(vim.uv.os_homedir() .. '/Desktop')
         end,
     }
@@ -137,4 +137,3 @@ autocmd(
         end,
     }
 )
-

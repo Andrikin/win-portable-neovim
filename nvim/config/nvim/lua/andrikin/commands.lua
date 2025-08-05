@@ -6,6 +6,7 @@ local Cygwin = require('andrikin.utils').Cygwin
 local Diretorio = require('andrikin.utils').Diretorio
 local Copyq = require('andrikin.utils').Copyq
 
+
 command(
 	'Clipboard',
     function(opts)
@@ -18,103 +19,103 @@ command(
 )
 
 command(
-	'CompilarOuvidoria',
+    'CompilarOuvidoria',
     function()
----@diagnostic disable-next-line: missing-parameter
+    ---@diagnostic disable-next-line: missing-parameter
         Ouvidoria.latex:compilar()
     end,
-	{}
+    {}
 )
 
 command(
-	'CompilarLatex',
+    'CompilarLatex',
     function()
         ---@diagnostic disable-next-line: param-type-mismatch, undefined-field
         local destino = Diretorio.new(vim.uv.os_homedir()) / 'Downloads'
         ---@diagnostic disable-next-line: missing-parameter
         Ouvidoria.latex:compilar(destino)
     end,
-	{}
+    {}
 )
 
 command(
-	'Ouvidoria',
+    'Ouvidoria',
     function(opts)
         Ouvidoria.ci:nova(opts)
     end,
-	{
-		nargs = "+",
-		complete = function(arg, _, _) return Ouvidoria.ci:tab(arg) end,
-	}
+    {
+        nargs = "+",
+        complete = function(arg, _, _) return Ouvidoria.ci:tab(arg) end,
+    }
 )
 
 command(
-	'Projetos',
-	function()
-		vim.cmd.Dirvish(Ouvidoria.ci.diretorios.projetos.diretorio)
-	end,
-	{}
+    'Projetos',
+    function()
+        vim.cmd.Dirvish(Ouvidoria.ci.diretorios.projetos.diretorio)
+    end,
+    {}
 )
 
 command(
-	'Desktop',
-	function()
-		vim.cmd.Dirvish(vim.fs.joinpath(
+    'Desktop',
+    function()
+        vim.cmd.Dirvish(vim.fs.joinpath(
             vim.env.HOMEPATH,
             'Desktop'
         ))
-	end,
-	{}
+    end,
+    {}
 )
 
 command(
-	'Downloads',
-	function()
-		vim.cmd.Dirvish(vim.fs.joinpath(
+    'Downloads',
+    function()
+        vim.cmd.Dirvish(vim.fs.joinpath(
             vim.env.HOMEPATH,
             'Downloads'
         ))
-	end,
-	{}
+    end,
+    {}
 )
 
 command(
-	'RedeLocal',
-	function()
+    'RedeLocal',
+    function()
         local andre = 'T:/16-Diretoria de Ouvidoria/Andre Aguiar'
         if vim.fn.isdirectory(andre) == 1 then
             vim.cmd.Dirvish(andre)
         end
-	end,
-	{}
+    end,
+    {}
 )
 
 command(
-	'SysinitEdit',
-	function()
-		vim.cmd.edit('$VIM/sysinit.vim')
-	end,
-	{}
+    'SysinitEdit',
+    function()
+        vim.cmd.edit('$VIM/sysinit.vim')
+    end,
+    {}
 )
 
 command(
-	'Config',
-	function()
-		vim.cmd.edit('$XDG_CONFIG_HOME')
-	end,
-	{}
+    'Config',
+    function()
+        vim.cmd.edit('$XDG_CONFIG_HOME')
+    end,
+    {}
 )
 
 command(
-	'Snippets',
-	function()
-		vim.cmd.edit(vim.fs.joinpath(
+    'Snippets',
+    function()
+        vim.cmd.edit(vim.fs.joinpath(
             ---@diagnostic disable-next-line: param-type-mismatch
             vim.fn.stdpath('config'),
             'snippets'
         ))
-	end,
-	{}
+    end,
+    {}
 )
 
 -- imprimir arquivos na impressora padrão
@@ -139,14 +140,14 @@ command(
 )
 
 command(
-	'Reload',
+    'Reload',
     require('andrikin.utils').reload,
-	{}
+    {}
 )
 
 command(
-	'Cygwin',
+    'Cygwin',
     function(opts) Cygwin:comando(opts) end,
-	{nargs = '+', complete = Cygwin.complete}
+    {nargs = '+', complete = Cygwin.complete}
 )
 
