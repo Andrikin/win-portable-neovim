@@ -1,5 +1,4 @@
 -- LSP --
-
 local lazypath = vim.fn.stdpath("data") .. "/lazy/lazy.nvim"
 -- Inicializando caminho para git
 ---@diagnostic disable-next-line: undefined-field
@@ -15,12 +14,44 @@ if not vim.uv.fs_stat(lazypath) then
 end
 vim.opt.rtp:prepend(lazypath)
 
+-- Temas - interface: nome, url
+local blackhole = {
+	nome = 'auto', -- Lualine não reconhece 'blackhole'
+	link = 'https://github.com/biisal/blackhole',
+	config = function ()
+		vim.cmd.colorscheme('blackhole')
+	end
+}
+local tema = blackhole
+tema.init = function ()
+    vim.opt.termguicolors = true
+end
+
 local plugins = {
+    -- Configuração de tema
+    {
+        tema.link,
+        priority = 1000,
+        lazy = false,
+		config = tema.config,
+        opts = tema.opts,
+        init = tema.init,
+    },
+	{
+        'https://github.com/Andrikin/awesome-pairing',
+        config = function ()
+            -- Awesome Pairing
+            vim.g.awesome_pairing_chars = [[({['"]]
+        end,
+    },
+	'https://github.com/Andrikin/awesome-substitute',
 	-- Fork Tim Pope vim-capslock
 	'https://github.com/Andrikin/vim-capslock',
 	'https://github.com/tpope/vim-surround.git',
 	-- Vim Cool,
 	'https://github.com/romainl/vim-cool.git',
+	-- Traces.vim,
+	'https://github.com/markonm/traces.vim.git',
     {
         'https://github.com/glacambre/firenvim',
         -- build = ':call firenvim#install(0)'
@@ -28,6 +59,41 @@ local plugins = {
             -- vim.fn["firenvim#install"](1) -- forçar instalação
             vim.fn["firenvim#install"](0)
         end,
+    },
+    -- Lualine,
+    {
+        'https://github.com/nvim-lualine/lualine.nvim',
+        config = function()
+            require('lualine').setup(
+                {
+                    options = { theme = tema.nome,
+                    component_separators = { left = '', right = ''},
+                    section_separators = { left = '', right = ''},
+                    always_show_tabline = false,
+                },
+                sections = {
+                    lualine_a = {'mode', 'CapsLockStatusline'},
+                },
+                winbar = {
+                    lualine_a = {},
+                    lualine_b = {},
+                    lualine_c = {'filename'},
+                    lualine_x = {},
+                    lualine_y = {},
+                    lualine_z = {}
+                },
+                tabline = {
+                    lualine_a = {
+                        {
+                            'tabs',
+                            mode = 1,
+                            path = 0,
+                        },
+                    },
+                }
+            }
+        )
+    end
     },
 }
 
@@ -56,15 +122,17 @@ local opts = {
 require("lazy").setup(plugins, opts)
 
 -- OPTIONS --
-
-vim.g.mapleader = ' '
-vim.g.maplocalleader = ' '
-
--- Search recursively
-vim.opt.path:append('**')
-
--- Sem numeração de linhas para comando TOHtml
-vim.g.html_number_lines = 0
+vim.g.firenvim_config = {
+    globalSettings = {
+    },
+    localSettings = {
+        ['<C-w>'] = 'default',
+        ['<C-n>'] = 'default',
+        ['.*'] = {
+            cmdline = 'neovim',
+        },
+    }
+}
 
 -- Indicadores - números nas linhas
 vim.opt.rnu = true
@@ -102,12 +170,6 @@ if vim.o.wildcharm ~= 9 then
 end
 -- vim.opt.completeopt = 'menu,menuone,noselect'
 vim.opt.completeopt = 'menu,noinsert,noselect,popup,fuzzy'
-if vim.fn.has('win32') then
-	vim.g.shell = vim.env.COMSPEC
-else
-	vim.g.shell = vim.env.TERM
-end
---let &g:shellpipe = '2>&1 | tee'
 vim.opt.complete:remove('t')
 vim.opt.title = true
 vim.opt.hidden = true
@@ -126,8 +188,6 @@ if vim.fn.has('persistent_undo') == 1 then
 	vim.opt.undofile = true
 end
 vim.opt.swapfile = false
--- set linebreak
--- set wrapmargin = 5
 vim.g.textwidth = 0
 
 -- Statusline
@@ -142,13 +202,6 @@ vim.opt.winborder = 'none'
 vim.opt.inccommand = '' -- conflict with traces.vim
 vim.opt.fillchars = 'vert:|,fold:*,foldclose:+,diff:-'
 
--- Using ripgrep populate quickfix/localfix lists ([cf]open; [cf]do {cmd} | update)
-if vim.fn.executable('rg') == 1 then
-	vim.g.grepprg = 'rg --vimgrep --smart-case --follow'
-else
-	vim.g.grepprg = 'grep -R'
-end
-
 -- Matchit
 -- TODO: Criar arquivos ftplugin para cada linguagem, definindo b:match_words
 vim.opt.matchpairs:append('<:>')
@@ -157,8 +210,24 @@ vim.opt.matchpairs:append('<:>')
 -- Disable Netrw
 vim.g.loaded_netrwPlugin = 1
 
+-- Vim-Surround (Tim Pope)
+-- Latex
+vim.g['surround_' .. vim.fn.char2nr('\\')] = ''
+vim.g['surround_' .. vim.fn.char2nr('l')] = ''
+-- Html
+vim.g['surround_' .. vim.fn.char2nr('t')] = ''
+
+-- --- Traces ---
+vim.g.traces_num_range_preview = 0
+
 -- Removendo providers: Perl
 vim.g.loaded_perl_provider = 0
 vim.g.loaded_ruby_provider = 0
 
+-- AUTOCOMMANDS --
+-- Auto Insert Mode
+vim.api.nvim_create_autocmd({'BufEnter'}, {
+    pattern = "txt",
+    command = 'norm i'
+})
 
