@@ -43,6 +43,7 @@ end
 
 local has_rm = vim.fn.executable('rm') == 1
 local has_mkdir = vim.fn.executable('mkdir') == 1
+
 local plugins = {
 	{
         'https://github.com/Andrikin/awesome-pairing',
@@ -221,7 +222,7 @@ local plugins = {
             -- },
 		},
     },{ -- change how vim.ui.select works (telescope)
-'https://github.com/nvim-telescope/telescope-ui-select.nvim',
+        'https://github.com/nvim-telescope/telescope-ui-select.nvim',
         lazy = true
     },
 	-- Treesitter,
@@ -231,12 +232,20 @@ local plugins = {
         branch = 'main',
         build = ':TSUpdate',
         cond = function()
-            local gcc_ok = vim.fn.executable('x86_64-w64-mingw32-gcc') == 1
-            if not gcc_ok then
+            local gcc = vim.fn.executable('x86_64-w64-mingw32-gcc') == 1
+            if not gcc then
                 vim.notify('Treesitter: Não foi possível encontrar compilador executável "gcc".')
             end
-            return gcc_ok
+            return gcc
         end
+    },
+    {
+        'https://github.com/glacambre/firenvim',
+        -- build = ':call firenvim#install(0)'
+        build = function()
+            -- vim.fn["firenvim#install"](1)
+            vim.fn["firenvim#install"](0)
+        end,
     },
 }
 
