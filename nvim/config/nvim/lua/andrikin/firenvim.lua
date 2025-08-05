@@ -14,29 +14,8 @@ if not vim.uv.fs_stat(lazypath) then
 end
 vim.opt.rtp:prepend(lazypath)
 
--- Temas - interface: nome, url
-local blackhole = {
-	nome = 'auto', -- Lualine não reconhece 'blackhole'
-	link = 'https://github.com/biisal/blackhole',
-	config = function ()
-		vim.cmd.colorscheme('blackhole')
-	end
-}
-local tema = blackhole
-tema.init = function ()
-    vim.opt.termguicolors = true
-end
-
 local plugins = {
     -- Configuração de tema
-    {
-        tema.link,
-        priority = 1000,
-        lazy = false,
-		config = tema.config,
-        opts = tema.opts,
-        init = tema.init,
-    },
 	{
         'https://github.com/Andrikin/awesome-pairing',
         config = function ()
@@ -59,41 +38,6 @@ local plugins = {
             -- vim.fn["firenvim#install"](1) -- forçar instalação
             vim.fn["firenvim#install"](0)
         end,
-    },
-    -- Lualine,
-    {
-        'https://github.com/nvim-lualine/lualine.nvim',
-        config = function()
-            require('lualine').setup(
-                {
-                    options = { theme = tema.nome,
-                    component_separators = { left = '', right = ''},
-                    section_separators = { left = '', right = ''},
-                    always_show_tabline = false,
-                },
-                sections = {
-                    lualine_a = {'mode', 'CapsLockStatusline'},
-                },
-                winbar = {
-                    lualine_a = {},
-                    lualine_b = {},
-                    lualine_c = {'filename'},
-                    lualine_x = {},
-                    lualine_y = {},
-                    lualine_z = {}
-                },
-                tabline = {
-                    lualine_a = {
-                        {
-                            'tabs',
-                            mode = 1,
-                            path = 0,
-                        },
-                    },
-                }
-            }
-        )
-    end
     },
 }
 
@@ -121,18 +65,26 @@ local opts = {
 
 require("lazy").setup(plugins, opts)
 
+-- Colorscheme --
+vim.cmd.colorscheme('vim')
+
 -- OPTIONS --
 vim.g.firenvim_config = {
     globalSettings = {
     },
     localSettings = {
-        ['<C-w>'] = 'default',
-        ['<C-n>'] = 'default',
+        ['<C-w>'] = 'noop',
+        ['<C-n>'] = 'noop',
         ['.*'] = {
             cmdline = 'neovim',
         },
     }
 }
+
+-- Configurações Windows
+vim.opt.fileformat = 'dos'
+vim.opt.eol = false
+vim.opt.fixeol = false
 
 -- Indicadores - números nas linhas
 vim.opt.rnu = true
@@ -188,11 +140,11 @@ if vim.fn.has('persistent_undo') == 1 then
 	vim.opt.undofile = true
 end
 vim.opt.swapfile = false
-vim.g.textwidth = 0
+vim.opt.textwidth = 78
 
 -- Statusline
-vim.opt.laststatus = 3
-vim.opt.showtabline = 1
+vim.opt.laststatus = 0
+vim.opt.showtabline = 0
 vim.opt.showmode = false
 
 -- NeoVim configurations
@@ -224,13 +176,107 @@ vim.g.traces_num_range_preview = 0
 vim.g.loaded_perl_provider = 0
 vim.g.loaded_ruby_provider = 0
 
+-- MAPPINGS --
+vim.keymap.set({'i', 'c'}, '<c-backspace>', '<c-w>')
+
+-- COMMANDS --
+local command = vim.api.nvim_create_user_command
+command(
+    'Resposta',
+    function ()
+        vim.cmd.normal('gg[ [ ')
+        vim.cmd.normal('G] ] ')
+        vim.fn.setline(1, [[
+Boa tarde,
+
+Segue resposta do setor responsável à sua manifestação:
+
+---
+        ]])
+        vim.fn.setline(vim.fn.line('$'), [[
+---
+
+Atenciosamente,
+Ouvidoria da Prefeitura de Itajaí
+        ]])
+    end,
+    {}
+)
+
+local Copyq = require('andrikin.utils').Copyq
+
+command(
+	'Clipboard',
+    function(arg)
+        Copyq.clipboard(arg)
+    end,
+	{
+		nargs = "?",
+		complete = function(arg, _, _) return Copyq:tab_complete(arg) end,
+	}
+)
+
 -- AUTOCOMMANDS --
+local autocmd = vim.api.nvim_create_autocmd
+local Andrikin = require('andrikin.utils').Andrikin
+local cursorline = require('andrikin.utils').cursorline
+
 -- Auto Insert Mode
-vim.api.nvim_create_autocmd({'BufEnter'}, {
-    pattern = "txt",
-    command = 'norm i'
+autocmd({'BufEnter'}, {
+    pattern = "*.txt",
+    command = 'call feedkeys("i")'
 })
 
--- CUSTOM COMMANDS AND AUTOCOMMANDS --
-require('andrikin.commands')
-require('andrikin.autocmds')
+-- Highlight linha quando entrar em INSERT MODE
+autocmd(
+    'InsertEnter',
+    {
+        group = Andrikin,
+        pattern = '*',
+        callback = function()
+            cursorline.on()
+        end,
+    }
+)
+autocmd(
+    'InsertLeave',
+    {
+        group = Andrikin,
+        pattern = '*',
+        callback = function()
+            local dirvish = vim.o.ft == 'dirvish' -- não desativar quando for Dirvish
+            if not dirvish then
+                cursorline.off()
+            end
+        end,
+    }
+)
+
+-- Resize windows automatically
+-- Tim Pope goodness
+autocmd(
+    'VimResized',
+    {
+        group = Andrikin,
+        pattern = '*',
+        callback = function()
+            vim.cmd.wincmd('=')
+        end,
+    }
+)
+
+-- Highlight configuração
+autocmd(
+    'TextYankPost',
+    {
+        group = Andrikin,
+        pattern = '*',
+        callback = function()
+            vim.hl.on_yank({
+                higroup = 'IncSearch',
+                timeout = 300,
+            })
+        end,
+    }
+)
+
