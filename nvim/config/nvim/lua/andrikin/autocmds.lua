@@ -105,7 +105,7 @@ autocmd(
         pattern = '*',
         once = true,
         callback = function()
-            if vim.fn.exists('g:loaded_fugitive') then
+            if vim.fn.exists('g:loaded_fugitive') and not vim.g.started_by_firenvim then
                 vim.fn.jobstart({
                     'git',
                     'pull'
