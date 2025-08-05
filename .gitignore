@@ -303,6 +303,8 @@ nvim/config/nvim/.luarc.json
 
 nvim/config/configstore/
 
+nvim/config/firenvim/
+
 nvim/bin/
 nvim/opt
 nvim/deps/
