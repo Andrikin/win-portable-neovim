@@ -239,14 +239,14 @@ local plugins = {
             return gcc
         end
     },
-    {
-        'https://github.com/glacambre/firenvim',
-        -- build = ':call firenvim#install(0)'
-        build = function()
-            -- vim.fn["firenvim#install"](1)
-            vim.fn["firenvim#install"](0)
-        end,
-    },
+    -- {
+    --     'https://github.com/glacambre/firenvim',
+    --     -- build = ':call firenvim#install(0)'
+    --     build = function()
+    --         -- vim.fn["firenvim#install"](1)
+    --         vim.fn["firenvim#install"](0)
+    --     end,
+    -- },
 }
 
 local opts = {
