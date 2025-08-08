@@ -1,8 +1,8 @@
 -- FIRENVIM CONFIG --
 local enable = {
     content = 'text',
-    priority = 0,
     selector = 'textarea',
+    priority = 1,
     takeover = 'always',
 }
 vim.g.firenvim_config = {
@@ -13,11 +13,13 @@ vim.g.firenvim_config = {
         ['.*'] = {
             cmdline = 'neovim',
             -- Desabilitar firenvim por padrão
+            content = 'text',
+            selector = 'textarea',
             takeover = 'never',
-            priority = 1
+            priority = 0,
             -- filename = '{hostname}_{pathname%10}.{extension}',
         },
-        -- ENABLE URLS --
+        -- ENABLE FIRENVIM IN URLS --
         -- ['https?://[^/]*somesite.com/*'] = enable,
         ['https?://[^/]*falabr.cgu.gov.br/*'] = enable,
     }
@@ -193,6 +195,7 @@ vim.g.loaded_ruby_provider = 0
 
 -- MAPPINGS --
 vim.keymap.set({'i', 'c'}, '<c-backspace>', '<c-w>')
+vim.keymap.set({'i', 'c'}, '<c-v>', '<c-r>+')
 
 -- COMMANDS --
 local command = vim.api.nvim_create_user_command
