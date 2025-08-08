@@ -1,3 +1,28 @@
+-- FIRENVIM CONFIG --
+local enable = {
+    content = 'text',
+    priority = 0,
+    selector = 'textarea',
+    takeover = 'always',
+}
+vim.g.firenvim_config = {
+    globalSettings = { alt = "all" },
+    localSettings = {
+        ['<C-w>'] = 'noop',
+        ['<C-n>'] = 'noop',
+        ['.*'] = {
+            cmdline = 'neovim',
+            -- Desabilitar firenvim por padrão
+            takeover = 'never',
+            priority = 1
+            -- filename = '{hostname}_{pathname%10}.{extension}',
+        },
+        -- ENABLE URLS --
+        -- ['https?://[^/]*somesite.com/*'] = enable,
+        ['https?://[^/]*falabr.cgu.gov.br/*'] = enable,
+    }
+}
+
 -- LSP --
 local lazypath = vim.fn.stdpath("data") .. "/lazy/lazy.nvim"
 -- Inicializando caminho para git
@@ -31,6 +56,9 @@ local plugins = {
 	'https://github.com/romainl/vim-cool.git',
 	-- Traces.vim,
 	'https://github.com/markonm/traces.vim.git',
+    -- dressing -- change vim.ui.select
+    'https://github.com/stevearc/dressing.nvim',
+    -- Firenvim
     {
         'https://github.com/glacambre/firenvim',
         -- build = ':call firenvim#install(0)'
@@ -67,19 +95,6 @@ require("lazy").setup(plugins, opts)
 
 -- Colorscheme --
 vim.cmd.colorscheme('vim')
-
--- OPTIONS --
-vim.g.firenvim_config = {
-    globalSettings = {
-    },
-    localSettings = {
-        ['<C-w>'] = 'noop',
-        ['<C-n>'] = 'noop',
-        ['.*'] = {
-            cmdline = 'neovim',
-        },
-    }
-}
 
 -- Configurações Windows
 vim.opt.fileformat = 'dos'
@@ -186,19 +201,15 @@ command(
     function ()
         vim.cmd.normal('gg[ [ ')
         vim.cmd.normal('G] ] ')
-        vim.fn.setline(1, [[
-Boa tarde,
+        vim.fn.setline(1, [[Boa tarde,
 
 Segue resposta do setor responsável à sua manifestação:
 
----
-        ]])
-        vim.fn.setline(vim.fn.line('$'), [[
----
+--- ]])
+        vim.fn.setline(vim.fn.line('$'), [[---
 
 Atenciosamente,
-Ouvidoria da Prefeitura de Itajaí
-        ]])
+Ouvidoria da Prefeitura de Itajaí]])
     end,
     {}
 )
