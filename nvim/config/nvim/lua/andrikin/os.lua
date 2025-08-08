@@ -62,6 +62,8 @@
 --
 -- Download VS Build Tools
 -- https://gist.github.com/mmozeiko/7f3162ec2988e81e56d5c4e22cde9977
+-- raw: https://gist.githubusercontent.com/mmozeiko/7f3162ec2988e81e56d5c4e22cde9977/raw/50d5f534519bce8c118df3e2a2bc9a6f16e29a58/portable-msvc.py
+-- raw 2: https://gist.githubusercontent.com/CrendKing/154abfa33200ef1cda38ddd61f4d414b/raw/591930da175eddf9690d84af1da5e01d64207f4b/portable-msvc.py
 -- OBS: incluir diretórios nas variáveis de ambiente: PATH, LIB, INCLUDE
 
 -- TODO: Para downloads no github, utilizar API para baixar o arquivo mais recente:
