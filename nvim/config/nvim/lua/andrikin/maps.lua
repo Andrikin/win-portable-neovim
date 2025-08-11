@@ -8,7 +8,8 @@ if not vim.g.nvy or not vim.g.neovide then
 end
 
 -- CTRL-BACKSPACE para apagar palavras
-vim.keymap.set({'i', 'c'}, '<c-backspace>', '<c-w>')
+vim.keymap.set({'i', 'c'}, '<c-backspace>', '<c-w>') -- obter mesmo comportamento (firefox)
+vim.keymap.set({'i', 'c'}, '<c-v>', '<c-r>+') -- colar clipboard
 
 -- Remover <space> dos modos: NORMAL e VISUAL (em conjunto com mapleader)
 vim.keymap.set({ 'n', 'v' }, '<Space>', '<Nop>', { silent = true })
