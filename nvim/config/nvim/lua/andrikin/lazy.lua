@@ -239,14 +239,26 @@ local plugins = {
             return gcc
         end
     },
-    -- {
-    --     'https://github.com/glacambre/firenvim',
-    --     -- build = ':call firenvim#install(0)'
-    --     build = function()
-    --         -- vim.fn["firenvim#install"](1)
-    --         vim.fn["firenvim#install"](0)
-    --     end,
-    -- },
+    -- Firenvim
+    {
+        'https://github.com/glacambre/firenvim',
+        build = function()
+            if vim.fn.isdirectory(vim.fn.expand('$HOME') .. '\\nvim\\config\\firenvim') == 0 then
+                vim.fn["firenvim#install"](1)
+            else
+                vim.fn["firenvim#install"](0)
+            end
+        end,
+        enabled = function()
+            return vim.g.started_by_firenvim
+        end
+    },{
+        -- dressing -- change vim.ui.select
+        'https://github.com/stevearc/dressing.nvim',
+        enabled = function()
+            return vim.g.started_by_firenvim
+        end
+    }
 }
 
 local opts = {

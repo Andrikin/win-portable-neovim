@@ -63,10 +63,12 @@ local plugins = {
     -- Firenvim
     {
         'https://github.com/glacambre/firenvim',
-        -- build = ':call firenvim#install(0)'
         build = function()
-            -- vim.fn["firenvim#install"](1) -- forçar instalação
-            vim.fn["firenvim#install"](0)
+            if vim.fn.isdirectory(vim.fn.expand('$HOME') .. '\\nvim\\config\\firenvim') == 0 then
+                vim.fn["firenvim#install"](1)
+            else
+                vim.fn["firenvim#install"](0)
+            end
         end,
     },
 }
