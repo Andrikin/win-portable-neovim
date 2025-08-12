@@ -96,7 +96,8 @@ local opts = {
 require("lazy").setup(plugins, opts)
 
 -- Colorscheme --
-vim.cmd.colorscheme('vim')
+-- vim.cmd.colorscheme('vim')
+vim.cmd.colorscheme('zellner')
 
 -- Configurações Windows
 vim.opt.fileformat = 'dos'
