@@ -297,3 +297,27 @@ autocmd(
     }
 )
 
+-- Remover textwidth da página de tratamento da manifestação
+-- do Fala.BR´
+autocmd(
+    'BufEnter',
+    {
+        group = Andrikin,
+        pattern = 'falabr.cgu.gov.br_festacao-TratarManifestacao-aspx_teudoFormComAjax-txtContribuicao_*.txt',
+        command = "set textwidth=0",
+    }
+)
+
+-- Automatically syncing changes to the page
+autocmd({'TextChanged', 'TextChangedI'}, {
+    callback = function(e)
+        if vim.g.timer_started == true then
+            return
+        end
+        vim.g.timer_started = true
+        vim.fn.timer_start(10000, function()
+            vim.g.timer_started = false
+            vim.cmd('silent write')
+        end)
+    end
+})
