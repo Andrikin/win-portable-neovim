@@ -53,6 +53,7 @@
 --
 -- Shutdown Timer Classic
 -- https://github.com/lukaslangrock/ShutdownTimerClassic/releases/download/v1.3.1/ShutdownTimerClassic_v1.3.1.zip
+--
 -- Ativar janela ao mover mouse sobre
 -- https://www.elevenforum.com/t/turn-on-or-off-activate-window-by-hovering-over-with-mouse-pointer-in-windows-11.6104/
 -- https://www.elevenforum.com/t/change-time-to-activate-window-by-hovering-over-with-mouse-pointer-in-windows-11.6105/
