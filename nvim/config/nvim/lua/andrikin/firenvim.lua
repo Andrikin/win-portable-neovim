@@ -308,16 +308,17 @@ autocmd(
     }
 )
 
--- Automatically syncing changes to the page
-autocmd({'TextChanged', 'TextChangedI'}, {
-    callback = function(e)
-        if vim.g.timer_started == true then
-            return
-        end
-        vim.g.timer_started = true
-        vim.fn.timer_start(10000, function()
-            vim.g.timer_started = false
-            vim.cmd('silent write')
-        end)
-    end
-})
+-- FIXME: força a página do Fala.BR a recarregar...
+-- -- Automatically syncing changes to the page
+-- autocmd({'TextChanged', 'TextChangedI'}, {
+--     callback = function(e)
+--         if vim.g.timer_started == true then
+--             return
+--         end
+--         vim.g.timer_started = true
+--         vim.fn.timer_start(10000, function()
+--             vim.g.timer_started = false
+--             vim.cmd('silent write')
+--         end)
+--     end
+-- })
