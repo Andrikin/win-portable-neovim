@@ -318,7 +318,7 @@ autocmd(
     'BufEnter',
     {
         group = Andrikin,
-        pattern = 'falabr.cgu.gov.br*.txt',
+        pattern = '*.txt',
         command = "set spell",
     }
 )
