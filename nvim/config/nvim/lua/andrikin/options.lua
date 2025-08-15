@@ -121,6 +121,9 @@ vim.g.undotree_SetFocusWhenToggle = 1
 vim.g.undotree_DiffAutoOpen = 0
 -- vim.g.undotree_DiffpanelHeight = 10
 
+-- spellfile.nvim -- Lua port of spellfile.vim
+vim.opt.spelllang = 'pt'
+
 -- --- Netrw ---
 -- Disable Netrw
 vim.g.loaded_netrwPlugin = 1

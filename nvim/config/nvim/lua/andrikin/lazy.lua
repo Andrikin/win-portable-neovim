@@ -258,7 +258,12 @@ local plugins = {
         enabled = function()
             return vim.g.started_by_firenvim
         end
-    }
+    },
+    -- spellfile.nvim -- Lua port of spellfile.vim
+    {
+        'https://github.com/cuducos/spellfile.nvim',
+        lazy = true,
+    },
 }
 
 local opts = {

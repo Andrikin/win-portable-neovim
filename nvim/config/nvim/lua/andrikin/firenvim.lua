@@ -60,6 +60,8 @@ local plugins = {
 	'https://github.com/markonm/traces.vim.git',
     -- dressing -- change vim.ui.select
     'https://github.com/stevearc/dressing.nvim',
+    -- spellfile.nvim -- Lua port of spellfile.vim
+    'https://github.com/cuducos/spellfile.nvim',
     -- Firenvim
     {
         'https://github.com/glacambre/firenvim',
@@ -100,6 +102,9 @@ require("lazy").setup(plugins, opts)
 -- Colorscheme --
 -- vim.cmd.colorscheme('vim')
 vim.cmd.colorscheme('zellner')
+
+-- spellfile.nvim -- Lua port of spellfile.vim
+vim.opt.spelllang = 'pt'
 
 -- Configurações Windows
 vim.opt.fileformat = 'dos'
@@ -298,13 +303,23 @@ autocmd(
 )
 
 -- Remover textwidth da página de tratamento da manifestação
--- do Fala.BR´
+-- do Fala.BR
 autocmd(
     'BufEnter',
     {
         group = Andrikin,
         pattern = 'falabr.cgu.gov.br_festacao-TratarManifestacao-aspx_teudoFormComAjax-txtContribuicao_*.txt',
         command = "set textwidth=0",
+    }
+)
+
+-- Configurações de ortografia no Fala.BR
+autocmd(
+    'BufEnter',
+    {
+        group = Andrikin,
+        pattern = 'falabr.cgu.gov.br*.txt',
+        command = "set spell",
     }
 )
 
