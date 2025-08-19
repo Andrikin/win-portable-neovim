@@ -98,6 +98,15 @@ command(
     {}
 )
 
+-- https://help.libreoffice.org/latest/en-US/text/sbasic/python/python_locations.html?&DbPAR=BASIC&System=WIN
+command(
+    'LibreOfficeScripts',
+    function()
+        vim.cmd.Dirvish('$APPDATA/LibreOffice/4/user/Scripts')
+    end,
+    {}
+)
+
 command(
     'Config',
     function()
