@@ -308,7 +308,10 @@ autocmd(
     'BufEnter',
     {
         group = Andrikin,
-        pattern = 'falabr.cgu.gov.br_festacao-TratarManifestacao-aspx_teudoFormComAjax-txtContribuicao_*.txt',
+        pattern = {
+            'falabr.cgu.gov.br_festacao-TratarManifestacao-aspx_teudoFormComAjax-txtContribuicao_*.txt',
+            'falabr.cgu.gov.br_stacao-TramitarManifestacao-aspx_-ConteudoFormComAjax-txtMensagem*.txt',
+        },
         command = "set textwidth=0",
     }
 )
