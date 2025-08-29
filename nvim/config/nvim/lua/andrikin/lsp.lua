@@ -41,6 +41,7 @@ if vim.fn.executable('x86_64-w64-mingw32-gcc') == 1 then
                     'markdown', 'markdown_inline',
                     'vim', 'vimdoc',
             }) 
+            vim.opt.indentexpr = "v:lua.require'nvim-treesitter'.indentexpr()"
         end,
         0
     )
