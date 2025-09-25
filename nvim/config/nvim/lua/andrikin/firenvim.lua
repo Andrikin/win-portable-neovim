@@ -315,6 +315,21 @@ autocmd(
         command = "set textwidth=0",
     }
 )
+-- Incluir Prefixos e Sufixos da resposta
+autocmd(
+    'BufEnter',
+    {
+        group = Andrikin,
+        pattern = {
+            'falabr.cgu.gov.br_stacao-AnalisarManifestacao-aspx_-ConteudoFormComAjax-txtResposta_*.txt',
+        },
+        callback = function ()
+            if vim.cmd.Resposta then
+                vim.cmd.Resposta()
+            end
+        end,
+    }
+)
 
 -- Configurações de ortografia no Fala.BR
 autocmd(
