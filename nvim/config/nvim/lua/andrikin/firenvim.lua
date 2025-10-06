@@ -174,7 +174,7 @@ vim.opt.showmode = false
 
 -- NeoVim configurations
 vim.opt.guicursor = 'i-n-v-c:block'
-vim.opt.guifont = 'SauceCodePro NFM:h11'
+vim.opt.guifont = 'SauceCodePro NFM:h9'
 vim.opt.winborder = 'none'
 vim.opt.inccommand = '' -- conflict with traces.vim
 vim.opt.fillchars = 'vert:|,fold:*,foldclose:+,diff:-'
