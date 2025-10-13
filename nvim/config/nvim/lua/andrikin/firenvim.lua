@@ -315,6 +315,7 @@ autocmd(
         command = "set textwidth=0",
     }
 )
+-- RESPOSTA FALA.BR
 -- Incluir Prefixos e Sufixos da resposta
 autocmd(
     'BufEnter',
@@ -324,6 +325,13 @@ autocmd(
             'falabr.cgu.gov.br_stacao-AnalisarManifestacao-aspx_-ConteudoFormComAjax-txtResposta_*.txt',
         },
         callback = function ()
+            local range = {1, vim.fn.line('$')}
+            vim.cmd.substitute({'/[“”]/"/ge', range = range})
+            vim.cmd.substitute({'/\\s\\([.,]\\)\\s/\\1 /ge', range = range})
+            vim.cmd.substitute({'/\\s\\+/ /ge', range = range})
+            -- Deve prever pontuação de e-mails: e.mail@mail.com
+            vim.cmd('v/@/s/\\([a-zA-Z]\\)\\([:.,]\\)\\([a-zA-Z]\\)/\\1\\2 \\3/ge')
+            vim.cmd('v/^$/normal gqip') -- ajuste para textwidth
             if vim.cmd.Resposta then
                 vim.cmd.Resposta()
             end
