@@ -327,7 +327,7 @@ autocmd(
         callback = function ()
             local range = {1, vim.fn.line('$')}
             vim.cmd.substitute({'/[“”]/"/ge', range = range})
-            vim.cmd.substitute({'/\\s\\([.,]\\)\\s/\\1 /ge', range = range})
+            vim.cmd.substitute({'/\\s\\+\\([.,]\\)\\s\\?/\\1 /ge', range = range})
             vim.cmd.substitute({'/\\s\\+/ /ge', range = range})
             -- Deve prever pontuação de e-mails: e.mail@mail.com
             vim.cmd('v/@/s/\\([a-zA-Z]\\)\\([:.,]\\)\\([a-zA-Z]\\)/\\1\\2 \\3/ge')
