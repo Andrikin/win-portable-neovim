@@ -130,6 +130,7 @@ https://www.elevenforum.com/t/turn-on-or-off-activate-window-by-hovering-over-wi
 https://www.elevenforum.com/t/change-time-to-activate-window-by-hovering-over-with-mouse-pointer-in-windows-11.6105/
 
 #### Esconder mouse enquanto digita:
+https://softwareok.com/?seite=Microsoft/AutoHideMouseCursor
 https://github.com/Stefan-Z-Camilleri-zz/Windows-Cursor-Hider
 
 #### Visualizador de imagens:
