@@ -323,6 +323,7 @@ autocmd(
         group = Andrikin,
         pattern = {
             'falabr.cgu.gov.br_stacao-AnalisarManifestacao-aspx_-ConteudoFormComAjax-txtResposta_*.txt',
+            'falabr.cgu.gov.br_web-manifestacao-analisar_TEXTAREA-id-txtResposta-textarea_*.txt',
         },
         callback = function ()
             local range = {1, vim.fn.line('$')}
