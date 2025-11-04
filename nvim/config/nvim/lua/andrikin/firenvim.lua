@@ -210,6 +210,18 @@ local command = vim.api.nvim_create_user_command
 command(
     'Resposta',
     function ()
+        local greetings = vim.fn.getline(1):match('Boa tarde,')
+        local endings = vim.fn.getline(vim.fn.line('$')):match('Ouvidoria da Prefeitura de Itajaí')
+        if greetings and endings then
+            do return end
+        end
+        local range = {1, vim.fn.line('$')}
+        vim.cmd.substitute({'/[“”]/"/ge', range = range})
+        vim.cmd.substitute({'/\\s\\+\\([.,]\\)\\s\\?/\\1 /ge', range = range})
+        vim.cmd.substitute({'/\\s\\+/ /ge', range = range})
+        -- Deve prever pontuação de e-mails: e.mail@mail.com
+        vim.cmd('v/@/s/\\([a-zA-Z]\\)\\([:.,]\\)\\([a-zA-Z]\\)/\\1\\2 \\3/ge')
+        vim.cmd('v/^$/normal gqip') -- ajuste para textwidth
         vim.cmd.normal('gg[ [ ')
         vim.cmd.normal('G] ] ')
         vim.fn.setline(1, [[Boa tarde,
@@ -326,13 +338,6 @@ autocmd(
             'falabr.cgu.gov.br_web-manifestacao-analisar_TEXTAREA-id-txtResposta-textarea_*.txt',
         },
         callback = function ()
-            local range = {1, vim.fn.line('$')}
-            vim.cmd.substitute({'/[“”]/"/ge', range = range})
-            vim.cmd.substitute({'/\\s\\+\\([.,]\\)\\s\\?/\\1 /ge', range = range})
-            vim.cmd.substitute({'/\\s\\+/ /ge', range = range})
-            -- Deve prever pontuação de e-mails: e.mail@mail.com
-            vim.cmd('v/@/s/\\([a-zA-Z]\\)\\([:.,]\\)\\([a-zA-Z]\\)/\\1\\2 \\3/ge')
-            vim.cmd('v/^$/normal gqip') -- ajuste para textwidth
             if vim.cmd.Resposta then
                 vim.cmd.Resposta()
             end
