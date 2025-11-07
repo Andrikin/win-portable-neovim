@@ -999,11 +999,36 @@ Latex.compilar = function(self, destino, temp)
         do return end
     end
     -- substituir caracteres
-    local range = {1, vim.fn.line('$')}
-    vim.cmd.substitute({"/[º°ª]/{\\\\textdegree}/ge", range = range})
-    vim.cmd.substitute({"/§/\\\\S/ge", range = range})
-    vim.cmd.substitute({'/[“”]/\\"/ge', range = range})
-    vim.cmd.substitute({"/[^\\\\]\\@<=\\$/\\\\$/ge", range = range})
+    local manifestacao = {
+        inicio = vim.fn.matchbufline(
+            vim.api.nvim_get_current_buf(),
+            "begin{document}", 1,
+            vim.fn.line('$'))[1],
+        fim = vim.fn.matchbufline(
+            vim.api.nvim_get_current_buf(),
+            "end{document}", 1,
+            vim.fn.line('$'))[1],
+    }
+    local documento = {
+        manifestacao.inicio.lnum or 1,
+        manifestacao.fim.lnum or vim.fn.line('$')
+    }
+    -- Formatar texto
+    vim.cmd.substitute({"/[º°ª]/{\\\\textdegree}/ge", range = documento})
+    vim.cmd.substitute({"/§/\\\\S/ge", range = documento})
+    vim.cmd.substitute({'/[“”]/\\"/ge', range = documento})
+    vim.cmd.substitute({"/[^\\\\]\\@<=\\$/\\\\$/ge", range = documento})
+    -- Formatar espaços e pontuações
+    vim.cmd.substitute({'/\\s\\+\\([.,]\\)\\s\\?/\\1 /ge', range = documento})
+    vim.cmd.substitute({'/\\s\\+/ /ge', range = documento})
+    vim.cmd.substitute({
+        '/\\([a-zA-Z]\\)\\s\\{,}\\([:.,]\\)\\s\\{,}\\([a-zA-Z0-9]\\)/\\1\\2 \\3/ge',
+        range = documento
+    })
+    vim.cmd.substitute({
+        "/{\\\\textdegree}\\([a-zA-Z0-9]\\)/{\\\\textdegree} \\1/ge",
+        range = documento
+    })
     -- substituir caracteres
     if vim.o.modified then -- salvar arquivo que está modificado.
         vim.cmd.write()

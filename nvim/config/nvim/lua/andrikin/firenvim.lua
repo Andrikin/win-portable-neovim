@@ -216,11 +216,13 @@ command(
             do return end
         end
         local range = {1, vim.fn.line('$')}
+        vim.cmd.substitute({"/\\([º°ª]\\)\\([a-zA-Z0-9]\\)/\\1 \\2/ge", range = range})
         vim.cmd.substitute({'/[“”]/"/ge', range = range})
+        -- Formatar espaços e pontuações
         vim.cmd.substitute({'/\\s\\+\\([.,]\\)\\s\\?/\\1 /ge', range = range})
         vim.cmd.substitute({'/\\s\\+/ /ge', range = range})
-        -- Deve prever pontuação de e-mails: e.mail@mail.com
-        vim.cmd('v/@/s/\\([a-zA-Z]\\)\\([:.,]\\)\\([a-zA-Z]\\)/\\1\\2 \\3/ge')
+        -- Evitando linhas com e-mail, adicionar espaço depois de pontuações
+        vim.cmd('v/@/s/\\([a-zA-Z]\\)\\s\\{,}\\([:.,]\\)\\s\\{,}\\([a-zA-Z0-9]\\)/\\1\\2 \\3/ge')
         vim.cmd('v/^$/normal gqip') -- ajuste para textwidth
         vim.cmd.normal('gg[ [ ')
         vim.cmd.normal('G] ] ')
