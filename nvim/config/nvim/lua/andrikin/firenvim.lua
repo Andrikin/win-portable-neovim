@@ -222,7 +222,7 @@ command(
         vim.cmd.substitute({'/\\s\\+\\([.,]\\)\\s\\?/\\1 /ge', range = range})
         vim.cmd.substitute({'/\\s\\+/ /ge', range = range})
         -- Evitando linhas com e-mail, adicionar espaço depois de pontuações
-        vim.cmd('v/@/s/\\([a-zA-Z]\\)\\s\\{,}\\([:.,]\\)\\s\\{,}\\([a-zA-Z0-9]\\)/\\1\\2 \\3/ge')
+        vim.cmd('v/@\\|gov\\.br\\|\\.com\\|\\.br/s/\\([a-zA-Z]\\)\\s\\{,}\\([:.,]\\)\\s\\{,}\\([a-zA-Z0-9]\\)/\\1\\2 \\3/ge')
         vim.cmd('v/^$/normal gqip') -- ajuste para textwidth
         vim.cmd.normal('gg[ [ ')
         vim.cmd.normal('G] ] ')
