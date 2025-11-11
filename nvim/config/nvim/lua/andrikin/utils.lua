@@ -1021,10 +1021,9 @@ Latex.compilar = function(self, destino, temp)
     -- Formatar espaços e pontuações
     vim.cmd.substitute({'/\\s\\+\\([.,]\\)\\s\\?/\\1 /ge', range = documento})
     vim.cmd.substitute({'/\\s\\+/ /ge', range = documento})
-    vim.cmd.substitute({
-        '/\\([a-zA-Z]\\)\\s\\{,}\\([:.,]\\)\\s\\{,}\\([a-zA-Z0-9]\\)/\\1\\2 \\3/ge',
-        range = documento
-    })
+    vim.cmd(
+        documento[1] .. ',' .. documento[2] .. 'v/@\\|gov\\.br\\|\\.com\\|\\.br/s/\\([a-zA-Z]\\)\\s\\{,}\\([:.,]\\)\\s\\{,}\\([a-zA-Z0-9]\\)/\\1\\2 \\3/ge'
+    )
     vim.cmd.substitute({
         "/{\\\\textdegree}\\([a-zA-Z0-9]\\)/{\\\\textdegree} \\1/ge",
         range = documento
