@@ -146,7 +146,7 @@ if vim.o.wildcharm ~= 9 then
     vim.opt.wildcharm = 9
 end
 -- vim.opt.completeopt = 'menu,menuone,noselect'
-vim.opt.completeopt = 'menu,noinsert,noselect,popup,fuzzy'
+vim.opt.completeopt = 'menu,popup,fuzzy'
 vim.opt.complete:remove('t')
 vim.opt.title = true
 vim.opt.hidden = true
