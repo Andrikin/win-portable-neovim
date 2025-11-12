@@ -11,6 +11,7 @@
 desktop.ini
 .ssh/
 .bash_history
+.zen/
 
 nvim/share/applications/
 nvim/share/icons/
