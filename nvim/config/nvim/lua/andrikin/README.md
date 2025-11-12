@@ -111,12 +111,12 @@ TODO
 #### Programa para extrair arquivos de ".msi": 
 https://github.com/activescott/lessmsi/releases/download/v2.7.3/lessmsi-v2.7.3.zip
 
-#### Programa para alternar rapidamente entre desktops:
-https://learn.microsoft.com/en-us/sysinternals/downloads/desktops
+#### Programa para alternar rapidamente entre desktops (Windows 10):
+https://sourceforge.net/projects/virtuawin/files/VirtuaWin/4.5/VirtuaWin_portable_4.5.zip/download
 
 OBS: Versão antiga, somente para versões do Windows XP e anteriores.
 
-#### Programa para alternar rapidamente entre desktops:
+#### Programa para alternar rapidamente entre desktops (Windows 11):
 https://github.com/nadimkobeissi/binkybox/releases/download/v0.2.1/binkybox-0.2.1.rar
 
 #### AltSnap:
