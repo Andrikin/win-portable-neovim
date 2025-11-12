@@ -305,6 +305,7 @@ nvim/config/nvim/.luarc.json
 nvim/config/configstore/
 
 nvim/config/firenvim/
+nvim/config/nvim/spell/
 
 nvim/bin/
 nvim/opt
