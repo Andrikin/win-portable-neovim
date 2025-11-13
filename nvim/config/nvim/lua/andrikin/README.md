@@ -141,7 +141,10 @@ raw: https://gist.githubusercontent.com/mmozeiko/7f3162ec2988e81e56d5c4e22cde997
 
 raw 2: https://gist.githubusercontent.com/CrendKing/154abfa33200ef1cda38ddd61f4d414b/raw/591930da175eddf9690d84af1da5e01d64207f4b/portable-msvc.py
 
-OBS: incluir diretórios nas variáveis de ambiente: PATH, LIB, INCLUDE
+OBS: incluir diretórios nas variáveis de ambiente: PATH, LIB, INCLUDE alterando
+comando no script para:
+
+$ setx VARIAVEL "VALOR"
 
 ### Extenções para macros LibreOffice:
 https://wiki.documentfoundation.org/Macros/Python_Design_Guide
