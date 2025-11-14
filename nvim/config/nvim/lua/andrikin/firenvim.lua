@@ -104,7 +104,7 @@ require("lazy").setup(plugins, opts)
 vim.cmd.colorscheme('zellner')
 
 -- spellfile.nvim -- Lua port of spellfile.vim
-vim.opt.spelllang = 'pt'
+vim.opt.spelllang = 'pt_br'
 
 -- Configurações Windows
 vim.opt.fileformat = 'dos'
