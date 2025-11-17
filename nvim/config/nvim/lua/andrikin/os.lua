@@ -82,7 +82,7 @@ local programas = {
 		cmd = 'jdtls'
 	},{
 		nome = 'maven',
-		link = 'https://dlcdn.apache.org/maven/maven-3/3.9.6/binaries/apache-maven-3.9.6-bin.zip',
+		link = 'https://dlcdn.apache.org/maven/maven-4/4.0.0-rc-5/binaries/apache-maven-4.0.0-rc-5-bin.zip',
 		cmd = 'mvn.cmd'
 	},{
 		nome = 'jq',
