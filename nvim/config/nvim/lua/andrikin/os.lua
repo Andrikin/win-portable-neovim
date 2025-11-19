@@ -114,6 +114,10 @@ local programas = {
         nome = 'lessmsi', -- Utilizar o lessmsi-gui.exe
         link = 'https://github.com/activescott/lessmsi/releases/download/v2.7.3/lessmsi-v2.7.3.zip',
         cmd = 'lessmsi.exe',
+    },{
+        nome = 'unzip', -- https://infozip.sourceforge.net/
+        link = 'https://linorg.usp.br/CTAN/systems/windows/w32tex/unzip.exe',
+        cmd = 'unzip.exe',
     }
 }
 
