@@ -38,9 +38,21 @@ vim.bo[buf].textwidth = 80
 vim.b[buf]['surround_' .. vim.fn.char2nr('l')] = "\\\1\\\1{\r}"
 vim.b[buf]['surround_' .. vim.fn.char2nr('\\')] = "\\\1\\\1{\r}"
 
--- spell
-vim.o.spell = true
-vim.o.spelllang = "pt_br"
+-- spell (local to window)
+vim.api.nvim_create_autocmd('BufEnter',{
+    group = Andrikin,
+    callback = function ()
+        vim.o.spell = true
+    end,
+    buffer = buf,
+})
+vim.api.nvim_create_autocmd('BufLeave',{
+    group = Andrikin,
+    callback = function ()
+        vim.o.spell = false
+    end,
+    buffer = buf,
+})
 
 -- Mappings
 vim.keymap.set({'i'}, '<c-v>', '<c-r>+', {buffer = buf})
