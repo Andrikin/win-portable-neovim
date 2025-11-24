@@ -45,7 +45,7 @@ local plugins = {
     -- Configuração de tema
 	{
         'https://github.com/Andrikin/awesome-pairing',
-        config = function ()
+        config = function()
             -- Awesome Pairing
             vim.g.awesome_pairing_chars = [[({['"]]
         end,
@@ -209,7 +209,7 @@ vim.keymap.set({'i', 'c'}, '<c-v>', '<c-r>+')
 local command = vim.api.nvim_create_user_command
 command(
     'Resposta',
-    function ()
+    function()
         local greetings = vim.fn.getline(1):match('Boa tarde,')
         local endings = vim.fn.getline(vim.fn.line('$')):match('Ouvidoria da Prefeitura de Itajaí')
         if greetings and endings then
@@ -226,15 +226,8 @@ command(
         vim.cmd('v/^$/normal gqip') -- ajuste para textwidth
         vim.cmd.normal('gg[ [ ')
         vim.cmd.normal('G] ] ')
-        vim.fn.setline(1, [[Boa tarde,
-
-Segue resposta do setor responsável à sua manifestação:
-
---- ]])
-        vim.fn.setline(vim.fn.line('$'), [[---
-
-Atenciosamente,
-Ouvidoria da Prefeitura de Itajaí]])
+        vim.fn.setline(1, 'Boa tarde,\r\rSegue resposta do setor responsável à sua manifestação:\r\r---')
+        vim.fn.setline(vim.fn.line('$'), '---\r\rAtenciosamente,\rOuvidoria da Prefeitura de Itajaí')
     end,
     {}
 )
@@ -339,7 +332,7 @@ autocmd(
             'falabr.cgu.gov.br_stacao-AnalisarManifestacao-aspx_-ConteudoFormComAjax-txtResposta_*.txt',
             'falabr.cgu.gov.br_web-manifestacao-analisar_TEXTAREA-id-txtResposta-textarea_*.txt',
         },
-        callback = function ()
+        callback = function()
             if vim.cmd.Resposta then
                 vim.cmd.Resposta()
             end
