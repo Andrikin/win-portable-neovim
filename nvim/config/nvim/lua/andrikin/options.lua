@@ -122,7 +122,7 @@ vim.g.undotree_DiffAutoOpen = 0
 -- vim.g.undotree_DiffpanelHeight = 10
 
 -- spellfile.nvim -- Lua port of spellfile.vim
-vim.opt.spelllang = 'pt'
+vim.opt.spelllang = 'pt_br'
 
 -- --- Netrw ---
 -- Disable Netrw
