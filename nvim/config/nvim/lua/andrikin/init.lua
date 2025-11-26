@@ -1,3 +1,5 @@
+if vim.loader then vim.loader.enable() end
+
 if vim.g.started_by_firenvim then
     require('andrikin.firenvim')
     do return end
