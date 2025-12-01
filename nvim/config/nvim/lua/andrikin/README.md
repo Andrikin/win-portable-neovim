@@ -108,6 +108,18 @@ TODO
 
 ## WINDOWS: 
 
+#### Explorador de arquivos (Explorer++): RECOMENDADO
+https://explorerplusplus.com/download
+
+#### Explorador de arquivos (Dolphin):
+https://cdn.kde.org/ci-builds/system/dolphin/master/windows/dolphin-master-6789-windows-cl-msvc2022-x86_64.exe
+
+https://cdn.kde.org/ci-builds/utilities/ark/master/windows/ark-master-2365-windows-cl-msvc2022-x86_64.exe
+
+https://forum.kde.org/viewtopic.php%3Ff=59&t=173363.html
+
+https://bugs.kde.org/show_bug.cgi?id=498581#c0
+
 #### Programa para extrair arquivos de ".msi": 
 https://github.com/activescott/lessmsi/releases/download/v2.7.3/lessmsi-v2.7.3.zip
 
