@@ -80,6 +80,17 @@ command(
 )
 
 command(
+    'Documents',
+    function()
+        vim.cmd.Dirvish(vim.fs.joinpath(
+            vim.env.HOMEPATH,
+            'Documents'
+        ))
+    end,
+    {}
+)
+
+command(
     'RedeLocal',
     function()
         local andre = 'T:/16-Diretoria de Ouvidoria/Andre Aguiar'
