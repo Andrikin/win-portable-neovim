@@ -79,7 +79,7 @@ vim.opt.showmode = false
 -- NeoVim configurations
 vim.opt.guicursor = 'i-n-v-c:block'
 vim.opt.guifont = 'SauceCodePro NFM:h11'
-vim.opt.winborder = 'none'
+vim.opt.winborder = 'single'
 if vim.g.nvy or vim.g.neovide then
 	vim.opt.guifont = 'SauceCodePro Nerd Font Mono:h12'
 end

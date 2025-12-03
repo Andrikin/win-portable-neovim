@@ -180,7 +180,7 @@ local plugins = {
             completion = {
                 menu = {
                     -- auto_show = false,
-                    border = 'none',
+                    border = vim.o.winborder,
                     draw = {
                         columns = { { "label", "label_description", gap = 1 }, { "kind" } },
                     }
