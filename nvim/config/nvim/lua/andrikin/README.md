@@ -47,7 +47,6 @@ para encaminhar e-mails.
     npm install -g emmet-ls
     ```
 - python:
-
     ```console
     pip install pyright | npm -g install pyright
     ```
@@ -82,6 +81,7 @@ para encaminhar e-mails.
         ```console
         setx VARIAVEL "VALOR"
         ```
+- [qView](https://interversehq.com/qview/) - simples visualizador de imagens.
 
 ## Macros LibreOffice:
 
