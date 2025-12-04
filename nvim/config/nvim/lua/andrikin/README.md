@@ -82,6 +82,7 @@ para encaminhar e-mails.
         setx VARIAVEL "VALOR"
         ```
 - [qView](https://interversehq.com/qview/) - simples visualizador de imagens.
+- [WindowTabs](https://github.com/leafOfTree/WindowTabs) - agrupador de janelas.
 
 ## Macros LibreOffice:
 
