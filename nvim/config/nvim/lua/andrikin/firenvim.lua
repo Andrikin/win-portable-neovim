@@ -340,13 +340,13 @@ autocmd(
     }
 )
 
--- Configurações de ortografia no Fala.BR
+-- Configurações de ortografia e tamanho do frame no Fala.BR
 autocmd(
     'BufEnter',
     {
         group = Andrikin,
         pattern = 'falabr.cgu.gov.br*.txt',
-        command = "set spell",
+        command = "set spell lines=25",
     }
 )
 
