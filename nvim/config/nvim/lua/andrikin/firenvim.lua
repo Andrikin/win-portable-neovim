@@ -336,6 +336,7 @@ autocmd(
             if vim.cmd.Resposta then
                 vim.cmd.Resposta()
             end
+            vim.cmd.set('lines=25')
         end,
     }
 )
@@ -346,7 +347,7 @@ autocmd(
     {
         group = Andrikin,
         pattern = 'falabr.cgu.gov.br*.txt',
-        command = "set spell lines=25",
+        command = "set spell",
     }
 )
 
