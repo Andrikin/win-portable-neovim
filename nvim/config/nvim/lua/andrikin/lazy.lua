@@ -249,15 +249,11 @@ local plugins = {
                 vim.fn["firenvim#install"](0)
             end
         end,
-        enabled = function()
-            return vim.g.started_by_firenvim
-        end
+        lazy = not vim.g.started_by_firenvim,
     },{
         -- dressing -- change vim.ui.select
         'https://github.com/stevearc/dressing.nvim',
-        enabled = function()
-            return vim.g.started_by_firenvim
-        end
+        lazy = not vim.g.started_by_firenvim,
     },
     -- spellfile.nvim -- Lua port of spellfile.vim
     {
