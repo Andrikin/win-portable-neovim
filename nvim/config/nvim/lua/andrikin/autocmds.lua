@@ -11,7 +11,21 @@ autocmd(
         group = Andrikin,
         pattern = '*',
         callback = function()
+            local dirvish = vim.o.ft == 'dirvish' -- não desativar quando for Dirvish
+            if dirvish then
+                do return end
+            end
             cursorline.on()
+        end,
+    }
+)
+autocmd(
+    'WinEnter',
+    {
+        group = Andrikin,
+        pattern = '*',
+        callback = function()
+            cursorline.off()
         end,
     }
 )
@@ -22,9 +36,10 @@ autocmd(
         pattern = '*',
         callback = function()
             local dirvish = vim.o.ft == 'dirvish' -- não desativar quando for Dirvish
-            if not dirvish then
-                cursorline.off()
+            if dirvish then
+                do return end
             end
+                cursorline.off()
         end,
     }
 )

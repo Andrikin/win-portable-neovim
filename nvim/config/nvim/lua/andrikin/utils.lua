@@ -1,5 +1,6 @@
 -- TODO: 
 -- resolver node cli.js path,
+-- trocar jobstart por vim.system
 
 ---@class Utils
 ---@field Diretorio Diretorio
@@ -59,17 +60,18 @@ Utils.win7 = string.match(vim.uv.os_uname()['version'], 'Windows 7')
 
 ---@type table
 Utils.cursorline = {
-    toggle = function(cursorlineopt)
-        cursorlineopt = cursorlineopt or {'number', 'line'}
-        vim.opt.cursorlineopt = cursorlineopt
+    toggle = function(opt)
+        opt = opt or 'both'
+        vim.wo.cursorlineopt = opt
         vim.wo.cursorline = not vim.wo.cursorline
     end,
-    on = function(cursorlineopt)
-        cursorlineopt = cursorlineopt or {'number', 'line'}
-        vim.opt.cursorlineopt = cursorlineopt
+    on = function(opt)
+        opt = opt or 'both'
+        vim.wo.cursorlineopt = opt
         vim.wo.cursorline = true
     end,
     off = function()
+        vim.wo.cursorlineopt = 'both'
         vim.wo.cursorline = false
     end
 }
@@ -102,6 +104,17 @@ Utils.renomear_executavel = function(programa)
         Utils.notify(('Não foi encontrado executável %s.'):format(nome))
     end
 end
+
+-- vim.system
+-- cwd
+-- env
+-- clear_env
+-- stdin
+-- stdout
+-- stderr
+-- text
+-- timeout
+-- detach
 
 --- Wrap envolta do vim.fn.jobstart
 ---@class Job
@@ -300,9 +313,9 @@ Programa.extrair = function(self)
         arquivo,
         '-o' .. diretorio,
     }
-    -- se tar.gz, extrair duas vezes
-    local tar_gz = vim.fn.fnamemodify(self.link, ':e:e') == 'tar.gz' or vim.fn.fnamemodify(self.link, ':e') == 'tgz'
-    if tar_gz then
+    -- se tar, extrair duas vezes
+    local tar = vim.fn.fnamemodify(self.link, ':e:e'):match("^tar") or vim.fn.fnamemodify(self.link, ':e'):match("^t")
+    if tar then
         -- https://superuser.com/questions/80019/how-can-i-unzip-a-tar-gz-in-one-step-using-7-zip
         cmd = {
             '7za',
@@ -666,7 +679,7 @@ SauceCodePro.registro = Diretorio.new('HKCU') / 'Software' / 'Microsoft' / 'Wind
 
 SauceCodePro.diretorio = Utils.Opt / 'fonte'
 
-SauceCodePro.link = 'https://github.com/ryanoasis/nerd-fonts/releases/download/v3.1.1/SourceCodePro.zip'
+SauceCodePro.link = 'https://github.com/ryanoasis/nerd-fonts/releases/latest/download/SourceCodePro.zip'
 
 SauceCodePro.arquivo = SauceCodePro.diretorio / vim.fn.fnamemodify(SauceCodePro.link, ':t')
 
@@ -1375,7 +1388,7 @@ Cygwin.job = Utils.Job.new()
 
 Cygwin.init = function(self)
     if not self.instalador or self.instalador == '' then
-        self.instalador = vim.fn.glob((Cygwin.diretorio / 'setup*.exe').diretorio)
+        Utils.notify("Sem instalador Cygwin, programa ainda não baixado.")
     end
     if self.existe then
         Utils.notify('cygwin: já instalado. Para mais pacotes, instalar manualmente.')
@@ -1384,6 +1397,10 @@ Cygwin.init = function(self)
     Utils.notify('cygwin: instalando.')
     self.job.on_exit = function()
         Utils.notify('cygwin: instalado com sucesso!')
+        vim.env.PATH = vim.env.PATH .. ';' .. self.bin.diretorio
+        if vim.fn.executable('cygwin') == 1 and vim.fn.executable('x86_64-w64-mingw32-gcc') == 0  then
+            self:comando({'install', 'mingw64-x86_64-gcc-core', 'mingw64-x86_64-clang', 'ghostscript'})
+        end
         self.job.on_exit = nil -- resetar
     end
     self.job:start({
@@ -1405,13 +1422,11 @@ Cygwin.init = function(self)
         '--only-site',
         '--site',
         'https://linorg.usp.br/cygwin/',
-    })
+    }):wait()
     ::cygwin_finalizar::
     -- adicionar diretório bin
     vim.env.PATH = vim.env.PATH .. ';' .. self.bin.diretorio
-    if vim.fn.executable('cygwin') == 1 and vim.fn.executable('x86_64-w64-mingw32-gcc') == 0  then
-        self:comando({'install', 'mingw64-x86_64-gcc-core', 'mingw64-x86_64-clang', 'ghostscript'})
-    end
+    -- WARNING
     if vim.fn.executable('gs.exe') == 0 then
         Utils.notify('Latex: realizar instalação de GhostScript com o comando Cygwin')
     end
@@ -1421,7 +1436,7 @@ end
 Cygwin.comando = function(self, opts)
     opts = opts or {}
     local args = opts.fargs or opts
----@diagnostic disable-next-line: deprecated
+    ---@diagnostic disable-next-line: deprecated
     local islist = vim.islist or vim.tbl_islist
     if not islist(args) then
         Utils.notify('cygwin: instalador: valores padrão encontrados no comando. Abortando.')
@@ -1471,8 +1486,8 @@ Cygwin.comando = function(self, opts)
         end
         self.job.on_stdout = nil
     end,
----@diagnostic disable-next-line: redundant-value
-    self.job:start(cmd):wait()
+    ---@diagnostic disable-next-line: redundant-value
+    self.job:start(cmd)
     if not ok then
         Utils.notify('cygwin: instalador: erro foi encontrado.')
     end
