@@ -6,7 +6,9 @@ if vim.g.started_by_firenvim then
 end
 -- Inicialização normal neovim
 require('andrikin.os')
-require('andrikin.lazy')
+if not package.loaded["andrikin.lazy"] then
+    require('andrikin.lazy')
+end
 require('andrikin.lsp')
 require('andrikin.options')
 require('andrikin.maps')
