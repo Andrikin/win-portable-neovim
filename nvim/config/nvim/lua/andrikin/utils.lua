@@ -1,7 +1,3 @@
--- TODO: 
--- resolver node cli.js path,
--- trocar jobstart por vim.system
-
 ---@class Utils
 ---@field Diretorio Diretorio
 ---@field SauceCodePro SauceCodePro
@@ -117,6 +113,9 @@ end
 -- detach
 
 --- Wrap envolta do vim.fn.jobstart
+--- WARNING(16/12/2025): tentei utilizar vim.system, mas para algumas
+--- chamadas de funções é necessário utilizar vim.schedule_wrap
+--- que traz complexidade para o código.
 ---@class Job
 ---@field clear_env boolean
 ---@diagnostic disable-next-line: duplicate-doc-field
@@ -289,7 +288,7 @@ Programa.baixar = function(self)
 	})
 end
 
--- TODO: refazer lógica de extração
+-- WIP: refazer lógica de extração
 -- ideia: continuar extração até não haver mais
 -- arquivos compactados.
 Programa.extrair = function(self)
@@ -388,7 +387,7 @@ Programa.checar_instalacao = function(self)
     end
 end
 
--- TODO: verificar quando utilizar esta método
+-- WIP: verificar quando utilizar este método
 Programa.resetar = function(self)
     local concluido = nil
     local diretorio = self:diretorio().diretorio
@@ -866,8 +865,8 @@ end
 
 Utils.SauceCodePro = SauceCodePro
 
----WARNING: classe para instalar as credenciais .ssh
----TODO: como resolver esta questão de proteção
+--- WARNING: classe para instalar as credenciais .ssh
+--- WIP: como resolver esta questão de proteção
 ---@class Ssh
 ---@field destino Diretorio
 ---@field arquivos table
@@ -1226,7 +1225,6 @@ Comunicacao.nova = function(self, opts)
     local ci = (self.diretorios.destino / titulo).diretorio
     vim.fn.writefile(vim.fn.readfile(modelo), ci) -- Sobreescreve arquivo, se existir
     vim.cmd.edit(ci)
-	vim.cmd.redraw({bang = true})
     local range = {1, vim.fn.line('$')}
 	-- preencher dados de C.I., ocorrência e setor no arquivo tex
     if modelo:match('modelo.basico') then
