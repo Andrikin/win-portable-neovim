@@ -54,6 +54,8 @@ para encaminhar e-mails.
 
 ## WINDOWS: 
 
+- [cURL](https://curl.se/windows/dl-8.17.0_5/curl-8.17.0_5-win64-mingw.zip)
+- [unzip](https://linorg.usp.br/CTAN/systems/windows/w32tex/unzip.exe)
 - [Explorador de arquivos (Explorer++)](https://explorerplusplus.com/download) -- **RECOMENDADO**.
 - [Explorador de arquivos (Dolphin)](https://cdn.kde.org/ci-builds/system/dolphin/master/windows/dolphin-master-6789-windows-cl-msvc2022-x86_64.exe)
     - **BUGS do Dolphin**:
