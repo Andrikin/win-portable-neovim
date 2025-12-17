@@ -21,9 +21,9 @@ lua << EOF
 	vim.opt.rtp:remove(applocal) -- remove only AppLocal from runtime
 	vim.opt.rtp:append(vim.fn.stdpath('config'))
 	vim.opt.rtp:append(site)
-	vim.loader.enable()
 	if not vim.env.NVIM_OPT then
 		vim.env.NVIM_OPT = vim.env.HOME .. '\\nvim\\opt'
 	end
+    if vim.loader then vim.loader.enable() end
 EOF
 
