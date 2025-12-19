@@ -2,6 +2,7 @@ if vim.g.started_by_firenvim then
     require('andrikin.firenvim')
     do return end
 end
+
 -- Inicialização normal neovim
 require('andrikin.os')
 if not package.loaded["andrikin.lazy"] then
@@ -12,4 +13,8 @@ require('andrikin.options')
 require('andrikin.maps')
 require('andrikin.commands')
 require('andrikin.autocmds')
+
+-- Inicializar variavel de ambiente para remote server (Windows 11)
+local andrikin_server = vim.fn.serverstart('\\\\.\\pipe\\nvim-andrikin')
+-- vim.fn.jobstart({'setx', 'NVIM_SERVER', vim.v.servername}, {detach = true})
 
