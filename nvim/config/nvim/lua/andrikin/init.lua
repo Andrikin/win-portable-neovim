@@ -15,6 +15,5 @@ require('andrikin.commands')
 require('andrikin.autocmds')
 
 -- Inicializar variavel de ambiente para remote server (Windows 11)
-local andrikin_server = vim.fn.serverstart('\\\\.\\pipe\\nvim-andrikin')
--- vim.fn.jobstart({'setx', 'NVIM_SERVER', vim.v.servername}, {detach = true})
+vim.fn.serverstart('\\\\.\\pipe\\nvim-andrikin')
 
