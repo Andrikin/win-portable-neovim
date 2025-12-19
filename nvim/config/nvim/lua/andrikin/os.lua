@@ -1,3 +1,6 @@
+-- Inicializar variavel de ambiente para remote server (Windows 11)
+vim.fn.serverstart('\\\\.\\pipe\\nvim-andrikin')
+
 -- IMPORTANT(Windows 10+): Desabilitar python.exe e python3.exe em "Gerenciar aliases de execução de aplicativo".
 -- Windows executa este alias antes de executar python declarado em PATH.
 -- ALTERNATIVE FIX: Remover WindowsApps do PATH
