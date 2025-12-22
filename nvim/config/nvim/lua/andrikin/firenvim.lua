@@ -165,7 +165,7 @@ if vim.fn.has('persistent_undo') == 1 then
 	vim.opt.undofile = true
 end
 vim.opt.swapfile = false
-vim.opt.textwidth = 78
+vim.opt.textwidth = 70
 
 -- Statusline
 vim.opt.laststatus = 0
