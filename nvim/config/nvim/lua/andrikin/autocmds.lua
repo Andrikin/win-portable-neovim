@@ -152,3 +152,16 @@ autocmd(
         end,
     }
 )
+
+-- copiar todo texto quando sair do buffer Copyq
+autocmd(
+    'BufLeave',
+    {
+        group = Andrikin,
+        pattern = 'Copyq*.txt',
+        callback = function()
+            vim.cmd.normal("ggVGgy")
+        end
+    }
+)
+
