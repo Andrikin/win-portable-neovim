@@ -21,6 +21,7 @@ nvim/share/nvim-qt/
 nvim/share/nvim/runtime/
 
 nvim/config/nvim/lua/andrikin/.luacheckrc
+nvim/config/nvim/lua/andrikin/.luarc.json
 
 nvim/config/nvim-data/
 nvim/config/nvim-data/lazy/
