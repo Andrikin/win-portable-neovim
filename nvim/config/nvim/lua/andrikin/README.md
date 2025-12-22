@@ -56,24 +56,24 @@ para encaminhar e-mails.
 
 - [cURL](https://curl.se/windows/dl-8.17.0_5/curl-8.17.0_5-win64-mingw.zip)
 - [unzip](https://linorg.usp.br/CTAN/systems/windows/w32tex/unzip.exe)
-- [Explorador de arquivos (Explorer++)](https://explorerplusplus.com/download) -- **RECOMENDADO**.
-- [Explorador de arquivos (Dolphin)](https://cdn.kde.org/ci-builds/system/dolphin/master/windows/dolphin-master-6789-windows-cl-msvc2022-x86_64.exe)
-    - **BUGS do Dolphin**:
-        1. <https://forum.kde.org/viewtopic.php%3Ff=59&t=173363.html>
-        2. <https://bugs.kde.org/show_bug.cgi?id=498581#c0>
 - [Gerenciador de arquivos compactados (Ark)](https://cdn.kde.org/ci-builds/utilities/ark/master/windows/ark-master-2365-windows-cl-msvc2022-x86_64.exe)
 - [Programa para extrair arquivos de ".msi"](https://github.com/activescott/lessmsi/releases/download/v2.7.3/lessmsi-v2.7.3.zip)
 - [Programa para alternar rapidamente entre desktops (Windows 10)](https://sourceforge.net/projects/virtuawin/files/VirtuaWin/4.5/VirtuaWin_portable_4.5.zip/download)
 - [Programa para alternar rapidamente entre desktops (Windows 11)](https://github.com/nadimkobeissi/binkybox/releases/download/v0.2.1/binkybox-0.2.1.rar)
 - [AltSnap](https://github.com/RamonUnch/AltSnap/releases/download/1.65/AltSnap1.65bin_x64.zip)
 - [Shutdown Timer Classic](https://github.com/lukaslangrock/ShutdownTimerClassic/releases/download/v1.3.1/ShutdownTimerClassic_v1.3.1.zip)
+- [nomacs](https://nomacs.org/docs/getting-started/installation/) - Visualizador de imagens.
+- [Explorador de arquivos (Explorer++)](https://explorerplusplus.com/download) -- **RECOMENDADO**.
+- [Explorador de arquivos (Dolphin)](https://cdn.kde.org/ci-builds/system/dolphin/master/windows/dolphin-master-6789-windows-cl-msvc2022-x86_64.exe)
+    - **BUGS do Dolphin**:
+        1. <https://forum.kde.org/viewtopic.php%3Ff=59&t=173363.html>
+        2. <https://bugs.kde.org/show_bug.cgi?id=498581#c0>
 - Ativar janela ao mover mouse:
     1. <https://www.elevenforum.com/t/turn-on-or-off-activate-window-by-hovering-over-with-mouse-pointer-in-windows-11.6104/>
     2. <https://www.elevenforum.com/t/change-time-to-activate-window-by-hovering-over-with-mouse-pointer-in-windows-11.6105/>
 - Esconder mouse enquanto digita:
     1. <https://softwareok.com/?seite=Microsoft/AutoHideMouseCursor>
     2. <https://github.com/Stefan-Z-Camilleri-zz/Windows-Cursor-Hider>
-- [nomacs](https://nomacs.org/docs/getting-started/installation/) - Visualizador de imagens.
 - Download VS Build Tools: 
     1. <https://gist.github.com/mmozeiko/7f3162ec2988e81e56d5c4e22cde9977>
     2. <https://gist.githubusercontent.com/mmozeiko/7f3162ec2988e81e56d5c4e22cde9977/raw/50d5f534519bce8c118df3e2a2bc9a6f16e29a58/portable-msvc.py>
