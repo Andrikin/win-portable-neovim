@@ -160,6 +160,9 @@ autocmd(
         group = Andrikin,
         pattern = 'Copyq*.txt',
         callback = function()
+            vim.wo.fixendofline = false
+            vim.wo.endofline = false
+            vim.wo.fileformat = 'dos'
             vim.cmd.normal("ggVGgy")
         end
     }
