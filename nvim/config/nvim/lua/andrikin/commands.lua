@@ -102,6 +102,17 @@ command(
 )
 
 command(
+    'ComunicacaoInterna',
+    function()
+        local andre = 'T:/1-Comunicação Interna - C.I'
+        if vim.fn.isdirectory(andre) == 1 then
+            vim.cmd.Dirvish(andre)
+        end
+    end,
+    {}
+)
+
+command(
     'SysinitEdit',
     function()
         vim.cmd.edit('$VIM/sysinit.vim')
