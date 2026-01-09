@@ -85,6 +85,7 @@ para encaminhar e-mails.
         ```
 - [qView](https://interversehq.com/qview/) - simples visualizador de imagens.
 - [WindowTabs](https://github.com/leafOfTree/WindowTabs) - agrupador de janelas.
+- [TinyTask](https://portableapps.com/apps/utilities/tinytask_portable) - automação minimalista de ações
 
 ## Macros LibreOffice:
 
