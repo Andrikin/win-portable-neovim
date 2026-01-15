@@ -140,7 +140,7 @@ local plugins = {
 	-- Traces.vim,
 	'https://github.com/markonm/traces.vim.git',
 	-- Undotree,
-	'https://github.com/mbbill/undotree.git',
+	-- 'https://github.com/mbbill/undotree.git',
     -- autocompletion engine
     {
         'https://github.com/Saghen/blink.cmp.git',
@@ -285,4 +285,8 @@ vim.cmd.packadd('matchit')
 -- vim.cmd.packadd('swapmouse')
 -- vim.cmd.packadd('termdebug')
 -- vim.cmd.packadd('vimball')
+-- new!!! 
+vim.cmd.packadd('nvim.difftool')
+vim.cmd.packadd('nvim.undotree')
+-- vim.cmd.packadd('nohlsearch')
 
