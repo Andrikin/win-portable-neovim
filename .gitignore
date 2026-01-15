@@ -300,6 +300,8 @@ nvim/config/nvim-data/tree-sitter-latex/
 nvim/config/nvim-data/.netrwhist
 nvim/config/nvim-data/blink/
 
+nvim/config/nvim/after/ftplugin/.luacheckrc
+
 nvim/config/nvim/plugged/
 
 nvim/config/nvim/lazy-lock.json
