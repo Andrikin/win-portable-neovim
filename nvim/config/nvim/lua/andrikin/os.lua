@@ -1,5 +1,5 @@
 -- Inicializar variavel de ambiente para remote server (Windows 11)
-local copyq = '\\\\.\\pipe\\nvim-copyq'
+local copyq = '\\\\.\\pipe\\copyq'
 local servers = vim.fn.serverlist()
 for _, server in ipairs(servers) do
     if server == copyq then
