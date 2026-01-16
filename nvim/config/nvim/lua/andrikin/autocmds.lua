@@ -168,3 +168,14 @@ autocmd(
     }
 )
 
+autocmd(
+    'FileType',
+    {
+        group = Andrikin,
+        pattern = {'css', 'html'},
+        callback = function()
+            vim.cmd('EmmetInstall')
+        end,
+    }
+)
+

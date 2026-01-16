@@ -300,7 +300,6 @@ nvim/config/nvim-data/tree-sitter-latex/
 nvim/config/nvim-data/.netrwhist
 nvim/config/nvim-data/blink/
 
-nvim/config/nvim/lua/andrikin/pack.lua
 nvim/config/nvim/nvim-pack-lock.json
 
 nvim/config/nvim/after/ftplugin/.luacheckrc
