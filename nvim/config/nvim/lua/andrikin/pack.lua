@@ -6,8 +6,7 @@ if not notify then
     notify = print
 end
 
-local site = vim.fn.stdpath('data') .. '\\site' -- custom vim plugins
-vim.opt.packpath:prepend(site)
+vim.opt.packpath:prepend(vim.fn.stdpath('data') .. '\\site')
 
 -- install plugins
 vim.pack.add({
@@ -29,7 +28,7 @@ vim.pack.add({
     'https://github.com/nvim-lualine/lualine.nvim',
     'https://github.com/neovim/nvim-lspconfig.git',
     'https://github.com/markonm/traces.vim.git',
-    {src = 'https://github.com/Saghen/blink.cmp.git', version = "v1.8.0"},
+    'https://github.com/Saghen/blink.cmp.git',
     'https://github.com/rafamadriz/friendly-snippets.git',
     'https://github.com/L3MON4D3/LuaSnip.git',
     'https://github.com/nvim-telescope/telescope.nvim.git',
@@ -180,7 +179,11 @@ require('luasnip.loaders.from_lua').lazy_load({
     )
 })
 
--- TODO: trazer "require" configurações de "lsp.lua"
+-- WARNING: caso remova configuração 'tabline'
+-- não serão inicializados comandos deste componente
+-- como, por exemplo, 'LualineRenameTab'.
+-- Remover, portanto, autocomando para renomear
+-- buffer checkhealth.
 require('lualine').setup({
     options = { theme = 'auto',
         component_separators = { left = '', right = ''},
@@ -212,7 +215,8 @@ require('blink.cmp').setup({
             'score',
             'sort_text',
         },
-        -- implementation = "prefer_rust_with_warning",
+        implementation = "prefer_rust_with_warning",
+        prebuilt_binaries = { force_version = "1.8.0"},
     },
     keymap = {
         preset = 'default',

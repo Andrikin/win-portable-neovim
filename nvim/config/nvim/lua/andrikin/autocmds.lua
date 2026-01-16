@@ -142,16 +142,19 @@ autocmd(
     }
 )
 
-autocmd(
-    'FileType',
-    {
-        group = Andrikin,
-        pattern = 'checkhealth',
-        callback = function()
-            vim.cmd.LualineRenameTab('CheckHealth')
-        end,
-    }
-)
+-- WARNING: precisa da configuração 'tabline',
+-- em 'require("lualine").setup()', para habilitar
+-- o comando 'LualineRenameTab'.
+-- autocmd(
+--     'FileType',
+--     {
+--         group = Andrikin,
+--         pattern = 'checkhealth',
+--         callback = function()
+--             vim.cmd.LualineRenameTab('CheckHealth')
+--         end,
+--     }
+-- )
 
 -- copiar todo texto quando sair do buffer Copyq
 autocmd(
@@ -174,6 +177,8 @@ autocmd(
         group = Andrikin,
         pattern = {'css', 'html'},
         callback = function()
+            vim.cmd.packadd('nvim-colorizer.lua')
+            vim.cmd.packadd('emmet-vim')
             vim.cmd('EmmetInstall')
         end,
     }
