@@ -6,7 +6,9 @@ if not notify then
     notify = print
 end
 
-vim.opt.packpath:prepend(vim.fn.stdpath('data') .. '\\site')
+if not vim.opt.packpath._value:match("site") then
+    vim.opt.packpath:prepend(vim.fn.stdpath('data') .. '\\site')
+end
 
 -- install plugins
 vim.pack.add({
@@ -44,6 +46,12 @@ vim.pack.add({
     -- ft = java
     'https://github.com/mfussenegger/nvim-jdtls.git',
 })
+
+if vim.fn.isdirectory(vim.fn.expand('$HOME') .. '\\nvim\\config\\firenvim') == 0 then
+    vim.cmd("silent! call firenvim#install(1)")
+else
+    vim.cmd("silent! call firenvim#install(0)")
+end
 
 local gcc = vim.fn.executable('x86_64-w64-mingw32-gcc') == 1
 if not gcc then

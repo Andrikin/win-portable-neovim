@@ -5,11 +5,6 @@ end
 
 -- Inicialização normal neovim
 require('andrikin.os')
-
--- if not package.loaded["andrikin.lazy"] then
---     require('andrikin.lazy')
--- end
-
 require('andrikin.pack')
 require('andrikin.lsp')
 require('andrikin.options')

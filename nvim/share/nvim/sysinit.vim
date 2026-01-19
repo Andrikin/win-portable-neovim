@@ -21,6 +21,7 @@ lua << EOF
 	vim.opt.rtp:remove(applocal) -- remove only AppLocal from runtime
 	vim.opt.rtp:append(vim.fn.stdpath('config'))
 	vim.opt.rtp:append(site)
+	vim.opt.packpath:append(site)
 	if not vim.env.NVIM_OPT then
 		vim.env.NVIM_OPT = vim.env.HOME .. '\\nvim\\opt'
 	end

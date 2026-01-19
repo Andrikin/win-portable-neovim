@@ -1,4 +1,30 @@
 -- FIRENVIM CONFIG --
+if not vim.opt.packpath._value:match("site") then
+    vim.opt.packpath:prepend(vim.fn.stdpath('data') .. '\\site')
+end
+vim.pack.add({
+    'https://github.com/Andrikin/awesome-pairing',
+	'https://github.com/Andrikin/awesome-substitute',
+	-- Fork Tim Pope vim-capslock
+	'https://github.com/Andrikin/vim-capslock',
+	'https://github.com/tpope/vim-surround.git',
+	-- Vim Cool,
+	'https://github.com/romainl/vim-cool.git',
+	-- Traces.vim,
+	'https://github.com/markonm/traces.vim.git',
+    -- dressing -- change vim.ui.select
+    'https://github.com/stevearc/dressing.nvim',
+    -- Firenvim
+    'https://github.com/glacambre/firenvim',
+})
+
+vim.cmd.packadd('firenvim')
+if vim.fn.isdirectory(vim.fn.expand('$HOME') .. '\\nvim\\config\\firenvim') == 0 then
+    vim.cmd("silent! call firenvim#install(1)")
+else
+    vim.cmd("silent! call firenvim#install(0)")
+end
+
 local enable = {
     content = 'text',
     selector = 'textarea',
@@ -25,83 +51,11 @@ vim.g.firenvim_config = {
     }
 }
 
--- LSP --
-local lazypath = vim.fn.stdpath("data") .. "/lazy/lazy.nvim"
--- Inicializando caminho para git
----@diagnostic disable-next-line: undefined-field
-if not vim.uv.fs_stat(lazypath) then
-  vim.fn.system({
-    "git",
-    "clone",
-    "--filter=blob:none",
-    "https://github.com/folke/lazy.nvim.git",
-    "--branch=stable", -- latest stable release
-    lazypath,
-  })
-end
-vim.opt.rtp:prepend(lazypath)
-
-local plugins = {
-    -- Configuração de tema
-	{
-        'https://github.com/Andrikin/awesome-pairing',
-        config = function()
-            -- Awesome Pairing
-            vim.g.awesome_pairing_chars = [[({['"]]
-        end,
-    },
-	'https://github.com/Andrikin/awesome-substitute',
-	-- Fork Tim Pope vim-capslock
-	'https://github.com/Andrikin/vim-capslock',
-	'https://github.com/tpope/vim-surround.git',
-	-- Vim Cool,
-	'https://github.com/romainl/vim-cool.git',
-	-- Traces.vim,
-	'https://github.com/markonm/traces.vim.git',
-    -- dressing -- change vim.ui.select
-    'https://github.com/stevearc/dressing.nvim',
-    -- spellfile.nvim -- Lua port of spellfile.vim
-    'https://github.com/cuducos/spellfile.nvim',
-    -- Firenvim
-    {
-        'https://github.com/glacambre/firenvim',
-        build = function()
-            if vim.fn.isdirectory(vim.fn.expand('$HOME') .. '\\nvim\\config\\firenvim') == 0 then
-                vim.fn["firenvim#install"](1)
-            else
-                vim.fn["firenvim#install"](0)
-            end
-        end,
-    },
-}
-
-local opts = {
-	performance = {
-		rtp = {
-			disabled_plugins = {
-				-- "gzip",
-				-- "matchit",
-				-- "matchparen",
-				"netrwPlugin",
-				-- "tarPlugin",
-				-- "tohtml",
-				"tutor",
-				-- "zipPlugin",
-                "man", -- man.lua
-			},
-		},
-	},
-    rocks = {
-        hererocks = false,
-        enabled = false,
-    }
-}
-
-require("lazy").setup(plugins, opts)
-
 -- Colorscheme --
 -- vim.cmd.colorscheme('vim')
 vim.cmd.colorscheme('zellner')
+
+vim.g.awesome_pairing_chars = [[({['"]]
 
 -- spellfile.nvim -- Lua port of spellfile.vim
 vim.opt.spelllang = 'pt_br'
