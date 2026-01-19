@@ -171,16 +171,3 @@ autocmd(
     }
 )
 
-autocmd(
-    'FileType',
-    {
-        group = Andrikin,
-        pattern = {'css', 'html'},
-        callback = function()
-            vim.cmd.packadd('nvim-colorizer.lua')
-            vim.cmd.packadd('emmet-vim')
-            vim.cmd('EmmetInstall')
-        end,
-    }
-)
-

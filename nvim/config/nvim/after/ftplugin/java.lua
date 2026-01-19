@@ -1,6 +1,6 @@
 vim.treesitter.start()
 vim.bo.indentexpr = "v:lua.require'nvim-treesitter'.indentexpr()"
-vim.cmd.Lazy('load nvim-jdtls')
+vim.cmd.packadd('nvim-jdtls')
 
 -- Eclipse Java development tools (JDT) Language Server downloaded from:
 -- https://www.eclipse.org/downloads/download.php?file=/jdtls/milestones/1.21.0/jdt-language-server-1.21.0-202303161431.tar.gz
@@ -62,17 +62,17 @@ local config = {
     -- https://github.com/eclipse/eclipse.jdt.ls/wiki/Language-Server-Settings-&-Capabilities#extended-client-capabilities
     extendedClientCapabilities = jdtls.extendedClientCapabilities,
   },
-  on_attach = function(client, bufnr)
+  on_attach = function(client, buf)
     -- https://github.com/mfussenegger/dotfiles/blob/833d634251ebf3bf7e9899ed06ac710735d392da/vim/.config/nvim/ftplugin/java.lua#L88-L94
-    local opts = { silent = true, buffer = bufnr }
-    vim.keymap.set('n', "cro", jdtls.organize_imports, { desc = 'Organize imports', buffer = bufnr })
+    local opts = { silent = true, buffer = buf }
+    vim.keymap.set('n', "cro", jdtls.organize_imports, { desc = 'Organize imports', buffer = buf })
     -- Should 'd' be reserved for debug?
     vim.keymap.set('n', "cdf", jdtls.test_class, opts)
     vim.keymap.set('n', "cdn", jdtls.test_nearest_method, opts)
-    vim.keymap.set('n', 'crv', jdtls.extract_variable_all, { desc = 'Extract variable', buffer = bufnr })
+    vim.keymap.set('n', 'crv', jdtls.extract_variable_all, { desc = 'Extract variable', buffer = buf })
     vim.keymap.set('v', 'crm', [[<ESC><CMD>lua require('jdtls').extract_method(true)<CR>]],
-      { desc = 'Extract method', buffer = bufnr })
-    vim.keymap.set('n', 'crc', jdtls.extract_constant, { desc = 'Extract constant', buffer = bufnr })
+      { desc = 'Extract method', buffer = buf })
+    vim.keymap.set('n', 'crc', jdtls.extract_constant, { desc = 'Extract constant', buffer = buf })
   end
 }
 
