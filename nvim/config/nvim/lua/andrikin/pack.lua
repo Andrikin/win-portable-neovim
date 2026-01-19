@@ -48,9 +48,12 @@ vim.pack.add({
 })
 
 if vim.fn.isdirectory(vim.fn.expand('$HOME') .. '\\nvim\\config\\firenvim') == 0 then
+    vim.cmd.packadd("firenvim")
     vim.cmd("silent! call firenvim#install(1)")
 else
-    vim.cmd("silent! call firenvim#install(0)")
+    if vim.g.firenvim_loaded then
+        vim.cmd("silent! call firenvim#install(0)")
+    end
 end
 
 local gcc = vim.fn.executable('x86_64-w64-mingw32-gcc') == 1

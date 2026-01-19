@@ -22,7 +22,9 @@ vim.cmd.packadd('firenvim')
 if vim.fn.isdirectory(vim.fn.expand('$HOME') .. '\\nvim\\config\\firenvim') == 0 then
     vim.cmd("silent! call firenvim#install(1)")
 else
-    vim.cmd("silent! call firenvim#install(0)")
+    if vim.g.firenvim_loaded then
+        vim.cmd("silent! call firenvim#install(0)")
+    end
 end
 
 local enable = {
