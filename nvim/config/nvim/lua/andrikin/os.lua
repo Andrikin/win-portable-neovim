@@ -1,13 +1,16 @@
 -- Inicializar variavel de ambiente para remote server (Windows 11)
 local copyq = '\\\\.\\pipe\\copyq'
 local servers = vim.fn.serverlist()
+local encontrado = false
 for _, server in ipairs(servers) do
     if server == copyq then
-        goto encontrado
+        encontrado = true
+        break
     end
 end
-vim.fn.serverstart(copyq)
-::encontrado::
+if not encontrado then
+    vim.fn.serverstart(copyq)
+end
 
 
 -- IMPORTANT(Windows 10+): Desabilitar python.exe e python3.exe em "Gerenciar aliases de execução de aplicativo".
