@@ -41,7 +41,6 @@ local programas = {
 		cmd = 'git.exe',
         config = function()
             require('andrikin.utils').Ouvidoria.ci:init() -- modelos latex
-            require('andrikin.lazy') -- plugins neovim
         end,
 	},{
 		nome = 'fd',
