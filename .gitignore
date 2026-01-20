@@ -303,6 +303,7 @@ nvim/config/nvim-data/blink/
 nvim/config/nvim/nvim-pack-lock.json
 
 nvim/config/nvim/after/ftplugin/.luacheckrc
+nvim/config/nvim/lsp/.luacheckrc
 
 nvim/config/nvim/plugged/
 
