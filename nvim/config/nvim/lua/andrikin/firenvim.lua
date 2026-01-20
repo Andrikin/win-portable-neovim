@@ -10,8 +10,6 @@ vim.pack.add({
 	'https://github.com/tpope/vim-surround.git',
 	-- Vim Cool,
 	'https://github.com/romainl/vim-cool.git',
-	-- Traces.vim,
-	'https://github.com/markonm/traces.vim.git',
     -- dressing -- change vim.ui.select
     'https://github.com/stevearc/dressing.nvim',
     -- Firenvim
@@ -132,7 +130,7 @@ vim.opt.showmode = false
 vim.opt.guicursor = 'i-n-v-c:block'
 vim.opt.guifont = 'SauceCodePro NFM:h9'
 vim.opt.winborder = 'none'
-vim.opt.inccommand = '' -- conflict with traces.vim
+vim.opt.inccommand = 'split'
 vim.opt.fillchars = 'vert:|,fold:*,foldclose:+,diff:-'
 
 -- Matchit
@@ -149,9 +147,6 @@ vim.g['surround_' .. vim.fn.char2nr('\\')] = ''
 vim.g['surround_' .. vim.fn.char2nr('l')] = ''
 -- Html
 vim.g['surround_' .. vim.fn.char2nr('t')] = ''
-
--- --- Traces ---
-vim.g.traces_num_range_preview = 0
 
 -- Removendo providers: Perl
 vim.g.loaded_perl_provider = 0

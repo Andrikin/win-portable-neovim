@@ -85,7 +85,7 @@ vim.opt.winborder = 'single'
 if vim.g.nvy or vim.g.neovide then
 	vim.opt.guifont = 'SauceCodePro Nerd Font Mono:h12'
 end
-vim.opt.inccommand = '' -- conflict with traces.vim
+vim.opt.inccommand = 'split' -- empty string to use with traces.vim
 vim.opt.fillchars = 'vert:|,fold:*,foldclose:+,diff:-'
 
 -- Using ripgrep populate quickfix/localfix lists ([cf]open; [cf]do {cmd} | update)
@@ -112,9 +112,6 @@ vim.g.dirvish_mode = '%sort /.*\\\\\\|.*[^\\\\]/' -- diretórios primeiro, depoi
 -- --- Emmet ---
 vim.g.user_emmet_install_global = 0
 -- vim.g.user_emmet_leader_key = '<m-space>'
-
--- --- Traces ---
-vim.g.traces_num_range_preview = 0
 
 -- --- UndoTree ---
 vim.g.undotree_WindowLayout = 1
