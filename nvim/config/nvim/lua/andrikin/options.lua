@@ -7,8 +7,6 @@ vim.opt.path:append('**')
 -- Sem numeração de linhas para comando TOHtml
 vim.g.html_number_lines = 0
 
-vim.opt.termguicolors = true
-
 -- Indicadores - números nas linhas
 vim.opt.rnu = true
 vim.opt.nu = true

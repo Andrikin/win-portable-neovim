@@ -65,6 +65,8 @@ else
     }})
 end
 
+-- Colorscheme
+vim.opt.termguicolors = true
 vim.cmd.colorscheme('blackhole')
 
 if vim.fn.executable('x86_64-w64-mingw32-gcc') == 1 then
@@ -226,7 +228,6 @@ require('blink.cmp').setup({
             'sort_text',
         },
         implementation = "prefer_rust_with_warning",
-        prebuilt_binaries = { force_version = "1.8.0"},
     },
     keymap = {
         preset = 'default',
