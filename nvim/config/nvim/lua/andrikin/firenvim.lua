@@ -141,13 +141,6 @@ vim.opt.matchpairs:append('<:>')
 -- Disable Netrw
 vim.g.loaded_netrwPlugin = 1
 
--- Vim-Surround (Tim Pope)
--- Latex
-vim.g['surround_' .. vim.fn.char2nr('\\')] = ''
-vim.g['surround_' .. vim.fn.char2nr('l')] = ''
--- Html
-vim.g['surround_' .. vim.fn.char2nr('t')] = ''
-
 -- Removendo providers: Perl
 vim.g.loaded_perl_provider = 0
 vim.g.loaded_ruby_provider = 0
