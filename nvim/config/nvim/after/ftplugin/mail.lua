@@ -1,4 +1,5 @@
-local opts = { silent = true, buffer = vim.api.nvim_get_current_buf() }
+local buf = vim.api.nvim_get_current_buf()
+local opts = { silent = true, buffer = buf }
 local open = vim.ui.open or function(arquivo)
     -- If {cmd} is a String it runs in the 'shell'
     vim.fn.jobstart(vim.fn.shellescape(arquivo), {detach = true})
@@ -20,7 +21,7 @@ vim.keymap.set('n', 'gm', function()
     local inicio = 5
     local conta = vim.fn['himalaya#domain#account#current']()
     local txt = vim.api.nvim_buf_get_lines(
-        vim.api.nvim_get_current_buf(),
+        buf,
         0, vim.fn.line('$'),
         false
     ) or {}
@@ -46,4 +47,4 @@ vim.keymap.set('n', 'gm', function()
         range = {inicio, vim.fn.line('$')},
     })
 end, opts)
-vim.bo.textwidth = 80
+vim.bo[buf].textwidth = 80

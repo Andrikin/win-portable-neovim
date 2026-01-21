@@ -10,6 +10,10 @@ if not vim.opt.packpath._value:match("site") then
     vim.opt.packpath:prepend(vim.fn.stdpath('data') .. '\\site')
 end
 
+-- add $XDG_CONFIG_HOME/after/ftplugin
+vim.opt.runtimepath:prepend(vim.fn.stdpath('config') .. '\\after')
+vim.opt.runtimepath:prepend(vim.fn.stdpath('config') .. '\\lsp')
+
 -- install plugins
 vim.pack.add({
     -- colorscheme
@@ -63,44 +67,39 @@ else
         src = 'https://github.com/nvim-treesitter/nvim-treesitter.git',
         version = 'main'
     }})
-end
-
--- Colorscheme
-vim.opt.termguicolors = true
-vim.cmd.colorscheme('blackhole')
-
-if vim.fn.executable('x86_64-w64-mingw32-gcc') == 1 then
     vim.defer_fn( -- kickstart.nvim
         function()
             require('nvim-treesitter.install').compilers = {'x86_64-w64-mingw32-gcc', 'x86_64-w64-mingw32-clang', 'gcc', 'cc', 'clang'}
             require('nvim-treesitter').install({
-                    'css', 'html', 'javascript', 'vue', 'typescript',
-                    'diff',
-                    'git_config', 'git_rebase', 'gitattributes', 'gitcommit', 'gitignore',
-                    'jsdoc', 'json', 'json5', 'java',
-                    'luadoc',
-                    'regex',
-                    'xml',
-                    'latex',
-                    'sql',
-                    'powershell',
-                    'jq',
-                    'ini',
-                    -- https://github.com/folke/dot/blob/master/nvim/lua/plugins/treesitter.lua -- folke saying that comment slow TS
-                    -- 'comment',
-                    -- DEFAULT Neovim 0.11:
-                    'python',
-                    'lua',
-                    'markdown', 'markdown_inline',
-                    'vim', 'vimdoc',
+                'css', 'html', 'javascript', 'vue', 'typescript',
+                'diff',
+                'git_config', 'git_rebase', 'gitattributes', 'gitcommit', 'gitignore',
+                'jsdoc', 'json', 'json5', 'java',
+                'luadoc',
+                'regex',
+                'xml',
+                'latex',
+                'sql',
+                'powershell',
+                'jq',
+                'ini',
+                -- https://github.com/folke/dot/blob/master/nvim/lua/plugins/treesitter.lua -- folke saying that comment slow TS
+                -- 'comment',
+                -- DEFAULT Neovim 0.11:
+                'python',
+                'lua',
+                'markdown', 'markdown_inline',
+                'vim', 'vimdoc',
             })
             vim.opt.indentexpr = "v:lua.require'nvim-treesitter'.indentexpr()"
         end,
         0
     )
-else
-    notify('Instalar x86_64-w64-mingw32-gcc para utilizar nvim-treesitter!')
 end
+
+-- Colorscheme
+vim.opt.termguicolors = true
+vim.cmd.colorscheme('blackhole')
 
 local _telescope = {
     tema = 'dropdown',
