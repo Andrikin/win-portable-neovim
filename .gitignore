@@ -13,6 +13,8 @@ desktop.ini
 .bash_history
 .zen/
 
+.nvimlog
+
 nvim/share/applications/
 nvim/share/icons/
 nvim/share/locale/
