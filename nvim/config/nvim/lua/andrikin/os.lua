@@ -130,6 +130,14 @@ local programas = {
         nome = 'unzip', -- https://infozip.sourceforge.net/
         link = 'https://linorg.usp.br/CTAN/systems/windows/w32tex/unzip.exe',
         cmd = 'unzip.exe',
+    },{
+        nome = 'rust',
+        link = 'https://static.rust-lang.org/dist/rust-nightly-x86_64-pc-windows-msvc.msi',
+        cmd = 'cargo.exe',
+    },{
+        nome = 'rust-analyzer',
+        link = 'https://github.com/rust-lang/rust-analyzer/releases/download/2026-01-19/rust-analyzer-aarch64-pc-windows-msvc.zip',
+        cmd = 'rust-analyzer.exe',
     }
 }
 

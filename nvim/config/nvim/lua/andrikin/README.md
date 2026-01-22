@@ -36,7 +36,7 @@ para encaminhar e-mails.
 - [python 3.8.9](https://www.python.org/ftp/python/3.8.9/python-3.8.9-embed-amd64.zip) (Windows 7).
 - [python 3.12.1](https://www.python.org/ftp/python/3.12.1/python-3.12.1-embed-amd64.zip) (Windows 10+).
 - [Instalador PIP](https://bootstrap.pypa.io/get-pip.py)
-- rust -- **TODO**.
+- [rust](https://static.rust-lang.org/dist/rust-nightly-x86_64-pc-windows-msvc.msi) -- **Usuário Local**
 
 ## LSP's:
 
@@ -50,7 +50,7 @@ para encaminhar e-mails.
     ```console
     pip install pyright | npm -g install pyright
     ```
-- rust: **TODO**.
+- [rust-analyzer](https://github.com/rust-lang/rust-analyzer/releases/download/2026-01-19/rust-analyzer-aarch64-pc-windows-msvc.zip)
 
 ## WINDOWS: 
 

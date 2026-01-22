@@ -314,6 +314,7 @@ Programa.extrair = function(self)
     }
     -- se tar, extrair duas vezes
     local tar = vim.fn.fnamemodify(self.link, ':e:e'):match("^tar") or vim.fn.fnamemodify(self.link, ':e'):match("^t")
+    local msi = vim.fn.fnamemodify(self.link, ':e'):match("^msi")
     if tar then
         -- https://superuser.com/questions/80019/how-can-i-unzip-a-tar-gz-in-one-step-using-7-zip
         cmd = {
@@ -329,6 +330,19 @@ Programa.extrair = function(self)
             '-ttar',
             '-o' .. diretorio,
         }
+    end
+    if msi and vim.fn.executable('lessmsi') then
+        cmd = {
+            'lessmsi.exe',
+            'x',
+            arquivo,
+            diretorio .. "\\",
+        }
+    else
+        if not vim.fn.executable('lessmsi') then
+            Utils.notify("Lessmsi não instalado! Checar instalação do programa!")
+            do return end
+        end
     end
     self.job.on_exit = function()
         self.extraido = true
