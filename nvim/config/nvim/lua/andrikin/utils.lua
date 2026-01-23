@@ -1762,16 +1762,7 @@ end
 -- https://gist.githubusercontent.com/mmozeiko/7f3162ec2988e81e56d5c4e22cde9977/raw/baa1baa8b7869aa259a3a1d287def7638f3cc822/portable-msvc.py
 Msvc.instalacao = function(self)
     if self.init() then
-        -- inicializar em PATH
-        local programa = {
-            nome = "msvc",
-            cmd = "cl.exe"
-        }
-        programa = setmetatable(programa, Programa)
-        local incluido = programa:registrar()
-        if not incluido then
-            Utils.notify("Msvc: Não foi possível concluir a inclusão de 'msvc' no PATH.")
-        end
+        Utils.notify("Msvc: já instalado")
         do return end
     end
     local diretorio = Utils.Opt / "msvc"
