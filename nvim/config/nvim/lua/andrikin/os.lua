@@ -31,8 +31,6 @@ local Ssh = require('andrikin.utils').Ssh.new()
 local Git = require('andrikin.utils').Git.new()
 ---@type SauceCodePro
 local _ = require('andrikin.utils').SauceCodePro.new()
--- type Msvc
-_ = require('andrikin.utils').Msvc:instalacao()
 
 local programas = {
 	{
@@ -69,7 +67,10 @@ local programas = {
 		nome = 'python',
 		link = 'https://www.python.org/ftp/python/3.12.2/python-3.12.2-embed-amd64.zip',
 		cmd = {'python.exe', 'pip.exe'},
-		config = function() require('andrikin.utils').Python:init() end,
+		config = function() 
+            require('andrikin.utils').Python:init()
+            require('andrikin.utils').Msvc:instalacao()
+        end,
     },{
 		nome = 'tectonic',
 		link = 'https://github.com/tectonic-typesetting/tectonic/releases/download/tectonic%400.14.1/tectonic-0.14.1-x86_64-pc-windows-msvc.zip',
