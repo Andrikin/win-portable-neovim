@@ -331,15 +331,16 @@ Programa.extrair = function(self)
             '-o' .. diretorio,
         }
     end
-    if msi and vim.fn.executable('lessmsi') then
+    local lessmsi = vim.fn.executable('lessmsi') == 1
+    if msi and lessmsi then
         cmd = {
             'lessmsi.exe',
             'x',
-            arquivo,
-            diretorio .. "\\",
+            arquivo:gsub("/", "\\"),
+            diretorio:gsub("/", "\\") .. "\\",
         }
     else
-        if not vim.fn.executable('lessmsi') then
+        if not lessmsi then
             Utils.notify("Lessmsi não instalado! Checar instalação do programa!")
             do return end
         end
@@ -373,7 +374,7 @@ Programa.registrar = function(self)
         Utils.notify(('Programa: registrar_path: Programa %s já registrado no sistema!'):format(self.nome))
         return true
     end
-    local limite = 1
+    local limite = 5
     if type(self.cmd) == 'table' then
         limite = #self.cmd
     end

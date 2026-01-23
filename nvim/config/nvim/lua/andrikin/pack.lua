@@ -213,6 +213,32 @@ require('lualine').setup({
         lualine_z = {}
     },
 })
+-- blink.cmp configuration
+local rust = vim.fn.executable('cargo.exe') == 1
+local fuzzy = vim.fn.filereadable(vim.fs.joinpath(
+    vim.fn.stdpath('data'),
+    "site", "pack", "core", "opt", "blink.cmp",
+    "target", "release", "blink_cmp_fuzzy.dll"
+)) == 1
+if not rust then
+    notify("rust: Não foi encontrado executável do 'rust'. Verificar instalação.")
+    do return end
+end
+-- compile fuzzy for blink.cmp
+if rust and not fuzzy then
+    local cd = vim.fs.joinpath(
+        vim.fn.stdpath('data'),
+        "site", "pack", "core", "opt", "blink.cmp"
+    )
+    ok, _ = pcall(vim.system, {
+        "cargo",
+        "build",
+        "--release"
+    },{ cwd = cd })
+    if not ok then
+        notify("blink.cmp: Erro ao compilar fuzzy para blink.cmp")
+    end
+end
 require('blink.cmp').setup({
     enabled = function ()
         return not vim.tbl_contains({ "vim"}, vim.bo.filetype)

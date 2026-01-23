@@ -16,5 +16,6 @@ vim.lsp.enable({
     'html',
     'jsonls',
     'cssls',
+    'rustanalyzer',
 })
 -- vim.lsp.set_log_level("debug")
