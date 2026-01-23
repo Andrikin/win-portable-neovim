@@ -1823,7 +1823,10 @@ Msvc.instalacao = function(self)
         vim.fn.writefile(resposta, tostring(diretorio / "msvc-install.py"))
         local job = Utils.Job.new()
         job.on_exit = function()
+            -- delete temp folder
             vim.fn.delete(tostring(temp), 'rf')
+            -- delete script file
+            vim.fn.delete(tostring(diretorio / "msvc-install.py"))
             job.on_exit = nil
             local setup = vim.fn.glob(tostring(diretorio / "setup*bat"):gsub("/", "\\"))
             if vim.fn.filereadable(setup) == 1 then
