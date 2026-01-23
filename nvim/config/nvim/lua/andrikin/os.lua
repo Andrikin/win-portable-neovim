@@ -31,6 +31,8 @@ local Ssh = require('andrikin.utils').Ssh.new()
 local Git = require('andrikin.utils').Git.new()
 ---@type SauceCodePro
 local _ = require('andrikin.utils').SauceCodePro.new()
+-- type Msvc
+_ = require('andrikin.utils').Msvc:instalacao()
 
 local programas = {
 	{

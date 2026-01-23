@@ -230,7 +230,7 @@ if rust and not fuzzy then
         vim.fn.stdpath('data'),
         "site", "pack", "core", "opt", "blink.cmp"
     )
-    ok, _ = pcall(vim.system, {
+    local ok, _ = pcall(vim.system, {
         "cargo",
         "build",
         "--release"

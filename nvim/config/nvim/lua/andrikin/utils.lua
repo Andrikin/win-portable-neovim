@@ -1750,5 +1750,88 @@ end
 
 Utils.Gs = Gs
 
+---@class Msvc
+local Msvc = {}
+
+Msvc.__index = Msvc
+
+Msvc.init = function()
+    return vim.fn.executable("python.exe") == 1 and vim.fn.executable("cl.exe") == 1
+end
+
+-- https://gist.githubusercontent.com/mmozeiko/7f3162ec2988e81e56d5c4e22cde9977/raw/baa1baa8b7869aa259a3a1d287def7638f3cc822/portable-msvc.py
+Msvc.instalacao = function(self)
+    if not self.init() then
+        Utils.notify("Msvc: Não foi possível completar a instalação do MSVC. Verificar instalação do 'python'")
+        do return end
+    end
+    local diretorio = Utils.Opt / "msvc"
+    local temp = Utils.Opt / "msvc" / "downloads"
+    -- criar função para download do script utilizando curl
+    local net = vim.net.request or function(url, opts, fun)
+        local erro = false
+        local resposta = ""
+        local job = Utils.Job.new()
+        opts = opts or {}
+        if not vim.tbl_isempty(opts) then
+            for k, v in pairs(opts) do
+                job[k] = v
+            end
+        end
+        job.on_stdout = function(_, data, _)
+            resposta = resposta .. data
+        end
+        job:start({
+            'curl',
+            '--fail',
+            '--location',
+            url
+        })
+        erro = job.id <= 0
+        fun(erro, resposta)
+    end
+    net("https://gist.githubusercontent.com/mmozeiko/7f3162ec2988e81e56d5c4e22cde9977/raw/baa1baa8b7869aa259a3a1d287def7638f3cc822/portable-msvc.py", {}, function(erro, resposta)
+        if erro then
+            Utils.notify("Msvc: Não foi possível fazer o download do script.")
+            do return end
+        end
+        -- criar diretorio
+        -- output folder
+        if vim.fn.isdirectory(tostring(diretorio)) == 0 then
+            vim.fn.mkdir(tostring(diretorio), 'p', '0755')
+        end
+        -- temp folder
+        if vim.fn.isdirectory(tostring(temp)) == 0 then
+            vim.fn.mkdir(tostring(temp), 'p', '0755')
+        end
+        -- modificar script
+        resposta = resposta:gsub('OUTPUT = Path("msvc")', "OUTPUT = Path(os.path.expanduser('~')) / 'Documents' / 'nvim' / 'win-portable-neovim' / 'nvim' / 'opt' / 'msvc'")
+        resposta = resposta:gsub('DOWNLOADS = Path("downloads")', "DOWNLOADS = Path(os.path.expanduser('~')) / 'Documents' / 'nvim' / 'win-portable-neovim' / 'nvim' / 'opt' / 'msvc' / 'downloads'")
+        resposta = resposta:gsub([[set PATH=%~dp0VC\Tools\MSVC\{msvcv}\bin\Host{host}\{target};%~dp0Windows Kits\10\bin\{sdkv}\{host};%~dp0Windows Kits\10\bin\{sdkv}\{host}\ucrt;%PATH%]], [[setx PATH "%~dp0VC\Tools\MSVC\{msvcv}\bin\Host{host}\{target};%~dp0Windows Kits\10\bin\{sdkv}\{host};%~dp0Windows Kits\10\bin\{sdkv}\{host}\ucrt;%PATH%"]])
+        resposta = resposta:gsub([[set INCLUDE=%~dp0VC\Tools\MSVC\{msvcv}\include;%~dp0Windows Kits\10\Include\{sdkv}\ucrt;%~dp0Windows Kits\10\Include\{sdkv}\shared;%~dp0Windows Kits\10\Include\{sdkv}\um;%~dp0Windows Kits\10\Include\{sdkv}\winrt;%~dp0Windows Kits\10\Include\{sdkv}\cppwinrt]], [[setx INCLUDE "%~dp0VC\Tools\MSVC\{msvcv}\include;%~dp0Windows Kits\10\Include\{sdkv}\ucrt;%~dp0Windows Kits\10\Include\{sdkv}\shared;%~dp0Windows Kits\10\Include\{sdkv}\um;%~dp0Windows Kits\10\Include\{sdkv}\winrt;%~dp0Windows Kits\10\Include\{sdkv}\cppwinrt"]])
+        resposta = resposta:gsub([[set LIB=%~dp0VC\Tools\MSVC\{msvcv}\lib\{target};%~dp0Windows Kits\10\Lib\{sdkv}\ucrt\{target};%~dp0Windows Kits\10\Lib\{sdkv}\um\{target}]], [[setx LIB "%~dp0VC\Tools\MSVC\{msvcv}\lib\{target};%~dp0Windows Kits\10\Lib\{sdkv}\ucrt\{target};%~dp0Windows Kits\10\Lib\{sdkv}\um\{target}"]])
+        resposta = vim.split(resposta, "\n")
+        vim.fn.writefile(resposta, tostring(diretorio / "msvc-install.py"))
+        local job = Utils.Job.new()
+        job.on_exit = function()
+            vim.fn.delete(tostring(temp), 'rf')
+            job.on_exit = nil
+            local setup = vim.fn.glob(tostring(diretorio / "setup*bat"):gsub("/", "\\"))
+            if vim.fn.filereadable(setup) == 1 then
+                job:start({
+                    "cmd.exe", "/c", "start",
+                    setup
+                })
+            end
+        end
+        job:start({
+            "python.exe",
+            tostring(diretorio / "msvc-install.py")
+        })
+    end)
+end
+
+Utils.Msvc = Msvc
+
 return Utils
 
