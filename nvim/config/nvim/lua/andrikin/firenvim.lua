@@ -285,6 +285,19 @@ autocmd(
     }
 )
 
+autocmd(
+    'BufEnter',
+    {
+        group = Andrikin,
+        pattern = {
+            'falabr.cgu.gov.br_web-manifestacao-criar_icao-texto-manifestacao-textarea_*.txt',
+        },
+        callback = function()
+            vim.cmd.set('lines=25')
+        end,
+    }
+)
+
 -- Configurações de ortografia e tamanho do frame no Fala.BR
 autocmd(
     'BufEnter',
