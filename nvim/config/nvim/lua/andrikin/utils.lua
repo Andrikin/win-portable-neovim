@@ -1810,33 +1810,12 @@ Msvc.instalacao = function(self)
         resposta = resposta.body
         resposta = vim.split(resposta, "\n")
         -- modificar script
-        for i, s in ipairs(resposta) do
-            if s:match('^OUTPUT = Path') then
-                resposta[i] =  "OUTPUT = Path(os.path.expanduser('~')) / 'Documents' / 'nvim' / 'win-portable-neovim' / 'nvim' / 'opt' / 'msvc'"
-                goto continuar
-            end
-            if s:match('^DOWNLOADS = Path') then
-                resposta[i] = "DOWNLOADS = Path(os.path.expanduser('~')) / 'Documents' / 'nvim' / 'win-portable-neovim' / 'nvim' / 'opt' / 'msvc' / 'downloads'"
-                goto continuar
-            end
-            if s:match('input') then
-                resposta[i] = "  accept = 'y'"
-                goto continuar
-            end
-            if s:match("^set PATH=") then
-                resposta[i] = [[setx PATH "%~dp0VC\Tools\MSVC\{msvcv}\bin\Host{host}\{target};%~dp0Windows Kits\10\bin\{sdkv}\{host};%~dp0Windows Kits\10\bin\{sdkv}\{host}\ucrt;%PATH%"]]
-                goto continuar
-            end
-            if s:match("^set INCLUDE=") then
-                resposta[i] = [[setx INCLUDE "%~dp0VC\Tools\MSVC\{msvcv}\include;%~dp0Windows Kits\10\Include\{sdkv}\ucrt;%~dp0Windows Kits\10\Include\{sdkv}\shared;%~dp0Windows Kits\10\Include\{sdkv}\um;%~dp0Windows Kits\10\Include\{sdkv}\winrt;%~dp0Windows Kits\10\Include\{sdkv}\cppwinrt"]]
-                goto continuar
-            end
-            if s:match("^set LIB=") then
-                resposta[i] = [[setx LIB "%~dp0VC\Tools\MSVC\{msvcv}\lib\{target};%~dp0Windows Kits\10\Lib\{sdkv}\ucrt\{target};%~dp0Windows Kits\10\Lib\{sdkv}\um\{target}"]]
-                goto continuar
-            end
-            ::continuar::
-        end
+        resposta[18] = "OUTPUT = Path(os.path.expanduser('~')) / 'Documents' / 'nvim' / 'win-portable-neovim' / 'nvim' / 'opt' / 'msvc'"
+        resposta[19] = "DOWNLOADS = Path(os.path.expanduser('~')) / 'Documents' / 'nvim' / 'win-portable-neovim' / 'nvim' / 'opt' / 'msvc' / 'downloads'"
+        resposta[193] = "  accept = 'y'"
+        resposta[381] = [[setx PATH "%~dp0VC\Tools\MSVC\{msvcv}\bin\Host{host}\{target};%~dp0Windows Kits\10\bin\{sdkv}\{host};%~dp0Windows Kits\10\bin\{sdkv}\{host}\ucrt;%PATH%"]]
+        resposta[382] = [[setx INCLUDE "%~dp0VC\Tools\MSVC\{msvcv}\include;%~dp0Windows Kits\10\Include\{sdkv}\ucrt;%~dp0Windows Kits\10\Include\{sdkv}\shared;%~dp0Windows Kits\10\Include\{sdkv}\um;%~dp0Windows Kits\10\Include\{sdkv}\winrt;%~dp0Windows Kits\10\Include\{sdkv}\cppwinrt"]]
+        resposta[383] = [[setx LIB "%~dp0VC\Tools\MSVC\{msvcv}\lib\{target};%~dp0Windows Kits\10\Lib\{sdkv}\ucrt\{target};%~dp0Windows Kits\10\Lib\{sdkv}\um\{target}"]]
         vim.schedule(function()
             vim.fn.writefile(resposta, script)
             local job = Utils.Job.new()
