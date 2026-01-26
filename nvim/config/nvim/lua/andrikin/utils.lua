@@ -1750,6 +1750,8 @@ end
 
 Utils.Gs = Gs
 
+--- TODO: como atualizar variáveis no shell atual
+--- WORKAROUND: reiniciar processo 'nvim'.
 ---@class Msvc
 local Msvc = {}
 
@@ -1767,6 +1769,15 @@ Msvc.instalacao = function(self)
     end
     local diretorio = Utils.Opt / "msvc"
     local temp = Utils.Opt / "msvc" / "downloads"
+    -- criar diretorio
+    -- output folder
+    if vim.fn.isdirectory(tostring(diretorio)) == 0 then
+        vim.fn.mkdir(tostring(diretorio), 'p', '0755')
+    end
+    -- temp folder
+    if vim.fn.isdirectory(tostring(temp)) == 0 then
+        vim.fn.mkdir(tostring(temp), 'p', '0755')
+    end
     -- criar função para download do script utilizando curl
     local net = vim.net.request or function(url, opts, fun)
         local erro = false
@@ -1790,47 +1801,64 @@ Msvc.instalacao = function(self)
         erro = job.id <= 0
         fun(erro, resposta)
     end
+    local script = tostring(diretorio / "msvc-install.py"):gsub("/", "\\")
     net("https://gist.githubusercontent.com/mmozeiko/7f3162ec2988e81e56d5c4e22cde9977/raw/baa1baa8b7869aa259a3a1d287def7638f3cc822/portable-msvc.py", {}, function(erro, resposta)
         if erro then
             Utils.notify("Msvc: Não foi possível fazer o download do script.")
             do return end
         end
-        -- criar diretorio
-        -- output folder
-        if vim.fn.isdirectory(tostring(diretorio)) == 0 then
-            vim.fn.mkdir(tostring(diretorio), 'p', '0755')
-        end
-        -- temp folder
-        if vim.fn.isdirectory(tostring(temp)) == 0 then
-            vim.fn.mkdir(tostring(temp), 'p', '0755')
-        end
-        -- modificar script
-        resposta = resposta:gsub('OUTPUT = Path("msvc")', "OUTPUT = Path(os.path.expanduser('~')) / 'Documents' / 'nvim' / 'win-portable-neovim' / 'nvim' / 'opt' / 'msvc'")
-        resposta = resposta:gsub('DOWNLOADS = Path("downloads")', "DOWNLOADS = Path(os.path.expanduser('~')) / 'Documents' / 'nvim' / 'win-portable-neovim' / 'nvim' / 'opt' / 'msvc' / 'downloads'")
-        resposta = resposta:gsub([[set PATH=%~dp0VC\Tools\MSVC\{msvcv}\bin\Host{host}\{target};%~dp0Windows Kits\10\bin\{sdkv}\{host};%~dp0Windows Kits\10\bin\{sdkv}\{host}\ucrt;%PATH%]], [[setx PATH "%~dp0VC\Tools\MSVC\{msvcv}\bin\Host{host}\{target};%~dp0Windows Kits\10\bin\{sdkv}\{host};%~dp0Windows Kits\10\bin\{sdkv}\{host}\ucrt;%PATH%"]])
-        resposta = resposta:gsub([[set INCLUDE=%~dp0VC\Tools\MSVC\{msvcv}\include;%~dp0Windows Kits\10\Include\{sdkv}\ucrt;%~dp0Windows Kits\10\Include\{sdkv}\shared;%~dp0Windows Kits\10\Include\{sdkv}\um;%~dp0Windows Kits\10\Include\{sdkv}\winrt;%~dp0Windows Kits\10\Include\{sdkv}\cppwinrt]], [[setx INCLUDE "%~dp0VC\Tools\MSVC\{msvcv}\include;%~dp0Windows Kits\10\Include\{sdkv}\ucrt;%~dp0Windows Kits\10\Include\{sdkv}\shared;%~dp0Windows Kits\10\Include\{sdkv}\um;%~dp0Windows Kits\10\Include\{sdkv}\winrt;%~dp0Windows Kits\10\Include\{sdkv}\cppwinrt"]])
-        resposta = resposta:gsub([[set LIB=%~dp0VC\Tools\MSVC\{msvcv}\lib\{target};%~dp0Windows Kits\10\Lib\{sdkv}\ucrt\{target};%~dp0Windows Kits\10\Lib\{sdkv}\um\{target}]], [[setx LIB "%~dp0VC\Tools\MSVC\{msvcv}\lib\{target};%~dp0Windows Kits\10\Lib\{sdkv}\ucrt\{target};%~dp0Windows Kits\10\Lib\{sdkv}\um\{target}"]])
+        resposta = resposta.body
         resposta = vim.split(resposta, "\n")
-        vim.fn.writefile(resposta, tostring(diretorio / "msvc-install.py"))
-        local job = Utils.Job.new()
-        job.on_exit = function()
-            -- delete temp folder
-            vim.fn.delete(tostring(temp), 'rf')
-            -- delete script file
-            vim.fn.delete(tostring(diretorio / "msvc-install.py"))
-            job.on_exit = nil
-            local setup = vim.fn.glob(tostring(diretorio / "setup*bat"):gsub("/", "\\"))
-            if vim.fn.filereadable(setup) == 1 then
-                job:start({
-                    "cmd.exe", "/c", "start",
-                    setup
-                })
+        -- modificar script
+        for i, s in ipairs(resposta) do
+            if s:match('^OUTPUT = Path') then
+                resposta[i] =  "OUTPUT = Path(os.path.expanduser('~')) / 'Documents' / 'nvim' / 'win-portable-neovim' / 'nvim' / 'opt' / 'msvc'"
+                goto continuar
             end
+            if s:match('^DOWNLOADS = Path') then
+                resposta[i] = "DOWNLOADS = Path(os.path.expanduser('~')) / 'Documents' / 'nvim' / 'win-portable-neovim' / 'nvim' / 'opt' / 'msvc' / 'downloads'"
+                goto continuar
+            end
+            if s:match('input') then
+                resposta[i] = "  accept = 'y'"
+                goto continuar
+            end
+            if s:match("^set PATH=") then
+                resposta[i] = [[setx PATH "%~dp0VC\Tools\MSVC\{msvcv}\bin\Host{host}\{target};%~dp0Windows Kits\10\bin\{sdkv}\{host};%~dp0Windows Kits\10\bin\{sdkv}\{host}\ucrt;%PATH%"]]
+                goto continuar
+            end
+            if s:match("^set INCLUDE=") then
+                resposta[i] = [[setx INCLUDE "%~dp0VC\Tools\MSVC\{msvcv}\include;%~dp0Windows Kits\10\Include\{sdkv}\ucrt;%~dp0Windows Kits\10\Include\{sdkv}\shared;%~dp0Windows Kits\10\Include\{sdkv}\um;%~dp0Windows Kits\10\Include\{sdkv}\winrt;%~dp0Windows Kits\10\Include\{sdkv}\cppwinrt"]]
+                goto continuar
+            end
+            if s:match("^set LIB=") then
+                resposta[i] = [[setx LIB "%~dp0VC\Tools\MSVC\{msvcv}\lib\{target};%~dp0Windows Kits\10\Lib\{sdkv}\ucrt\{target};%~dp0Windows Kits\10\Lib\{sdkv}\um\{target}"]]
+                goto continuar
+            end
+            ::continuar::
         end
-        job:start({
-            "python.exe",
-            tostring(diretorio / "msvc-install.py")
-        })
+        vim.schedule(function()
+            vim.fn.writefile(resposta, script)
+            local job = Utils.Job.new()
+            job.on_exit = function()
+                -- delete temp folder
+                vim.fn.delete(tostring(temp), 'rf')
+                -- delete script file
+                vim.fn.delete(script)
+                job.on_exit = nil
+                local setup = vim.fn.glob(tostring(diretorio / "setup*bat"):gsub("/", "\\"))
+                if vim.fn.filereadable(setup) == 1 then
+                    job:start({
+                        "cmd.exe", "/c", "start",
+                        setup
+                    })
+                end
+            end
+            job:start({
+                "python.exe",
+                script
+            })
+        end)
     end)
 end
 
