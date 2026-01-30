@@ -5,155 +5,128 @@ local Andrikin = require('andrikin.utils').Andrikin
 local cursorline = require('andrikin.utils').cursorline
 
 -- Highlight linha quando entrar em INSERT MODE
-autocmd(
-    'InsertEnter',
-    {
-        group = Andrikin,
-        pattern = '*',
-        callback = function()
-            local dirvish = vim.o.ft == 'dirvish' -- não desativar quando for Dirvish
-            if dirvish then
-                do return end
-            end
-            cursorline.on()
-        end,
-    }
-)
-autocmd(
-    'WinEnter',
-    {
-        group = Andrikin,
-        pattern = '*',
-        callback = function()
+autocmd('InsertEnter', {
+    group = Andrikin,
+    pattern = '*',
+    callback = function()
+        local dirvish = vim.o.ft == 'dirvish' -- não desativar quando for Dirvish
+        if dirvish then
+            do return end
+        end
+        cursorline.on()
+    end,
+})
+autocmd('WinEnter', {
+    group = Andrikin,
+    pattern = '*',
+    callback = function()
+        cursorline.off()
+    end,
+})
+autocmd('InsertLeave', {
+    group = Andrikin,
+    pattern = '*',
+    callback = function()
+        local dirvish = vim.o.ft == 'dirvish' -- não desativar quando for Dirvish
+        if dirvish then
+            do return end
+        end
             cursorline.off()
-        end,
-    }
-)
-autocmd(
-    'InsertLeave',
-    {
-        group = Andrikin,
-        pattern = '*',
-        callback = function()
-            local dirvish = vim.o.ft == 'dirvish' -- não desativar quando for Dirvish
-            if dirvish then
-                do return end
-            end
-                cursorline.off()
-        end,
-    }
-)
+    end,
+})
 
 -- Resize windows automatically
 -- Tim Pope goodness
-autocmd(
-    'VimResized',
-    {
-        group = Andrikin,
-        pattern = '*',
-        callback = function()
-            vim.cmd.wincmd('=')
-        end,
-    }
-)
+autocmd('VimResized', {
+    group = Andrikin,
+    pattern = '*',
+    callback = function()
+        vim.cmd.wincmd('=')
+    end,
+})
 
 -- Highlight configuração
-autocmd(
-    'TextYankPost',
-    {
-        group = Andrikin,
-        pattern = '*',
-        callback = function()
-            vim.hl.on_yank({
-                higroup = 'IncSearch',
-                timeout = 300,
-            })
-        end,
-    }
-)
+autocmd('TextYankPost', {
+    group = Andrikin,
+    pattern = '*',
+    callback = function()
+        vim.hl.on_yank({
+            higroup = 'IncSearch',
+            timeout = 300,
+        })
+    end,
+})
 
 -- Remover fonte do regedit (Windows)
-autocmd(
-    'VimLeave',
-    {
-        group = Andrikin,
-        callback = function()
-            local flashdrive = vim.env.HOME:sub(1, 1):lower() ~= 'c'
-            local remover = false
-            if flashdrive then
-                remover = vim.fn.confirm(
-                    'Remover fonte do regedit?',
-                    '&Sim\n&Não',
-                    2
-                ) == 1
-            else
-                do return end
-            end
-            if remover then
-                vim.cmd.FonteRemover()
-            end
-        end,
-    }
-)
+autocmd('VimLeave', {
+    group = Andrikin,
+    callback = function()
+        local flashdrive = vim.env.HOME:sub(1, 1):lower() ~= 'c'
+        local remover = false
+        if flashdrive then
+            remover = vim.fn.confirm(
+                'Remover fonte do regedit?',
+                '&Sim\n&Não',
+                2
+            ) == 1
+        else
+            do return end
+        end
+        if remover then
+            vim.cmd.FonteRemover()
+        end
+    end,
+})
 
 -- --- Builtin LSP commands ---
 -- Only available in git projects (git init)
-autocmd(
-    'LspAttach',
-    {
-        group = Andrikin,
-        callback = function(ev)
-            local client = vim.lsp.get_client_by_id(ev.data.client_id)
-            if client and client:supports_method('textDocument/completion') then
-                vim.lsp.completion.enable(true, client.id, ev.buf, { autotrigger = false })
-            end
+autocmd('LspAttach', {
+    group = Andrikin,
+    callback = function(ev)
+        local client = vim.lsp.get_client_by_id(ev.data.client_id)
+        if client and client:supports_method('textDocument/completion') then
+            vim.lsp.completion.enable(true, client.id, ev.buf, { autotrigger = false })
         end
-    }
-)
+    end
+})
 
 -- Setar cwd para $HOMEPATH/Desktop
 -- Realizar Git pull no repositório win-portable-neovim\
-autocmd(
-    'VimEnter',
-    {
-        group = Andrikin,
-        pattern = '*',
-        once = true,
-        callback = function()
-            if vim.g.loaded_fugitive then
-                vim.fn.jobstart({
-                    'git',
-                    'pull'
-                }, {
-                    cwd = vim.env.HOME,
-                    on_stdout = function(_, data, _)
-                        if data[1] == 'Already up to date.' then
-                            print('win-portable-neovim: não há nada para atualizar!')
-                        elseif data[1]:match('^Updating') then
-                            reload()
-                            print('win-portable-neovim: atualizado e recarregado!')
-                        end
-                    end,
-                })
-            end
-            ---@diagnostic disable-next-line: undefined-field
-            vim.cmd.cd(vim.uv.os_homedir() .. '/Desktop')
-        end,
-    }
-)
+autocmd('VimEnter', {
+    group = Andrikin,
+    pattern = '*',
+    once = true,
+    callback = function()
+        if vim.g.loaded_fugitive then
+            vim.fn.jobstart({
+                'git',
+                'pull'
+            }, {
+                cwd = vim.env.HOME,
+                on_stdout = function(_, data, _)
+                    if data[1] == 'Already up to date.' then
+                        print('win-portable-neovim: não há nada para atualizar!')
+                    elseif data[1]:match('^Updating') then
+                        reload()
+                        print('win-portable-neovim: atualizado e recarregado!')
+                    end
+                end,
+            })
+        end
+        ---@diagnostic disable-next-line: undefined-field
+        vim.cmd.cd(vim.uv.os_homedir() .. '/Desktop')
+    end,
+})
 
 -- copiar todo texto quando sair do buffer Copyq
-autocmd(
-    'BufWrite',
-    {
-        group = Andrikin,
-        pattern = 'Copyq*.txt',
-        callback = function()
-            vim.bo.fixendofline = false
-            vim.bo.endofline = false
-            vim.bo.fileformat = 'dos'
-            vim.cmd.normal("ggVGgy")
-        end
-    }
-)
+autocmd('BufWrite', {
+    group = Andrikin,
+    pattern = 'Copyq*.txt',
+    callback = function()
+        vim.bo.fixendofline = false
+        vim.bo.endofline = false
+        vim.bo.fileformat = 'dos'
+        vim.cmd.normal("ggVGgy")
+    end
+})
 
