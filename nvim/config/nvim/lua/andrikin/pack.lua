@@ -190,6 +190,15 @@ require('luasnip.loaders.from_lua').lazy_load({
     )
 })
 
+require('dressing').setup({
+    input = {
+        mappings = {
+            i = {
+                ['<NL>'] = "Confirm",
+            }
+        }
+    }
+})
 -- WARNING: caso remova configuração 'tabline'
 -- não serão inicializados comandos deste componente
 -- como, por exemplo, 'LualineRenameTab'.
