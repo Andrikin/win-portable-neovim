@@ -142,20 +142,6 @@ autocmd(
     }
 )
 
--- WARNING: precisa da configuração 'tabline',
--- em 'require("lualine").setup()', para habilitar
--- o comando 'LualineRenameTab'.
--- autocmd(
---     'FileType',
---     {
---         group = Andrikin,
---         pattern = 'checkhealth',
---         callback = function()
---             vim.cmd.LualineRenameTab('CheckHealth')
---         end,
---     }
--- )
-
 -- copiar todo texto quando sair do buffer Copyq
 autocmd(
     'BufWrite',
