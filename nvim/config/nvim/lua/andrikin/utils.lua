@@ -1607,6 +1607,7 @@ Python.init = function(self)
     if vim.fn.executable('pip.exe') == 1 then
         local pacotes = {
             'pyright',
+            'basedpyright',
             'pynvim',
             'greenlet',
         }
