@@ -25,6 +25,8 @@ else
     end
 end
 
+vim.cmd.packadd('nvim.undotree')
+
 local enable = {
     content = 'text',
     selector = 'textarea',
