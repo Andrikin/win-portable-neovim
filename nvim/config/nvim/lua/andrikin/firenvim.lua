@@ -162,6 +162,7 @@ command(
             do return end
         end
         local range = {1, vim.fn.line('$')}
+        -- vim.cmd.substitute({'/[\\n\\r]\\{3,}/\\r\\r/ge', range = range})
         vim.cmd.substitute({"/\\([º°ª]\\)\\([a-zA-Z0-9]\\)/\\1 \\2/ge", range = range})
         vim.cmd.substitute({'/[“”]/"/ge', range = range})
         -- Formatar espaços e pontuações
@@ -283,6 +284,7 @@ autocmd(
                 vim.cmd.Resposta()
             end
             vim.cmd.set('lines=25')
+            vim.cmd.substitute({'/[\\n\\r]\\{3,}/\\r\\r/ge', range = {1, vim.fn.line('$')}})
         end,
     }
 )
