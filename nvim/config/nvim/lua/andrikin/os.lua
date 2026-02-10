@@ -141,6 +141,10 @@ local programas = {
         nome = 'rust-analyzer',
         link = 'https://github.com/rust-lang/rust-analyzer/releases/download/2026-01-19/rust-analyzer-aarch64-pc-windows-msvc.zip',
         cmd = 'rust-analyzer.exe',
+    },{
+        nome = 'luarocks',
+        link = 'https://luarocks.github.io/luarocks/releases/luarocks-3.13.0-windows-64.zip',
+        cmd = 'luarocks.exe',
     }
 }
 
