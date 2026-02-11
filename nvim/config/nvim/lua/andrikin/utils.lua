@@ -448,7 +448,7 @@ Diretorio.__index = Diretorio
 ---@return Diretorio
 Diretorio.new = function(caminho)
     caminho = caminho or ''
-    vim.validate({caminho = {caminho, {'table', 'string'}}})
+    vim.validate('caminho', caminho, {'table', 'string'})
     if type(caminho) == 'table' then
         for _, valor in ipairs(caminho) do
             if type(valor) ~= 'string' then
