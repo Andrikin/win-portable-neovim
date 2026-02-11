@@ -142,10 +142,18 @@ local programas = {
         link = 'https://github.com/rust-lang/rust-analyzer/releases/download/2026-01-19/rust-analyzer-aarch64-pc-windows-msvc.zip',
         cmd = 'rust-analyzer.exe',
     },{
-        nome = 'luarocks',
-        link = 'https://luarocks.github.io/luarocks/releases/luarocks-3.13.0-windows-64.zip',
-        cmd = 'luarocks.exe',
-    }
+        nome = 'lua-bin', -- version 5.1 (https://sourceforge.net/projects/luabinaries/files/)
+        link = 'https://sitsa.dl.sourceforge.net/project/luabinaries/5.1.5/Tools%20Executables/lua-5.1.5_Win64_bin.zip',
+        cmd = 'lua5.1.exe',
+    },{
+        nome = 'lua-lib', -- libs for version 5.1 (build for msvc 14)
+        link = 'https://sinalbr.dl.sourceforge.net/project/luabinaries/5.1.5/Windows%20Libraries/Static/lua-5.1.5_Win64_vc14_lib.zip',
+        cmd = 'lua5.1.lib',
+    }--,{
+    --     nome = 'luarocks',
+    --     link = 'https://luarocks.github.io/luarocks/releases/luarocks-3.13.0-win32.zip',
+    --     cmd = 'luarocks.exe',
+    -- }
 }
 
 Registrador.iniciar(programas)
