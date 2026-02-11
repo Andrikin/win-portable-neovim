@@ -468,7 +468,7 @@ end
 ---@return string
 ---@return _
 Diretorio._sanitize = function(str)
-    vim.validate({ str = {str, 'string'} })
+    vim.validate( 'str', str, 'string' )
     return vim.fs.normalize(str):gsub('//+', '/')
 end
 
@@ -492,8 +492,8 @@ end
 ---@return Diretorio
 --- Realiza busca nas duas direções pelo 
 Diretorio.buscar = function(dir, start)
-    vim.validate({ dir = {dir,{'table', 'string'}} })
-    vim.validate({ start = {start, 'string'} })
+    vim.validate( 'dir', dir, {'table', 'string'} )
+    vim.validate( 'start', start, 'string' )
     if type(dir) == 'table' then
         dir = vim.fs.normalize(table.concat(dir, '/'))
     else
@@ -526,7 +526,7 @@ end
 ---@param str string
 ---@return string
 Diretorio._suffix = function(str)
-    vim.validate({ str = {str, 'string'} })
+    vim.validate( 'str', str, 'string' )
     return (str:match('^[/\\]') or str == '') and str or vim.fs.normalize('/' .. str)
 end
 
