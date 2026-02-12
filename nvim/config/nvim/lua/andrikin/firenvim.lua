@@ -29,7 +29,7 @@ vim.cmd.packadd('nvim.undotree')
 
 local enable = {
     content = 'text',
-    selector = 'textarea > :not(#ConteudoForm_ConteudoGeral_ConteudoFormComAjax_txtTextoManifestacao)',
+    selector = 'textarea:not([readonly], [aria-readonly])',
     priority = 1,
     takeover = 'always',
 }
