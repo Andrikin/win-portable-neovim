@@ -48,7 +48,7 @@ if vim.fn.has('win32') then
 else
 	vim.g.shell = vim.env.TERM
 end
---let &g:shellpipe = '2>&1 | tee'
+--let &g:shellpipe = '2>&1 | tee' -- default in Windows
 vim.opt.complete:remove('t')
 vim.opt.title = true
 vim.opt.hidden = true
@@ -110,13 +110,6 @@ vim.g.dirvish_mode = '%sort /.*\\\\\\|.*[^\\\\]/' -- diretórios primeiro, depoi
 -- --- Emmet ---
 vim.g.user_emmet_install_global = 0
 -- vim.g.user_emmet_leader_key = '<m-space>'
-
--- --- UndoTree ---
-vim.g.undotree_WindowLayout = 1
-vim.g.undotree_ShortIndicators = 1
-vim.g.undotree_SetFocusWhenToggle = 1
-vim.g.undotree_DiffAutoOpen = 0
--- vim.g.undotree_DiffpanelHeight = 10
 
 -- spellfile.nvim -- Lua port of spellfile.vim
 vim.opt.spelllang = 'pt_br'
