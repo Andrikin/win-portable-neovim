@@ -181,16 +181,14 @@ command(
 
 local Copyq = require('andrikin.utils').Copyq
 
-command(
-	'Clipboard',
+command('Clipboard',
     function(arg)
         Copyq.clipboard(arg)
     end,
 	{
 		nargs = "?",
 		complete = function(arg, _, _) return Copyq:tab_complete(arg) end,
-	}
-)
+})
 
 -- AUTOCOMMANDS --
 local autocmd = vim.api.nvim_create_autocmd
@@ -204,18 +202,15 @@ autocmd({'BufEnter'}, {
 })
 
 -- Highlight linha quando entrar em INSERT MODE
-autocmd(
-    'InsertEnter',
+autocmd('InsertEnter',
     {
         group = Andrikin,
         pattern = '*',
         callback = function()
             cursorline.on()
         end,
-    }
-)
-autocmd(
-    'InsertLeave',
+})
+autocmd('InsertLeave',
     {
         group = Andrikin,
         pattern = '*',
@@ -225,25 +220,21 @@ autocmd(
                 cursorline.off()
             end
         end,
-    }
-)
+})
 
 -- Resize windows automatically
 -- Tim Pope goodness
-autocmd(
-    'VimResized',
+autocmd('VimResized',
     {
         group = Andrikin,
         pattern = '*',
         callback = function()
             vim.cmd.wincmd('=')
         end,
-    }
-)
+})
 
 -- Highlight configuração
-autocmd(
-    'TextYankPost',
+autocmd('TextYankPost',
     {
         group = Andrikin,
         pattern = '*',
@@ -253,13 +244,11 @@ autocmd(
                 timeout = 300,
             })
         end,
-    }
-)
+})
 
 -- Remover textwidth da página de tratamento da manifestação
 -- do Fala.BR
-autocmd(
-    'BufEnter',
+autocmd('BufEnter',
     {
         group = Andrikin,
         pattern = {
@@ -267,12 +256,10 @@ autocmd(
             'falabr.cgu.gov.br_stacao-TramitarManifestacao-aspx_-ConteudoFormComAjax-txtMensagem*.txt',
         },
         command = "set textwidth=0",
-    }
-)
+})
 -- RESPOSTA FALA.BR
 -- Incluir Prefixos e Sufixos da resposta
-autocmd(
-    'BufEnter',
+autocmd('BufEnter',
     {
         group = Andrikin,
         pattern = {
@@ -286,11 +273,9 @@ autocmd(
             vim.cmd.set('lines=25')
             vim.cmd.substitute({'/[\\n\\r]\\{3,}/\\r\\r/ge', range = {1, vim.fn.line('$')}})
         end,
-    }
-)
+})
 
-autocmd(
-    'BufEnter',
+autocmd('BufEnter',
     {
         group = Andrikin,
         pattern = {
@@ -299,18 +284,15 @@ autocmd(
         callback = function()
             vim.cmd.set('lines=25')
         end,
-    }
-)
+})
 
 -- Configurações de ortografia e tamanho do frame no Fala.BR
-autocmd(
-    'BufEnter',
+autocmd('BufEnter',
     {
         group = Andrikin,
         pattern = 'falabr.cgu.gov.br*.txt',
         command = "set spell",
-    }
-)
+})
 
 -- FIXME: força a página do Fala.BR a recarregar...
 -- -- Automatically syncing changes to the page

@@ -7,138 +7,111 @@ local Diretorio = require('andrikin.utils').Diretorio
 local Copyq = require('andrikin.utils').Copyq
 
 
-command(
-	'Clipboard',
+command('Clipboard',
     function(opts)
         Copyq.clipboard(opts)
     end,
 	{
 		nargs = "?",
 		complete = function(arg, _, _) return Copyq:tab_complete(arg) end,
-	}
-)
+})
 
-command(
-    'CompilarOuvidoria',
+command('CompilarOuvidoria',
     function()
     ---@diagnostic disable-next-line: missing-parameter
         Ouvidoria.latex:compilar()
     end,
-    {}
-)
+{})
 
-command(
-    'CompilarLatex',
+command('CompilarLatex',
     function()
         ---@diagnostic disable-next-line: param-type-mismatch, undefined-field
         local destino = Diretorio.new(vim.uv.os_homedir()) / 'Downloads'
         ---@diagnostic disable-next-line: missing-parameter
         Ouvidoria.latex:compilar(destino)
     end,
-    {}
-)
+{})
 
-command(
-    'Ouvidoria',
+command('Ouvidoria',
     function(opts)
         Ouvidoria.ci:nova(opts)
     end,
     {
         nargs = "+",
         complete = function(arg, _, _) return Ouvidoria.ci:tab(arg) end,
-    }
-)
+})
 
-command(
-    'Projetos',
+command('Projetos',
     function()
         vim.cmd.Dirvish(Ouvidoria.ci.diretorios.projetos.diretorio)
     end,
-    {}
-)
+{})
 
-command(
-    'Desktop',
+command('Desktop',
     function()
         vim.cmd.Dirvish(vim.fs.joinpath(
             vim.env.HOMEPATH,
             'Desktop'
         ))
     end,
-    {}
-)
+{})
 
-command(
-    'Downloads',
+command('Downloads',
     function()
         vim.cmd.Dirvish(vim.fs.joinpath(
             vim.env.HOMEPATH,
             'Downloads'
         ))
     end,
-    {}
-)
+{})
 
-command(
-    'Documents',
+command('Documents',
     function()
         vim.cmd.Dirvish(vim.fs.joinpath(
             vim.env.HOMEPATH,
             'Documents'
         ))
     end,
-    {}
-)
+{})
 
-command(
-    'RedeLocal',
+command('RedeLocal',
     function()
         local andre = 'T:/16-Diretoria de Ouvidoria/Andre Aguiar'
         if vim.fn.isdirectory(andre) == 1 then
             vim.cmd.Dirvish(andre)
         end
     end,
-    {}
-)
+{})
 
-command(
-    'ComunicacaoInterna',
+command('ComunicacaoInterna',
     function()
         local andre = 'T:/1-Comunicação Interna - C.I/' .. os.date('%Y')
         if vim.fn.isdirectory(andre) == 1 then
             vim.cmd.Dirvish(andre)
         end
     end,
-    {}
-)
+{})
 
-command(
-    'SysinitEdit',
+command('SysinitEdit',
     function()
         vim.cmd.edit('$VIM/sysinit.vim')
     end,
-    {}
-)
+{})
 
 -- https://help.libreoffice.org/latest/en-US/text/sbasic/python/python_locations.html?&DbPAR=BASIC&System=WIN
-command(
-    'LibreOfficeScripts',
+command('LibreOfficeScripts',
     function()
         vim.cmd.Dirvish('$APPDATA/LibreOffice/4/user/Scripts')
     end,
-    {}
-)
+{})
 
-command(
-    'Config',
+command('Config',
     function()
         vim.cmd.edit('$XDG_CONFIG_HOME')
     end,
-    {}
-)
+{})
 
-command(
-    'Snippets',
+command('Snippets',
     function()
         vim.cmd.edit(vim.fs.joinpath(
             ---@diagnostic disable-next-line: param-type-mismatch
@@ -146,12 +119,10 @@ command(
             'snippets'
         ))
     end,
-    {}
-)
+{})
 
 -- imprimir arquivos na impressora padrão
-command(
-    'Imprimir',
+command('Imprimir',
     function(opts)
         local arquivo = opts.fargs[1]
         local printer = opts.fargs[2]
@@ -170,14 +141,11 @@ command(
     { nargs = "+", complete = 'file' }
 )
 
-command(
-    'Reload',
+command('Reload',
     require('andrikin.utils').reload,
-    {}
-)
+{})
 
-command(
-    'Cygwin',
+command('Cygwin',
     function(opts) Cygwin:comando(opts) end,
     {nargs = '+', complete = Cygwin.complete}
 )

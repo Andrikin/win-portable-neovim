@@ -74,12 +74,13 @@ Utils.cursorline = {
 
 -- Recarregar configuração depois de atualizar o repositório git
 Utils.reload = function()
-    for name,_ in pairs(package.loaded) do
-        if name:match('^andrikin') then
-            package.loaded[name] = nil
-        end
-    end
-    require('andrikin')
+    vim.cmd.restart() -- neovim nightly
+    -- for name,_ in pairs(package.loaded) do
+    --     if name:match('^andrikin') then
+    --         package.loaded[name] = nil
+    --     end
+    -- end
+    -- require('andrikin')
 end
 
 Utils.Andrikin = vim.api.nvim_create_augroup('Andrikin', {clear = true})
