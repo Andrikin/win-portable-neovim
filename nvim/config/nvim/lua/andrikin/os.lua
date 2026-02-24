@@ -17,8 +17,10 @@ end
 -- Windows executa este alias antes de executar python declarado em PATH.
 -- ALTERNATIVE FIX: Remover WindowsApps do PATH
 local desabilitar = require('andrikin.utils').remover_path
-for _, programa in ipairs({'WindowsApps', 'Oracle', 'LibreOffice'}) do
-    desabilitar(programa)
+if desabilitar then
+    for _, programa in ipairs({'WindowsApps', 'Oracle', 'LibreOffice'}) do
+        desabilitar(programa)
+    end
 end
 
 require('andrikin.utils').init()
@@ -40,18 +42,18 @@ local programas = {
         config = function() require('andrikin.utils').Cygwin:init() end,
     },{
 		nome = 'git',
-		link = 'https://github.com/git-for-windows/git/releases/download/v2.43.0.windows.1/MinGit-2.43.0-64-bit.zip',
+		link = 'https://github.com/git-for-windows/git/releases/download/v2.53.0.windows.1/MinGit-2.53.0-64-bit.zip',
 		cmd = 'git.exe',
         config = function()
             require('andrikin.utils').Ouvidoria.ci:init() -- modelos latex
         end,
 	},{
 		nome = 'fd',
-		link = 'https://github.com/sharkdp/fd/releases/download/v8.7.1/fd-v8.7.1-x86_64-pc-windows-gnu.zip',
+		link = 'https://github.com/sharkdp/fd/releases/download/v10.3.0/fd-v10.3.0-x86_64-pc-windows-gnu.zip',
 		cmd = 'fd.exe'
 	},{
 		nome = 'ripgrep',
-		link = 'https://github.com/BurntSushi/ripgrep/releases/download/14.0.3/ripgrep-14.0.3-i686-pc-windows-msvc.zip',
+		link = 'https://github.com/BurntSushi/ripgrep/releases/download/15.1.0/ripgrep-15.1.0-x86_64-pc-windows-msvc.zip',
 		cmd = 'rg.exe'
 	},{
 		nome = 'sumatra',
@@ -77,7 +79,7 @@ local programas = {
 		cmd = 'tectonic.exe',
 	},{
 		nome = 'texlab-latex-lsp',
-		link = 'https://github.com/latex-lsp/texlab/releases/download/v5.22.1/texlab-x86_64-windows.zip',
+		link = 'https://github.com/latex-lsp/texlab/releases/download/v5.25.1/texlab-x86_64-windows.zip',
 		cmd = 'texlab.exe'
 	},{
 		nome = 'deno-javascript-lsp',
@@ -101,7 +103,7 @@ local programas = {
 		cmd = 'mvn.cmd'
 	},{
 		nome = 'jq',
-		link = 'https://github.com/jqlang/jq/releases/download/jq-1.7.1/jq-windows-i386.exe',
+		link = 'https://github.com/jqlang/jq/releases/download/jq-1.8.1/jq-windows-i386.exe',
 		cmd = {'jq.exe', 'jq-windows-i386.exe'},
         config = function() require('andrikin.utils').Jq:init() end,
 	},{
