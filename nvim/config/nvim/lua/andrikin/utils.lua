@@ -1042,19 +1042,20 @@ Latex.compilar = function(self, destino, temp)
         manifestacao.fim.lnum or vim.fn.line('$')
     }
     -- Formatar texto
-    vim.cmd.substitute({"/[º°ª]/{\\\\textdegree}/ge", range = documento})
-    vim.cmd.substitute({"/§/\\\\S/ge", range = documento})
-    vim.cmd.substitute({'/[“”]/\\"/ge', range = documento})
-    vim.cmd.substitute({"/[^\\\\]\\@<=\\$/\\\\$/ge", range = documento})
+    vim.cmd.substitute({"/[º°ª]/{\\\\textdegree}/ge", range = documento, mods = { silent = true }})
+    vim.cmd.substitute({"/§/\\\\S/ge", range = documento, mods = { silent = true }})
+    vim.cmd.substitute({'/[“”]/\\"/ge', range = documento, mods = { silent = true }})
+    vim.cmd.substitute({"/[^\\\\]\\@<=\\$/\\\\$/ge", range = documento, mods = { silent = true }})
     -- Formatar espaços e pontuações
-    vim.cmd.substitute({'/\\s\\+\\([.,]\\)\\s\\?/\\1 /ge', range = documento})
-    vim.cmd.substitute({'/\\s\\+/ /ge', range = documento})
+    vim.cmd.substitute({'/\\s\\+\\([.,]\\)\\s\\?/\\1 /ge', range = documento, mods = { silent = true }})
+    vim.cmd.substitute({'/\\s\\+/ /ge', range = documento, mods = { silent = true }})
     vim.cmd(
         documento[1] .. ',' .. documento[2] .. 'v/@\\|gov\\.br\\|\\.com\\|\\.br/s/\\([a-zA-Z]\\)\\s\\{,}\\([:.,]\\)\\s\\{,}\\([a-zA-Z0-9]\\)/\\1\\2 \\3/ge'
     )
     vim.cmd.substitute({
         "/{\\\\textdegree}\\([a-zA-Z0-9]\\)/{\\\\textdegree} \\1/ge",
-        range = documento
+        range = documento,
+        mods = { silent = true },
     })
     -- substituir caracteres
     if vim.o.modified then -- salvar arquivo que está modificado.
@@ -1244,16 +1245,16 @@ Comunicacao.nova = function(self, opts)
     local range = {1, vim.fn.line('$')}
 	-- preencher dados de C.I., ocorrência e setor no arquivo tex
     if modelo:match('modelo.basico') then
-        vim.cmd.substitute({("/<numero>/%s/Ie"):format(num_ci), range = range})
-        vim.cmd.substitute({("/<setor>/%s/Ie"):format(setor), range = range})
+        vim.cmd.substitute({("/<numero>/%s/Ie"):format(num_ci), range = range, mods = { silent = true }})
+        vim.cmd.substitute({("/<setor>/%s/Ie"):format(setor), range = range, mods = { silent = true }})
     elseif modelo:match('alerta.gabinete') or modelo:match('carga.gabinete') then
-        vim.cmd.substitute({("/<ocorrencia>/%s/Ie"):format(ocorrencia), range = range})
-        vim.cmd.substitute({("/<secretaria>/%s/Ie"):format(setor), range = range})
-        vim.cmd.substitute({("/<numero>/%s/Ie"):format(num_ci), range = range})
+        vim.cmd.substitute({("/<ocorrencia>/%s/Ie"):format(ocorrencia), range = range, mods = { silent = true }})
+        vim.cmd.substitute({("/<secretaria>/%s/Ie"):format(setor), range = range, mods = { silent = true }})
+        vim.cmd.substitute({("/<numero>/%s/Ie"):format(num_ci), range = range, mods = { silent = true }})
     else
-        vim.cmd.substitute({("/<ocorrencia>/%s/Ie"):format(ocorrencia), range = range})
-        vim.cmd.substitute({("/<numero>/%s/Ie"):format(num_ci), range = range})
-        vim.cmd.substitute({("/<setor>/%s/Ie"):format(setor), range = range})
+        vim.cmd.substitute({("/<ocorrencia>/%s/Ie"):format(ocorrencia), range = range, mods = { silent = true }})
+        vim.cmd.substitute({("/<numero>/%s/Ie"):format(num_ci), range = range, mods = { silent = true }})
+        vim.cmd.substitute({("/<setor>/%s/Ie"):format(setor), range = range, mods = { silent = true }})
     end
 end
 
