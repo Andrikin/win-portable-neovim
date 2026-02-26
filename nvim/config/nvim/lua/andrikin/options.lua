@@ -77,7 +77,8 @@ vim.opt.showtabline = 1
 vim.opt.showmode = false
 
 -- NeoVim configurations
-vim.opt.guicursor = 'i-n-v-c:block'
+-- vim.opt.guicursor = 'i-n-v-c:block' -- sem blink
+vim.opt.guicursor = "i-n-v-c:block,n-v-c:blinkwait700-blinkoff400-blinkon250"
 vim.opt.guifont = 'SauceCodePro NFM:h11'
 vim.opt.winborder = 'single'
 if vim.g.nvy or vim.g.neovide then
