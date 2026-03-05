@@ -48,6 +48,10 @@ local programas = {
             require('andrikin.utils').Ouvidoria.ci:init() -- modelos latex
         end,
 	},{
+        nome = 'lessmsi', -- Utilizar o lessmsi-gui.exe
+        link = 'https://github.com/activescott/lessmsi/releases/download/v2.7.3/lessmsi-v2.7.3.zip',
+        cmd = 'lessmsi.exe',
+    },{
 		nome = 'fd',
 		link = 'https://github.com/sharkdp/fd/releases/download/v10.3.0/fd-v10.3.0-x86_64-pc-windows-gnu.zip',
 		cmd = 'fd.exe'
@@ -127,10 +131,6 @@ local programas = {
         nome = 'cmail',
         link = 'https://www.inveigle.net/downloads/CMail_0.8.11_x86.zip',
         cmd = 'cmail.exe',
-    },{
-        nome = 'lessmsi', -- Utilizar o lessmsi-gui.exe
-        link = 'https://github.com/activescott/lessmsi/releases/download/v2.7.3/lessmsi-v2.7.3.zip',
-        cmd = 'lessmsi.exe',
     },{
         nome = 'unzip', -- https://infozip.sourceforge.net/
         link = 'https://linorg.usp.br/CTAN/systems/windows/w32tex/unzip.exe',
