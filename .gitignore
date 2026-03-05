@@ -12,7 +12,7 @@ desktop.ini
 .ssh/
 .bash_history
 .zen/
-
+.wget-hsts
 .nvimlog
 
 nvim/share/applications/
