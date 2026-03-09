@@ -13,18 +13,29 @@ lua << EOF
 	init(vim.env.XDG_CONFIG_HOME)
 	vim.env.XDG_DATA_HOME = vim.env.XDG_CONFIG_HOME
 	vim.env.XDG_STATE_HOME = vim.env.XDG_DATA_HOME
-	vim.env.NVIM_LOG_FILE = vim.fn.stdpath('data') .. '\\log'
-	init(vim.env.NVIM_LOG_FILE)
+	-- vim.env.NVIM_LOG_FILE = vim.fn.stdpath('data') .. '\\log'
+	-- init(vim.env.NVIM_LOG_FILE)
 	local site = vim.fn.stdpath('data') .. '\\site' -- custom vim plugins
+	local after = vim.fn.stdpath('config') .. '\\after'
+	local lsp = vim.fn.stdpath('config') .. '\\lsp'
 	init(site)
     local applocal = vim.tbl_filter(function(opt) return opt:match('AppLocal') end, vim.opt.rtp:get())
 	vim.opt.rtp:remove(applocal) -- remove only AppLocal from runtime
 	vim.opt.rtp:append(vim.fn.stdpath('config'))
 	vim.opt.rtp:append(site)
 	vim.opt.packpath:append(site)
+    -- utils.lua
 	if not vim.env.NVIM_OPT then
 		vim.env.NVIM_OPT = vim.env.HOME .. '\\nvim\\opt'
 	end
+    -- vim.pack
+    if not vim.opt.packpath._value:match("site") then
+        vim.opt.packpath:prepend(site)
+    end
+    -- add $XDG_CONFIG_HOME/after/ftplugin
+    vim.opt.runtimepath:prepend(after)
+    vim.opt.runtimepath:prepend(lsp)
+    -- load them all!
     if vim.loader then vim.loader.enable() end
 EOF
 

@@ -6,14 +6,6 @@ if not notify then
     notify = print
 end
 
-if not vim.opt.packpath._value:match("site") then
-    vim.opt.packpath:prepend(vim.fn.stdpath('data') .. '\\site')
-end
-
--- add $XDG_CONFIG_HOME/after/ftplugin
-vim.opt.runtimepath:prepend(vim.fn.stdpath('config') .. '\\after')
-vim.opt.runtimepath:prepend(vim.fn.stdpath('config') .. '\\lsp')
-
 -- install plugins
 vim.pack.add({
     -- colorscheme
