@@ -1763,6 +1763,7 @@ Msvc.__index = Msvc
 Msvc.init = function()
     if vim.fn.executable("lessmsi.exe") == 0 then
         error("Msvc: lessmsi não instalado")
+        return false
     end
     return vim.fn.executable("python.exe") == 1 and vim.fn.executable("cl.exe") == 1
 end
