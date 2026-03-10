@@ -190,6 +190,22 @@ command('Clipboard',
 		complete = function(arg, _, _) return Copyq:tab_complete(arg) end,
 })
 
+
+-- Mensagens automáticas
+command('Anexos',
+    function()
+        vim.cmd('%d')
+        vim.fn.setline(1, [[Boa tarde,
+
+Segue no anexo, resposta do setor responsável à sua manifestação.
+
+Atenciosamente,
+Ouvidoria da Prefeitura de Itajaí
+        ]])
+        vim.cmd("ZZ")
+    end,
+{})
+
 -- AUTOCOMMANDS --
 local autocmd = vim.api.nvim_create_autocmd
 local Andrikin = require('andrikin.utils').Andrikin
