@@ -202,7 +202,7 @@ Segue no anexo, resposta do setor responsável à sua manifestação.
 Atenciosamente,
 Ouvidoria da Prefeitura de Itajaí
         ]])
-        vim.cmd("ZZ")
+        vim.cmd.normal("ZZ")
     end,
 {})
 
