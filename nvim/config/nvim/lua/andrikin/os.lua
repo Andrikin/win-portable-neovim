@@ -36,6 +36,10 @@ local _ = require('andrikin.utils').SauceCodePro.new()
 
 local programas = {
 	{
+        nome = 'unzip', -- https://infozip.sourceforge.net/
+        link = 'https://linorg.usp.br/CTAN/systems/windows/w32tex/unzip.exe',
+        cmd = 'unzip.exe',
+    },{
         nome = 'cygwin',
         link = 'https://cygwin.com/setup-x86_64.exe',
         cmd = 'setup-x86_64.exe',
@@ -131,10 +135,6 @@ local programas = {
         nome = 'cmail',
         link = 'https://www.inveigle.net/downloads/CMail_0.8.11_x86.zip',
         cmd = 'cmail.exe',
-    },{
-        nome = 'unzip', -- https://infozip.sourceforge.net/
-        link = 'https://linorg.usp.br/CTAN/systems/windows/w32tex/unzip.exe',
-        cmd = 'unzip.exe',
     },{
         nome = 'rust',
         link = 'https://static.rust-lang.org/dist/rust-nightly-x86_64-pc-windows-msvc.msi',

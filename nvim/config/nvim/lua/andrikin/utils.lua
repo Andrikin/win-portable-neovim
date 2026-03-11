@@ -308,14 +308,21 @@ Programa.extrair = function(self)
     local diretorio = tostring(self:diretorio())
     local arquivo = tostring(self:diretorio() / self:nome_arquivo())
     local cmd = {
-        '7za',
-        'x',
+        'unzip',
         arquivo,
-        '-o' .. diretorio,
+        '-d',
+        diretorio
     }
-    -- se tar, extrair duas vezes
+    if vim.fn.executable('7za') == 1 then
+        cmd = {
+            '7za',
+            'x',
+            arquivo,
+            '-o' .. diretorio,
+        }
+    end
+-- se tar, extrair duas vezes
     local tar = vim.fn.fnamemodify(self.link, ':e:e'):match("^tar") or vim.fn.fnamemodify(self.link, ':e'):match("^t")
-    local msi = vim.fn.fnamemodify(self.link, ':e'):match("^msi")
     if tar then
         -- https://superuser.com/questions/80019/how-can-i-unzip-a-tar-gz-in-one-step-using-7-zip
         cmd = {
@@ -333,6 +340,7 @@ Programa.extrair = function(self)
         }
     end
     local lessmsi = vim.fn.executable('lessmsi') == 1
+    local msi = vim.fn.fnamemodify(self.link, ':e'):match("^msi")
     if msi and lessmsi then
         cmd = {
             'lessmsi.exe',
@@ -577,6 +585,7 @@ Utils.Diretorio = Diretorio
 ---@type Diretorio
 Utils.Opt = Diretorio.new(vim.env.NVIM_OPT)
 
+-- TODO: utilizar vim.system
 --- Criar diretório 'opt' caso não exista
 Utils.init = function()
     local projetos = (Diretorio.new(vim.fn.fnamemodify(vim.env.HOME, ':h')) / 'projetos').diretorio
@@ -598,7 +607,8 @@ Utils.init = function()
     local has_7zip = vim.fn.executable('7zr.exe') == 1 and vim.fn.executable('7za.exe') == 1
     local job = Utils.Job.new()
     if not has_7zip then
-		job:start({
+        -- download 7zr
+        job:start({
             'curl',
             '--fail',
             '--location',
@@ -608,6 +618,7 @@ Utils.init = function()
             '-O',
             link_7zr,
         })
+        -- prepare for 7za
         job.on_exit = function()
             job.on_exit = nil
             job:start({
@@ -617,7 +628,8 @@ Utils.init = function()
                 '-o' .. tostring(diretorio),
             }):wait()
         end
-		job:start({
+        -- download 7za
+        job:start({
             'curl',
             '--fail',
             '--location',
