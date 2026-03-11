@@ -177,6 +177,8 @@ vim.cmd.packadd('nvim.undotree')
 --     })
 -- end
 
+-- spellfile.vim
+require('nvim.spellfile').config()
 -- colorizer.lua
 require('colorizer').setup({'css', 'html', 'javascript'})
 -- Lazydev -- Neovim 0.11
