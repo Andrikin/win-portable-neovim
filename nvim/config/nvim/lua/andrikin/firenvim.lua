@@ -27,6 +27,9 @@ end
 
 vim.cmd.packadd('nvim.undotree')
 
+-- spellfile.vim
+require('nvim.spellfile').config()
+
 local enable = {
     content = 'text',
     selector = 'textarea:not([readonly], [aria-readonly])',
