@@ -163,6 +163,7 @@ carregar('ui-select')
 vim.cmd.packadd('telescope.nvim')
 vim.cmd.packadd('nvim.difftool')
 vim.cmd.packadd('nvim.undotree')
+vim.cmd.packadd('justify')
 
 -- experimental
 -- if vim.version().minor >= 12 then

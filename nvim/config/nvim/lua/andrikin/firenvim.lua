@@ -26,6 +26,7 @@ else
 end
 
 vim.cmd.packadd('nvim.undotree')
+-- vim.cmd.packadd('justify')
 
 -- spellfile.vim
 require('nvim.spellfile').config()
@@ -174,6 +175,9 @@ command(
         -- Evitando linhas com e-mail, adicionar espaço depois de pontuações
         vim.cmd('v/@\\|gov\\.br\\|\\.com\\|\\.br/s/\\([a-zA-Z]\\)\\s\\{,}\\([:.,]\\)\\s\\{,}\\([a-zA-Z0-9]\\)/\\1\\2 \\3/ge')
         vim.cmd('v/^$/normal gqip') -- ajuste para textwidth
+        -- package justify
+        -- vim.cmd('%Justify 70 4') -- justifica o texto
+        vim.cmd('%left')
         vim.cmd.normal('gg[ [ ')
         vim.cmd.normal('G] ] ')
         vim.fn.setline(1, 'Boa tarde,\r\rSegue resposta do setor responsável à sua manifestação:\r\r---')
