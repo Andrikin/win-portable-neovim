@@ -36,6 +36,13 @@ local _ = require('andrikin.utils').SauceCodePro.new()
 
 local programas = {
 	{
+		nome = 'git',
+		link = 'https://github.com/git-for-windows/git/releases/download/v2.53.0.windows.1/MinGit-2.53.0-64-bit.zip',
+		cmd = 'git.exe',
+        config = function()
+            require('andrikin.utils').Ouvidoria.ci:init() -- modelos latex
+        end,
+	},{
         nome = 'unzip', -- https://infozip.sourceforge.net/
         link = 'https://linorg.usp.br/CTAN/systems/windows/w32tex/unzip.exe',
         cmd = 'unzip.exe',
@@ -45,13 +52,6 @@ local programas = {
         cmd = 'setup-x86_64.exe',
         config = function() require('andrikin.utils').Cygwin:init() end,
     },{
-		nome = 'git',
-		link = 'https://github.com/git-for-windows/git/releases/download/v2.53.0.windows.1/MinGit-2.53.0-64-bit.zip',
-		cmd = 'git.exe',
-        config = function()
-            require('andrikin.utils').Ouvidoria.ci:init() -- modelos latex
-        end,
-	},{
         nome = 'lessmsi', -- Utilizar o lessmsi-gui.exe
         link = 'https://github.com/activescott/lessmsi/releases/download/v2.7.3/lessmsi-v2.7.3.zip',
         cmd = 'lessmsi.exe',
