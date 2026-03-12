@@ -1,6 +1,7 @@
 -- CUSTOM COMMANDS
 
 local command = vim.api.nvim_create_user_command
+local notify = require('andrikin.utils').notify
 local Ouvidoria = require('andrikin.utils').Ouvidoria -- executar bootstrap
 local Cygwin = require('andrikin.utils').Cygwin
 local Diretorio = require('andrikin.utils').Diretorio
@@ -34,7 +35,12 @@ command('CompilarLatex',
 
 command('Ouvidoria',
     function(opts)
-        Ouvidoria.ci:nova(opts)
+        local ok, erro = pcall(function(o) Ouvidoria.ci:nova(o) end, opts)
+        if not ok and (erro and erro:match('Keyboard interrupt')) then
+            notify('Ouvidoria: Operação interrompida por Ctrl-C')
+        else
+            notify('Ouvidoria: ' .. erro)
+        end
     end,
     {
         nargs = "+",
