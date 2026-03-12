@@ -21,15 +21,17 @@ local Utils = {}
 
 --- Mostra notificação para usuário, registrando em :messages
 ---@param msg string
-Utils.notify = function(msg)
-    vim.api.nvim_echo({{msg, 'DiagnosticInfo'}}, true, {})
+Utils.notify = function(msg, info)
+    info = info or 'DiagnosticInfo'
+    vim.api.nvim_echo({{msg, info}}, true, {})
     vim.cmd.redraw({bang = true})
 end
 
 --- Mostra uma notificação para o usuário, mas sem registrar em :messages
 ---@param msg string
-Utils.echo = function(msg)
-    vim.api.nvim_echo({{msg, 'DiagnosticInfo'}}, false, {})
+Utils.echo = function(msg, info)
+    info = info or 'DiagnosticInfo'
+    vim.api.nvim_echo({{msg, info}}, false, {})
     vim.cmd.redraw({bang = true})
 end
 
@@ -586,6 +588,7 @@ Utils.Diretorio = Diretorio
 Utils.Opt = Diretorio.new(vim.env.NVIM_OPT)
 
 -- TODO: utilizar vim.system
+-- adicionar git
 --- Criar diretório 'opt' caso não exista
 Utils.init = function()
     local projetos = (Diretorio.new(vim.fn.fnamemodify(vim.env.HOME, ':h')) / 'projetos').diretorio
