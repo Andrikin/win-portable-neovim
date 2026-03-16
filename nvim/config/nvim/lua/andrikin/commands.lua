@@ -148,7 +148,8 @@ command('Imprimir',
 )
 
 command('Reload',
-    require('andrikin.utils').reload,
+    -- require('andrikin.utils').reload,
+    vim.cmd.restart() -- neovim nightly 0.12
 {})
 
 command('Cygwin',

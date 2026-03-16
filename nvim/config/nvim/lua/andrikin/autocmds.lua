@@ -1,6 +1,6 @@
 -- Autocmds goosebumps
 local autocmd = vim.api.nvim_create_autocmd
-local reload = require('andrikin.utils').reload
+-- local reload = require('andrikin.utils').reload
 local Andrikin = require('andrikin.utils').Andrikin
 local cursorline = require('andrikin.utils').cursorline
 
@@ -107,7 +107,8 @@ autocmd('VimEnter', {
                     if data[1] == 'Already up to date.' then
                         print('win-portable-neovim: não há nada para atualizar!')
                     elseif data[1]:match('^Updating') then
-                        reload()
+                        -- reload()
+                        vim.cmd.restart() -- neovim nightly 0.12
                         print('win-portable-neovim: atualizado e recarregado!')
                     end
                 end,

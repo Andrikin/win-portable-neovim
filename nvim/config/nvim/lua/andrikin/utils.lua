@@ -74,17 +74,6 @@ Utils.cursorline = {
     end
 }
 
--- Recarregar configuração depois de atualizar o repositório git
-Utils.reload = function()
-    vim.cmd.restart() -- neovim nightly
-    -- for name,_ in pairs(package.loaded) do
-    --     if name:match('^andrikin') then
-    --         package.loaded[name] = nil
-    --     end
-    -- end
-    -- require('andrikin')
-end
-
 Utils.Andrikin = vim.api.nvim_create_augroup('Andrikin', {clear = true})
 
 Utils.renomear_executavel = function(programa)
@@ -1864,6 +1853,14 @@ Msvc.instalacao = function(self)
 end
 
 Utils.Msvc = Msvc
+
+-- WIP: comando para baixar dependências
+Utils.dependencias = function()
+    ---@type Registrador
+    local programas = require('andrikin.os').programas
+    local registrador = require('andrikin.utils').registrador.new()
+    registrador.iniciar(programas)
+end
 
 return Utils
 
