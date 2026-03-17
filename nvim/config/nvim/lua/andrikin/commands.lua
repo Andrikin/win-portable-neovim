@@ -38,7 +38,7 @@ command('Ouvidoria',
         local ok, erro = pcall(function(o) Ouvidoria.ci:nova(o) end, opts)
         if not ok and (erro and erro:match('Keyboard interrupt')) then
             notify('Ouvidoria: Operação interrompida por Ctrl-C')
-        else
+        elseif not ok then
             notify('Ouvidoria: ' .. erro)
         end
     end,
@@ -147,11 +147,12 @@ command('Imprimir',
     { nargs = "+", complete = 'file' }
 )
 
-command('Reload',
-    -- require('andrikin.utils').reload,
-    vim.cmd.restart() -- neovim nightly 0.12
-{})
-
+-- command('AndrikinInstalarDependencias',
+--     function()
+--         require("andrikin.utils").dependencias()
+--     end,
+-- {})
+--
 command('Cygwin',
     function(opts) Cygwin:comando(opts) end,
     {nargs = '+', complete = Cygwin.complete}
