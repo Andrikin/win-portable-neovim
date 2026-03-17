@@ -162,3 +162,4 @@ Registrador.iniciar(programas)
 Ssh:bootstrap()
 Git:bootstrap()
 
+-- return programas
