@@ -3,7 +3,7 @@
 
 local notify = require('andrikin.utils').notify
 if not notify then
-    notify = print
+    notify = vim.print
 end
 
 -- install plugins
