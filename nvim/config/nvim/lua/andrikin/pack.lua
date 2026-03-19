@@ -75,6 +75,8 @@ else
                 'powershell',
                 'jq',
                 'ini',
+                'rust',
+                'zig',
                 -- https://github.com/folke/dot/blob/master/nvim/lua/plugins/treesitter.lua -- folke saying that comment slow TS
                 -- 'comment',
                 -- DEFAULT Neovim 0.11:
@@ -84,8 +86,7 @@ else
                 'vim', 'vimdoc',
             })
             vim.opt.indentexpr = "v:lua.require'nvim-treesitter'.indentexpr()"
-        end,
-        0
+        end, 0
     )
 end
 
