@@ -4,6 +4,9 @@
 lua << EOF
     -- mkdir function
 	local mkdir = function(path)
+		if not path then
+			do return end
+		end
 		-- check for directory and create it if not found
 		if vim.fn.isdirectory(path) == 0 then
 			vim.fn.mkdir(path, 'p', '0755')
@@ -21,12 +24,15 @@ lua << EOF
 	local site = vim.fn.stdpath('data') .. '\\site' -- custom vim plugins
 	local after = vim.fn.stdpath('config') .. '\\after'
 	local lsp = vim.fn.stdpath('config') .. '\\lsp'
+    local applocal = vim.tbl_filter(
+        function(opt) return opt:match('AppLocal') end,
+        vim.opt.rtp:get()
+    )
 	mkdir(site)
 	mkdir(after)
-	mkdir(lspsite)
+	mkdir(lsp)
     -- AppLocal directory
-    local applocal = vim.tbl_filter(function(opt) return opt:match('AppLocal') end, vim.opt.rtp:get())
-	vim.opt.rtp:remove(applocal) -- remove only AppLocal from runtime
+	vim.opt.runtimepath:remove(applocal) -- remove only AppLocal from runtime
     vim.opt.runtimepath:prepend(after)
     vim.opt.runtimepath:prepend(lsp)
 	vim.opt.runtimepath:prepend(site)
