@@ -1,17 +1,9 @@
--- Inicializar variavel de ambiente para remote server (Windows 11)
+-- Inicializar variavel de ambiente para neovim remote server (Windows 11)
 local copyq = '\\\\.\\pipe\\copyq'
-local servers = vim.fn.serverlist()
-local encontrado = false
-for _, server in ipairs(servers) do
-    if server == copyq then
-        encontrado = true
-        break
-    end
+local ok, _ = pcall(vim.fn.serverstart, copyq)
+if not ok then
+    require('andrikin.utils').notify("Server copyq já existe.")
 end
-if not encontrado then
-    vim.fn.serverstart(copyq)
-end
-
 
 -- IMPORTANT(Windows 10+): Desabilitar python.exe e python3.exe em "Gerenciar aliases de execução de aplicativo".
 -- Windows executa este alias antes de executar python declarado em PATH.
@@ -77,7 +69,7 @@ local programas = {
 		nome = 'python',
 		link = 'https://www.python.org/ftp/python/3.12.2/python-3.12.2-embed-amd64.zip',
 		cmd = {'python.exe', 'pip.exe'},
-		config = function() 
+		config = function()
             require('andrikin.utils').Python:init()
             require('andrikin.utils').Msvc:instalacao()
         end,
@@ -151,15 +143,14 @@ local programas = {
         nome = 'lua-lib', -- libs for version 5.1 (build for msvc 14)
         link = 'https://sinalbr.dl.sourceforge.net/project/luabinaries/5.1.5/Windows%20Libraries/Static/lua-5.1.5_Win64_vc14_lib.zip',
         cmd = 'lua5.1.lib',
-    }--,{
-    --     nome = 'luarocks',
-    --     link = 'https://luarocks.github.io/luarocks/releases/luarocks-3.13.0-win32.zip',
-    --     cmd = 'luarocks.exe',
-    -- }
+    },{
+        nome = 'zig',
+        link = 'https://ziglang.org/download/0.15.2/zig-x86_64-windows-0.15.2.zip',
+        cmd = 'zig.exe',
+    }
 }
 
 Registrador.iniciar(programas)
 Ssh:bootstrap()
 Git:bootstrap()
 
--- return programas
