@@ -167,13 +167,6 @@ vim.keymap.set('n', '<leader>t',
 	end
 )
 
--- -- Undotree plugin
--- vim.keymap.set(
--- 	'n',
--- 	'<leader>u',
--- 	vim.cmd.UndotreeToggle
--- )
-
 -- Nvim-Undotree plugin
 vim.keymap.set(
 	'n',
