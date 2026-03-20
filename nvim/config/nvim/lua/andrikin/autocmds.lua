@@ -117,14 +117,21 @@ autocmd('VimEnter', {
     end,
 })
 
--- copiar todo texto quando sair do buffer Copyq
+-- WIP: ao selecionar a entrada para edição no editor externo, mudar o foco do
+-- programa faz com que a janela do copyq feche, executando o restante da macro
+-- - copiar conteúdo do arquivo para entrada e deletar arquivo, antes mesmo de
+-- completar a edição no editor externo.
+-- https://copyq.readthedocs.io/en/latest/faq.html#why-does-my-external-editor-fail-to-edit-items
+--
+-- ideia: copiar todo texto quando sair do buffer, criando nova entrada no
+-- copyq
 autocmd('BufWrite', {
     group = Andrikin,
     pattern = 'Copyq*.txt',
-    callback = function()
-        vim.bo.fixendofline = false
-        vim.bo.endofline = false
-        vim.bo.fileformat = 'dos'
+    callback = function(args)
+        vim.bo[args.buf].fixendofline = false
+        vim.bo[args.buf].endofline = false
+        vim.bo[args.buf].fileformat = 'dos'
         vim.cmd.normal("ggVGgy")
     end
 })

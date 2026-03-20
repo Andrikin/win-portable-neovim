@@ -166,7 +166,7 @@ vim.cmd.packadd('nvim.difftool')
 vim.cmd.packadd('nvim.undotree')
 vim.cmd.packadd('justify')
 
--- experimental
+-- experimental: ui2
 -- if vim.version().minor >= 12 then
 --     require('vim._core.ui2').enable({
 --      enable = true, -- Whether to enable or disable the UI.
