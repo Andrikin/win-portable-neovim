@@ -87,13 +87,6 @@ end
 vim.opt.inccommand = 'split' -- empty string to use with traces.vim
 vim.opt.fillchars = 'vert:|,fold:*,foldclose:+,diff:-'
 
--- Using ripgrep populate quickfix/localfix lists ([cf]open; [cf]do {cmd} | update)
-if vim.fn.executable('rg') == 1 then
-	vim.g.grepprg = 'rg --vimgrep --smart-case --follow'
-else
-	vim.g.grepprg = 'grep -R'
-end
-
 -- Vim-Surround (Tim Pope)
 -- Latex
 vim.g['surround_' .. vim.fn.char2nr('\\')] = ''
