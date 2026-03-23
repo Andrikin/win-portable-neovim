@@ -274,7 +274,8 @@ autocmd('TextYankPost',
 autocmd('BufEnter',
     {
         group = Andrikin,
-        pattern = {
+        once = true,
+        pattern ={
             'falabr.cgu.gov.br_festacao-TratarManifestacao-aspx_teudoFormComAjax-txtContribuicao_*.txt',
             'falabr.cgu.gov.br_stacao-TramitarManifestacao-aspx_-ConteudoFormComAjax-txtMensagem*.txt',
         },
@@ -285,6 +286,7 @@ autocmd('BufEnter',
 autocmd('BufEnter',
     {
         group = Andrikin,
+        once = true,
         pattern = {
             'falabr.cgu.gov.br_stacao-AnalisarManifestacao-aspx_-ConteudoFormComAjax-txtResposta_*.txt',
             'falabr.cgu.gov.br_web-manifestacao-analisar_TEXTAREA-id-txtResposta-textarea_*.txt',
@@ -304,6 +306,7 @@ autocmd('BufEnter',
 autocmd('BufEnter',
     {
         group = Andrikin,
+        once = true,
         pattern = {
             'falabr.cgu.gov.br_web-manifestacao-criar_icao-texto-manifestacao-textarea_*.txt',
         },
@@ -317,6 +320,7 @@ autocmd('BufEnter',
     {
         group = Andrikin,
         pattern = 'falabr.cgu.gov.br*.txt',
+        once = true,
         command = "set spell",
 })
 
