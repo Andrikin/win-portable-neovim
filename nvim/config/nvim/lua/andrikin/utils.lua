@@ -1045,7 +1045,7 @@ Latex.compilar = function(self, destino, temp)
         manifestacao.inicio.lnum or 1,
         manifestacao.fim.lnum or vim.fn.line('$')
     }
-    -- Formatar texto
+    -- Formatar texto -- ver vim.api.nvim_parse_cmd
     vim.cmd.substitute({"/[º°ª]/{\\\\textdegree}/ge", range = documento, mods = { silent = true }})
     vim.cmd.substitute({"/§/\\\\S/ge", range = documento, mods = { silent = true }})
     vim.cmd.substitute({'/[“”]/\\"/ge', range = documento, mods = { silent = true }})

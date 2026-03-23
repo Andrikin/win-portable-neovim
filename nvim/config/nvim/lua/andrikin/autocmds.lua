@@ -131,8 +131,8 @@ autocmd('BufWrite', {
     callback = function(args)
         vim.bo[args.buf].fixendofline = false
         vim.bo[args.buf].endofline = false
-        vim.bo[args.buf].fileformat = 'dos'
-        vim.cmd.normal("ggVGgy")
+        -- vim.bo[args.buf].fileformat = 'dos'
+        vim.cmd.yank({reg = '+', range = {1, vim.fn.line('$')}})
     end
 })
 
