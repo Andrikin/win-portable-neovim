@@ -167,11 +167,11 @@ command(
         end
         local range = {1, vim.fn.line('$')}
         -- vim.cmd.substitute({'/[\\n\\r]\\{3,}/\\r\\r/ge', range = range})
-        vim.cmd.substitute({"/\\([º°ª]\\)\\([a-zA-Z0-9]\\)/\\1 \\2/ge", range = range})
-        vim.cmd.substitute({'/[“”]/"/ge', range = range})
+        vim.cmd.substitute({"/\\([º°ª]\\)\\([a-zA-Z0-9]\\)/\\1 \\2/ge", range = range, mods = { silent = true }})
+        vim.cmd.substitute({'/[“”]/"/ge', range = range, mods = { silent = true }})
         -- Formatar espaços e pontuações
-        vim.cmd.substitute({'/\\s\\+\\([.,]\\)\\s\\?/\\1 /ge', range = range})
-        vim.cmd.substitute({'/\\s\\+/ /ge', range = range})
+        vim.cmd.substitute({'/\\s\\+\\([.,]\\)\\s\\?/\\1 /ge', range = range, mods = { silent = true }})
+        vim.cmd.substitute({'/\\s\\+/ /ge', range = range, mods = { silent = true }})
         -- Evitando linhas com e-mail, adicionar espaço depois de pontuações
         vim.cmd('v/@\\|gov\\.br\\|\\.com\\|\\.br/s/\\([a-zA-Z]\\)\\s\\{,}\\([:.,]\\)\\s\\{,}\\([a-zA-Z0-9]\\)/\\1\\2 \\3/ge')
         vim.cmd('v/^$/normal gqip') -- ajuste para textwidth
@@ -294,7 +294,10 @@ autocmd('BufEnter',
                 vim.cmd.Resposta()
             end
             vim.cmd.set('lines=25')
-            vim.cmd.substitute({'/[\\n\\r]\\{3,}/\\r\\r/ge', range = {1, vim.fn.line('$')}})
+            vim.cmd.substitute({'/[\\n\\r]\\{3,}/\\r\\r/ge',
+                range = {1, vim.fn.line('$')},
+                mods = { silent = true }}
+            )
         end,
 })
 
