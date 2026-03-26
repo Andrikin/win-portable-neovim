@@ -36,6 +36,7 @@ command('CompilarLatex',
 command('Ouvidoria',
     function(opts)
         local ok, erro = pcall(function(o) Ouvidoria.ci:nova(o) end, opts)
+        notify = notify or vim.print
         if not ok and (erro and erro:match('Keyboard interrupt')) then
             notify('Ouvidoria: Operação interrompida por Ctrl-C')
         elseif not ok then
