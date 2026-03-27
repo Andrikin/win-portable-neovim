@@ -110,6 +110,7 @@ vim.opt.spelllang = 'pt_br'
 
 -- --- Netrw ---
 -- Disable Netrw
+vim.g.loaded_netrw = 1
 vim.g.loaded_netrwPlugin = 1
 
 -- Neovide
