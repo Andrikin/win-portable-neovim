@@ -39,7 +39,8 @@ vim.keymap.set('i', '.', '.<c-g>u')
 -- Using gk and gj (screen cursor up/down)
 -- nnoremap <expr> k v:count == 0 ? 'gk' : 'k'
 -- nnoremap <expr> j v:count == 0 ? 'gj' : 'j'
--- Adding jumps to jumplist - The Primeagen gold apple with gk and gj (screen cursor up/down)
+-- Adding jumps to jumplist - The Primeagen gold apple with gk and gj (screen
+-- cursor up/down)
 vim.keymap.set( 'n', 'k',
 	function()
 		local count = vim.v.count
@@ -70,7 +71,8 @@ vim.keymap.set( 'n', 'j',
 )
 
 -- Moving lines up and down - The Primeagen knowledge word
--- inoremap <c-j> <c-o>:m.+1<cr> -- utilizo muito <c-j> para newlines, seria inviável trocar para essa funcionalidade
+-- inoremap <c-j> <c-o>:m.+1<cr> -- utilizo muito <c-j> para newlines, seria
+-- inviável trocar para essa funcionalidade
 -- inoremap <c-k> <c-o>:m.-2<cr>
 -- nnoremap <leader>k <cmd>m.-2<cr>
 -- nnoremap <leader>j <cmd>m.+1<cr>
@@ -221,31 +223,40 @@ vim.keymap.set('i', '<c-j>',
 -- Removendo cliques do mouse em todos os modos - Nvy
 if vim.g.nvy then
     vim.keymap.set({ 'n', 'v', 'i', 'c', 's', 'o', 't', 'l' },
-    '<LeftMouse>',
-    '<Nop>', { silent = true })
+        '<LeftMouse>',
+        '<Nop>',
+    { silent = true })
     vim.keymap.set({ 'n', 'v', 'i', 'c', 's', 'o', 't', 'l' },
-    '<LeftDrag>',
-    '<Nop>', { silent = true })
+        '<LeftDrag>',
+        '<Nop>',
+    { silent = true })
     vim.keymap.set({ 'n', 'v', 'i', 'c', 's', 'o', 't', 'l' },
-    '<LeftRelease>',
-    '<Nop>', { silent = true })
+        '<LeftRelease>',
+        '<Nop>',
+    { silent = true })
     vim.keymap.set({ 'n', 'v', 'i', 'c', 's', 'o', 't', 'l' },
-    '<MiddleRelease>',
-    '<Nop>', { silent = true })
+        '<MiddleRelease>',
+        '<Nop>',
+    { silent = true })
     vim.keymap.set({ 'n', 'v', 'i', 'c', 's', 'o', 't', 'l' },
-    '<RightRelease>',
-    '<Nop>', { silent = true })
+        '<RightRelease>',
+        '<Nop>',
+    { silent = true })
     vim.keymap.set({ 'n', 'v', 'i', 'c', 's', 'o', 't', 'l' },
-    '<RightDrag>',
-    '<Nop>', { silent = true })
+        '<RightDrag>',
+        '<Nop>',
+    { silent = true })
     vim.keymap.set({ 'n', 'v', 'i', 'c', 's', 'o', 't', 'l' },
-    '<RightMouse>',
-    '<Nop>', { silent = true })
+        '<RightMouse>',
+        '<Nop>',
+    { silent = true })
     vim.keymap.set({ 'n', 'v', 'i', 'c', 's', 'o', 't', 'l' },
-    '<MiddleDrag>',
-    '<Nop>', { silent = true })
+        '<MiddleDrag>',
+        '<Nop>',
+    { silent = true })
     vim.keymap.set({ 'n', 'v', 'i', 'c', 's', 'o', 't', 'l' },
-    '<MiddleMouse>',
-    '<Nop>', { silent = true })
+        '<MiddleMouse>',
+        '<Nop>',
+    { silent = true })
 end
 

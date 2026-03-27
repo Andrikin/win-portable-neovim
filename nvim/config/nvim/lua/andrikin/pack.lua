@@ -10,11 +10,11 @@ end
 vim.pack.add({
     -- colorscheme
     'https://github.com/biisal/blackhole',
-    -- my plugins
+    -- my plugins and forks
     'https://github.com/Andrikin/awesome-pairing',
     'https://github.com/Andrikin/awesome-substitute',
     'https://github.com/Andrikin/vim-capslock',
-    -- tim pope plugins
+    -- tim pope pieces of miracles - plugins
     'https://github.com/tpope/vim-fugitive.git',
     'https://github.com/tpope/vim-surround.git',
     'https://github.com/tpope/vim-eunuch.git',
@@ -77,7 +77,8 @@ else
                 'ini',
                 'rust',
                 'zig',
-                -- https://github.com/folke/dot/blob/master/nvim/lua/plugins/treesitter.lua -- folke saying that comment slow TS
+                -- https://github.com/folke/dot/blob/master/nvim/lua/plugins/treesitter.lua
+                -- folke saying that "comment" slow TS
                 -- 'comment',
                 -- DEFAULT Neovim 0.11:
                 'python',
@@ -208,11 +209,9 @@ require('dressing').setup({
         }
     }
 })
--- WARNING: caso remova configuração 'tabline'
--- não serão inicializados comandos deste componente
--- como, por exemplo, 'LualineRenameTab'.
--- Remover, portanto, autocomando para renomear
--- buffer checkhealth.
+-- WARNING: caso remova configuração 'tabline' não serão inicializados comandos
+-- deste componente como, por exemplo, 'LualineRenameTab'. Remover, portanto,
+-- autocomando para renomear buffer checkhealth.
 require('lualine').setup({
     options = { theme = 'auto',
         component_separators = { left = '', right = ''},

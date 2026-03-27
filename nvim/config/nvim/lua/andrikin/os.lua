@@ -5,8 +5,9 @@ if not ok then
     require('andrikin.utils').notify("Server copyq já existe.")
 end
 
--- IMPORTANT(Windows 10+): Desabilitar python.exe e python3.exe em "Gerenciar aliases de execução de aplicativo".
--- Windows executa este alias antes de executar python declarado em PATH.
+-- IMPORTANT(Windows 10+): Desabilitar python.exe e python3.exe em "Gerenciar
+-- aliases de execução de aplicativo". Windows executa este alias antes de
+-- executar python declarado em PATH.
 -- ALTERNATIVE FIX: Remover WindowsApps do PATH
 local desabilitar = require('andrikin.utils').remover_path
 if desabilitar then

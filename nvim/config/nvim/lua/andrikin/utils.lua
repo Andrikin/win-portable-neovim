@@ -93,21 +93,10 @@ Utils.renomear_executavel = function(programa)
     end
 end
 
--- vim.system
--- cwd
--- env
--- clear_env
--- stdin
--- stdout
--- stderr
--- text
--- timeout
--- detach
-
 --- Wrap envolta do vim.fn.jobstart
---- WARNING(16/12/2025): tentei utilizar vim.system, mas para algumas
---- chamadas de funções é necessário utilizar vim.schedule_wrap
---- que traz complexidade para o código.
+--- WARNING(16/12/2025): tentei utilizar vim.system, mas para algumas chamadas
+--- de funções é necessário utilizar vim.schedule_wrap que traz complexidade
+--- para o código.
 ---@class Job
 ---@field clear_env boolean
 ---@diagnostic disable-next-line: duplicate-doc-field
@@ -365,8 +354,8 @@ Programa.extrair = function(self)
     self.job:start(cmd)
 end
 
---- Verifica se o programa já está no PATH, busca pelo executável e 
---- realiza o registro na variável PATH do sistema
+--- Verifica se o programa já está no PATH, busca pelo executável e realiza o
+--- registro na variável PATH do sistema
 ---@return boolean
 Programa.registrar = function(self)
     local registrado = vim.env.PATH:match(self:diretorio().diretorio:gsub('[\\-]', '.'))
@@ -420,9 +409,9 @@ Programa.criar_diretorio = function(self)
     end
 end
 
---- Instalação do programa.
---- Realiza duas tentativas de inclusão no PATH, baixando e extraindo programa
---- na primeira falha. Na segunda, retorna mensagem de erro.
+--- Instalação do programa. Realiza duas tentativas de inclusão no PATH,
+--- baixando e extraindo programa na primeira falha. Na segunda, retorna
+--- mensagem de erro.
 Programa.instalar = function(self)
     if self:registrar() then
 		if self.config then
@@ -1013,8 +1002,8 @@ Latex.init = function(self)
     end
 end
 
--- criar pdf original na pasta Temp
--- comprimir pdf original e colocar pdf comprimido na pasta Downloads
+-- criar pdf original na pasta "Temp" comprimir pdf original e colocar pdf
+-- comprimido na pasta "Downloads"
 ---@param temp Diretorio
 ---@param destino Diretorio
 Latex.compilar = function(self, destino, temp)
@@ -1304,9 +1293,10 @@ local Copyq = {}
 Copyq.__index = Copyq
 
 -- https://copyq.readthedocs.io/en/latest/known-issues.html
--- On Windows, CopyQ does not print anything on console
--- Use Action dialog in CopyQ (F5 shortcut) and set "Store standard output" to "text/plain" to save the output as new item in current tab.
--- selecionar qual tab - default 'clipboard'
+-- On Windows, CopyQ does not print anything on console Use Action dialog in
+-- CopyQ (F5 shortcut) and set "Store standard output" to "text/plain" to save
+-- the output as new item in current tab. selecionar qual tab - default
+-- 'clipboard'
 Copyq.clipboard = function(tab)
     tab = tab.args == "" and 'clipboard' or tab.args
     if vim.fn.executable('copyq') ~= 1 then
@@ -1853,14 +1843,6 @@ Msvc.instalacao = function(self)
 end
 
 Utils.Msvc = Msvc
-
--- WIP: comando para baixar dependências
-Utils.dependencias = function()
-    ---@type Registrador
-    local programas = require('andrikin.os').programas
-    local registrador = require('andrikin.utils').registrador.new()
-    registrador.iniciar(programas)
-end
 
 return Utils
 
