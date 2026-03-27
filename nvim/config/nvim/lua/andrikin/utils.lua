@@ -1829,7 +1829,7 @@ Msvc.instalacao = function(self)
                 local setup = vim.fn.glob(tostring(diretorio / "setup*bat"):gsub("/", "\\"))
                 if vim.fn.filereadable(setup) == 1 then
                     job:start({
-                        "cmd.exe", "/c", "start",
+                        "cmd.exe", "/c", "start", [[""]],
                         setup
                     })
                 end
