@@ -41,32 +41,23 @@ vim.keymap.set('i', '.', '.<c-g>u')
 -- nnoremap <expr> j v:count == 0 ? 'gj' : 'j'
 -- Adding jumps to jumplist - The Primeagen gold apple with gk and gj (screen
 -- cursor up/down)
+local van_halen = function(acao)
+    local contador = vim.v.count
+    local marcador = ''
+    if contador > 1 then
+        marcador = 'm`' .. contador
+    end
+    if contador == 0 then
+        return marcador .. 'g' .. acao
+    end
+    return marcador .. acao
+end
 vim.keymap.set( 'n', 'k',
-	function()
-		local count = vim.v.count
-		local marcador = ''
-		if count > 1 then
-			marcador = 'm`' .. count
-		end
-		if count == 0 then
-			return marcador .. 'gk'
-		end
-		return marcador .. 'k'
-	end,
+    function () van_halen('k') end,
 	{ expr = true, silent = true }
 )
 vim.keymap.set( 'n', 'j',
-	function()
-		local count = vim.v.count
-		local marcador = ''
-		if count > 1 then
-			marcador = 'm`' .. count
-		end
-		if count == 0 then
-			return marcador .. 'gj'
-		end
-		return marcador .. 'j'
-	end,
+    function () van_halen('j') end,
 	{ expr = true, silent = true }
 )
 
