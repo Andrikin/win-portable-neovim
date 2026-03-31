@@ -155,6 +155,27 @@ vim.g.loaded_ruby_provider = 0
 vim.keymap.set({'i', 'c'}, '<c-backspace>', '<c-w>')
 vim.keymap.set({'i', 'c'}, '<c-v>', '<c-r>+')
 
+-- 'gk' e 'gj' ThePrimeagen way
+local van_halen = function(acao)
+    local contador = vim.v.count
+    local marcador = ''
+    if contador > 1 then
+        marcador = 'm`' .. contador
+    end
+    if contador == 0 then
+        return marcador .. 'g' .. acao
+    end
+    return marcador .. acao
+end
+vim.keymap.set( 'n', 'k',
+    function () van_halen('k') end,
+	{ expr = true, silent = true }
+)
+vim.keymap.set( 'n', 'j',
+    function () van_halen('j') end,
+	{ expr = true, silent = true }
+)
+
 -- COMMANDS --
 local command = vim.api.nvim_create_user_command
 command(
