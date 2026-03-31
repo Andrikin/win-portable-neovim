@@ -168,11 +168,11 @@ local van_halen = function(acao)
     return marcador .. acao
 end
 vim.keymap.set( 'n', 'k',
-    function () van_halen('k') end,
+    function () return van_halen('k') end,
 	{ expr = true, silent = true }
 )
 vim.keymap.set( 'n', 'j',
-    function () van_halen('j') end,
+    function () return van_halen('j') end,
 	{ expr = true, silent = true }
 )
 
