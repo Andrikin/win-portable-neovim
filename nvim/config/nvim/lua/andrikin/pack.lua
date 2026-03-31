@@ -168,8 +168,7 @@ vim.cmd.packadd('nvim.undotree')
 vim.cmd.packadd('justify')
 
 -- experimental: ui2
-require('vim._core.ui2').enable()
-
+vim.defer_fn( function() require('vim._core.ui2').enable() end, 1000)
 -- spellfile.vim
 require('nvim.spellfile').config()
 -- colorizer.lua
