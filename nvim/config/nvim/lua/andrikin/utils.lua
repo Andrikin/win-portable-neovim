@@ -1407,8 +1407,8 @@ Cygwin.init = function(self)
     self.job.on_exit = function()
         Utils.notify('cygwin: instalado com sucesso!')
         vim.env.PATH = vim.env.PATH .. ';' .. self.bin.diretorio
-        if vim.fn.executable('cygwin') == 1 and vim.fn.executable('x86_64-w64-mingw32-gcc') == 0  then
-            self:comando({'install', 'mingw64-x86_64-gcc-core', 'mingw64-x86_64-clang', 'ghostscript'})
+        if vim.fn.executable('cygwin') == 1 and vim.fn.executable('gs.exe') == 0  then
+            self:comando({'install', 'ghostscript'})
         end
         self.job.on_exit = nil -- resetar
     end

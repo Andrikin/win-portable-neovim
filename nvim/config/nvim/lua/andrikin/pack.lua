@@ -61,7 +61,6 @@ else
     }})
     vim.defer_fn( -- kickstart.nvim
         function()
-            require('nvim-treesitter.install').compilers = {'x86_64-w64-mingw32-gcc', 'x86_64-w64-mingw32-clang', 'gcc', 'cc', 'clang'}
             require('nvim-treesitter').install({
                 'css', 'html', 'javascript', 'vue', 'typescript',
                 'diff',
@@ -86,13 +85,15 @@ else
                 'markdown', 'markdown_inline',
                 'vim', 'vimdoc',
             })
-            vim.opt.indentexpr = "v:lua.require'nvim-treesitter'.indentexpr()"
+            vim.o.indentexpr = "v:lua.require'nvim-treesitter'.indentexpr()"
+            vim.wo.foldexpr = 'v:lua.vim.treesitter.foldexpr()'
+            vim.wo.foldmethod = 'expr'
         end, 0
     )
 end
 
 -- Colorscheme
-vim.opt.termguicolors = true
+vim.o.termguicolors = true
 vim.cmd.colorscheme('blackhole')
 
 local _telescope = {
@@ -168,7 +169,7 @@ vim.cmd.packadd('nvim.undotree')
 vim.cmd.packadd('justify')
 
 -- experimental: ui2
-vim.defer_fn( function() require('vim._core.ui2').enable() end, 1000)
+vim.defer_fn( function() require('vim._core.ui2').enable() end, 5000)
 -- spellfile.vim
 require('nvim.spellfile').config()
 -- colorizer.lua

@@ -8,41 +8,41 @@ vim.opt.path:append('**')
 vim.g.html_number_lines = 0
 
 -- Indicadores - números nas linhas
-vim.opt.rnu = true
-vim.opt.nu = true
+vim.o.rnu = true
+vim.o.nu = true
 
 -- Tamanho da indentação
-vim.opt.tabstop = 4
-vim.opt.shiftwidth = 4
-vim.opt.softtabstop = 4
-vim.opt.expandtab = true -- ThePrimeagen way
+vim.o.tabstop = 4
+vim.o.shiftwidth = 4
+vim.o.softtabstop = 4
+vim.o.expandtab = true -- ThePrimeagen way
 
 -- Configurações para search
-vim.opt.incsearch = true
-vim.opt.ignorecase = true
-vim.opt.smartcase = true
-vim.opt.hlsearch = true
+vim.o.incsearch = true
+vim.o.ignorecase = true
+vim.o.smartcase = true
+vim.o.hlsearch = true
 
 -- Configurações gerais
-vim.opt.autochdir = false
-vim.opt.scrolloff = 999
-vim.opt.lazyredraw = true
-vim.opt.backspace = 'indent,eol,start'
-vim.opt.splitbelow = true
-vim.opt.splitright = true
-vim.opt.helpheight = 15
+vim.o.autochdir = false
+vim.o.scrolloff = 999
+vim.o.lazyredraw = true
+vim.o.backspace = 'indent,eol,start'
+vim.o.splitbelow = true
+vim.o.splitright = true
+vim.o.helpheight = 15
 -- Problems that can occur in vim session can be avoid using this configuration
 vim.opt.sessionoptions:remove('options')
-vim.opt.encoding = 'utf-8'
-vim.opt.autoread = true
-vim.opt.tabpagemax = 50
-vim.opt.wildmenu = true
+vim.o.encoding = 'utf-8'
+vim.o.autoread = true
+vim.o.tabpagemax = 50
+vim.o.wildmenu = true
 -- usar <tab> para cmdline completion em macros
 if vim.o.wildcharm ~= 9 then
     vim.opt.wildcharm = 9
 end
 -- vim.opt.completeopt = 'menu,menuone,noselect'
-vim.opt.completeopt = 'menu,noinsert,noselect,popup,fuzzy'
+vim.o.completeopt = 'menu,noinsert,noselect,popup,fuzzy'
 if vim.fn.has('win32') then
 	vim.g.shell = vim.env.COMSPEC
 else
@@ -50,10 +50,10 @@ else
 end
 --let &g:shellpipe = '2>&1 | tee' -- default in Windows
 vim.opt.complete:remove('t')
-vim.opt.title = true
-vim.opt.hidden = true
-vim.opt.mouse = ''
-vim.opt.mousemodel = 'extend'
+vim.o.title = true
+vim.o.hidden = true
+vim.o.mouse = ''
+vim.o.mousemodel = 'extend'
 if vim.fn.has('persistent_undo') == 1 then
     local path = vim.fs.joinpath(
         ---@diagnostic disable-next-line: param-type-mismatch
@@ -63,29 +63,29 @@ if vim.fn.has('persistent_undo') == 1 then
 	if vim.fn.isdirectory(path) == 0 then
 		vim.fn.mkdir(path, 'p', '0755')
 	end
-	vim.opt.undodir = path
-	vim.opt.undofile = true
+	vim.o.undodir = path
+	vim.o.undofile = true
 end
-vim.opt.swapfile = false
+vim.o.swapfile = false
 -- set linebreak
 -- set wrapmargin = 5
 vim.g.textwidth = 0
 
 -- Statusline
-vim.opt.laststatus = 3
-vim.opt.showtabline = 1
-vim.opt.showmode = false
+vim.o.laststatus = 3
+vim.o.showtabline = 1
+vim.o.showmode = false
 
 -- NeoVim configurations
 -- vim.opt.guicursor = 'i-n-v-c:block' -- sem blink
-vim.opt.guicursor = "i-n-v-c:block,n-v-c:blinkwait700-blinkoff400-blinkon250"
-vim.opt.guifont = 'SauceCodePro NFM:h11'
-vim.opt.winborder = 'single'
+vim.o.guicursor = "i-n-v-c:block,n-v-c:blinkwait700-blinkoff400-blinkon250"
+vim.o.guifont = 'SauceCodePro NFM:h11'
+vim.o.winborder = 'single'
 if vim.g.nvy or vim.g.neovide then
-	vim.opt.guifont = 'SauceCodePro Nerd Font Mono:h12'
+	vim.o.guifont = 'SauceCodePro Nerd Font Mono:h12'
 end
-vim.opt.inccommand = 'split' -- empty string to use with traces.vim
-vim.opt.fillchars = 'vert:|,fold:*,foldclose:+,diff:-'
+vim.o.inccommand = 'split' -- empty string to use with traces.vim
+vim.o.fillchars = 'vert:|,fold:*,foldclose:+,diff:-'
 
 -- Vim-Surround (Tim Pope)
 -- Latex
@@ -106,7 +106,7 @@ vim.g.user_emmet_install_global = 0
 -- vim.g.user_emmet_leader_key = '<m-space>'
 
 -- spellfile.nvim -- Lua port of spellfile.vim
-vim.opt.spelllang = 'pt_br'
+vim.o.spelllang = 'pt_br'
 
 -- --- Netrw ---
 -- Disable Netrw
