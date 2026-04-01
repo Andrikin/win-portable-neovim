@@ -86,8 +86,8 @@ else
                 'vim', 'vimdoc',
             })
             vim.o.indentexpr = "v:lua.require'nvim-treesitter'.indentexpr()"
-            vim.wo.foldexpr = 'v:lua.vim.treesitter.foldexpr()'
-            vim.wo.foldmethod = 'expr'
+            -- vim.wo.foldexpr = 'v:lua.vim.treesitter.foldexpr()'
+            -- vim.wo.foldmethod = 'expr'
         end, 0
     )
 end
