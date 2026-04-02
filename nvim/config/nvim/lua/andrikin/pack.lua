@@ -54,42 +54,39 @@ end
 local gcc = vim.fn.executable('x86_64-w64-mingw32-gcc') == 1
 if not gcc then
     vim.notify('Treesitter: Não foi possível encontrar compilador executável "gcc".')
+    pcall(vim.cmd.Cygwin, 'install x86_64-w64-mingw32-gcc')
 else
     vim.pack.add({{
         src = 'https://github.com/nvim-treesitter/nvim-treesitter.git',
         version = 'main'
     }})
-    vim.defer_fn( -- kickstart.nvim
-        function()
-            require('nvim-treesitter').install({
-                'css', 'html', 'javascript', 'vue', 'typescript',
-                'diff',
-                'git_config', 'git_rebase', 'gitattributes', 'gitcommit', 'gitignore',
-                'jsdoc', 'json', 'json5', 'java',
-                'luadoc',
-                'regex',
-                'xml',
-                'latex',
-                'sql',
-                'powershell',
-                'jq',
-                'ini',
-                'rust',
-                'zig',
-                -- https://github.com/folke/dot/blob/master/nvim/lua/plugins/treesitter.lua
-                -- folke saying that "comment" slow TS
-                -- 'comment',
-                -- DEFAULT Neovim 0.11:
-                'python',
-                'lua',
-                'markdown', 'markdown_inline',
-                'vim', 'vimdoc',
-            })
-            vim.o.indentexpr = "v:lua.require'nvim-treesitter'.indentexpr()"
-            -- vim.wo.foldexpr = 'v:lua.vim.treesitter.foldexpr()'
-            -- vim.wo.foldmethod = 'expr'
-        end, 0
-    )
+    require('nvim-treesitter').install({
+        'css', 'html', 'javascript', 'vue', 'typescript',
+        'diff',
+        'git_config', 'git_rebase', 'gitattributes', 'gitcommit', 'gitignore',
+        'jsdoc', 'json', 'json5', 'java',
+        'luadoc',
+        'regex',
+        'xml',
+        'latex',
+        'sql',
+        'powershell',
+        'jq',
+        'ini',
+        'rust',
+        'zig',
+        -- https://github.com/folke/dot/blob/master/nvim/lua/plugins/treesitter.lua
+        -- folke saying that "comment" slow TS
+        -- 'comment',
+        -- DEFAULT Neovim 0.11:
+        'python',
+        'lua',
+        'markdown', 'markdown_inline',
+        'vim', 'vimdoc',
+    })
+    vim.o.indentexpr = "v:lua.require'nvim-treesitter'.indentexpr()"
+    -- vim.wo.foldexpr = 'v:lua.vim.treesitter.foldexpr()'
+    -- vim.wo.foldmethod = 'expr'
 end
 
 -- Colorscheme
