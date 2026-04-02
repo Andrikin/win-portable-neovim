@@ -1,7 +1,4 @@
 -- FIRENVIM CONFIG --
-if not vim.opt.packpath._value:match("site") then
-    vim.opt.packpath:prepend(vim.fn.stdpath('data') .. '\\site')
-end
 vim.pack.add({
     'https://github.com/Andrikin/awesome-pairing',
 	'https://github.com/Andrikin/awesome-substitute',
