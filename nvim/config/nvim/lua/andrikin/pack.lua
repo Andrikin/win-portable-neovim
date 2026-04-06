@@ -80,9 +80,11 @@ else
         -- folke saying that "comment" slow TS
         -- 'comment',
         -- DEFAULT Neovim 0.11:
-        -- 'lua',
-        -- 'markdown', 'markdown_inline',
-        -- 'vim', 'vimdoc',
+        'c',
+        'lua',
+        'query',
+        'markdown', 'markdown_inline',
+        'vim', 'vimdoc',
     })
     -- vim.o.indentexpr = "v:lua.require'nvim-treesitter'.indentexpr()"
     -- vim.wo.foldexpr = 'v:lua.vim.treesitter.foldexpr()'
