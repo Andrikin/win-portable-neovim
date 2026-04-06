@@ -61,54 +61,54 @@ vim.cmd.colorscheme('zellner')
 vim.g.awesome_pairing_chars = [[({['"]]
 
 -- spellfile.nvim -- Lua port of spellfile.vim
-vim.opt.spelllang = 'pt_br'
+vim.o.spelllang = 'pt_br'
 
 -- Configurações Windows
-vim.opt.fileformat = 'dos'
-vim.opt.eol = false
-vim.opt.fixeol = false
+vim.o.fileformat = 'dos'
+vim.o.eol = false
+vim.o.fixeol = false
 
 -- Indicadores - números nas linhas
-vim.opt.rnu = true
-vim.opt.nu = true
+vim.o.rnu = true
+vim.o.nu = true
 
 -- Tamanho da indentação
-vim.opt.tabstop = 4
-vim.opt.shiftwidth = 4
-vim.opt.softtabstop = 4
-vim.opt.expandtab = true -- ThePrimeagen way
+vim.o.tabstop = 4
+vim.o.shiftwidth = 4
+vim.o.softtabstop = 4
+vim.o.expandtab = true -- ThePrimeagen way
 
 -- Configurações para search
-vim.opt.incsearch = true
-vim.opt.ignorecase = true
-vim.opt.smartcase = true
-vim.opt.hlsearch = true
+vim.o.incsearch = true
+vim.o.ignorecase = true
+vim.o.smartcase = true
+vim.o.hlsearch = true
 
 -- Configurações gerais
-vim.opt.autochdir = false
-vim.opt.scrolloff = 999
-vim.opt.lazyredraw = true
-vim.opt.backspace = 'indent,eol,start'
-vim.opt.splitbelow = true
-vim.opt.splitright = true
-vim.opt.helpheight = 15
+vim.o.autochdir = false
+vim.o.scrolloff = 999
+vim.o.lazyredraw = true
+vim.o.backspace = 'indent,eol,start'
+vim.o.splitbelow = true
+vim.o.splitright = true
+vim.o.helpheight = 15
 -- Problems that can occur in vim session can be avoid using this configuration
 vim.opt.sessionoptions:remove('options')
-vim.opt.encoding = 'utf-8'
-vim.opt.autoread = true
-vim.opt.tabpagemax = 50
-vim.opt.wildmenu = true
+vim.o.encoding = 'utf-8'
+vim.o.autoread = true
+vim.o.tabpagemax = 50
+vim.o.wildmenu = true
 -- usar <tab> para cmdline completion em macros
 if vim.o.wildcharm ~= 9 then
-    vim.opt.wildcharm = 9
+    vim.o.wildcharm = 9
 end
--- vim.opt.completeopt = 'menu,menuone,noselect'
-vim.opt.completeopt = 'menu,popup,fuzzy'
+-- vim.o.completeopt = 'menu,menuone,noselect'
+vim.o.completeopt = 'menu,popup,fuzzy'
 vim.opt.complete:remove('t')
-vim.opt.title = true
-vim.opt.hidden = true
-vim.opt.mouse = ''
-vim.opt.mousemodel = 'extend'
+vim.o.title = true
+vim.o.hidden = true
+vim.o.mouse = ''
+vim.o.mousemodel = 'extend'
 if vim.fn.has('persistent_undo') == 1 then
     local path = vim.fs.joinpath(
         ---@diagnostic disable-next-line: param-type-mismatch
@@ -118,23 +118,23 @@ if vim.fn.has('persistent_undo') == 1 then
 	if vim.fn.isdirectory(path) == 0 then
 		vim.fn.mkdir(path, 'p', '0755')
 	end
-	vim.opt.undodir = path
-	vim.opt.undofile = true
+	vim.o.undodir = path
+	vim.o.undofile = true
 end
-vim.opt.swapfile = false
-vim.opt.textwidth = 70
+vim.o.swapfile = false
+vim.o.textwidth = 70
 
 -- Statusline
-vim.opt.laststatus = 0
-vim.opt.showtabline = 0
-vim.opt.showmode = false
+vim.o.laststatus = 0
+vim.o.showtabline = 0
+vim.o.showmode = false
 
 -- NeoVim configurations
-vim.opt.guicursor = 'i-n-v-c:block'
-vim.opt.guifont = 'SauceCodePro NFM:h9'
-vim.opt.winborder = 'none'
-vim.opt.inccommand = 'split'
-vim.opt.fillchars = 'vert:|,fold:*,foldclose:+,diff:-'
+vim.o.guicursor = 'i-n-v-c:block'
+vim.o.guifont = 'SauceCodePro NFM:h9'
+vim.o.winborder = 'none'
+vim.o.inccommand = 'split'
+vim.o.fillchars = 'vert:|,fold:*,foldclose:+,diff:-'
 
 -- Matchit
 -- TODO: Criar arquivos ftplugin para cada linguagem, definindo b:match_words
