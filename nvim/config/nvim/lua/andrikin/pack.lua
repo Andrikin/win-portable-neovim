@@ -61,16 +61,17 @@ else
         version = 'main'
     }})
     require('nvim-treesitter').install({
-        'css', 'html', 'javascript', 'vue', 'typescript',
+        'python',
         'diff',
-        'git_config', 'git_rebase', 'gitattributes', 'gitcommit', 'gitignore',
-        'jsdoc', 'json', 'json5', 'java',
         'luadoc',
-        'regex',
-        'xml',
         'latex',
-        'sql',
+        'regex',
+        'git_config', 'git_rebase', 'gitattributes', 'gitcommit', 'gitignore',
+        'css', 'html', 'javascript', 'vue', 'typescript',
+        'jsdoc', 'json', 'json5', 'java',
         'powershell',
+        'xml',
+        'sql',
         'jq',
         'ini',
         'rust',
@@ -79,10 +80,9 @@ else
         -- folke saying that "comment" slow TS
         -- 'comment',
         -- DEFAULT Neovim 0.11:
-        'python',
-        'lua',
-        'markdown', 'markdown_inline',
-        'vim', 'vimdoc',
+        -- 'lua',
+        -- 'markdown', 'markdown_inline',
+        -- 'vim', 'vimdoc',
     })
     -- vim.o.indentexpr = "v:lua.require'nvim-treesitter'.indentexpr()"
     -- vim.wo.foldexpr = 'v:lua.vim.treesitter.foldexpr()'
