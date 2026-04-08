@@ -99,7 +99,13 @@ vim.g['surround_' .. vim.fn.char2nr('t')] = ''
 vim.opt.matchpairs:append('<:>')
 
 -- Dirvish
-vim.g.dirvish_mode = ':%sort /.*\\\\\\|.*[^\\\\]/' -- diretórios primeiro, depois arquivos
+vim.defer_fn(function()
+    if vim.fn.exists(':SortingDirvish') > 0 then
+        vim.g.dirvish_mode = ':SortingDirvish'
+    else
+        vim.g.dirvish_mode = ':%sort /.*\\\\\\|.*[^\\\\]/' -- diretórios primeiro, depois arquivos
+    end
+end, 1000)
 
 -- --- Emmet ---
 vim.g.user_emmet_install_global = 0
