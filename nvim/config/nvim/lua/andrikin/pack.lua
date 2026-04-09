@@ -1,5 +1,5 @@
 ---@diagnostic disable: param-type-mismatch
--- TODO: Usar vim.pack para gerenciamento de plugins no neovim 0.12+nightlY
+-- TODO: Usar vim.pack para gerenciamento de plugins no neovim 0.12+nightly
 
 local notify = require('andrikin.utils').notify
 if not notify then
@@ -167,8 +167,6 @@ vim.cmd.packadd('nvim.difftool')
 vim.cmd.packadd('nvim.undotree')
 vim.cmd.packadd('justify')
 
--- experimental: ui2
-vim.defer_fn( function() require('vim._core.ui2').enable() end, 5000)
 -- spellfile.vim
 require('nvim.spellfile').config()
 -- colorizer.lua
@@ -289,3 +287,6 @@ require('blink.cmp').setup({
         default = { 'lsp', 'snippets', 'buffer', 'path' },
     },
 })
+
+-- experimental: ui2
+require('vim._core.ui2').enable()
