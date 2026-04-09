@@ -148,6 +148,10 @@ local programas = {
         nome = 'zig',
         link = 'https://ziglang.org/download/0.15.2/zig-x86_64-windows-0.15.2.zip',
         cmd = 'zig.exe',
+    },{
+        nome = 'cpdf', -- pdf tools: merge, split, etc
+        link = 'https://github.com/coherentgraphics/cpdf-binaries/archive/refs/heads/master.zip',
+        cmd = 'cpdf.exe',
     }
 }
 
