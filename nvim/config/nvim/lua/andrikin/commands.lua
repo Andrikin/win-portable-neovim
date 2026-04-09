@@ -13,9 +13,12 @@ command('Clipboard',
         Copyq.clipboard(opts)
     end,
 	{
-		nargs = "?",
-		complete = function(arg, _, _) return Copyq:tab_complete(arg) end,
-})
+        nargs = "?",
+        complete = function(arg, _, _)
+            return Copyq:tab_complete(arg)
+        end,
+    }
+)
 
 command('CompilarOuvidoria',
     function()
@@ -45,8 +48,11 @@ command('Ouvidoria',
     end,
     {
         nargs = "+",
-        complete = function(arg, _, _) return Ouvidoria.ci:tab(arg) end,
-})
+        complete = function(arg, _, _) 
+            return Ouvidoria.ci:tab(arg) 
+        end,
+    }
+)
 
 command('Projetos',
     function()
@@ -178,6 +184,5 @@ command('SortingDirvish',
         end
         vim.api.nvim_buf_set_lines(buf, 0, -1, false, diretorios)
     end,
-    {}
-)
+{})
 
