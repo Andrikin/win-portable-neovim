@@ -66,8 +66,8 @@ vim.o.spelllang = 'pt_br'
 
 -- Configurações Windows
 vim.o.fileformat = 'dos'
-vim.o.eol = false
-vim.o.fixeol = false
+vim.o.eol = true
+vim.o.fixeol = true
 
 -- Indicadores - números nas linhas
 vim.o.rnu = true
@@ -185,7 +185,6 @@ command(
             do return end
         end
         local range = {1, vim.fn.line('$')}
-        -- vim.cmd.substitute({'/[\\n\\r]\\{3,}/\\r\\r/ge', range = range})
         vim.cmd.substitute({"/\\([º°ª]\\)\\([a-zA-Z0-9]\\)/\\1 \\2/ge", range = range, mods = { silent = true }})
         vim.cmd.substitute({'/[“”]/"/ge', range = range, mods = { silent = true }})
         -- Formatar espaços e pontuações
@@ -197,10 +196,12 @@ command(
         -- package justify
         -- vim.cmd('%Justify 70 4') -- justifica o texto
         vim.cmd('%left')
-        vim.cmd.normal('gg[ [ ')
-        vim.cmd.normal('G] ] ')
-        vim.fn.setline(1, 'Boa tarde,\r\rSegue resposta do setor responsável à sua manifestação:\r\r---')
-        vim.fn.setline(vim.fn.line('$'), '---\r\rAtenciosamente,\rOuvidoria da Prefeitura de Itajaí')
+        vim.fn.append(0, 'Boa tarde,\r\rSegue resposta do setor responsável à sua manifestação:\r\r---\r\r')
+        vim.fn.append(vim.fn.line('$'), '\rAtenciosamente,\r\r\r---\r\rAtenciosamente,\rOuvidoria da Prefeitura de Itajaí')
+        vim.cmd.set('lines=25')
+        -- remover linhas em branco desnecessárias
+        vim.cmd.substitute({'/[\\n\\r]\\{3,}/\\r\\r/ge', range = {1, vim.fn.line('$')}, mods = { silent = true }})
+        vim.cmd.substitute({[[/\r/\r/ge]], range = {1, vim.fn.line('$')}, mods = { silent = true }})
     end,
     {}
 )
@@ -239,7 +240,7 @@ local cursorline = require('andrikin.utils').cursorline
 
 -- Auto Insert Mode
 autocmd({'BufEnter'}, {
-    pattern = "*.txt",
+    pattern = '*.txt',
     command = 'call feedkeys("i")'
 })
 
@@ -309,14 +310,9 @@ autocmd('BufEnter',
             'falabr.cgu.gov.br_web-manifestacao-analisar_TEXTAREA-id-txtResposta-textarea_*.txt',
         },
         callback = function()
-            if vim.cmd.Resposta then
+        if vim.fn.exists(':Resposta') > 0 then
                 vim.cmd.Resposta()
             end
-            vim.cmd.set('lines=25')
-            vim.cmd.substitute({'/[\\n\\r]\\{3,}/\\r\\r/ge',
-                range = {1, vim.fn.line('$')},
-                mods = { silent = true }}
-            )
         end,
 })
 
