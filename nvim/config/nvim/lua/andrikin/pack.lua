@@ -26,6 +26,7 @@ vim.pack.add({
     'https://github.com/nvim-lualine/lualine.nvim',
     'https://github.com/neovim/nvim-lspconfig.git',
     'https://github.com/Saghen/blink.cmp.git',
+    'https://github.com/Saghen/blink.lib',
     'https://github.com/rafamadriz/friendly-snippets.git',
     'https://github.com/L3MON4D3/LuaSnip.git',
     'https://github.com/nvim-telescope/telescope.nvim.git',
