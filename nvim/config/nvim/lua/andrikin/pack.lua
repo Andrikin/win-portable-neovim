@@ -25,8 +25,8 @@ vim.pack.add({
     'https://github.com/justinmk/vim-dirvish.git',
     'https://github.com/nvim-lualine/lualine.nvim',
     'https://github.com/neovim/nvim-lspconfig.git',
-    'https://github.com/Saghen/blink.cmp.git',
-    'https://github.com/Saghen/blink.lib',
+    -- 'https://github.com/Saghen/blink.lib',
+    { src = 'https://github.com/Saghen/blink.cmp', version = 'v1' },
     'https://github.com/rafamadriz/friendly-snippets.git',
     'https://github.com/L3MON4D3/LuaSnip.git',
     'https://github.com/nvim-telescope/telescope.nvim.git',
@@ -168,6 +168,8 @@ vim.cmd.packadd('nvim.difftool')
 vim.cmd.packadd('nvim.undotree')
 vim.cmd.packadd('justify')
 
+-- experimental: ui2
+require('vim._core.ui2').enable()
 -- spellfile.vim
 require('nvim.spellfile').config()
 -- colorizer.lua
@@ -220,30 +222,12 @@ require('lualine').setup({
 })
 -- blink.cmp configuration
 local rust = vim.fn.executable('cargo.exe') == 1
-local fuzzy = vim.fn.filereadable(vim.fs.joinpath(
-    vim.fn.stdpath('data'),
-    "site", "pack", "core", "opt", "blink.cmp",
-    "target", "release", "blink_cmp_fuzzy.dll"
-)) == 1
 if not rust then
     notify("rust: Não foi encontrado executável do 'rust'. Verificar instalação.")
     do return end
 end
--- compile fuzzy for blink.cmp
-if rust and not fuzzy then
-    local cd = vim.fs.joinpath(
-        vim.fn.stdpath('data'),
-        "site", "pack", "core", "opt", "blink.cmp"
-    )
-    local ok, _ = pcall(vim.system, {
-        "cargo",
-        "build",
-        "--release"
-    },{ cwd = cd })
-    if not ok then
-        notify("blink.cmp: Erro ao compilar fuzzy para blink.cmp")
-    end
-end
+-- compile fuzzy for blink.cmp - v2
+-- require('blink.cmp').build():wait(240000)
 require('blink.cmp').setup({
     enabled = function ()
         return not vim.tbl_contains({ "vim"}, vim.bo.filetype)
@@ -289,5 +273,3 @@ require('blink.cmp').setup({
     },
 })
 
--- experimental: ui2
-require('vim._core.ui2').enable()
