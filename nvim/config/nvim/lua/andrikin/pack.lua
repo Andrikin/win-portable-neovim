@@ -36,7 +36,8 @@ vim.pack.add({
     'https://github.com/stevearc/dressing.nvim',
     -- ft = css, html, javascript
     'https://github.com/mattn/emmet-vim.git',
-    'https://github.com/norcalli/nvim-colorizer.lua.git',
+    'https://github.com/catgoose/nvim-colorizer.lua.git',
+    -- 'https://github.com/norcalli/nvim-colorizer.lua.git', -- outdated
     -- ft = lua
     'https://github.com/folke/lazydev.nvim.git',
     -- ft = java
@@ -173,7 +174,7 @@ require('vim._core.ui2').enable()
 -- spellfile.vim
 require('nvim.spellfile').config()
 -- colorizer.lua
-require('colorizer').setup({'css', 'html', 'javascript'})
+require('colorizer').setup({ filetype = {'css', 'html', 'javascript'}, lazy_load = true })
 -- Lazydev -- Neovim 0.11
 require('lazydev').setup()
 -- carregar snippets (LuaSnip)
