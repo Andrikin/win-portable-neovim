@@ -146,7 +146,7 @@ local programas = {
         cmd = 'lua5.1.lib',
     },{
         nome = 'zig',
-        link = 'https://ziglang.org/download/0.15.2/zig-x86_64-windows-0.15.2.zip',
+        link = 'https://ziglang.org/download/0.16.0/zig-x86_64-windows-0.16.0.zip',
         cmd = 'zig.exe',
     },{
         nome = 'cpdf', -- pdf tools: merge, split, etc
