@@ -25,6 +25,8 @@ vim.pack.add({
     'https://github.com/justinmk/vim-dirvish.git',
     'https://github.com/nvim-lualine/lualine.nvim',
     'https://github.com/neovim/nvim-lspconfig.git',
+    -- lua, html, java, javascript, python, https://ctags.sourceforge.net/languages.html ...
+    'https://github.com/ludovicchabant/vim-gutentags',
     -- 'https://github.com/Saghen/blink.lib',
     { src = 'https://github.com/Saghen/blink.cmp', version = 'v1' },
     'https://github.com/rafamadriz/friendly-snippets.git',

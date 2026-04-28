@@ -136,3 +136,17 @@ vim.g.loaded_ruby_provider = 0
 -- Andrikin/awesome-pairing
 vim.g.awesome_pairing_chars = [[({['"]]
 
+-- Guttentags
+local ctagsdir = vim.fn.stdpath('config') .. '/ctags'
+if vim.fn.isdirectory(ctagsdir) == 0 then
+    vim.fn.mkdir(ctagsdir, 'p', '0755')
+end
+vim.g.gutentags_cache_dir = ctagsdir
+vim.g.gutentags_add_ctrlp_root_markers = 0
+vim.g.gutentags_add_default_project_roots = 0
+vim.g.gutentags_project_root = {'.git'}
+vim.g.gutentags_generate_on_new = 1
+vim.g.gutentags_generate_on_missing = 1
+vim.g.gutentags_generate_on_write = 1
+vim.g.gutentags_generate_on_empty_buffer = 0
+
