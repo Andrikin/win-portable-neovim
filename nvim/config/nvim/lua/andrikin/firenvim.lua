@@ -5,9 +5,9 @@ vim.pack.add({
 	-- Fork Tim Pope vim-capslock
 	'https://github.com/Andrikin/vim-capslock',
 	'https://github.com/tpope/vim-surround.git',
-	-- Vim Cool,
+	-- auto nohlsearch
 	'https://github.com/romainl/vim-cool.git',
-    -- dressing -- change vim.ui.select
+    -- change vim.ui.select
     'https://github.com/stevearc/dressing.nvim',
     -- Firenvim
     'https://github.com/glacambre/firenvim',
