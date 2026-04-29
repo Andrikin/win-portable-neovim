@@ -174,17 +174,17 @@ vim.keymap.set(
 	vim.cmd.Git
 )
 
--- --- Telescope ---
+-- fzf-lua
 vim.keymap.set( -- telescope way to open buffers
 	'n', '<leader><space>',
 	function()
-		vim.cmd.Telescope('buffers')
+		vim.cmd.Pick('buffers')
 	end
 )
-vim.keymap.set( -- telescope way to check for help
+vim.keymap.set( -- telescope way to open buffers
 	'n', '<leader>h',
 	function()
-		vim.cmd.Telescope('help_tags')
+		vim.cmd.Pick('help')
 	end
 )
 

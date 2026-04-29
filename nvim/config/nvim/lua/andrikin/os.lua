@@ -152,6 +152,10 @@ local programas = {
         nome = 'cpdf', -- pdf tools: merge, split, etc
         link = 'https://github.com/coherentgraphics/cpdf-binaries/archive/refs/heads/master.zip',
         cmd = 'cpdf.exe',
+    },{
+        nome = 'fzf', -- pdf tools: merge, split, etc
+        link = 'https://github.com/junegunn/fzf/releases/download/v0.72.0/fzf-0.72.0-windows_amd64.zip',
+        cmd = 'fzf.exe',
     }
 }
 

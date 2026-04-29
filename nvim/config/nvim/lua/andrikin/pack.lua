@@ -21,25 +21,23 @@ vim.pack.add({
     'https://github.com/tpope/vim-dadbod.git',
     -- plugins
     { src = 'https://github.com/ThePrimeagen/harpoon.git', version = 'harpoon2' },
+    -- harpoon dependency
+    'https://github.com/nvim-lua/plenary.nvim.git',
     'https://github.com/romainl/vim-cool.git',
     'https://github.com/justinmk/vim-dirvish.git',
     'https://github.com/nvim-lualine/lualine.nvim',
     'https://github.com/neovim/nvim-lspconfig.git',
-    -- lua, html, java, javascript, python, https://ctags.sourceforge.net/languages.html ...
-    'https://github.com/ludovicchabant/vim-gutentags',
-    -- 'https://github.com/Saghen/blink.lib',
     { src = 'https://github.com/Saghen/blink.cmp', version = 'v1' },
+    -- 'https://github.com/Saghen/blink.lib',
     'https://github.com/rafamadriz/friendly-snippets.git',
     'https://github.com/L3MON4D3/LuaSnip.git',
-    'https://github.com/nvim-telescope/telescope.nvim.git',
-    'https://github.com/nvim-lua/plenary.nvim.git',
-    'https://github.com/nvim-telescope/telescope-ui-select.nvim',
     'https://github.com/glacambre/firenvim',
     'https://github.com/stevearc/dressing.nvim',
+    'https://github.com/nvim-mini/mini.pick',
     -- ft = css, html, javascript
     'https://github.com/mattn/emmet-vim.git',
-    'https://github.com/catgoose/nvim-colorizer.lua.git',
     -- 'https://github.com/norcalli/nvim-colorizer.lua.git', -- outdated
+    'https://github.com/catgoose/nvim-colorizer.lua.git',
     -- ft = lua
     'https://github.com/folke/lazydev.nvim.git',
     -- ft = java
@@ -99,74 +97,6 @@ end
 vim.o.termguicolors = true
 vim.cmd.colorscheme('blackhole')
 
-local _telescope = {
-    tema = 'dropdown',
-    actions = require('telescope.actions')
-}
-require('telescope').setup({
-    extensions = { -- configurando extenções
-        ["ui-select"] = {
-            require("telescope.themes").get_dropdown()
-        }
-    },
-    pickers = {
-        buffers = {
-            previewer = false,
-            theme = _telescope.tema,
-            mappings = {
-                n = {
-                    ['dd'] = _telescope.actions.delete_buffer,
-                },
-            },
-        },
-        find_files = {
-            previewer = false,
-            theme = _telescope.tema,
-        },
-        help_tags = {
-            previewer = false,
-            theme = _telescope.tema,
-        },
-        file_browser = {
-            previewer = false,
-            theme = _telescope.tema,
-        },
-    },
-    defaults = {
-        layout_config = {
-            width = 0.5,
-            height = 0.70,
-        },
-        path_display = {
-            tail = true,
-        },
-        mappings = {
-            i = {
-                ['<c-j>'] = _telescope.actions.select_default + _telescope.actions.center,
-                ['gq'] = _telescope.actions.close, -- ruim para as buscas que precisarem de "gq"
-                ['<c-u>'] = {'<c-u>', type = 'command'},
-                ['<esc>'] = {'<esc>', type = 'command'},
-            },
-            n = {
-                ['<c-j>'] = _telescope.actions.select_default + _telescope.actions.center,
-                ['gq'] = _telescope.actions.close,
-            },
-        },
-    }
-})
--- Carregando extenções do telescope
-local carregar = function (extencao)
-    local ok, _ = pcall(require('telescope').load_extension, extencao)
-    if not ok then
-        notify(('Telescope: não foi possível carregar a extenção %s.'):format(extencao))
-    else
-        notify(('Telescope: extenção %s carregada com sucesso'):format(extencao))
-    end
-end
-carregar('fzf')
-carregar('ui-select')
-
-vim.cmd.packadd('telescope.nvim')
 vim.cmd.packadd('nvim.difftool')
 vim.cmd.packadd('nvim.undotree')
 vim.cmd.packadd('justify')
@@ -179,6 +109,21 @@ require('nvim.spellfile').config()
 require('colorizer').setup({ filetype = {'css', 'html', 'javascript'}, lazy_load = true })
 -- Lazydev -- Neovim 0.11
 require('lazydev').setup()
+-- mini.pick
+require('mini.pick').setup({
+    window= {
+        config = function()
+            local height = math.floor(0.3 * vim.o.lines)
+            local width = math.floor(0.7 * vim.o.columns)
+            return {
+                anchor = 'NW', height = height, width = width,
+                row = math.floor(0.5 * (vim.o.lines - height)),
+                col = math.floor(0.5 * (vim.o.columns - width)),
+            }
+        end
+    }
+})
+require('mini.pick').ui_select()
 -- carregar snippets (LuaSnip)
 require('luasnip').config.set_config({
 	history = true,
@@ -192,7 +137,6 @@ require('luasnip.loaders.from_lua').lazy_load({
         'snippets'
     )
 })
-
 require('dressing').setup({
     input = {
         mappings = {
