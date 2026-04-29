@@ -1481,10 +1481,10 @@ Cygwin.comando = function(self, opts)
         table.insert(cmd, args[i])
     end
     ::executar::
-    local ok = false
-    self.job.on_exit = function()
-        ok = true
-        self.job.on_exit = nil
+    self.job.on_exit = function(id, _, _)
+        if id ~= 0 then
+            Utils.notify('cygwin: instalador: erro foi encontrado.')
+        end
     end
     self.job.on_stdout = function(_, data, _)
         ---@diagnostic disable-next-line: param-type-mismatch
@@ -1497,9 +1497,6 @@ Cygwin.comando = function(self, opts)
     end,
     ---@diagnostic disable-next-line: redundant-value
     self.job:start(cmd)
-    if not ok then
-        Utils.notify('cygwin: instalador: erro foi encontrado.')
-    end
 end
 
 Cygwin.complete = function(arg, _, _)
