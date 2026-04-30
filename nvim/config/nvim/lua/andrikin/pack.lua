@@ -123,10 +123,6 @@ require('mini.pick').setup({
         end
     }
 })
-vim.ui.select = function(items, opts, on_choice)
-    local start_opts = { window = { config = { width = vim.o.columns } } }
-    return require('mini.pick').ui_select(items, opts, on_choice, start_opts)
-end
 -- carregar snippets (LuaSnip)
 require('luasnip').config.set_config({
 	history = true,
