@@ -174,12 +174,46 @@ vim.keymap.set(
 	vim.cmd.Git
 )
 
--- fzf-lua
-vim.keymap.set( -- telescope way to open buffers
+-- mini.pick
+vim.keymap.set( -- custom list for buffers
 	'n', '<leader><space>',
-	function()
-		vim.cmd.Pick('buffers')
-	end
+    function()
+        local choose = function(item)
+            MiniPick.default_choose(vim.fn.expand(item))
+        end
+        local buffers = function()
+            local blist = vim.api.nvim_exec2('buffers', {output = true})
+            local items = {}
+            for _, l in ipairs(vim.split(blist.output, '\n')) do
+                local name = l:match('"(.*)"')
+                local item = name
+                table.insert(items, item)
+            end
+            return items
+        end
+        local show = function(buf_id, items_to_show, query)
+            local basename_nsid = vim.api.nvim_get_namespaces()['MiniPickBasename'] or vim.api.nvim_create_namespace('MiniPickBasename')
+            vim.api.nvim_buf_clear_namespace(buf_id, basename_nsid, 0, -1)
+            MiniPick.default_show(buf_id, items_to_show, query, { show_icons = false })
+            local extmark_opts = { virt_text_pos = 'inline' }
+            for i = 1, #items_to_show do
+                local line_nr = i - 1
+                local file = items_to_show[i]
+                local basename = vim.fs.basename(file)
+                extmark_opts.virt_text = { { basename .. ' ', 'MiniPickNormal' } }
+                vim.api.nvim_buf_set_extmark(buf_id, basename_nsid, line_nr, 0, extmark_opts)
+                local file_opts = { end_row = i, end_col = 0, hl_mode = 'blend', hl_group = 'Comment', priority = 199 }
+                vim.api.nvim_buf_set_extmark(buf_id, basename_nsid, line_nr, 0 , file_opts)
+            end
+        end
+        local pick_buffers = { source = {
+            show = show,
+            name = 'Buffers',
+            items = buffers,
+            choose = choose,
+        } }
+        MiniPick.start(pick_buffers)
+    end
 )
 vim.keymap.set( -- telescope way to open buffers
 	'n', '<leader>h',
