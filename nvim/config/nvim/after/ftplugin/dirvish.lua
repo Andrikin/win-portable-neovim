@@ -1,9 +1,5 @@
 local buf = vim.api.nvim_get_current_buf()
-local open = function(arquivo)
--- local open = vim.ui.open and function(arquivo)
---     vim.print('vim.ui.open: ' .. arquivo)
---     vim.ui.open(arquivo, { cmd = {'start', '""'} })
--- end or function(arquivo)
+local open = vim.ui.open or function(arquivo)
     vim.print('jobstart: ' .. arquivo)
     vim.fn.jobstart(
         vim.fn.shellescape(arquivo, true),
