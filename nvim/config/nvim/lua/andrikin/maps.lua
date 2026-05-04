@@ -175,6 +175,7 @@ vim.keymap.set(
 )
 
 -- mini.pick
+-- https://github.com/nvim-mini/mini.nvim/issues/2186
 vim.keymap.set( -- custom list for buffers
 	'n', '<leader><space>',
     function()
