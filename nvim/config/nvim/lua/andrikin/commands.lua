@@ -166,8 +166,7 @@ command('SortingDirvish',
         local plist = vim.api.nvim_buf_get_lines(buf, 0, -1, false)
         local paths = {}
         for _, p in ipairs(plist) do
-            local ptemp = vim.fs.normalize(p)
-            local m = vim.uv.fs_stat(ptemp)
+            local m = vim.uv.fs_stat(p)
             local path = {
                 path = p,
                 mod = m.mtime.sec or m.mtime
