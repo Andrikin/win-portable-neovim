@@ -163,6 +163,10 @@ command('Cygwin',
 command('SortingDirvish',
     function()
         local buf = vim.api.nvim_get_current_buf()
+        if vim.bo[buf].ft ~= 'dirvish' then
+            vim.notify('Não utilizar este comando fora do Dirvish.')
+            do return end
+        end
         local plist = vim.api.nvim_buf_get_lines(buf, 0, -1, false)
         local paths = {}
         for _, p in ipairs(plist) do
