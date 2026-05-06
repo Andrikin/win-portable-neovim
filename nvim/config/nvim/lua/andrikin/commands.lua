@@ -163,26 +163,28 @@ command('Cygwin',
 command('SortingDirvish',
     function()
         local buf = vim.api.nvim_get_current_buf()
-        local diretorios = vim.api.nvim_buf_get_lines(buf, 0, -1, false)
-        table.sort(diretorios, function(a, b)
-            if not a or not b then
-                return false
+        local plist = vim.api.nvim_buf_get_lines(buf, 0, -1, false)
+        local paths = {}
+        for _, p in ipairs(plist) do
+            local ptemp = vim.fs.normalize(p)
+            local m = vim.uv.fs_stat(ptemp)
+            local path = {
+                path = p,
+                mod = m.mtime.sec or m.mtime
+            }
+            if vim.fn.isdirectory(p) > 0 then
+                path.mod = 9999999999
             end
-            a = vim.fs.normalize(a):gsub('//+', '/')
-            b = vim.fs.normalize(b):gsub('//+', '/')
-            a = vim.uv.fs_stat(a)
-            b = vim.uv.fs_stat(b)
-            a = a.mtime.sec or a.mtime
-            b = b.mtime.sec or b.mtime
-            return a > b
-        end)
-        for i, dir in ipairs(diretorios) do
-            if vim.fn.isdirectory(dir) > 0 then
-                local d = table.remove(diretorios, i)
-                table.insert(diretorios, 1, d)
-            end
+            table.insert(paths, path)
         end
-        vim.api.nvim_buf_set_lines(buf, 0, -1, false, diretorios)
+        table.sort(paths, function (a, b)
+            return a.mod > b.mod
+        end)
+        plist = {}
+        for _, path in ipairs(paths) do
+            table.insert(plist, path.path)
+        end
+        vim.api.nvim_buf_set_lines(buf, 0, -1, false, plist)
     end,
 {})
 
