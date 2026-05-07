@@ -983,6 +983,7 @@ Latex.new = function()
             modelos = Diretorio.new(vim.fn.fnamemodify(vim.env.HOME, ':h')) / 'projetos' / 'ouvidoria-latex-modelos',
 ---@diagnostic disable-next-line: undefined-field
             download = Diretorio.new(vim.uv.os_homedir()) / 'Downloads',
+            documentos = Diretorio.new(vim.uv.os_homedir()) / 'Documents' / 'CI' / os.date('%Y'),
             temp = Diretorio.new(vim.env.TEMP),
             redelocal = Diretorio.new('T:') / '1-Comunicação Interna - C.I' / os.date('%Y'),
         }
@@ -997,6 +998,10 @@ Latex.is_tex = function()
 end
 
 Latex.init = function(self)
+    local documentos = vim.fn.isdirectory(self.diretorios.documentos.diretorio) == 1
+    if not documentos then
+        vim.fn.mkdir(self.diretorios.documentos.diretorio, 'p', '0755')
+    end
     if not vim.env.TEXINPUTS then
         vim.env.TEXINPUTS = '.;' .. self.diretorios.modelos.diretorio .. ';' -- não é necessário para Windows
     end
@@ -1006,7 +1011,7 @@ end
 -- comprimido na pasta "Downloads"
 ---@param temp Diretorio
 ---@param destino Diretorio
-Latex.compilar = function(self, destino, temp)
+Latex.compilar = function(self, destino, temp, comunicacao)
     if not self.is_tex() then
         Utils.notify('Latex: compilar: Comando executável somente para arquivos .tex!')
         do return end
@@ -1018,6 +1023,15 @@ Latex.compilar = function(self, destino, temp)
     ) == 1
     if not gerar_pdf then
         do return end
+    end
+    local copiar_arquivo = function (de, para)
+        local ok = vim.uv.fs_copyfile(de, para, {excl = true})
+        if not ok then
+            Utils.notify(('LatexCompilar: %s não foi copiado para %s.').format(
+                vim.fs.basename(de),
+                vim.fs.basename(vim.fs.dirname(para))
+            ))
+        end
     end
     -- substituir caracteres
     local manifestacao = {
@@ -1058,7 +1072,7 @@ Latex.compilar = function(self, destino, temp)
     destino = destino or self.diretorios.redelocal
     local has_gs = vim.fn.executable('gs.exe') == 1
     local tex = vim.fn.expand('%:p')
-    local arquivo = vim.fn.fnamemodify(tex, ':t'):gsub('tex$', 'pdf')
+    local arquivo = vim.fs.basename(tex):gsub('tex$', 'pdf')
     local arquivo_destino = (destino / arquivo).diretorio
     local arquivo_temp = (temp / arquivo).diretorio
     local compilar = {
@@ -1087,12 +1101,17 @@ Latex.compilar = function(self, destino, temp)
         do return end
     else
         if vim.fn.filereadable(arquivo_temp) ~= 0 then -- arquivo existe
-            -- copiar arquivo temp para pasta Downloads
-            vim.cmd['!']({
-                args = {'cp', vim.fn.shellescape(arquivo_temp), vim.fn.shellescape((self.diretorios.download / arquivo).diretorio)},
-                mods = {silent = true}
-            })
+            -- copiar arquivo temp para 'Downloads'
+            copiar_arquivo(arquivo_temp,
+                (self.diretorios.download / arquivo).diretorio
+            )
         end
+    end
+    -- backup pasta 'Documents/CI'
+    if comunicacao then
+        copiar_arquivo(tex,
+            (self.diretorios.documentos / vim.fs.basename(tex)).diretorio
+        )
     end
     -- comprimir arquivo somente se ghostscript
     -- estiver instalado
@@ -1136,6 +1155,7 @@ Comunicacao.new = function()
             modelos = Diretorio.new(vim.fn.fnamemodify(vim.env.HOME, ':h')) / 'projetos' / 'ouvidoria-latex-modelos',
 ---@diagnostic disable-next-line: undefined-field
             destino = Diretorio.new(vim.uv.os_homedir()) / 'Downloads',
+            documentos = Diretorio.new(vim.uv.os_homedir()) / 'Documents' / 'CI' / os.date('%Y'),
             projetos = Diretorio.new(vim.fn.fnamemodify(vim.env.HOME, ':h')) / 'projetos',
         },
     }, Comunicacao)
@@ -1238,32 +1258,64 @@ Comunicacao.nova = function(self, opts)
     local range = {1, vim.fn.line('$')}
 	-- preencher dados de C.I., ocorrência e setor no arquivo tex
     if modelo:match('modelo.basico') then
-        vim.cmd.substitute({("/<numero>/%s/Ie"):format(num_ci), range = range, mods = { silent = true }})
-        vim.cmd.substitute({("/<setor>/%s/Ie"):format(setor), range = range, mods = { silent = true }})
+        vim.cmd.substitute(
+            {("/<numero>/%s/Ie"):format(num_ci),
+            range = range,
+            mods = { silent = true }}
+        )
+        vim.cmd.substitute(
+            {("/<setor>/%s/Ie"):format(setor),
+            range = range,
+            mods = { silent = true }}
+        )
     elseif modelo:match('alerta.gabinete') or modelo:match('carga.gabinete') then
-        vim.cmd.substitute({("/<ocorrencia>/%s/Ie"):format(ocorrencia), range = range, mods = { silent = true }})
-        vim.cmd.substitute({("/<secretaria>/%s/Ie"):format(setor), range = range, mods = { silent = true }})
-        vim.cmd.substitute({("/<numero>/%s/Ie"):format(num_ci), range = range, mods = { silent = true }})
+        vim.cmd.substitute(
+            {("/<ocorrencia>/%s/Ie"):format(ocorrencia),
+            range = range,
+            mods = { silent = true }}
+        )
+        vim.cmd.substitute(
+            {("/<secretaria>/%s/Ie"):format(setor),
+            range = range,
+            mods = { silent = true }}
+        )
+        vim.cmd.substitute(
+            {("/<numero>/%s/Ie"):format(num_ci),
+            range = range,
+            mods = { silent = true }}
+        )
     else
-        vim.cmd.substitute({("/<ocorrencia>/%s/Ie"):format(ocorrencia), range = range, mods = { silent = true }})
-        vim.cmd.substitute({("/<numero>/%s/Ie"):format(num_ci), range = range, mods = { silent = true }})
-        vim.cmd.substitute({("/<setor>/%s/Ie"):format(setor), range = range, mods = { silent = true }})
+        vim.cmd.substitute(
+            {("/<ocorrencia>/%s/Ie"):format(ocorrencia),
+            range = range,
+            mods = { silent = true }}
+        )
+        vim.cmd.substitute(
+            {("/<numero>/%s/Ie"):format(num_ci),
+            range = range,
+            mods = { silent = true }}
+        )
+        vim.cmd.substitute(
+            {("/<setor>/%s/Ie"):format(setor),
+            range = range,
+            mods = { silent = true }}
+        )
     end
 end
 
 ---@return table
 Comunicacao.tab = function(self, args)-- completion
-	return vim.tbl_filter(
-		function(ci)
-			return ci:match(args:gsub('-', '.'))
-		end,
-		vim.tbl_map(
-			function(modelo)
-				return vim.fn.fnamemodify(modelo, ':t'):match('(.*).tex$')
-			end,
+    return vim.tbl_filter(
+        function(ci)
+            return ci:match(args:gsub('-', '.'))
+        end,
+        vim.tbl_map(
+            function(modelo)
+                return vim.fn.fnamemodify(modelo, ':t'):match('(.*).tex$')
+            end,
             self:modelos()
-		)
-	)
+        )
+    )
 end
 
 ---@class Ouvidoria
@@ -1275,11 +1327,11 @@ Ouvidoria.__index = Ouvidoria
 
 ---@return Ouvidoria
 Ouvidoria.new = function()
-	local ouvidoria = setmetatable({
+    local ouvidoria = setmetatable({
         ci = Comunicacao.new(),
         latex = Latex.new(),
     }, Ouvidoria)
-	return ouvidoria
+    return ouvidoria
 end
 
 Utils.Ouvidoria = Ouvidoria.new()

@@ -23,7 +23,7 @@ command('Clipboard',
 command('CompilarOuvidoria',
     function()
     ---@diagnostic disable-next-line: missing-parameter
-        Ouvidoria.latex:compilar()
+        Ouvidoria.latex:compilar(nil, nil, true)
     end,
 {})
 
@@ -32,7 +32,7 @@ command('CompilarLatex',
         ---@diagnostic disable-next-line: param-type-mismatch, undefined-field
         local destino = Diretorio.new(vim.uv.os_homedir()) / 'Downloads'
         ---@diagnostic disable-next-line: missing-parameter
-        Ouvidoria.latex:compilar(destino)
+        Ouvidoria.latex:compilar(destino, nil, false)
     end,
 {})
 
@@ -163,11 +163,10 @@ command('Cygwin',
 command('SortingDirvish',
     function()
         local buf = vim.api.nvim_get_current_buf()
-        if vim.bo[buf].ft ~= 'dirvish' then
-            vim.notify('Não utilizar este comando fora do Dirvish.')
+        local plist = vim.api.nvim_buf_get_lines(buf, 0, -1, false)
+        if #plist == 1 and plist[1] == '' then
             do return end
         end
-        local plist = vim.api.nvim_buf_get_lines(buf, 0, -1, false)
         local paths = {}
         for _, p in ipairs(plist) do
             local m = vim.uv.fs_stat(p)
