@@ -1025,7 +1025,7 @@ Latex.compilar = function(self, destino, temp, comunicacao)
         do return end
     end
     local copiar_arquivo = function (de, para)
-        local ok = vim.uv.fs_copyfile(de, para, {excl = true})
+        local ok = vim.uv.fs_copyfile(de, para)
         if not ok then
             Utils.notify(('LatexCompilar: %s não foi copiado para %s.').format(
                 vim.fs.basename(de),
