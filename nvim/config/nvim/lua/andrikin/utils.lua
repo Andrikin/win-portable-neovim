@@ -1533,7 +1533,8 @@ Cygwin.comando = function(self, opts)
         table.insert(cmd, args[i])
     end
     ::executar::
-    self.job.on_exit = function(id, _, _)
+    -- :h job_control.txt -> on_exit
+    self.job.on_exit = function(_, id, _)
         if id ~= 0 then
             Utils.notify('cygwin: instalador: erro foi encontrado.')
         end
