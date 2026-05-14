@@ -12,7 +12,6 @@
 ---@field notify nil
 ---@field echo nil
 ---@field remover_path nil
----@field npcall nil
 ---@field cursorline table
 ---@field autocmd function
 ---@field Andrikin number
@@ -50,7 +49,6 @@ Utils.remover_path = function (programa)
     end
 end
 
-Utils.npcall = vim.F.npcall
 
 ---@type string | nil
 ---@diagnostic disable-next-line: undefined-field
@@ -1033,7 +1031,6 @@ Latex.compilar = function(self, destino, temp, comunicacao)
             ))
         end
     end
-    -- substituir caracteres
     local manifestacao = {
         inicio = vim.fn.matchbufline(
             vim.api.nvim_get_current_buf(),
@@ -1048,7 +1045,7 @@ Latex.compilar = function(self, destino, temp, comunicacao)
         manifestacao.inicio.lnum or 1,
         manifestacao.fim.lnum or vim.fn.line('$')
     }
-    -- Formatar texto -- ver vim.api.nvim_parse_cmd
+    -- Formatar texto -- OBS: ver vim.api.nvim_parse_cmd
     vim.cmd.substitute({"/[º°ª]/{\\\\textdegree}/ge", range = documento, mods = { silent = true }})
     vim.cmd.substitute({"/§/\\\\S/ge", range = documento, mods = { silent = true }})
     vim.cmd.substitute({'/[“”]/\\"/ge', range = documento, mods = { silent = true }})
@@ -1064,7 +1061,6 @@ Latex.compilar = function(self, destino, temp, comunicacao)
         range = documento,
         mods = { silent = true },
     })
-    -- substituir caracteres
     if vim.o.modified then -- salvar arquivo que está modificado.
         vim.cmd.write()
     end
@@ -1582,12 +1578,9 @@ Python.job = Utils.Job.new()
 Python.get_pip_instalado = function(self)
     local pip = vim.fs.find('pip.exe', {path = tostring(self.diretorio), type = 'file'})[1]
     if not pip then
-        return nil
+        return false
     end
-    return Utils.npcall(
-        vim.fn.fnamemodify,
-        pip, ':h'
-    )
+    return true
 end
 
 Python.instalar_get_pip = function(self)
