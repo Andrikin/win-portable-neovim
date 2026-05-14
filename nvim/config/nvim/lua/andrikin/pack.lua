@@ -1,10 +1,7 @@
 ---@diagnostic disable: param-type-mismatch
 -- TODO: Usar vim.pack para gerenciamento de plugins no neovim 0.12+nightly
 
-local notify = require('andrikin.utils').notify
-if not notify then
-    notify = vim.print
-end
+local notify = require('andrikin.utils').notify or vim.print
 
 -- install plugins
 vim.pack.add({
@@ -44,7 +41,7 @@ vim.pack.add({
     'https://github.com/mfussenegger/nvim-jdtls.git',
 })
 
-if vim.fn.isdirectory(vim.fn.expand('$HOME') .. '\\nvim\\config\\firenvim') == 0 then
+if vim.fn.isdirectory(vim.fn.expand('$HOME') .. '/nvim/config/firenvim') == 0 then
     vim.cmd.packadd("firenvim")
     vim.cmd("silent! call firenvim#install(1)")
 else
