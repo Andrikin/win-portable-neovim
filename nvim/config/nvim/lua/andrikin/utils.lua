@@ -576,11 +576,11 @@ Utils.init = function()
     end
     vim.env.PATH = vim.env.PATH .. ';' .. Utils.Opt.diretorio
     -- extrator padrão 7zip Packing / unpacking: 7z, XZ, BZIP2, GZIP, TAR, ZIP and WIM
-    local diretorio = (Utils.Opt / '7zip')
-    if vim.fn.isdirectory(tostring(diretorio)) == 0 then
-        vim.fn.mkdir(tostring(diretorio), 'p', '0755')
+    local d7zip = (Utils.Opt / '7zip')
+    if vim.fn.isdirectory(tostring(d7zip)) == 0 then
+        vim.fn.mkdir(tostring(d7zip), 'p', '0755')
     end
-    vim.env.PATH = vim.env.PATH .. ';' .. tostring(Utils.Opt / '7zip')
+    vim.env.PATH = vim.env.PATH .. ';' .. tostring(d7zip)
     local link_7zr = 'https://7-zip.org/a/7zr.exe'
     local link_7za = 'https://7-zip.org/a/7z2409-extra.7z'
     local has_7zip = vim.fn.executable('7zr.exe') == 1 and vim.fn.executable('7za.exe') == 1
@@ -593,7 +593,7 @@ Utils.init = function()
             '--location',
             '--silent',
             '--output-dir',
-            tostring(diretorio),
+            tostring(d7zip),
             '-O',
             link_7zr,
         })
@@ -603,8 +603,8 @@ Utils.init = function()
             job:start({
                 '7zr.exe',
                 'x',
-                tostring(diretorio / vim.fn.fnamemodify(link_7za, ':t')),
-                '-o' .. tostring(diretorio),
+                tostring(d7zip / vim.fn.fnamemodify(link_7za, ':t')),
+                '-o' .. tostring(d7zip),
             }):wait()
         end
         -- download 7za
@@ -614,14 +614,38 @@ Utils.init = function()
             '--location',
             '--silent',
             '--output-dir',
-            tostring(diretorio),
+            tostring(d7zip),
             '-O',
             link_7za,
         })
         job:wait_all()
     end
     -- adicionar 7za.exe no PATH
-    vim.env.PATH = vim.env.PATH .. ';' .. tostring(Utils.Opt / '7zip' / 'x64')
+    vim.env.PATH = vim.env.PATH .. ';' .. tostring(d7zip / 'x64')
+    -- verificar instalação GIT
+    if vim.fn.executable('git.exe') == 0 then
+        local dgit = (Utils.Opt / 'git')
+        local zip = (dgit / 'git.zip')
+        if vim.fn.isdirectory(tostring(dgit)) == 0 then
+            vim.fn.mkdir(tostring(dgit), 'p', '0755')
+        end
+        job.on_exit = nil
+        vim.net.request(
+            'https://github.com/git-for-windows/git/releases/download/v2.53.0.windows.1/MinGit-2.53.0-64-bit.zip',
+            { outpath = tostring(zip) },
+            function (err, _)
+                if err then do return end end
+                -- unzip git.zip
+                job:start({
+                    '7za',
+                    'x',
+                    tostring(zip),
+                    '-o' .. tostring(dgit),
+                })
+                vim.env.PATH = vim.env.PATH .. ';' .. tostring(dgit / 'cmd')
+            end
+        )
+    end
 end
 
 ---@class Registrador
