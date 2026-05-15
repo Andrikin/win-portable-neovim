@@ -13,14 +13,9 @@ vim.pack.add({
     'https://github.com/glacambre/firenvim',
 })
 
-vim.cmd.packadd('firenvim')
-if vim.fn.isdirectory(vim.fn.expand('$HOME') .. '\\nvim\\config\\firenvim') == 0 then
-    local ok, _ = pcall(function ()
-        vim.cmd("silent! call firenvim#install(1)")
-    end)
-    if not ok then
-        vim.cmd("silent! call firenvim#install(0)")
-    end
+vim.cmd.packadd("firenvim")
+if vim.fn.isdirectory(vim.fn.expand('$HOME') .. '/nvim/config/firenvim') == 0 then
+    vim.cmd("silent! call firenvim#install(1)")
 end
 
 vim.cmd.packadd('nvim.undotree')
@@ -56,7 +51,6 @@ vim.g.firenvim_config = {
 }
 
 -- Colorscheme --
--- vim.cmd.colorscheme('vim')
 vim.cmd.colorscheme('zellner')
 
 vim.g.awesome_pairing_chars = [[({['"]]
@@ -86,6 +80,7 @@ vim.o.smartcase = true
 vim.o.hlsearch = true
 
 -- Configurações gerais
+vim.o.autocomplete = true
 vim.o.autochdir = false
 vim.o.scrolloff = 999
 vim.o.lazyredraw = true
@@ -93,21 +88,12 @@ vim.o.backspace = 'indent,eol,start'
 vim.o.splitbelow = true
 vim.o.splitright = true
 vim.o.helpheight = 15
--- Problems that can occur in vim session can be avoid using this configuration
-vim.opt.sessionoptions:remove('options')
-vim.o.encoding = 'utf-8'
-vim.o.autoread = true
-vim.o.tabpagemax = 50
-vim.o.wildmenu = true
 -- usar <tab> para cmdline completion em macros
 if vim.o.wildcharm ~= 9 then
     vim.o.wildcharm = 9
 end
--- vim.o.completeopt = 'menu,menuone,noselect'
-vim.o.completeopt = 'menu,popup,fuzzy'
 vim.opt.complete:remove('t')
-vim.o.title = true
-vim.o.hidden = true
+vim.o.title = false
 vim.o.mouse = ''
 vim.o.mousemodel = 'extend'
 if vim.fn.has('persistent_undo') == 1 then
@@ -133,7 +119,7 @@ vim.o.showmode = false
 -- NeoVim configurations
 vim.o.guicursor = 'i-n-v-c:block'
 vim.o.guifont = 'SauceCodePro NFM:h9'
-vim.o.winborder = 'none'
+vim.o.winborder = 'single'
 vim.o.inccommand = 'split'
 vim.o.fillchars = 'vert:|,fold:*,foldclose:+,diff:-'
 
@@ -143,6 +129,7 @@ vim.opt.matchpairs:append('<:>')
 
 -- --- Netrw ---
 -- Disable Netrw
+vim.g.loaded_netrw = 1
 vim.g.loaded_netrwPlugin = 1
 
 -- Removendo providers: Perl
@@ -182,7 +169,7 @@ command(
         local greetings = vim.fn.getline(1):match('Boa tarde,')
         local endings = vim.fn.getline(vim.fn.line('$')):match('Ouvidoria da Prefeitura de Itajaí')
         if greetings and endings then
-            do return end
+            return
         end
         local range = {1, vim.fn.line('$')}
         vim.cmd.substitute({"/\\([º°ª]\\)\\([a-zA-Z0-9]\\)/\\1 \\2/ge", range = range, mods = { silent = true }})
