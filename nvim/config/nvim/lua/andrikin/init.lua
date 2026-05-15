@@ -1,6 +1,6 @@
 if vim.g.started_by_firenvim then
     require('andrikin.firenvim')
-    do return end
+    return
 end
 
 -- Inicialização normal neovim

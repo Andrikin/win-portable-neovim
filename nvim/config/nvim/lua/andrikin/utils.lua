@@ -82,7 +82,7 @@ Utils.renomear_executavel = function(programa)
     if antigo ~= '' then
         if vim.fn.filereadable(novo) == 1 then
             Utils.notify(('Arquivo %s já renomeado.'):format(nome))
-            do return end
+            return
         end
         Utils.notify(('Renomeando executável %s.'):format(nome))
         vim.fn.rename(antigo, novo)
@@ -275,13 +275,13 @@ Programa.extrair = function(self)
     if self:extencao() == 'exe' then
         if not self:registrar() then
             Utils.notify(('Não foi possível realizar a instalação do programa %s.'):format(self.nome))
-            do return end
+            return
         else
             if self.config then
                 self.config()
             end
         end
-        do return end
+        return
     end
     local diretorio = tostring(self:diretorio())
     local arquivo = tostring(self:diretorio() / self:nome_arquivo())
@@ -329,7 +329,7 @@ Programa.extrair = function(self)
     else
         if not lessmsi then
             Utils.notify("Lessmsi não instalado! Checar instalação do programa!")
-            do return end
+            return
         end
     end
     self.job.on_exit = function()
@@ -340,7 +340,7 @@ Programa.extrair = function(self)
         end
         if not self:registrar() then
             Utils.notify(('Não foi possível realizar a instalação do programa %s.'):format(self.nome))
-            do return end
+            return
         else
             if self.config then
                 self.config()
@@ -416,7 +416,7 @@ Programa.instalar = function(self)
 			self.config()
 		end
         self.concluido = true
-        do return end
+        return
     end
     self:criar_diretorio()
     self:baixar()
@@ -623,8 +623,9 @@ Utils.init = function()
     -- adicionar 7za.exe no PATH
     vim.env.PATH = vim.env.PATH .. ';' .. tostring(d7zip / 'x64')
     -- verificar instalação GIT
+    local dgit = (Utils.Opt / 'git')
+    vim.env.PATH = vim.env.PATH .. ';' .. tostring(dgit / 'cmd')
     if vim.fn.executable('git.exe') == 0 then
-        local dgit = (Utils.Opt / 'git')
         local zip = (dgit / 'git.zip')
         if vim.fn.isdirectory(tostring(dgit)) == 0 then
             vim.fn.mkdir(tostring(dgit), 'p', '0755')
@@ -634,7 +635,7 @@ Utils.init = function()
             'https://github.com/git-for-windows/git/releases/download/v2.53.0.windows.1/MinGit-2.53.0-64-bit.zip',
             { outpath = tostring(zip) },
             function (err, _)
-                if err then do return end end
+                if err then return end
                 -- unzip git.zip
                 job:start({
                     '7za',
@@ -642,7 +643,6 @@ Utils.init = function()
                     tostring(zip),
                     '-o' .. tostring(dgit),
                 })
-                vim.env.PATH = vim.env.PATH .. ';' .. tostring(dgit / 'cmd')
             end
         )
     end
@@ -1036,7 +1036,7 @@ end
 Latex.compilar = function(self, destino, temp, comunicacao)
     if not self.is_tex() then
         Utils.notify('Latex: compilar: Comando executável somente para arquivos .tex!')
-        do return end
+        return
     end
     local gerar_pdf = vim.fn.confirm(
         'Deseja gerar arquivo pdf?',
@@ -1044,7 +1044,7 @@ Latex.compilar = function(self, destino, temp, comunicacao)
         2
     ) == 1
     if not gerar_pdf then
-        do return end
+        return
     end
     local copiar_arquivo = function (de, para)
         local ok = vim.uv.fs_copyfile(de, para)
@@ -1118,7 +1118,7 @@ Latex.compilar = function(self, destino, temp, comunicacao)
     local resultado = vim.fn.system(compilar)
     if vim.v.shell_error > 0 then -- erro ao compilar
         Utils.notify(resultado)
-        do return end
+        return
     else
         if vim.fn.filereadable(arquivo_temp) ~= 0 then -- arquivo existe
             -- copiar arquivo temp para 'Downloads'
@@ -1141,7 +1141,7 @@ Latex.compilar = function(self, destino, temp, comunicacao)
         -- erro ao comprimir
         if vim.v.shell_error > 0 then
             Utils.notify(resultado)
-            do return end
+            return
         end
     end
     Utils.notify('Arquivo pdf gerado!')
@@ -1208,11 +1208,11 @@ Comunicacao.init = function(self)
                 })
             end,
         3000)
-        do return end
+        return
     end
     if not has_git then
         Utils.notify('Comunicacao: init: não foi encontrado o comando git')
-        do return end
+        return
     end
     local has_diretorio_projetos = vim.fn.isdirectory(self.diretorios.projetos.diretorio) == 1
     local has_diretorio_ssh = vim.fn.isdirectory(Ssh.destino.diretorio) == 1
@@ -1254,7 +1254,7 @@ Comunicacao.nova = function(self, opts)
 	)
     if not modelo then
         Utils.notify('Ouvidoria: Ci: não foi encontrado o arquivo modelo para criar nova comunicação.')
-        do return end
+        return
     end
 	local num_ci = vim.fn.input('Digite o número da C.I.: ')
 	local setor = vim.fn.input('Digite o setor destinatário: ')
@@ -1373,7 +1373,7 @@ Copyq.clipboard = function(tab)
     tab = tab.args == "" and 'clipboard' or tab.args
     if vim.fn.executable('copyq') ~= 1 then
         Utils.notify('copyq: Não foi encontrado "copyq". Por gentileza, realize a instalação.')
-        do return end
+        return
     end
     local clipboard = vim.fn.system({"copyq","eval","--",([[
             let indent = 4;
@@ -1521,7 +1521,7 @@ Cygwin.comando = function(self, opts)
     local islist = vim.islist or vim.tbl_islist
     if not islist(args) then
         Utils.notify('cygwin: instalador: valores padrão encontrados no comando. Abortando.')
-        do return end
+        return
     end
     local cmd = {
         self.instalador,
@@ -1656,7 +1656,7 @@ Python.init = function(self)
         local ok, erro = pcall(self.instalar_get_pip, self)
         if not ok then
             Utils.notify(erro)
-            do return end
+            return
         end
         -- registrar pip no PATH
         local pip = vim.fn.fnamemodify(vim.fs.find('pip.exe', {path = self.diretorio.diretorio, type = 'file'})[1], ':h')
@@ -1664,7 +1664,7 @@ Python.init = function(self)
             vim.env.PATH = vim.env.PATH .. ';' .. pip
         else
             Utils.notify('Erro ao registrar "pip.exe" na variável de ambiente PATH.')
-            do return end
+            return
         end
     end
     if vim.fn.executable('pip.exe') == 1 then
@@ -1689,7 +1689,7 @@ Python.init = function(self)
         end
     else
         Utils.notify('"pip.exe" não encontrado. Falha na instalação.')
-        do return end
+        return
     end
     vim.g.python3_host_prog = vim.fs.find('python.exe', {path = self.diretorio.diretorio, type = 'file'})[1]
     if not vim.g.python3_host_prog or vim.g.python3_host_prog == '' then
@@ -1833,7 +1833,7 @@ end
 Msvc.instalacao = function(self)
     if self.init() then
         Utils.notify("Msvc: já instalado")
-        do return end
+        return
     end
     local diretorio = Utils.Opt / "msvc"
     local temp = Utils.Opt / "msvc" / "downloads"
@@ -1873,7 +1873,7 @@ Msvc.instalacao = function(self)
     net("https://gist.githubusercontent.com/mmozeiko/7f3162ec2988e81e56d5c4e22cde9977/raw/baa1baa8b7869aa259a3a1d287def7638f3cc822/portable-msvc.py", {}, function(erro, resposta)
         if erro then
             Utils.notify("Msvc: Não foi possível fazer o download do script.")
-            do return end
+            return
         end
         resposta = resposta.body
         resposta = vim.split(resposta, "\n")

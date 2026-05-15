@@ -10,7 +10,7 @@ autocmd('InsertEnter', {
     callback = function()
         local dirvish = vim.o.ft == 'dirvish' -- não desativar quando for Dirvish
         if dirvish then
-            do return end
+            return
         end
         cursorline.on()
     end,
@@ -28,7 +28,7 @@ autocmd('InsertLeave', {
     callback = function()
         local dirvish = vim.o.ft == 'dirvish' -- não desativar quando for Dirvish
         if dirvish then
-            do return end
+            return
         end
             cursorline.off()
     end,
@@ -69,7 +69,7 @@ autocmd('VimLeave', {
                 2
             ) == 1
         else
-            do return end
+            return
         end
         if remover then
             vim.cmd.FonteRemover()
