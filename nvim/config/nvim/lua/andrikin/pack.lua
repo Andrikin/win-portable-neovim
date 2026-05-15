@@ -17,14 +17,15 @@ vim.pack.add({
     'https://github.com/tpope/vim-eunuch.git',
     'https://github.com/tpope/vim-dadbod.git',
     -- plugins
-    { src = 'https://github.com/ThePrimeagen/harpoon.git', version = 'harpoon2' },
+    -- { src = 'https://github.com/ThePrimeagen/harpoon.git', version = 'harpoon2' },
     -- harpoon dependency
-    'https://github.com/nvim-lua/plenary.nvim.git',
+    -- 'https://github.com/nvim-lua/plenary.nvim.git',
     'https://github.com/romainl/vim-cool.git',
     'https://github.com/justinmk/vim-dirvish.git',
     'https://github.com/nvim-lualine/lualine.nvim',
     'https://github.com/neovim/nvim-lspconfig.git',
     { src = 'https://github.com/Saghen/blink.cmp', version = 'v1' },
+    -- blink.cmp dependency - v2
     -- 'https://github.com/Saghen/blink.lib',
     'https://github.com/rafamadriz/friendly-snippets.git',
     'https://github.com/L3MON4D3/LuaSnip.git',
@@ -34,20 +35,16 @@ vim.pack.add({
     -- ft = css, html, javascript
     'https://github.com/mattn/emmet-vim.git',
     -- 'https://github.com/norcalli/nvim-colorizer.lua.git', -- outdated
-    'https://github.com/catgoose/nvim-colorizer.lua.git',
+    'https://github.com/catgoose/nvim-colorizer.lua.git', -- fork
     -- ft = lua
     'https://github.com/folke/lazydev.nvim.git',
     -- ft = java
     'https://github.com/mfussenegger/nvim-jdtls.git',
 })
 
+vim.cmd.packadd("firenvim")
 if vim.fn.isdirectory(vim.fn.expand('$HOME') .. '/nvim/config/firenvim') == 0 then
-    vim.cmd.packadd("firenvim")
     vim.cmd("silent! call firenvim#install(1)")
-else
-    if vim.g.firenvim_loaded then
-        vim.cmd("silent! call firenvim#install(0)")
-    end
 end
 
 local gcc = vim.fn.executable('x86_64-w64-mingw32-gcc') == 1
@@ -96,6 +93,7 @@ vim.cmd.colorscheme('blackhole')
 
 vim.cmd.packadd('nvim.difftool')
 vim.cmd.packadd('nvim.undotree')
+vim.cmd.packadd('nvim.tohtml')
 vim.cmd.packadd('justify')
 
 -- experimental: ui2
@@ -167,7 +165,7 @@ require('lualine').setup({
 local rust = vim.fn.executable('cargo.exe') == 1
 if not rust then
     notify("rust: Não foi encontrado executável do 'rust'. Verificar instalação.")
-    do return end
+    return
 end
 -- compile fuzzy for blink.cmp - v2
 -- require('blink.cmp').build():wait(240000)

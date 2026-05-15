@@ -1,5 +1,5 @@
 ---@diagnostic disable: need-check-nil
-local notify = require('andrikin.utils').notify
+local notify = require('andrikin.utils').notify or vim.notify
 
 if not vim.g.nvy or not vim.g.neovide then
 	-- Fix ^\ (nvim-qt/windows 7)
@@ -129,7 +129,7 @@ local toggle_list = function(modo, comando, on_error)
                 vim.fn.win_gotoid(win.winid)
             end
             vim.cmd.windo({args = {'normal', 'ZQ'}, range = {win.winnr}})
-            do return end
+            return
         end
     end
     if not aberto then
@@ -228,19 +228,19 @@ vim.keymap.set(
 	end
 )
 
--- The Primeagen Harpoon2
-local harpoon2 = require('harpoon')
-harpoon2:setup()
-vim.keymap.set("n", "gha", function() harpoon2:list():add() end)
-vim.keymap.set("n", "ghm", function() harpoon2.ui:toggle_quick_menu(harpoon2:list()) end)
--- LOL mapping style
-vim.keymap.set("n", "ghq", function() harpoon2:list():select(1) end)
-vim.keymap.set("n", "ghw", function() harpoon2:list():select(2) end)
-vim.keymap.set("n", "ghe", function() harpoon2:list():select(3) end)
-vim.keymap.set("n", "ghr", function() harpoon2:list():select(4) end)
--- Toggle previous & next buffers stored within Harpoon list
-vim.keymap.set("n", "ghp", function() harpoon2:list():prev() end)
-vim.keymap.set("n", "ghn", function() harpoon2:list():next() end)
+-- -- The Primeagen Harpoon2
+-- local harpoon2 = require('harpoon')
+-- harpoon2:setup()
+-- vim.keymap.set("n", "gha", function() harpoon2:list():add() end)
+-- vim.keymap.set("n", "ghm", function() harpoon2.ui:toggle_quick_menu(harpoon2:list()) end)
+-- -- LOL mapping style
+-- vim.keymap.set("n", "ghq", function() harpoon2:list():select(1) end)
+-- vim.keymap.set("n", "ghw", function() harpoon2:list():select(2) end)
+-- vim.keymap.set("n", "ghe", function() harpoon2:list():select(3) end)
+-- vim.keymap.set("n", "ghr", function() harpoon2:list():select(4) end)
+-- -- Toggle previous & next buffers stored within Harpoon list
+-- vim.keymap.set("n", "ghp", function() harpoon2:list():prev() end)
+-- vim.keymap.set("n", "ghn", function() harpoon2:list():next() end)
 
 -- autocompletion LSP neovim 0.11
 vim.keymap.set('i', '<c-space>',
