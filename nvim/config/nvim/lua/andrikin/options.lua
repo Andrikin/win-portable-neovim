@@ -4,9 +4,6 @@ vim.g.maplocalleader = ' '
 -- Search recursively
 vim.opt.path:append('**')
 
--- Sem numeração de linhas para comando TOHtml
-vim.g.html_number_lines = 0
-
 -- Indicadores - números nas linhas
 vim.o.rnu = true
 vim.o.nu = true
@@ -48,7 +45,6 @@ if vim.fn.has('win32') then
 else
 	vim.g.shell = vim.env.TERM
 end
---let &g:shellpipe = '2>&1 | tee' -- default in Windows
 vim.opt.complete:remove('t')
 vim.o.title = true
 vim.o.hidden = true

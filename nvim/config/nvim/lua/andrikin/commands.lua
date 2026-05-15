@@ -1,7 +1,7 @@
 -- CUSTOM COMMANDS
 
 local command = vim.api.nvim_create_user_command
-local notify = require('andrikin.utils').notify
+local notify = require('andrikin.utils').notify or vim.notify
 local Ouvidoria = require('andrikin.utils').Ouvidoria -- executar bootstrap
 local Cygwin = require('andrikin.utils').Cygwin
 local Diretorio = require('andrikin.utils').Diretorio
@@ -39,7 +39,6 @@ command('CompilarLatex',
 command('Ouvidoria',
     function(opts)
         local ok, erro = pcall(function(o) Ouvidoria.ci:nova(o) end, opts)
-        notify = notify or vim.print
         if not ok and (erro and erro:match('Keyboard interrupt')) then
             notify('Ouvidoria: Operação interrompida por Ctrl-C')
         elseif not ok then
@@ -141,7 +140,7 @@ command('Imprimir',
         local printer = opts.fargs[2]
         if not arquivo then
             print('Não foi informado arquivo para impressão. Abortando')
-            do return end
+            return
         end
         if not printer then
             -- printer = vim.fn.system({'wmic', 'printer', 'get', 'name,default'})
@@ -165,7 +164,7 @@ command('SortingDirvish',
         local buf = vim.api.nvim_get_current_buf()
         local plist = vim.api.nvim_buf_get_lines(buf, 0, -1, false)
         if #plist == 1 and plist[1] == '' then
-            do return end
+            return
         end
         local paths = {}
         for _, p in ipairs(plist) do

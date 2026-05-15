@@ -2,7 +2,8 @@
 local copyq = '\\\\.\\pipe\\copyq'
 local ok, _ = pcall(vim.fn.serverstart, copyq)
 if not ok then
-    require('andrikin.utils').notify("Server copyq já existe.")
+    local notify = require('andrikin.utils').notify or vim.notify
+    notify("Server copyq já existe.")
 end
 
 -- IMPORTANT(Windows 10+): Desabilitar python.exe e python3.exe em "Gerenciar
