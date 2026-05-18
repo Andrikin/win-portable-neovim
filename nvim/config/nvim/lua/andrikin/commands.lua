@@ -166,26 +166,32 @@ command('SortingDirvish',
         if #plist == 1 and plist[1] == '' then
             return
         end
-        local paths = {}
+		-- somente diretórios
+		vim.cmd('silent sort :/$:')
+		vim.cmd('silent g/[^/]$/d')
+        local dlist = vim.api.nvim_buf_get_lines(buf, 0, -1, false)
+		if #dlist == 1 and dlist[1] == '' then
+			dlist = {}
+		end
+        local fpaths = {}
         for _, p in ipairs(plist) do
             local m = vim.uv.fs_stat(p)
             local path = {
                 path = p,
-                mod = m.mtime.sec or m.mtime
+                mtime = m.mtime.sec or m.mtime,
             }
-            if vim.fn.isdirectory(p) > 0 then
-                path.mod = 9999999999
-            end
-            table.insert(paths, path)
+			if m.type ~= 'directory' then
+				table.insert(fpaths, path)
+			end
         end
-        table.sort(paths, function (a, b)
-            return a.mod > b.mod
+		-- ordernar arquivos
+        table.sort(fpaths, function (a, b)
+            return a.mtime > b.mtime
         end)
-        plist = {}
-        for _, path in ipairs(paths) do
-            table.insert(plist, path.path)
+		-- adicionar arquivos aos diretórios
+        for _, path in ipairs(fpaths) do
+			table.insert(dlist, path.path)
         end
-        vim.api.nvim_buf_set_lines(buf, 0, -1, false, plist)
+        vim.api.nvim_buf_set_lines(buf, 0, -1, false, dlist)
     end,
 {})
-
