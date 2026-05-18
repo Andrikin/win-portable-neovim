@@ -13,7 +13,7 @@ lua << EOF
 		end
 	end
     -- XDG variables
-	vim.env.HOME = string.match(vim.env.VIMRUNTIME, '^(.*win.portable.neovim).*$')
+	vim.env.HOME = string.match(vim.env.VIMRUNTIME, '^(.*win%-portable%-neovim).*$')
 	vim.env.XDG_CONFIG_HOME = vim.env.HOME .. '\\nvim\\config'
 	mkdir(vim.env.XDG_CONFIG_HOME)
 	vim.env.XDG_DATA_HOME = vim.env.XDG_CONFIG_HOME
