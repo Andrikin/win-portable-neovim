@@ -124,7 +124,7 @@ autocmd('VimEnter', {
 -- https://copyq.readthedocs.io/en/latest/faq.html#why-does-my-external-editor-fail-to-edit-items
 --
 -- ideia: copiar todo texto quando sair do buffer, criando nova entrada no
--- copyq
+-- copyq: tab -> clipboard
 autocmd('BufWrite', {
     group = Andrikin,
     pattern = 'Copyq*.txt',
