@@ -42,10 +42,29 @@ vim.pack.add({
     'https://github.com/mfussenegger/nvim-jdtls.git',
 })
 
-vim.cmd.packadd("firenvim")
-if vim.fn.isdirectory(vim.fn.expand('$HOME') .. '/nvim/config/firenvim') == 0 then
-    vim.cmd("silent! call firenvim#install(1)")
-end
+-- vim.pack autocmds:
+vim.api.nvim_create_autocmd('PackChanged', { -- install firenvim
+    callback = function (ev) 
+        local nome, tipo = ev.data.spec.name, ev.data.kind
+        if nome == 'firenvim' and (tipo == 'install' or tipo == 'update') then
+            if not ev.data.active then vim.cmd.packadd('firenvim') end
+            if vim.fn.isdirectory(vim.fn.expand('$HOME') .. '/nvim/config/firenvim') == 0 then
+                vim.cmd("silent! call firenvim#install(0)")
+            end
+        end
+    end
+})
+vim.api.nvim_create_autocmd('PackChanged', { -- build blink.cmp
+    callback = function (ev)
+        local nome, tipo = ev.data.spec.name, ev.data.kind
+        if nome == 'blink.cmp' and (tipo == 'install' or tipo == 'update') then
+            if not ev.data.active then vim.cmd.packadd('blink.cmp') end
+            if vim.fn.exists(':BlinkCmp') then
+                vim.cmd.BlinkCmp('build')
+            end
+        end
+    end
+})
 
 local gcc = vim.fn.executable('x86_64-w64-mingw32-gcc') == 1
 if not gcc then
@@ -95,6 +114,7 @@ vim.cmd.packadd('nvim.difftool')
 vim.cmd.packadd('nvim.undotree')
 vim.cmd.packadd('nvim.tohtml')
 vim.cmd.packadd('justify')
+-- vim.cmd.packadd("firenvim")
 
 -- experimental: ui2
 require('vim._core.ui2').enable()

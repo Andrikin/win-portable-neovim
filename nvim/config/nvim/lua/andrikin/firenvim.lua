@@ -13,10 +13,19 @@ vim.pack.add({
     'https://github.com/glacambre/firenvim',
 })
 
-vim.cmd.packadd("firenvim")
-if vim.fn.isdirectory(vim.fn.expand('$HOME') .. '/nvim/config/firenvim') == 0 then
-    vim.cmd("silent! call firenvim#install(1)")
-end
+-- vim.pack autocmds:
+vim.api.nvim_create_autocmd('PackChanged', { -- install firenvim
+    callback = function (ev) 
+        local nome, tipo = ev.data.spec.name, ev.data.kind
+        if nome == 'firenvim' and (tipo == 'install' or tipo == 'update') then
+            if not ev.data.active then vim.cmd.packadd('firenvim') end
+            if vim.fn.isdirectory(vim.fn.expand('$HOME') .. '/nvim/config/firenvim') == 0 then
+                vim.cmd("silent! call firenvim#install(0)")
+            end
+        end
+    end
+})
+-- vim.cmd.packadd("firenvim")
 
 vim.cmd.packadd('nvim.undotree')
 -- vim.cmd.packadd('justify')
