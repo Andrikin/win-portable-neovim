@@ -6,7 +6,8 @@ local notify = require('andrikin.utils').notify or vim.print
 -- install plugins
 vim.pack.add({
     -- colorscheme
-    'https://github.com/biisal/blackhole',
+    'https://github.com/polirritmico/monokai-nightasty.nvim',
+    -- 'https://github.com/biisal/blackhole',
     -- my plugins and forks
     'https://github.com/Andrikin/awesome-pairing',
     'https://github.com/Andrikin/awesome-substitute',
@@ -22,7 +23,8 @@ vim.pack.add({
     -- 'https://github.com/nvim-lua/plenary.nvim.git',
     'https://github.com/romainl/vim-cool.git',
     'https://github.com/justinmk/vim-dirvish.git',
-    'https://github.com/nvim-lualine/lualine.nvim',
+    -- statusline
+    { src = 'https://github.com/nvim-mini/mini.statusline', version = 'stable' },
     'https://github.com/neovim/nvim-lspconfig.git',
     { src = 'https://github.com/Saghen/blink.cmp', version = 'v1' },
     -- blink.cmp dependency - v2
@@ -44,7 +46,7 @@ vim.pack.add({
 
 -- vim.pack autocmds:
 vim.api.nvim_create_autocmd('PackChanged', { -- install firenvim
-    callback = function (ev) 
+    callback = function (ev)
         local nome, tipo = ev.data.spec.name, ev.data.kind
         if nome == 'firenvim' and (tipo == 'install' or tipo == 'update') then
             if not ev.data.active then vim.cmd.packadd('firenvim') end
@@ -108,7 +110,8 @@ end
 
 -- Colorscheme
 vim.o.termguicolors = true
-vim.cmd.colorscheme('blackhole')
+-- vim.cmd.colorscheme('blackhole')
+vim.cmd.colorscheme('monokai-nightasty')
 
 vim.cmd.packadd('nvim.difftool')
 vim.cmd.packadd('nvim.undotree')
@@ -124,6 +127,8 @@ require('nvim.spellfile').config()
 require('colorizer').setup({ filetype = {'css', 'html', 'javascript'}, lazy_load = true })
 -- Lazydev -- Neovim 0.11
 require('lazydev').setup()
+-- mini.statusline
+require('mini.statusline').setup()
 -- mini.pick
 require('mini.pick').setup({
     window= {
@@ -159,27 +164,6 @@ require('dressing').setup({
             }
         }
     }
-})
--- WARNING: caso remova configuração 'tabline' não serão inicializados comandos
--- deste componente como, por exemplo, 'LualineRenameTab'. Remover, portanto,
--- autocomando para renomear buffer checkhealth.
-require('lualine').setup({
-    options = { theme = 'auto',
-        component_separators = { left = '', right = ''},
-        section_separators = { left = '', right = ''},
-        always_show_tabline = false,
-    },
-    sections = {
-        lualine_a = {'mode', 'CapsLockStatusline'},
-    },
-    winbar = {
-        lualine_a = {},
-        lualine_b = {},
-        lualine_c = {'filename'},
-        lualine_x = {},
-        lualine_y = {},
-        lualine_z = {}
-    },
 })
 -- blink.cmp configuration
 local rust = vim.fn.executable('cargo.exe') == 1
