@@ -47,8 +47,8 @@ command('Ouvidoria',
     end,
     {
         nargs = "+",
-        complete = function(arg, _, _) 
-            return Ouvidoria.ci:tab(arg) 
+        complete = function(arg, _, _)
+            return Ouvidoria.ci:tab(arg)
         end,
     }
 )
