@@ -166,9 +166,10 @@ command('SortingDirvish',
         if #plist == 1 and plist[1] == '' then
             return
         end
-		-- somente diretórios
+		-- diretórios; .diretórios
 		vim.cmd('silent sort :/$:')
-		vim.cmd('silent g/[^/]$/d')
+        -- somente diretórios
+        vim.cmd('silent g/[^/]$/d')
         local dlist = vim.api.nvim_buf_get_lines(buf, 0, -1, false)
 		if #dlist == 1 and dlist[1] == '' then
 			dlist = {}
