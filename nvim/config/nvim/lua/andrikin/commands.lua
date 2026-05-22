@@ -59,10 +59,19 @@ command('Projetos',
     end,
 {})
 
+command('InicializacaoWindows',
+    function()
+        vim.cmd.Dirvish(vim.fs.joinpath(
+            vim.env.APPDATA,
+            '/Microsoft/Windows/Start Menu/Programs/Startup'
+        ))
+    end,
+{})
+
 command('Desktop',
     function()
         vim.cmd.Dirvish(vim.fs.joinpath(
-            vim.env.HOMEPATH,
+            vim.env.HOMEDRIVE .. vim.env.HOMEPATH,
             'Desktop'
         ))
     end,
@@ -71,7 +80,7 @@ command('Desktop',
 command('Downloads',
     function()
         vim.cmd.Dirvish(vim.fs.joinpath(
-            vim.env.HOMEPATH,
+            vim.env.HOMEDRIVE .. vim.env.HOMEPATH,
             'Downloads'
         ))
     end,
@@ -80,7 +89,7 @@ command('Downloads',
 command('Documents',
     function()
         vim.cmd.Dirvish(vim.fs.joinpath(
-            vim.env.HOMEPATH,
+            vim.env.HOMEDRIVE .. vim.env.HOMEPATH,
             'Documents'
         ))
     end,
