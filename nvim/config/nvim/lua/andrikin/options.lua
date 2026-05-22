@@ -1,6 +1,9 @@
 vim.g.mapleader = ' '
 vim.g.maplocalleader = ' '
 
+-- terminal toggler
+vim.g.terminal_toggle = {}
+
 -- Search recursively
 vim.opt.path:append('**')
 

@@ -119,46 +119,64 @@ vim.keymap.set(
 	end
 )
 
-local toggle_list = function(modo, comando, on_error)
-    local aberto = false
-    local windows = vim.fn.getwininfo()
-    for _, win in ipairs(windows) do
-        aberto = win[modo] == 1
-        if aberto then
-            if vim.fn.tabpagenr() ~= win.tabnr then
-                vim.fn.win_gotoid(win.winid)
-            end
-            vim.cmd.windo({args = {'normal', 'ZQ'}, range = {win.winnr}})
-            return
-        end
+-- --- Terminal ---
+local toggle_list = function()
+    local tabnr = vim.fn.tabpagenr()
+    if tabnr <= 0 then
+        notify('toggle_terminal: erro encontrado')
+        return
     end
-    if not aberto then
-        if modo == 'terminal' then
-            vim.cmd.split()
+    -- terminal aberto no tab atual?
+    if vim.g.terminal_toggle[tabnr] then
+        local buf = vim.fn.getbufinfo(vim.g.terminal_toggle[tabnr])
+        if not vim.tbl_isempty(buf) then
+            buf = buf[1]
+            if buf.hidden == 1 then
+                vim.cmd.split("+b" .. vim.g.terminal_toggle[tabnr])
+            else
+                vim.fn.win_execute(
+                    vim.fn.win_findbuf(vim.g.terminal_toggle[tabnr])[1],
+                    'close', true
+                )
+            end
         end
-        local ok, resultado = pcall(vim.cmd[comando])
-        if not ok and on_error then
-            on_error(resultado)
+    else
+        -- abrir novo terminal no tab atual
+        local wins = vim.api.nvim_list_wins()
+        local terminals = {}
+        for _, w in ipairs(wins) do
+            local info = vim.fn.getwininfo(w)[1]
+            if info.terminal == 1 then
+                table.insert(terminals, {buf = info.bufnr, tab = info.tabnr})
+            end
+        end
+        if vim.tbl_isempty(terminals) then
+            vim.print('novo terminal!')
+            vim.cmd.split('+terminal')
+            local temp = vim.g.terminal_toggle
+            temp[tabnr] = vim.api.nvim_get_current_buf()
+            vim.g.terminal_toggle = temp
+        else
+            if vim.tbl_contains(terminals, function (v)
+                return vim.deep_equal(v, { buf = vim.g.terminal_toggle[tabnr], tab = tabnr })
+            end, { predicate = true }) then
+                vim.cmd.split("+b" .. vim.g.terminal_toggle[tabnr])
+            else
+                vim.cmd.split('+terminal')
+                local tabbufs = vim.fn.tabpagebuflist()
+                for _, t in ipairs(terminals) do
+                    if vim.fn.count(tabbufs, t.buf) == 1 then
+                        local temp = vim.g.terminal_toggle
+                        temp[tabnr] = t.buf
+                        vim.g.terminal_toggle = temp
+                        break
+                    end
+                end
+            end
         end
     end
 end
-
--- --- Terminal ---
-
-vim.keymap.set('t', '<esc>', '<C-\\><C-n>')
--- Terminal Toggle
-vim.keymap.set('n', '<leader>t',
-	function()
-        toggle_list('terminal', 'terminal',
-            function(resposta)
-				if resposta and vim.fn.has('win32') and resposta:match('E903:') then
-					notify('Não foi possível abrir o terminal. Esta feature não está disponível para a sua versão de Windows, somente para Windows 10+.')
-					vim.cmd.normal('ZQ')
-				end
-            end
-        )
-	end
-)
+vim.keymap.set('n', '<leader>t', toggle_list)
 
 -- Nvim-Undotree plugin
 vim.keymap.set(
