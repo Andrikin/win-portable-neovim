@@ -67,6 +67,15 @@ vim.keymap.set( 'n', 'j',
 -- inoremap <c-k> <c-o>:m.-2<cr>
 -- nnoremap <leader>k <cmd>m.-2<cr>
 -- nnoremap <leader>j <cmd>m.+1<cr>
+vim.keymap.set('i', '<a-k>', "<c-o>:m.-2<cr>", {silent = true})
+vim.keymap.set('i', '<a-j>', "<c-o>:m.+1<cr>", {silent = true})
+if vim.g.mapleader == ' ' then
+	vim.keymap.set('n', '<leader>k', ":m.-2<cr>", {silent = true})
+	vim.keymap.set('n', '<leader>j', ":m.+1<cr>", {silent = true})
+else
+	vim.keymap.set('n', '<space>k', ":m.-2<cr>", {silent = true})
+	vim.keymap.set('n', '<space>j', ":m.+1<cr>", {silent = true})
+end
 vim.keymap.set('v', 'K', ":m'<-2<cr>gv", {silent = true})
 vim.keymap.set('v', 'J', ":m'>+1<cr>gv", {silent = true})
 -- gJ com o mesmo comportamento de J (juntar linhas removendo espaços)
@@ -121,60 +130,43 @@ vim.keymap.set(
 
 -- --- Terminal ---
 local toggle_list = function()
-    local tabnr = vim.fn.tabpagenr()
-    if tabnr <= 0 then
-        notify('toggle_terminal: erro encontrado')
+	local ttoggler = vim.g.ttoggler
+    local tnumber = vim.api.nvim_tabpage_get_number(0)
+    if tnumber <= 0 then
+        vim.notify('toggle_terminal: erro encontrado')
         return
     end
-    -- terminal aberto no tab atual?
-    if vim.g.terminal_toggle[tabnr] then
-        local buf = vim.fn.getbufinfo(vim.g.terminal_toggle[tabnr])
-        if not vim.tbl_isempty(buf) then
-            buf = buf[1]
-            if buf.hidden == 1 then
-                vim.cmd.split("+b" .. vim.g.terminal_toggle[tabnr])
-            else
-                vim.fn.win_execute(
-                    vim.fn.win_findbuf(vim.g.terminal_toggle[tabnr])[1],
-                    'close', true
-                )
-            end
+    if ttoggler[tnumber] then
+        local binfo = vim.fn.getbufinfo(ttoggler[tnumber])[1]
+		if binfo.hidden == 0 then
+			vim.api.nvim_buf_call(
+				ttoggler[tnumber],
+				vim.cmd.close
+			)
+		else
+			vim.cmd.split("+b" .. ttoggler[tnumber])
         end
     else
-        -- abrir novo terminal no tab atual
-        local wins = vim.api.nvim_list_wins()
-        local terminals = {}
-        for _, w in ipairs(wins) do
-            local info = vim.fn.getwininfo(w)[1]
-            if info.terminal == 1 then
-                table.insert(terminals, {buf = info.bufnr, tab = info.tabnr})
-            end
-        end
-        if vim.tbl_isempty(terminals) then
-            vim.print('novo terminal!')
-            vim.cmd.split('+terminal')
-            local temp = vim.g.terminal_toggle
-            temp[tabnr] = vim.api.nvim_get_current_buf()
-            vim.g.terminal_toggle = temp
-        else
-            if vim.tbl_contains(terminals, function (v)
-                return vim.deep_equal(v, { buf = vim.g.terminal_toggle[tabnr], tab = tabnr })
-            end, { predicate = true }) then
-                vim.cmd.split("+b" .. vim.g.terminal_toggle[tabnr])
-            else
-                vim.cmd.split('+terminal')
-                local tabbufs = vim.fn.tabpagebuflist()
-                for _, t in ipairs(terminals) do
-                    if vim.fn.count(tabbufs, t.buf) == 1 then
-                        local temp = vim.g.terminal_toggle
-                        temp[tabnr] = t.buf
-                        vim.g.terminal_toggle = temp
-                        break
-                    end
-                end
-            end
-        end
+		vim.cmd.split('+terminal')
+		local w = vim.api.nvim_get_current_win()
+		local winfo = vim.fn.getwininfo(w)[1]
+		local t = winfo.terminal == 1
+		if t then
+			ttoggler[tnumber] = winfo.bufnr
+		else
+			for win in ipairs(vim.api.nvim_list_wins()) do
+				if vim.api.nvim_win_get_tabpage(win) == tnumber then
+					local wininfo = vim.fn.getwininfo(win)[1]
+					local isterminal = wininfo.terminal == 1
+					if isterminal then
+						ttoggler[tnumber] = wininfo.bufnr
+						break
+					end
+				end
+			end
+		end
     end
+	vim.g.ttoggler = ttoggler
 end
 vim.keymap.set('n', '<leader>t', toggle_list)
 
