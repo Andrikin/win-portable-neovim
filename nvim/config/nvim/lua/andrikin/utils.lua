@@ -56,19 +56,17 @@ Utils.win7 = string.match(vim.uv.os_uname()['version'], 'Windows 7')
 
 ---@type table
 Utils.cursorline = {
-    toggle = function(opt)
-        opt = opt or 'both'
-        vim.wo.cursorlineopt = opt
-        vim.wo.cursorline = not vim.wo.cursorline
+    toggle = function()
+		local id = vim.api.nvim_get_current_win()
+        vim.wo[id][0].cursorline = not vim.wo[id][0].cursorline
     end,
-    on = function(opt)
-        opt = opt or 'both'
-        vim.wo.cursorlineopt = opt
-        vim.wo.cursorline = true
+    on = function()
+		local id = vim.api.nvim_get_current_win()
+        vim.wo[id][0].cursorline = true
     end,
     off = function()
-        vim.wo.cursorlineopt = 'both'
-        vim.wo.cursorline = false
+		local id = vim.api.nvim_get_current_win()
+        vim.wo[id][0].cursorline = false
     end
 }
 

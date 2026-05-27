@@ -7,8 +7,8 @@ local cursorline = require('andrikin.utils').cursorline
 autocmd('InsertEnter', {
     group = Andrikin,
     pattern = '*',
-    callback = function()
-        local dirvish = vim.o.ft == 'dirvish' -- não desativar quando for Dirvish
+    callback = function(w)
+        local dirvish = vim.bo[w.buf].ft == 'dirvish' -- não desativar quando for Dirvish
         if dirvish then
             return
         end
@@ -25,8 +25,8 @@ autocmd('WinEnter', {
 autocmd('InsertLeave', {
     group = Andrikin,
     pattern = '*',
-    callback = function()
-        local dirvish = vim.o.ft == 'dirvish' -- não desativar quando for Dirvish
+    callback = function(w)
+        local dirvish = vim.bo[w.buf].ft == 'dirvish' -- não desativar quando for Dirvish
         if dirvish then
             return
         end
