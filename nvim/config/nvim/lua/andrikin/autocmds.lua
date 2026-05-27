@@ -30,7 +30,7 @@ autocmd('InsertLeave', {
         if dirvish then
             return
         end
-            cursorline.off()
+		cursorline.off()
     end,
 })
 
