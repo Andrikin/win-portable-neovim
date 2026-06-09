@@ -8,8 +8,10 @@ local autocmds = vim.api.nvim_get_autocmds({
     buffer = buf,
 })
 vim.treesitter.start()
-vim.bo[buf].syntax = "ON" -- wip: treesitter highlight não está funcionando
-vim.bo[buf].indentexpr = "v:lua.require'nvim-treesitter'.indentexpr()"
+vim.schedule(function ()
+    vim.bo[buf].syntax = "ON" -- wip: treesitter highlight não está funcionando
+    vim.bo[buf].indentexpr = "v:lua.require'nvim-treesitter'.indentexpr()"
+end)
 for _, au in ipairs(autocmds) do
     if au.group_name == "Andrikin" then
         has_autocmd = true
@@ -45,7 +47,9 @@ if not has_autocmd then
         buffer = buf,
     })
 end
-vim.bo[buf].textwidth = 80
+vim.schedule(function ()
+    vim.bo[buf].textwidth = 80
+end)
 
 -- Vim-Surround (Tim Pope)
 -- Latex

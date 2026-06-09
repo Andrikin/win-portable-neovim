@@ -1,6 +1,8 @@
 local buf = vim.api.nvim_get_current_buf()
 vim.treesitter.start()
-vim.bo[buf].indentexpr = "v:lua.require'nvim-treesitter'.indentexpr()"
+vim.schedule(function ()
+    vim.bo[buf].indentexpr = "v:lua.require'nvim-treesitter'.indentexpr()"
+end)
 vim.cmd.packadd('nvim-jdtls')
 
 -- Eclipse Java development tools (JDT) Language Server downloaded from:
@@ -12,8 +14,10 @@ local jdtls_path = vim.env.NVIM_OPT .. '/jdtls-java-lsp'
 local launcher_jar = vim.fn.glob(jdtls_path .. '/plugins/org.eclipse.equinox.launcher_*.jar')
 local workspace_dir = vim.fn.fnamemodify(vim.fn.getcwd(), ':p:h:t')
 
-vim.bo[buf].tabstop = 4
-vim.bo[buf].shiftwidth = 0
+vim.schedule(function ()
+    vim.bo[buf].tabstop = 4
+    vim.bo[buf].shiftwidth = 0
+end)
 
 local function get_config_dir()
   -- Unlike some other programming languages (e.g. JavaScript)
