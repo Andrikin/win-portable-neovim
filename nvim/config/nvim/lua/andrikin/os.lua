@@ -89,7 +89,7 @@ local programas = {
 		cmd = 'deno.exe'
 	},{
 		nome = 'lua-lsp',
-		link = 'https://github.com/LuaLS/lua-language-server/releases/download/3.10.0/lua-language-server-3.10.0-win32-x64.zip',
+		link = 'https://github.com/LuaLS/lua-language-server/releases/download/3.10.0/lua-language-server-3.18.2-win32-x64.zip',
 		cmd = 'lua-language-server.exe'
 	},{
 		nome = 'java',
