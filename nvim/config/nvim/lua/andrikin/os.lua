@@ -31,7 +31,7 @@ local _ = require('andrikin.utils').SauceCodePro.new()
 local programas = {
 	{
 		nome = 'git',
-		link = 'https://github.com/git-for-windows/git/releases/download/v2.53.0.windows.1/MinGit-2.53.0-64-bit.zip',
+		link = 'https://github.com/git-for-windows/git/releases/download/v2.54.0.windows.1/MinGit-2.54.0-64-bit.zip',
 		cmd = 'git.exe',
         config = function()
             require('andrikin.utils').Ouvidoria.ci:init() -- modelos latex
