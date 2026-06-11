@@ -146,14 +146,10 @@ command('Snippets',
 command('Imprimir',
     function(opts)
         local arquivo = opts.fargs[1]
-        local printer = opts.fargs[2]
+        local printer = opts.fargs[2] or '\\\\printserver\\CI-OUVIDORIA'
         if not arquivo then
             print('Não foi informado arquivo para impressão. Abortando')
             return
-        end
-        if not printer then
-            -- printer = vim.fn.system({'wmic', 'printer', 'get', 'name,default'})
-            printer = '\\\\printserver\\CI-OUVIDORIA'
         end
         vim.fn.jobstart(
             ('print %s /D:%s'):format(vim.fn.shellescape(arquivo), printer),
