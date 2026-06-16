@@ -24,7 +24,7 @@ vim.pack.add({
     'https://github.com/romainl/vim-cool.git',
     'https://github.com/justinmk/vim-dirvish.git',
     -- statusline
-    { src = 'https://github.com/nvim-mini/mini.statusline', version = 'stable' },
+    -- { src = 'https://github.com/nvim-mini/mini.statusline', version = 'stable' },
     'https://github.com/neovim/nvim-lspconfig.git',
     { src = 'https://github.com/Saghen/blink.cmp', version = 'v1' },
     -- blink.cmp dependency - v2
@@ -128,7 +128,7 @@ require('colorizer').setup({ filetype = {'css', 'html', 'javascript'}, lazy_load
 -- Lazydev -- Neovim 0.11
 require('lazydev').setup()
 -- mini.statusline
-require('mini.statusline').setup()
+-- require('mini.statusline').setup()
 -- mini.pick
 require('mini.pick').setup({
     window= {
