@@ -44,6 +44,9 @@ lua << EOF
 	if not vim.env.NVIM_OPT then
 		vim.env.NVIM_OPT = vim.env.HOME .. '\\nvim\\opt'
 	end
+	if not vim.env.NVIMOPT then
+		vim.env.NVIMOPT = vim.env.HOME .. '\\nvim\\opt'
+	end
     -- load them all!
     if vim.loader then vim.loader.enable() end
 EOF
