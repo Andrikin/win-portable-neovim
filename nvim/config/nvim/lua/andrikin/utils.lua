@@ -1053,36 +1053,6 @@ Latex.compilar = function(self, destino, temp, comunicacao)
             ))
         end
     end
-    local manifestacao = {
-        inicio = vim.fn.matchbufline(
-            vim.api.nvim_get_current_buf(),
-            "begin{document}", 1,
-            vim.fn.line('$'))[1],
-        fim = vim.fn.matchbufline(
-            vim.api.nvim_get_current_buf(),
-            "end{document}", 1,
-            vim.fn.line('$'))[1],
-    }
-    local documento = {
-        manifestacao.inicio.lnum or 1,
-        manifestacao.fim.lnum or vim.fn.line('$')
-    }
-    -- Formatar texto -- OBS: ver vim.api.nvim_parse_cmd
-    vim.cmd.substitute({"/[º°ª]/{\\\\textdegree}/ge", range = documento, mods = { silent = true }})
-    vim.cmd.substitute({"/§/\\\\S/ge", range = documento, mods = { silent = true }})
-    vim.cmd.substitute({'/[“”]/\\"/ge', range = documento, mods = { silent = true }})
-    vim.cmd.substitute({"/[^\\\\]\\@<=\\$/\\\\$/ge", range = documento, mods = { silent = true }})
-    -- Formatar espaços e pontuações
-    vim.cmd.substitute({'/\\s\\+\\([.,]\\)\\s\\?/\\1 /ge', range = documento, mods = { silent = true }})
-    vim.cmd.substitute({'/\\s\\+/ /ge', range = documento, mods = { silent = true }})
-    vim.cmd(
-        documento[1] .. ',' .. documento[2] .. 'v/@\\|gov\\.br\\|\\.com\\|\\.br/s/\\([a-zA-Z]\\)\\s\\{,}\\([:.,]\\)\\s\\{,}\\([a-zA-Z0-9]\\)/\\1\\2 \\3/ge'
-    )
-    vim.cmd.substitute({
-        "/{\\\\textdegree}\\([a-zA-Z0-9]\\)/{\\\\textdegree} \\1/ge",
-        range = documento,
-        mods = { silent = true },
-    })
     if vim.o.modified then -- salvar arquivo que está modificado.
         vim.cmd.write()
     end
