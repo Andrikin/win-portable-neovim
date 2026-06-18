@@ -254,9 +254,24 @@ end)()
     return
 end)()
 
--- win-portable-neovim init
+-- win-portable-neovim git init
 (function ()
-    return
+    if not vim.fn.executable('git.exe') then
+        vim.print('Não foi encontrado git! Verificar sua instalação.')
+        return
+    end
+    if not vim.uv.fs_stat(vim.fs.joinpath(vim.env.HOME, '.git')) then
+        vim.cmd.cd(vim.env.HOME)
+		vim.cmd['!']('git init')
+		vim.cmd['!']('git remote add win git@github.com:Andrikin/win-portable-neovim')
+		vim.cmd['!']('git fetch')
+		vim.cmd['!']('git add .')
+		vim.cmd['!']('git commit -m "dummy commit"')
+		vim.cmd['!']('git checkout --track win/main')
+		vim.cmd['!']('git branch -d master')
+    else
+        vim.print("Git: diretório '.git' já existe!")
+    end
 end)()
 
 -- Dependencies init
