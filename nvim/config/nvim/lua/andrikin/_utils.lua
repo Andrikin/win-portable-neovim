@@ -51,7 +51,7 @@ local downloadit = function (dir, link)
             end
             local arquivo = vim.fs.joinpath( dir, vim.fs.basename(link) )
             if vim.uv.fs_stat(arquivo) and (
-                arquivo:match('zip$') 
+                arquivo:match('zip$')
                 or arquivo:match('tar$')
                 or arquivo:match('gz$')
             ) then
