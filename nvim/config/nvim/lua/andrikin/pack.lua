@@ -4,6 +4,7 @@
 local notify = require('andrikin.utils').notify or vim.print
 
 -- install plugins
+-- https://echasnovski.com/blog/2026-03-13-a-guide-to-vim-pack
 vim.pack.add({
     -- colorscheme
     'https://github.com/polirritmico/monokai-nightasty.nvim',
@@ -42,7 +43,7 @@ vim.pack.add({
     'https://github.com/folke/lazydev.nvim.git',
     -- ft = java
     'https://github.com/mfussenegger/nvim-jdtls.git',
-})
+}, { confirm = false })
 
 -- vim.pack autocmds:
 vim.api.nvim_create_autocmd('PackChanged', { -- install firenvim
