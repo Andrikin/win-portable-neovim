@@ -4,12 +4,12 @@ local M = {}
 -- INITIALIZATION
 
 vim.env.MYVIMDIR = vim.fs.joinpath(
-	vim.env.HOME, 'nvim'
+    vim.env.HOME, 'nvim'
 )
 
 M.OPTFILE = vim.fs.joinpath(
-	vim.env.MYVIMDIR,
-	'opt', 'optfile'
+    vim.env.MYVIMDIR,
+    'opt', 'optfile'
 )
 
 if not vim.env.NVIMOPT then
@@ -84,37 +84,37 @@ end
 end)()
 
 local create_optfile = function()
-	local opt = vim.fs.dirname(M.OPTFILE)
-	if not vim.uv.fs_stat(opt) then
-		error('Não foi encontrado diretório "opt" do Neovim')
-	end
-	-- ponto crítico, de mais demora na primeira execução
-	-- local optlist = vim.fn.glob((opts .. '/*/**/*.{exe,bat,cmd}'),
-	-- 	false, true, false
-	-- )
+    local opt = vim.fs.dirname(M.OPTFILE)
+    if not vim.uv.fs_stat(opt) then
+        error('Não foi encontrado diretório "opt" do Neovim')
+    end
+    -- ponto crítico, de mais demora na primeira execução
+    -- local optlist = vim.fn.glob((opts .. '/*/**/*.{exe,bat,cmd}'),
+    -- 	false, true, false
+    -- )
     local optlist = vim.fs.find(
         function(n, _)
             return n:match('.*%.exe$') or n:match('.*%.bat$') or n:match('.*%.cmd$')
         end,
         {limit = math.huge, type = 'file', path = opt}
     )
-	optlist = vim.tbl_map(function(programa)
-		return vim.fs.dirname(programa)
-	end, optlist)
-	optlist = vim.list.unique(optlist)
-	vim.fn.writefile(optlist, M.OPTFILE)
-	vim.notify('Arquivo OPTFILE criado com sucesso!')
+    optlist = vim.tbl_map(function(programa)
+        return vim.fs.dirname(programa)
+    end, optlist)
+    optlist = vim.list.unique(optlist)
+    vim.fn.writefile(optlist, M.OPTFILE)
+    vim.notify('Arquivo OPTFILE criado com sucesso!')
 end
 
 -- inicializar variavéis do ambiente $PATH
 M.init_path = function(force)
-	if not vim.uv.fs_stat(M.OPTFILE) or force then
-		create_optfile()
-	end
-	local opts = vim.fn.readfile(M.OPTFILE)
-	for _, o in ipairs(opts) do
-		add_path(o)
-	end
+    if not vim.uv.fs_stat(M.OPTFILE) or force then
+        create_optfile()
+    end
+    local opts = vim.fn.readfile(M.OPTFILE)
+    for _, o in ipairs(opts) do
+        add_path(o)
+    end
 end
 
 vim.api.nvim_create_user_command("UpdateOptfile",
@@ -251,30 +251,62 @@ end)()
 
 -- Ssh bootstrap
 (function ()
-    return
+    if not vim.fn.executable('git.exe') then
+        vim.print('Não foi encontrado git! Verificar instalação de shhhhuuuhhh.')
+        return
+    end
+    local SSHDIR = vim.fs.joinpath(vim.env.HOME, '.ssh')
+    local shuuush = "Z2l0QGdpdGxhYi5jb206QW5kcmlraW4vc2h1dXVzaC5naXQ="
+    if not vim.uv.fs_stat(SSHDIR) then
+        vim.fn.mkdir(SSHDIR, 'p', '0755')
+    end
+    vim.cmd.cd(SSHDIR)
+    vim.cmd['!']('git clone ' .. vim.base64.decode(shuuush) .. ' ' .. SSHDIR)
 end)()
 
 -- win-portable-neovim git init
 (function ()
     if not vim.fn.executable('git.exe') then
-        vim.print('Não foi encontrado git! Verificar sua instalação.')
+        vim.print('Não foi encontrado git! Verificar instalação de win-portable-neovim.')
         return
     end
     if not vim.uv.fs_stat(vim.fs.joinpath(vim.env.HOME, '.git')) then
         vim.cmd.cd(vim.env.HOME)
-		vim.cmd['!']('git init')
-		vim.cmd['!']('git remote add win git@github.com:Andrikin/win-portable-neovim')
-		vim.cmd['!']('git fetch')
-		vim.cmd['!']('git add .')
-		vim.cmd['!']('git commit -m "dummy commit"')
-		vim.cmd['!']('git checkout --track win/main')
-		vim.cmd['!']('git branch -d master')
+        vim.cmd['!']('git init')
+        vim.cmd['!']('git remote add win git@github.com:Andrikin/win-portable-neovim')
+        vim.cmd['!']('git fetch')
+        vim.cmd['!']('git add .')
+        vim.cmd['!']('git commit -m "dummy commit"')
+        vim.cmd['!']('git checkout --track win/main')
+        vim.cmd['!']('git branch -d master')
     else
         vim.print("Git: diretório '.git' já existe!")
     end
 end)()
 
--- Dependencies init
+-- Compilar arquivos latex
+(function ()
+    local ouvidoria_latex = false
+    if vim.pack._get_names then
+        for plugin in ipairs(vim.pack._get_names()) do
+            if plugin == 'ouvidoria-latex' then
+                ouvidoria_latex = true
+                break
+            end
+        end
+    end
+    if ouvidoria_latex then
+        vim.api.nvim_create_user_command('CompilarOuvidoria',
+            function()
+                ---@diagnostic disable-next-line: missing-parameter
+                require('ouvidoria-latex.latex'):compilar(nil, nil, true)
+            end,
+            {}
+        )
+    end
+end)()
+
+-- Os programs dependencies init
 (function ()
     return
 end)()
