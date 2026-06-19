@@ -278,7 +278,7 @@ autocmd('TextYankPost',
         group = Andrikin,
         pattern = '*',
         callback = function()
-            vim.hl.on_yank({
+            vim.hl.hl_op({
                 higroup = 'IncSearch',
                 timeout = 300,
             })
