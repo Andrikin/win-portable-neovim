@@ -136,3 +136,13 @@ autocmd('BufWrite', {
     end
 })
 
+autocmd('VimEnter',
+	{
+		group = Andrikin,
+		callback = function()
+			-- experimental: ui2
+			require('vim._core.ui2').enable()
+		end,
+	}
+)
+

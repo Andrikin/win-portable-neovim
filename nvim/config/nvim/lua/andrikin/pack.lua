@@ -120,8 +120,6 @@ vim.cmd.packadd('nvim.tohtml')
 vim.cmd.packadd('justify')
 -- vim.cmd.packadd("firenvim")
 
--- experimental: ui2
-require('vim._core.ui2').enable()
 -- spellfile.vim
 require('nvim.spellfile').config()
 -- colorizer.lua
