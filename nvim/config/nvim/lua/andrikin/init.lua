@@ -4,7 +4,8 @@ if vim.g.started_by_firenvim then
 end
 
 -- Inicialização normal neovim
-require('andrikin.os')
+-- require('andrikin.os')
+require('andrikin._utils')
 require('andrikin.pack')
 require('andrikin.lsp')
 require('andrikin.options')

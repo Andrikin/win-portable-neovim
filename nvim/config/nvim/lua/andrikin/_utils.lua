@@ -309,7 +309,6 @@ end)()
         vim.cmd['!']('git checkout --track win/main')
         vim.cmd['!']('git branch -d master')
     else
-        -- TODO: Remover autocmd em 'autocmds.lua'
         vim.print("Git: diretório '.git' já existe!")
         vim.system({'git', 'pull'}, {cwd = vim.env.HOME}, function (obj)
             if obj.stdout:match('^Updating') then

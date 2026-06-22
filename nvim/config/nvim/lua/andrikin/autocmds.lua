@@ -89,34 +89,6 @@ autocmd('LspAttach', {
     end
 })
 
--- Setar cwd para $HOMEPATH/Desktop
--- Realizar Git pull no repositório win-portable-neovim\
-autocmd('VimEnter', {
-    group = Andrikin,
-    pattern = '*',
-    once = true,
-    callback = function()
-        if vim.g.loaded_fugitive then
-            vim.fn.jobstart({
-                'git',
-                'pull'
-            }, {
-                cwd = vim.env.HOME,
-                on_stdout = function(_, data, _)
-                    if data[1] == 'Already up to date.' then
-                        print('win-portable-neovim: não há nada para atualizar!')
-                    elseif data[1]:match('^Updating') then
-                        vim.cmd.restart() -- neovim nightly 0.12
-                        print('win-portable-neovim: atualizado e recarregado!')
-                    end
-                end,
-            })
-        end
-        ---@diagnostic disable-next-line: undefined-field
-        vim.cmd.cd(vim.uv.os_homedir() .. '/Desktop')
-    end,
-})
-
 -- WIP: ao selecionar a entrada para edição no editor externo, mudar o foco do
 -- programa faz com que a janela do copyq feche, executando o restante da macro
 -- - copiar conteúdo do arquivo para entrada e deletar arquivo, antes mesmo de
