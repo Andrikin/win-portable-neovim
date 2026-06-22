@@ -1,102 +1,4 @@
--- REFAZER UTILS.LUA
 local M = {}
-
---- DEPENDENCIAS ---
-local DEPENDENCIAS = {
-	{
-        nome = 'unzip', -- https://infozip.sourceforge.net/
-        link = 'https://linorg.usp.br/CTAN/systems/windows/w32tex/unzip.exe',
-    },{
-        nome = 'setup-x86_64', -- cygwin
-        link = 'https://cygwin.com/setup-x86_64.exe',
-        config = function() require('andrikin.utils').Cygwin:init() end,
-    },{
-        nome = 'lessmsi', -- Utilizar o lessmsi-gui.exe
-        link = 'https://github.com/activescott/lessmsi/releases/download/v2.7.3/lessmsi-v2.7.3.zip',
-    },{
-		nome = 'fd',
-		link = 'https://github.com/sharkdp/fd/releases/download/v10.3.0/fd-v10.3.0-x86_64-pc-windows-gnu.zip',
-	},{
-		nome = 'rg',
-		link = 'https://github.com/BurntSushi/ripgrep/releases/download/15.1.0/ripgrep-15.1.0-x86_64-pc-windows-msvc.zip',
-	},{
-		nome = 'sumatra',
-		link = 'https://www.sumatrapdfreader.org/dl/rel/3.5.2/SumatraPDF-3.5.2-64.zip',
-	},{
-		nome = 'node',
-		link = 'https://nodejs.org/dist/v20.10.0/node-v20.10.0-win-x64.zip',
-		config = function() require('andrikin.utils').Node:init() end,
-	},{
-		nome = 'python',
-		link = 'https://www.python.org/ftp/python/3.12.2/python-3.12.2-embed-amd64.zip',
-		config = function()
-            require('andrikin.utils').Python:init()
-            require('andrikin.utils').Msvc:instalacao()
-        end,
-    },{
-		nome = 'tectonic',
-		link = 'https://github.com/tectonic-typesetting/tectonic/releases/download/tectonic%400.14.1/tectonic-0.14.1-x86_64-pc-windows-msvc.zip',
-	},{
-		nome = 'texlab',
-		link = 'https://github.com/latex-lsp/texlab/releases/download/v5.25.1/texlab-x86_64-windows.zip',
-	},{
-		nome = 'deno',
-		link = 'https://github.com/denoland/deno/releases/download/v2.1.3/deno-x86_64-pc-windows-msvc.zip',
-	},{
-		nome = 'lua-language-server',
-		link = 'https://github.com/LuaLS/lua-language-server/releases/download/3.10.0/lua-language-server-3.18.2-win32-x64.zip',
-	},{
-		nome = 'java',
-		link = 'https://download.java.net/java/GA/jdk26/c3cc523845074aa0af4f5e1e1ed4151d/35/GPL/openjdk-26_windows-x64_bin.zip', -- openjdk
-	},{
-		nome = 'jdtls',
-		link = 'https://download.eclipse.org/jdtls/snapshots/jdt-language-server-latest.tar.gz',
-	},{
-		nome = 'mvn',
-		link = 'https://dlcdn.apache.org/maven/maven-4/4.0.0-rc-5/binaries/apache-maven-4.0.0-rc-5-bin.zip',
-	},{
-		nome = 'jq',
-		link = 'https://github.com/jqlang/jq/releases/download/jq-1.8.1/jq-windows-i386.exe',
-	},{
-        nome = 'tree-sitter',
-        link = 'https://github.com/tree-sitter/tree-sitter/releases/download/v0.26.3/tree-sitter-windows-x64.gz',
-    },{
-		nome = 'sqlite3',
-		link = 'https://www.sqlite.org/2024/sqlite-tools-win-x64-3460000.zip',
-    },{
-        nome = 'gradle',
-        link = 'https://services.gradle.org/distributions/gradle-8.10.2-bin.zip',
-    },{
-        nome = 'pandoc',
-        link = 'https://github.com/jgm/pandoc/releases/download/3.5/pandoc-3.5-windows-x86_64.zip',
-    },{
-        nome = 'cmail',
-        link = 'https://www.inveigle.net/downloads/CMail_0.8.11_x86.zip',
-    },{
-        nome = 'rust',
-        link = 'https://static.rust-lang.org/dist/rust-nightly-x86_64-pc-windows-msvc.msi',
-    },{
-        nome = 'rust-analyzer',
-        link = 'https://github.com/rust-lang/rust-analyzer/releases/download/2026-01-19/rust-analyzer-aarch64-pc-windows-msvc.zip',
-    },{
-        nome = 'lua5.1', -- version 5.1 (https://sourceforge.net/projects/luabinaries/files/)
-        link = 'https://sitsa.dl.sourceforge.net/project/luabinaries/5.1.5/Tools%20Executables/lua-5.1.5_Win64_bin.zip',
-    },{
-        nome = 'lua5.1.lib', -- libs for version 5.1 (build for msvc 14)
-        link = 'https://sinalbr.dl.sourceforge.net/project/luabinaries/5.1.5/Windows%20Libraries/Static/lua-5.1.5_Win64_vc14_lib.zip',
-    },{
-        nome = 'zig',
-        link = 'https://ziglang.org/download/0.16.0/zig-x86_64-windows-0.16.0.zip',
-    },{
-        nome = 'cpdf', -- pdf tools: merge, split, etc
-        link = 'https://github.com/coherentgraphics/cpdf-binaries/archive/refs/heads/master.zip',
-    },{
-        nome = 'fzf',
-        link = 'https://github.com/junegunn/fzf/releases/download/v0.72.0/fzf-0.72.0-windows_amd64.zip',
-    }
-}
-
---- DEPENDENCIAS ---
 
 -- INITIALIZATION
 
@@ -155,18 +57,9 @@ local extractit = function (file, dir, async, removefile)
     if not vim.uv.fs_stat(dir) then
         error("extractit: não existe diretório.")
     end
-	local cmd = {}
-	if (vim.fn.fnamemodify(file, ':e'):match("^msi")
-		and executable('lessmsi')
-	) then
-		cmd = {'lessmsi.exe', 'x',
-			file:gsub("/", "\\"),
-			dir:gsub("/", "\\") .. "\\"
-		}
-	else
-		cmd = { 'tar', '-xf', file, '-C', dir }
-	end
-    local it = vim.system(cmd, function ()
+    local it = vim.system({
+        'tar', '-xf', file, '-C', dir
+    }, function ()
 		if removefile then
 			vim.fs.rm(vim.fs.joinpath(dir, file))
 		end
@@ -177,7 +70,7 @@ local extractit = function (file, dir, async, removefile)
 end
 
 -- download e extração de arquivos
-local downloadit = function (dir, link, addpath)
+local downloadit = function (dir, link, addpath, config)
 	addpath = addpath ~= nil and addpath or false
     vim.net.request(
         link,
@@ -191,19 +84,20 @@ local downloadit = function (dir, link, addpath)
             local arquivo = vim.fs.joinpath( dir, vim.fs.basename(link) )
             if vim.uv.fs_stat(arquivo) and (
                 arquivo:match('zip$')
-                or arquivo:match('tar$')
-                or arquivo:match('gz$')
-                or arquivo:match('msi$')
+                or arquivo:match('tar%.[a-z]+$')
             ) then
-                extractit( arquivo, dir, false, true)
-				if addpath then
-					local dirs = findexecutables(dir)
-					for _, d in ipairs(dirs) do
-						-- adicionar no $PATH e também no arquivo OPTFILE
-						add_path(d)
-						vim.fn.writefile({d}, M.OPTFILE, 'a')
-					end
-				end
+                extractit(arquivo, dir, false, true)
+            end
+            if addpath then
+                local dirs = findexecutables(dir)
+                for _, d in ipairs(dirs) do
+                    -- adicionar no $PATH e também no arquivo OPTFILE
+                    add_path(d)
+                    vim.fn.writefile({d}, M.OPTFILE, 'a')
+                end
+            end
+            if config then
+                config()
             end
         end
     )
@@ -415,7 +309,16 @@ end)()
         vim.cmd['!']('git checkout --track win/main')
         vim.cmd['!']('git branch -d master')
     else
+        -- TODO: Remover autocmd em 'autocmds.lua'
         vim.print("Git: diretório '.git' já existe!")
+        vim.system({'git', 'pull'}, {cwd = vim.env.HOME}, function (obj)
+            if obj.stdout:match('^Updating') then
+                vim.defer_fn(function ()
+                    vim.cmd.restart()
+                end, 5000)
+                vim.print('win-portable-neovim: Atualizado! Preparando para reiniciar Neovim!')
+            end
+        end)
     end
 end)()
 
@@ -442,32 +345,37 @@ end)()
 end)()
 
 -- criar diretório em OPT, baixar programa e adicionar no $PATH
-local function add_dependencia(nome, link)
-	local dir = vim.fs.joinpath(M.OPT, nome)
+local function add_dependencia(dep)
+	local dir = vim.fs.joinpath(M.OPT, dep.nome)
 	if not vim.uv.fs_stat(dir) then
         vim.fn.mkdir(dir, 'p', '0755')
 	end
-	downloadit(dir, link, true)
+	downloadit(dir, dep.link, true, dep.config)
 end
 
 -- Os programas dependências init
 (function ()
-	for _, dep in ipairs(DEPENDENCIAS) do
+	for _, dep in ipairs(require('andrikin._deps')) do
 		local dir = vim.fs.joinpath(M.OPT, dep.nome)
 		if not executable(dep.nome) or not vim.uv.fs_stat(dir) then
-			add_dependencia(dep.nome, dep.link)
+			add_dependencia(dep)
 		end
 	end
 	-- comando para adicionar mais 
 	vim.api.nvim_create_user_command("DependenciaAdd",
 		-- nome, link
 		function(args)
-			local nome = args.fargs[1]
-			local link = args.fargs[2]
-			add_dependencia(nome, link)
+            local dep = {
+                nome = args.fargs[1],
+                link = args.fargs[2],
+            }
+			add_dependencia(dep)
 		end, { nargs = 2 }
 	)
 end)()
+
+-- iniciar sessão neovim em Desktop
+vim.cmd.cd(vim.fs.joinpath(vim.env.USERPROFILE, '/Desktop'))
 
 return M
 
