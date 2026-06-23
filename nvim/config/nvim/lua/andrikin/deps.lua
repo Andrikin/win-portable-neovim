@@ -1,10 +1,10 @@
 if not vim.env.NVIMOPT then
-    M.OPT = vim.fs.joinpath(
+    OPT = vim.fs.joinpath(
         vim.env.HOME,
         'nvim', 'opt'
     )
 else
-    M.OPT = vim.env.NVIMOPT
+    OPT = vim.env.NVIMOPT
 end
 
 return {
