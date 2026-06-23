@@ -6,7 +6,6 @@ end
 -- Inicialização normal neovim
 require('andrikin.win')
 require('andrikin.pack')
-require('andrikin.lsp')
 require('andrikin.options')
 require('andrikin.maps')
 require('andrikin.commands')
