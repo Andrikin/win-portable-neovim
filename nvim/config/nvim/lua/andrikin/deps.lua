@@ -1,5 +1,11 @@
---- DEPENDENCIAS ---
-local OPT = require('andrikin.win').OPT
+if not vim.env.NVIMOPT then
+    M.OPT = vim.fs.joinpath(
+        vim.env.HOME,
+        'nvim', 'opt'
+    )
+else
+    M.OPT = vim.env.NVIMOPT
+end
 
 return {
 	{
@@ -331,5 +337,4 @@ return {
         link = 'https://github.com/junegunn/fzf/releases/download/v0.72.0/fzf-0.72.0-windows_amd64.zip',
     }
 }
---- DEPENDENCIAS ---
 
