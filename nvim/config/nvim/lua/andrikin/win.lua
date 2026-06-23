@@ -53,36 +53,38 @@ end
 -- extração de arquivos
 local extractit = function (file, dir, async, removefile)
 	removefile = removefile ~= nil and removefile or false
+    local arquivo = vim.fs.joinpath(dir, file)
     async = async or false
     if not vim.uv.fs_stat(dir) then
         error("extractit: não existe diretório.")
     end
     local it = vim.system({
-        'tar', '-xf', file, '-C', dir
+        'tar', '-xf', arquivo, '-C', dir
     }, function ()
 		if removefile then
-			vim.fs.rm(vim.fs.joinpath(dir, file))
+			vim.fs.rm(arquivo)
 		end
     end)
     if not async then
-        it:wait()
+        vim.schedule(function() it:wait() end)
     end
 end
 
 -- download e extração de arquivos
 local downloadit = function (dir, link, addpath, config)
 	addpath = addpath ~= nil and addpath or false
+    local arquivo = vim.fs.basename(link)
     vim.net.request(
-        link,
-        { outpath = dir },
+        link, { 
+            outpath = vim.fs.joinpath( dir, arquivo ),
+        },
         -- extrair arquivo
         function(err, _)
             if err then
-                vim.print(('Erro ao realizar download de %s.'):format(vim.fs.basename(link)))
+                vim.print(('Erro ao realizar download de %s.\nErro: %s'):format(arquivo, err))
                 return
             end
-            local arquivo = vim.fs.joinpath( dir, vim.fs.basename(link) )
-            if vim.uv.fs_stat(arquivo) and (
+            if vim.uv.fs_stat(vim.fs.joinpath( dir, arquivo )) and (
                 arquivo:match('zip$')
                 or arquivo:match('tar%.[a-z]+$')
             ) then
@@ -92,8 +94,10 @@ local downloadit = function (dir, link, addpath, config)
                 local dirs = findexecutables(dir)
                 for _, d in ipairs(dirs) do
                     -- adicionar no $PATH e também no arquivo OPTFILE
-                    add_path(d)
-                    vim.fn.writefile({d}, M.OPTFILE, 'a')
+                    vim.schedule(function() 
+                        add_path(d) 
+                        vim.fn.writefile({d}, M.OPTFILE, 'a')
+                    end)
                 end
             end
             if config then
