@@ -1,61 +1,27 @@
 -- CUSTOM COMMANDS
 
 local command = vim.api.nvim_create_user_command
-local notify = require('andrikin.utils').notify or vim.notify
-local Ouvidoria = require('andrikin.utils').Ouvidoria -- executar bootstrap
-local Cygwin = require('andrikin.utils').Cygwin
-local Diretorio = require('andrikin.utils').Diretorio
-local Copyq = require('andrikin.utils').Copyq
+-- local Copyq = require('andrikin.utils').Copyq
 
 
-command('Clipboard',
-    function(opts)
-        Copyq.clipboard(opts)
-    end,
-	{
-        nargs = "?",
-        complete = function(arg, _, _)
-            return Copyq:tab_complete(arg)
-        end,
-    }
-)
-
-command('CompilarOuvidoria',
-    function()
-    ---@diagnostic disable-next-line: missing-parameter
-        Ouvidoria.latex:compilar(nil, nil, true)
-    end,
-{})
-
-command('CompilarLatex',
-    function()
-        ---@diagnostic disable-next-line: param-type-mismatch, undefined-field
-        local destino = Diretorio.new(vim.uv.os_homedir()) / 'Downloads'
-        ---@diagnostic disable-next-line: missing-parameter
-        Ouvidoria.latex:compilar(destino, nil, false)
-    end,
-{})
-
-command('Ouvidoria',
-    function(opts)
-        local ok, erro = pcall(function(o) Ouvidoria.ci:nova(o) end, opts)
-        if not ok and (erro and erro:match('Keyboard interrupt')) then
-            notify('Ouvidoria: Operação interrompida por Ctrl-C')
-        elseif not ok then
-            notify('Ouvidoria: ' .. erro)
-        end
-    end,
-    {
-        nargs = "+",
-        complete = function(arg, _, _)
-            return Ouvidoria.ci:tab(arg)
-        end,
-    }
-)
+-- command('Clipboard',
+--     function(opts)
+--         Copyq.clipboard(opts)
+--     end,
+-- 	{
+--         nargs = "?",
+--         complete = function(arg, _, _)
+--             return Copyq:tab_complete(arg)
+--         end,
+--     }
+-- )
 
 command('Projetos',
     function()
-        vim.cmd.Dirvish(Ouvidoria.ci.diretorios.projetos.diretorio)
+        vim.cmd.Dirvish(vim.fs.joinpath(
+            vim.fs.basedir(vim.env.HOME),
+            'projetos'
+        ))
     end,
 {})
 
@@ -156,11 +122,6 @@ command('Imprimir',
         {detach = true})
     end,
     { nargs = "+", complete = 'file' }
-)
-
-command('Cygwin',
-    function(opts) Cygwin:comando(opts) end,
-    {nargs = '+', complete = Cygwin.complete}
 )
 
 -- Sort paths in dirvish buffer, from newest to oldest

@@ -202,16 +202,16 @@ command(
     {}
 )
 
-local Copyq = require('andrikin.utils').Copyq
+-- local Copyq = require('andrikin.utils').Copyq
 
-command('Clipboard',
-    function(arg)
-        Copyq.clipboard(arg)
-    end,
-	{
-		nargs = "?",
-		complete = function(arg, _, _) return Copyq:tab_complete(arg) end,
-})
+-- command('Clipboard',
+--     function(arg)
+--         Copyq.clipboard(arg)
+--     end,
+-- 	{
+-- 		nargs = "?",
+-- 		complete = function(arg, _, _) return Copyq:tab_complete(arg) end,
+-- })
 
 
 -- Mensagens automáticas
@@ -231,8 +231,7 @@ Ouvidoria da Prefeitura de Itajaí
 
 -- AUTOCOMMANDS --
 local autocmd = vim.api.nvim_create_autocmd
-local Andrikin = require('andrikin.utils').Andrikin
-local cursorline = require('andrikin.utils').cursorline
+local Andrikin = vim.api.nvim_create_augroup('Andrikin', {clear = true})
 
 -- Auto Insert Mode
 autocmd({'BufEnter'}, {
@@ -246,7 +245,8 @@ autocmd('InsertEnter',
         group = Andrikin,
         pattern = '*',
         callback = function()
-            cursorline.on()
+            local id = vim.api.nvim_get_current_win()
+            vim.wo[id][0].cursorline = true
         end,
 })
 autocmd('InsertLeave',
@@ -256,7 +256,8 @@ autocmd('InsertLeave',
         callback = function()
             local dirvish = vim.o.ft == 'dirvish' -- não desativar quando for Dirvish
             if not dirvish then
-                cursorline.off()
+                local id = vim.api.nvim_get_current_win()
+                vim.wo[id][0].cursorline = false
             end
         end,
 })

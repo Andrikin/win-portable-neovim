@@ -133,7 +133,7 @@ local create_optfile = function()
     end, optlist)
     optlist = vim.list.unique(optlist)
     vim.fn.writefile(optlist, M.OPTFILE)
-    vim.notify('Arquivo OPTFILE criado com sucesso!')
+    vim.print('Arquivo OPTFILE criado com sucesso!')
 end
 
 -- inicializar variavéis do ambiente $PATH

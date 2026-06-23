@@ -1,7 +1,4 @@
 ---@diagnostic disable: param-type-mismatch
--- TODO: Usar vim.pack para gerenciamento de plugins no neovim 0.12+nightly
-
-local notify = require('andrikin.utils').notify or vim.print
 
 -- install plugins
 -- https://echasnovski.com/blog/2026-03-13-a-guide-to-vim-pack
@@ -72,7 +69,7 @@ vim.api.nvim_create_autocmd('PackChanged', { -- build blink.cmp
 
 local gcc = vim.fn.executable('x86_64-w64-mingw32-gcc') == 1
 if not gcc then
-    vim.notify('Treesitter: Não foi possível encontrar compilador executável "gcc".')
+    vim.print('Treesitter: Não foi possível encontrar compilador executável "gcc".')
     pcall(vim.cmd.Cygwin, 'install x86_64-w64-mingw32-gcc')
 else
     vim.pack.add({{
@@ -168,7 +165,7 @@ require('dressing').setup({
 -- blink.cmp configuration
 local rust = vim.fn.executable('cargo.exe') == 1
 if not rust then
-    notify("rust: Não foi encontrado executável do 'rust'. Verificar instalação.")
+    vim.print("rust: Não foi encontrado executável do 'rust'. Verificar instalação.")
     return
 end
 -- compile fuzzy for blink.cmp - v2
@@ -218,3 +215,25 @@ require('blink.cmp').setup({
     },
 })
 
+-- Configuração de LSP servers
+
+-- lsp.diagnostic: Mensagem de erro mais curta
+vim.diagnostic.config({
+    underline = true,
+})
+
+-- Ativar LSP nos buffers, automaticamente -- Neovim 0.11
+vim.lsp.enable({
+    'luals',
+    'texlab',
+    'emmetls',
+    -- 'pyright',
+    'basedpyright',
+    'denols',
+    'vimls',
+    'html',
+    'jsonls',
+    'cssls',
+    'rustanalyzer',
+})
+-- vim.lsp.set_log_level("debug")

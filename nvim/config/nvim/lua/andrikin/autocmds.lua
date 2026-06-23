@@ -1,7 +1,6 @@
 -- Autocmds goosebumps
 local autocmd = vim.api.nvim_create_autocmd
-local Andrikin = require('andrikin.utils').Andrikin
-local cursorline = require('andrikin.utils').cursorline
+local Andrikin = vim.api.nvim_create_augroup('Andrikin', {clear = true})
 
 -- Highlight linha quando entrar em INSERT MODE
 autocmd('InsertEnter', {
@@ -12,14 +11,16 @@ autocmd('InsertEnter', {
         if dirvish then
             return
         end
-        cursorline.on()
+        local id = vim.api.nvim_get_current_win()
+        vim.wo[id][0].cursorline = true
     end,
 })
 autocmd('WinEnter', {
     group = Andrikin,
     pattern = '*',
     callback = function()
-        cursorline.off()
+        local id = vim.api.nvim_get_current_win()
+        vim.wo[id][0].cursorline = false
     end,
 })
 autocmd('InsertLeave', {
@@ -30,7 +31,8 @@ autocmd('InsertLeave', {
         if dirvish then
             return
         end
-		cursorline.off()
+        local id = vim.api.nvim_get_current_win()
+        vim.wo[id][0].cursorline = false
     end,
 })
 
