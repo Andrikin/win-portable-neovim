@@ -215,7 +215,7 @@ return {
                 vim.print('Variável python3_host_prog não configurado.')
             end
             -- Msvc installation
-            (function()
+            _ = (function()
                 if vim.fn.executable("cl.exe") == 1 then
                     return
                 end

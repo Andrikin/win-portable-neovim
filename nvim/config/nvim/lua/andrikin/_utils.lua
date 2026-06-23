@@ -104,7 +104,7 @@ local downloadit = function (dir, link, addpath, config)
 end
 
 -- Check folders initialization
-(function()
+_ = (function()
     if not vim.uv.fs_stat(M.OPT) then
         vim.fn.mkdir(M.OPT, 'p', '0755')
     end
@@ -154,7 +154,7 @@ vim.api.nvim_create_user_command("UpdateOptfile",
 )
 
 -- Check git, install it
-(function()
+_ = (function()
     if executable('git.exe') then
         vim.print("Git já instalado!")
         return
@@ -165,7 +165,7 @@ vim.api.nvim_create_user_command("UpdateOptfile",
 end)()
 
 -- Check font, install it
-(function()
+_ = (function()
     local SAUCEREGCMD = vim.fs.joinpath(
         'HKCU','Software', 'Microsoft',
         'Windows NT', 'CurrentVersion', 'Fonts'
@@ -248,7 +248,7 @@ end)()
 end)()
 
 -- Check remote server, initialize it
-(function()
+_ = (function()
     local copyq = '\\\\.\\pipe\\copyq'
     local ok, _ = pcall(vim.fn.serverstart, copyq)
     if not ok then
@@ -260,7 +260,7 @@ end)()
 -- aliases de execução de aplicativo". Windows executa este alias antes de
 -- executar python declarado em $PATH.
 -- ALTERNATIVE FIX: Remover WindowsApps do $PATH
-(function()
+_ = (function()
     local remove = function (programa)
         if vim.env.PATH:match(programa) then
             local PATH = ''
@@ -279,7 +279,7 @@ end)()
 end)()
 
 -- Ssh bootstrap
-(function ()
+_ = (function ()
     if not executable('git.exe') then
         vim.print('Não foi encontrado git! Verificar instalação de shhhhuuuhhh.')
         return
@@ -294,7 +294,7 @@ end)()
 end)()
 
 -- win-portable-neovim git init
-(function ()
+_ = (function ()
     if not executable('git.exe') then
         vim.print('Não foi encontrado git! Verificar instalação de win-portable-neovim.')
         return
@@ -322,7 +322,7 @@ end)()
 end)()
 
 -- Compilar arquivos latex
-(function ()
+_ = (function ()
     local ouvidoria_latex = false
     if vim.pack._get_names then
         for plugin in ipairs(vim.pack._get_names()) do
@@ -353,7 +353,7 @@ local function add_dependencia(dep)
 end
 
 -- Os programas dependências init
-(function ()
+_ = (function ()
 	for _, dep in ipairs(require('andrikin._deps')) do
 		local dir = vim.fs.joinpath(M.OPT, dep.nome)
 		if not executable(dep.nome) or not vim.uv.fs_stat(dir) then
