@@ -75,7 +75,7 @@ local downloadit = function (dir, link, addpath, config)
 	addpath = addpath ~= nil and addpath or false
     local arquivo = vim.fs.basename(link)
     vim.net.request(
-        link, { 
+        link, {
             outpath = vim.fs.joinpath( dir, arquivo ),
         },
         -- extrair arquivo
@@ -94,8 +94,8 @@ local downloadit = function (dir, link, addpath, config)
                 local dirs = findexecutables(dir)
                 for _, d in ipairs(dirs) do
                     -- adicionar no $PATH e também no arquivo OPTFILE
-                    vim.schedule(function() 
-                        add_path(d) 
+                    vim.schedule(function()
+                        add_path(d)
                         vim.fn.writefile({d}, M.OPTFILE, 'a')
                     end)
                 end
@@ -187,10 +187,10 @@ _ = (function()
             'Windows NT', 'CurrentVersion', 'Fonts'
         ):gsub('/', '\\'),
         '/s'
-    }):wait()
-    SAUCEFONTES = vim.iter(vim.fn.split(SAUCEFONTES.stdout)):filter(function(fonte)
-        return fonte:match('^C:.*SauceCodePro.*$')
-    end)
+    }):wait().stdout
+    SAUCEFONTES = vim.iter(vim.fn.split(SAUCEFONTES)):filter(function(fonte)
+        return fonte:match('^C:.*ttf$')
+    end):totable()
     local instalar = function(fontes)
         for _, fonte in ipairs(fontes) do
             local nome = vim.fs.basename(fonte)
