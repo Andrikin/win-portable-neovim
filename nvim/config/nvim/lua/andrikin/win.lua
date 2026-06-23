@@ -368,8 +368,14 @@ _ = (function ()
                 nome = args.fargs[1],
                 link = args.fargs[2],
             }
+            if dep.nome == nil or dep.nome == '' then
+                error('Não foi encontrado valor para a variável "nome"')
+            end
+            if dep.link == nil or dep.link == '' then
+                error('Não foi encontrado valor para a variável "link"')
+            end
 			add_dependencia(dep)
-		end, { nargs = 2 }
+		end, { nargs = '+' }
 	)
 end)()
 
