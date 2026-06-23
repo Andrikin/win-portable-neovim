@@ -10,6 +10,7 @@ vim.pack.add({
     'https://github.com/polirritmico/monokai-nightasty.nvim',
     -- 'https://github.com/biisal/blackhole',
     -- my plugins and forks
+    'https://github.com/Andrikin/ouvidoria-latex',
     'https://github.com/Andrikin/awesome-pairing',
     'https://github.com/Andrikin/awesome-substitute',
     'https://github.com/Andrikin/vim-capslock',
