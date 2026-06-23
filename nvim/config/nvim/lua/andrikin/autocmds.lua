@@ -1,10 +1,8 @@
 -- Autocmds goosebumps
 local autocmd = vim.api.nvim_create_autocmd
-local Andrikin = vim.api.nvim_create_augroup('Andrikin', {clear = true})
 
 -- Highlight linha quando entrar em INSERT MODE
 autocmd('InsertEnter', {
-    group = Andrikin,
     pattern = '*',
     callback = function(w)
         local dirvish = vim.bo[w.buf].ft == 'dirvish' -- não desativar quando for Dirvish
@@ -15,14 +13,12 @@ autocmd('InsertEnter', {
     end,
 })
 autocmd('WinEnter', {
-    group = Andrikin,
     pattern = '*',
     callback = function()
         vim.wo[vim.api.nvim_get_current_win()][0].cursorline = false
     end,
 })
 autocmd('InsertLeave', {
-    group = Andrikin,
     pattern = '*',
     callback = function(w)
         local dirvish = vim.bo[w.buf].ft == 'dirvish' -- não desativar quando for Dirvish
@@ -36,7 +32,6 @@ autocmd('InsertLeave', {
 -- Resize windows automatically
 -- Tim Pope goodness
 autocmd('VimResized', {
-    group = Andrikin,
     pattern = '*',
     callback = function()
         vim.cmd.wincmd('=')
@@ -45,7 +40,6 @@ autocmd('VimResized', {
 
 -- Highlight configuração
 autocmd('TextYankPost', {
-    group = Andrikin,
     pattern = '*',
     callback = function()
         vim.hl.hl_op({
@@ -57,7 +51,6 @@ autocmd('TextYankPost', {
 
 -- Remover fonte do regedit (Windows)
 autocmd('VimLeave', {
-    group = Andrikin,
     callback = function()
         local flashdrive = vim.env.HOME:sub(1, 1):lower() ~= 'c'
         local remover = false
@@ -79,7 +72,6 @@ autocmd('VimLeave', {
 -- --- Builtin LSP commands ---
 -- Only available in git projects (git init)
 autocmd('LspAttach', {
-    group = Andrikin,
     callback = function(ev)
         local client = vim.lsp.get_client_by_id(ev.data.client_id)
         if client and client:supports_method('textDocument/completion') then
@@ -97,7 +89,6 @@ autocmd('LspAttach', {
 -- ideia: copiar todo texto quando sair do buffer, criando nova entrada no
 -- copyq: tab -> clipboard
 autocmd('BufWrite', {
-    group = Andrikin,
     pattern = 'Copyq*.txt',
     callback = function(args)
         vim.bo[args.buf].fixendofline = false
@@ -109,7 +100,6 @@ autocmd('BufWrite', {
 
 autocmd('VimEnter',
 	{
-		group = Andrikin,
 		callback = function()
 			-- experimental: ui2
 			require('vim._core.ui2').enable()
