@@ -237,3 +237,4 @@ vim.lsp.enable({
     'rustanalyzer',
 })
 -- vim.lsp.set_log_level("debug")
+

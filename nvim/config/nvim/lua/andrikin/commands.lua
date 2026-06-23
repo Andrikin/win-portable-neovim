@@ -19,7 +19,7 @@ local command = vim.api.nvim_create_user_command
 command('Projetos',
     function()
         vim.cmd.Dirvish(vim.fs.joinpath(
-            vim.fs.basedir(vim.env.HOME),
+            vim.fs.dirname(vim.env.HOME),
             'projetos'
         ))
     end,

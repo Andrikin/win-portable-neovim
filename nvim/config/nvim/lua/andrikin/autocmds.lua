@@ -11,16 +11,14 @@ autocmd('InsertEnter', {
         if dirvish then
             return
         end
-        local id = vim.api.nvim_get_current_win()
-        vim.wo[id][0].cursorline = true
+        vim.wo[vim.api.nvim_get_current_win()][0].cursorline = true
     end,
 })
 autocmd('WinEnter', {
     group = Andrikin,
     pattern = '*',
     callback = function()
-        local id = vim.api.nvim_get_current_win()
-        vim.wo[id][0].cursorline = false
+        vim.wo[vim.api.nvim_get_current_win()][0].cursorline = false
     end,
 })
 autocmd('InsertLeave', {
@@ -31,8 +29,7 @@ autocmd('InsertLeave', {
         if dirvish then
             return
         end
-        local id = vim.api.nvim_get_current_win()
-        vim.wo[id][0].cursorline = false
+        vim.wo[vim.api.nvim_get_current_win()][0].cursorline = false
     end,
 })
 
