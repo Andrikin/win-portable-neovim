@@ -146,6 +146,7 @@ M.init_path = function(force)
         add_path(o)
     end
 end
+M.init_path()
 
 vim.api.nvim_create_user_command("UpdateOptfile",
     function()
