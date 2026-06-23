@@ -320,13 +320,15 @@ return {
     },{
         nome = 'rust-analyzer',
         link = 'https://github.com/rust-lang/rust-analyzer/releases/download/2026-01-19/rust-analyzer-aarch64-pc-windows-msvc.zip',
-    },{
-        nome = 'lua5.1', -- version 5.1 (https://sourceforge.net/projects/luabinaries/files/)
-        link = 'https://sitsa.dl.sourceforge.net/project/luabinaries/5.1.5/Tools%20Executables/lua-5.1.5_Win64_bin.zip',
-    },{
-        nome = 'lua5.1.lib', -- libs for version 5.1 (build for msvc 14)
-        link = 'https://sinalbr.dl.sourceforge.net/project/luabinaries/5.1.5/Windows%20Libraries/Static/lua-5.1.5_Win64_vc14_lib.zip',
-    },{
+    }
+    -- ,{
+    --     nome = 'lua5.1', -- version 5.1 (https://sourceforge.net/projects/luabinaries/files/)
+    --     link = 'https://sitsa.dl.sourceforge.net/project/luabinaries/5.1.5/Tools%20Executables/lua-5.1.5_Win64_bin.zip',
+    -- },{
+    --     nome = 'lua5.1.lib', -- libs for version 5.1 (build for msvc 14)
+    --     link = 'https://sinalbr.dl.sourceforge.net/project/luabinaries/5.1.5/Windows%20Libraries/Static/lua-5.1.5_Win64_vc14_lib.zip',
+    -- }
+    ,{
         nome = 'zig',
         link = 'https://ziglang.org/download/0.16.0/zig-x86_64-windows-0.16.0.zip',
     },{
