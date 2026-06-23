@@ -1,5 +1,5 @@
 --- DEPENDENCIAS ---
-local OPT = require('andrikin._utils').OPT
+local OPT = require('andrikin.win').OPT
 
 return {
 	{

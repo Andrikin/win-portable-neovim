@@ -354,7 +354,7 @@ end
 
 -- Os programas dependências init
 _ = (function ()
-	for _, dep in ipairs(require('andrikin._deps')) do
+	for _, dep in ipairs(require('andrikin.deps')) do
 		local dir = vim.fs.joinpath(M.OPT, dep.nome)
 		if not executable(dep.nome) or not vim.uv.fs_stat(dir) then
 			add_dependencia(dep)
