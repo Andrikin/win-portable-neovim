@@ -1,5 +1,6 @@
 -- Autocmds goosebumps
 local autocmd = vim.api.nvim_create_autocmd
+-- local Andrikin = vim.api.nvim_create_augroup('Andrikin', { clear = true })
 
 -- Highlight linha quando entrar em INSERT MODE
 autocmd('InsertEnter', {
