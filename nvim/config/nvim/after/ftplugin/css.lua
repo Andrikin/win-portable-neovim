@@ -5,5 +5,5 @@ if not vim.g.loaded_emmet_vim then
 end
 vim.cmd.EmmetInstall()
 vim.schedule(function ()
-    vim.bo[buf].indentexpr = "v:lua.require'nvim-treesitter'.indentexpr()"
+    vim.bo.indentexpr = "v:lua.require'nvim-treesitter'.indentexpr()"
 end)

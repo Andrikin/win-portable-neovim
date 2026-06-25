@@ -3,8 +3,8 @@ local buf = vim.api.nvim_get_current_buf()
 vim.treesitter.start()
 vim.schedule(function ()
     -- vim.bo[buf].syntax = "ON" -- wip: treesitter highlight não está funcionando
-    vim.bo[buf].indentexpr = "v:lua.require'nvim-treesitter'.indentexpr()"
-    vim.bo[buf].textwidth = 80
+    vim.bo.indentexpr = "v:lua.require'nvim-treesitter'.indentexpr()"
+    vim.bo.textwidth = 80
 end)
 
 -- Vim-Surround (Tim Pope)

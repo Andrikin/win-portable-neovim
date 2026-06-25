@@ -1,7 +1,7 @@
 local buf = vim.api.nvim_get_current_buf()
 vim.treesitter.start()
 vim.schedule(function ()
-    vim.bo[buf].indentexpr = "v:lua.require'nvim-treesitter'.indentexpr()"
+    vim.bo.indentexpr = "v:lua.require'nvim-treesitter'.indentexpr()"
 end)
 vim.cmd.packadd('nvim-jdtls')
 
@@ -15,8 +15,8 @@ local launcher_jar = vim.fn.glob(jdtls_path .. '/plugins/org.eclipse.equinox.lau
 local workspace_dir = vim.fn.fnamemodify(vim.fn.getcwd(), ':p:h:t')
 
 vim.schedule(function ()
-    vim.bo[buf].tabstop = 4
-    vim.bo[buf].shiftwidth = 0
+    vim.bo.tabstop = 4
+    vim.bo.shiftwidth = 0
 end)
 
 local function get_config_dir()
