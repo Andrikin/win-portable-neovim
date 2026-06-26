@@ -1,9 +1,7 @@
 ---@diagnostic disable: need-check-nil
-local notify = require('andrikin.utils').notify or vim.notify
-
 if not vim.g.nvy or not vim.g.neovide then
 	-- Fix ^\ (nvim-qt/windows 7)
-	notify('Mapeamento do comando <c-]>: Jump to the definition of the keyword under the cursor.')
+	vim.print('Mapeamento do comando <c-]>: Jump to the definition of the keyword under the cursor.')
 	vim.keymap.set('n', '<c-\\>', '<c-]>')
 end
 
@@ -133,7 +131,7 @@ local toggle_list = function()
 	local ttoggler = vim.g.ttoggler
     local tnumber = vim.api.nvim_tabpage_get_number(0)
     if tnumber <= 0 then
-        vim.notify('toggle_terminal: erro encontrado')
+        vim.print('toggle_terminal: erro encontrado')
         return
     end
     if ttoggler[tnumber] then

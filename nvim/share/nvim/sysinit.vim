@@ -14,16 +14,16 @@ lua << EOF
 	end
     -- XDG variables
 	vim.env.HOME = string.match(vim.env.VIMRUNTIME, '^(.*win%-portable%-neovim).*$')
-	vim.env.XDG_CONFIG_HOME = vim.env.HOME .. '\\nvim\\config'
+	vim.env.XDG_CONFIG_HOME = vim.env.HOME .. '/nvim/config'
 	mkdir(vim.env.XDG_CONFIG_HOME)
 	vim.env.XDG_DATA_HOME = vim.env.XDG_CONFIG_HOME
 	vim.env.XDG_STATE_HOME = vim.env.XDG_DATA_HOME
-	-- vim.env.NVIM_LOG_FILE = vim.fn.stdpath('data') .. '\\log'
+	-- vim.env.NVIM_LOG_FILE = vim.fn.stdpath('data') .. '/log'
 	-- mkdir(vim.env.NVIM_LOG_FILE)
     -- runtimepaths
-	local site = vim.fn.stdpath('data') .. '\\site' -- custom vim plugins
-	local after = vim.fn.stdpath('config') .. '\\after'
-	local lsp = vim.fn.stdpath('config') .. '\\lsp'
+	local site = vim.fn.stdpath('data') .. '/site' -- custom vim plugins
+	local after = vim.fn.stdpath('config') .. '/after'
+	local lsp = vim.fn.stdpath('config') .. '/lsp'
     local applocal = vim.tbl_filter(
         function(opt) return opt:match('AppLocal') end,
         vim.opt.rtp:get()
@@ -41,11 +41,8 @@ lua << EOF
     -- vim.pack paths
 	vim.opt.packpath:prepend(site)
     -- utils.lua
-	if not vim.env.NVIM_OPT then
-		vim.env.NVIM_OPT = vim.env.HOME .. '\\nvim\\opt'
-	end
 	if not vim.env.NVIMOPT then
-		vim.env.NVIMOPT = vim.env.HOME .. '\\nvim\\opt'
+		vim.env.NVIMOPT = vim.env.HOME .. '/nvim/opt'
 	end
     -- load them all!
     if vim.loader then vim.loader.enable() end

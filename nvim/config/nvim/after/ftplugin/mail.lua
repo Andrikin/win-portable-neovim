@@ -48,5 +48,5 @@ vim.keymap.set('n', 'gm', function()
     })
 end, opts)
 vim.schedule(function ()
-    vim.bo[buf].textwidth = 80
+    vim.bo.textwidth = 80
 end)
