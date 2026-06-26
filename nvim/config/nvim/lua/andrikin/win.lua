@@ -1,12 +1,12 @@
+-- TODO: como obter todos os executáveis em $PATH?
 local M = {}
-
--- INITIALIZATION
 
 local function executable(exe)
 	return vim.fn.executable(exe) == 1
 end
 
-local function findexecutables(dir)
+local function findexecutables(dir, limit)
+    limit = limit or math.huge
 	return vim.fs.find(
 		function(n, _)
 			return (n:match('.*%.exe$')
@@ -14,7 +14,7 @@ local function findexecutables(dir)
 				or n:match('.*%.cmd$')
 			)
 		end,
-		{limit = math.huge, type = 'file', path = dir}
+		{limit = limit, type = 'file', path = dir}
 	)
 end
 
@@ -84,24 +84,33 @@ local downloadit = function (dir, link, addpath, config)
                 vim.print(('Erro ao realizar download de %s.\nErro: %s'):format(arquivo, err))
                 return
             end
-            if vim.uv.fs_stat(vim.fs.joinpath( dir, arquivo )) and (
+            if vim.uv.fs_stat(vim.fs.joinpath(dir, arquivo)) and (
                 arquivo:match('zip$')
                 or arquivo:match('tar%.[a-z]+$')
             ) then
                 extractit(arquivo, dir, false, true)
             end
             if addpath then
-                local dirs = findexecutables(dir)
-                for _, d in ipairs(dirs) do
-                    -- adicionar no $PATH e também no arquivo OPTFILE
-                    vim.schedule(function()
+                vim.schedule(function ()
+                    local dirs = findexecutables(dir)
+                    local path = vim.env.PATH
+                    local exe = vim.fs.basename(dir)
+                    vim.env.PATH = "C:/Windows/System32"
+                    for _, d in ipairs(dirs) do
+                        -- adicionar no $PATH e também no arquivo OPTFILE
                         add_path(d)
-                        vim.fn.writefile({d}, M.OPTFILE, 'a')
-                    end)
-                end
+                    end
+                    local programa = vim.fs.dirname(vim.fn.exepath(exe))
+                    vim.env.PATH = "C:/Windows/System32"
+                    vim.env.PATH = path
+                    if programa ~= "" then
+                        vim.fn.writefile({programa}, M.OPTFILE, 'a')
+                        add_path(programa)
+                    end
+                end)
             end
             if config then
-                config()
+                vim.schedule(config)
             end
         end
     )
@@ -117,21 +126,43 @@ _ = (function()
         vim.fn.mkdir(PROJETOS, 'p', '0755')
     end
     add_path(M.OPT)
-    -- WIP: Check unzip, install it
-    -- 'https://linorg.usp.br/CTAN/systems/windows/w32tex/unzip.exe'
-    -- downloadit(M.OPT, 'https://linorg.usp.br/CTAN/systems/windows/w32tex/unzip.exe')
 end)()
 
-local create_optfile = function()
-    local opt = vim.fs.dirname(M.OPTFILE)
-    if not vim.uv.fs_stat(opt) then
-        error('Não foi encontrado diretório "opt" do Neovim')
+-- HACK: melhorar para obter todos os executáveis
+local check_opts = function ()
+    -- must have in $PATH
+    local deps = {
+        "C:/Windows",
+        "C:/Windows/System32",
+        "C:/Windows/System32/WindowsPowerShell/v1.0",
+        "C:/Windows/System32/OpenSSH",
+        -- HACK: forçar reconhecimento de git
+        vim.fs.joinpath(M.OPT, 'git', 'cmd')
+    }
+    local opts = require('andrikin.deps')
+    for _, o in ipairs(opts) do
+        local exe = vim.fn.exepath(o.nome)
+        local programa = ""
+        if exe ~= "." and exe ~= "" then
+            programa = vim.fs.dirname(exe)
+        end
+        if programa ~= "" then
+            table.insert(deps, programa)
+        end
     end
+    vim.env.PATH = "C:/Windows/System32"
+    for _, d in ipairs(deps) do
+        add_path(d)
+    end
+    vim.fn.writefile(deps, M.OPTFILE)
+end
+
+local create_optfile = function()
     -- ponto crítico, de mais demora na primeira execução
     -- local optlist = vim.fn.glob((opts .. '/*/**/*.{exe,bat,cmd}'),
     -- 	false, true, false
     -- )
-    local optlist = findexecutables(opt)
+    local optlist = findexecutables(M.OPT)
     optlist = vim.tbl_map(function(programa)
         return vim.fs.dirname(vim.trim(programa))
     end, optlist)
@@ -148,6 +179,9 @@ M.init_path = function(force)
     local opts = vim.fn.readfile(M.OPTFILE)
     for _, o in ipairs(opts) do
         add_path(o)
+    end
+    if force then
+        check_opts()
     end
 end
 M.init_path()
