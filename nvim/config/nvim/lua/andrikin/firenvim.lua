@@ -11,11 +11,11 @@ vim.pack.add({
     'https://github.com/stevearc/dressing.nvim',
     -- Firenvim
     'https://github.com/glacambre/firenvim',
-})
+}, {confirm = false})
 
 -- vim.pack autocmds:
 vim.api.nvim_create_autocmd('PackChanged', { -- install firenvim
-    callback = function (ev) 
+    callback = function (ev)
         local nome, tipo = ev.data.spec.name, ev.data.kind
         if nome == 'firenvim' and (tipo == 'install' or tipo == 'update') then
             if not ev.data.active then vim.cmd.packadd('firenvim') end
@@ -141,9 +141,10 @@ vim.opt.matchpairs:append('<:>')
 vim.g.loaded_netrw = 1
 vim.g.loaded_netrwPlugin = 1
 
--- Removendo providers: Perl
+-- Removendo providers:
 vim.g.loaded_perl_provider = 0
 vim.g.loaded_ruby_provider = 0
+vim.g.loaded_node_provider = 0
 
 -- MAPPINGS --
 vim.keymap.set({'i', 'c'}, '<c-backspace>', '<c-w>')
@@ -202,17 +203,72 @@ command(
     {}
 )
 
--- local Copyq = require('andrikin.utils').Copyq
-
--- command('Clipboard',
---     function(arg)
---         Copyq.clipboard(arg)
---     end,
--- 	{
--- 		nargs = "?",
--- 		complete = function(arg, _, _) return Copyq:tab_complete(arg) end,
--- })
-
+-- Copyq integration
+_ = (function()
+    if vim.fn.executable('copyq') ~= 1 then
+        vim.print('Não foi encontrado "copyq". Por gentileza, realize a instalação.')
+        return
+    end
+    vim.api.nvim_create_user_command('Clipboard',
+        function(args)
+            local tab = args.fargs[1] or 'clipboard'
+            local clipboard = vim.system({"copyq","eval","--",([[
+                let indent = 4;
+                let tamanho = size() <= 50 && size() || 50;
+                tab('%s');
+                let c = [];
+                for(i=0;i<tamanho;i++) c.push(str(read(i)));
+                print(JSON.stringify(c, null, indent));
+            ]]):format(tab)}):wait().stdout
+            -- transformar JSON
+            clipboard = vim.json.decode(clipboard)
+            local temp = {}
+            local index = 1
+            for i, _ in ipairs(clipboard) do -- remover strings vazias
+                if clipboard[i] ~= "" then
+                    temp[index] = clipboard[i]
+                    index = index + 1
+                end
+            end
+            ---@diagnostic disable-next-line: cast-local-type
+            clipboard = temp
+            vim.ui.select(clipboard, {
+                prompt = 'Selecione uma entrado do clipboard:',
+                format_item = function(item)
+                    if #item <= 75 then
+                        return item
+                    end
+                    return item:sub(1, 75)
+                end,
+            }, function(choice)
+                    if choice then
+                        vim.fn.setreg('"', choice)
+                        vim.cmd.normal('P')
+                    end
+                end
+            )
+        end,
+        {
+            nargs = "?",
+            complete = function(arg, _, _)
+                local lista = vim.system({"copyq", "eval", "--", [[
+                    let indent = 4;
+                    let tabs = tab();
+                    print(JSON.stringify(tabs, null, indent));
+                ]]}):wait().stdout
+                local ok = nil
+                ok, lista = pcall(vim.json.decode, lista)
+                if not ok then
+                    return {}
+                end
+                return vim.tbl_filter(function(copyqtab)
+                    return copyqtab:lower():match(arg:gsub('-', '.'):lower())
+                end, lista)
+            end,
+        }
+    )
+end
+)()
 
 -- Mensagens automáticas
 command('Anexos',
@@ -346,3 +402,4 @@ autocmd('BufEnter',
 --         end)
 --     end
 -- })
+
