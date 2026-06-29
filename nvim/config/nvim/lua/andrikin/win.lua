@@ -295,6 +295,78 @@ _ = (function()
     end
 end)()
 
+-- Copyq integration
+-- https://copyq.readthedocs.io/en/latest/known-issues.html
+-- On Windows, CopyQ does not print anything on console Use Action dialog in
+-- CopyQ (F5 shortcut) and set "Store standard output" to "text/plain" to save
+-- the output as new item in current tab. selecionar qual tab - default
+-- 'clipboard'
+_ = (function()
+    if not executable('copyq') then
+        vim.print('Não foi encontrado "copyq". Por gentileza, realize a instalação.')
+        return
+    end
+    vim.api.nvim_create_user_command('Clipboard',
+        function(args)
+            local tab = args.fargs[1] or 'clipboard'
+            local clipboard = vim.system({"copyq","eval","--",([[
+                let indent = 4;
+                let tamanho = size() <= 50 && size() || 50;
+                tab('%s');
+                let c = [];
+                for(i=0;i<tamanho;i++) c.push(str(read(i)));
+                print(JSON.stringify(c, null, indent));
+            ]]):format(tab)}):wait().stdout
+            -- transformar JSON
+            clipboard = vim.json.decode(clipboard)
+            local temp = {}
+            local index = 1
+            for i, _ in ipairs(clipboard) do -- remover strings vazias
+                if clipboard[i] ~= "" then
+                    temp[index] = clipboard[i]
+                    index = index + 1
+                end
+            end
+            ---@diagnostic disable-next-line: cast-local-type
+            clipboard = temp
+            vim.ui.select(clipboard, {
+                prompt = 'Selecione uma entrado do clipboard:',
+                format_item = function(item)
+                    if #item <= 75 then
+                        return item
+                    end
+                    return item:sub(1, 75)
+                end,
+            }, function(choice)
+                    if choice then
+                        vim.fn.setreg('"', choice)
+                        vim.cmd.normal('P')
+                    end
+                end
+            )
+        end,
+        {
+            nargs = "?",
+            complete = function(arg, _, _)
+                local lista = vim.system({"copyq", "eval", "--", [[
+                    let indent = 4;
+                    let tabs = tab();
+                    print(JSON.stringify(tabs, null, indent));
+                ]]}):wait().stdout
+                local ok = nil
+                ok, lista = pcall(vim.json.decode, lista)
+                if not ok then
+                    return {}
+                end
+                return vim.tbl_filter(function(copyqtab)
+                    return copyqtab:lower():match(arg:gsub('-', '.'):lower())
+                end, lista)
+            end,
+        }
+    )
+end
+)()
+
 -- IMPORTANT(Windows 10+): Desabilitar python.exe e python3.exe em "Gerenciar
 -- aliases de execução de aplicativo". Windows executa este alias antes de
 -- executar python declarado em $PATH.
