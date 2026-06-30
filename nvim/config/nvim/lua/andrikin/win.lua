@@ -90,6 +90,7 @@ local downloadit = function (dir, link, addpath, config)
             ) then
                 extractit(arquivo, dir, false, true)
             end
+            -- TODO: refazer para simplificar, se possível
             if addpath then
                 vim.schedule(function ()
                     local dirs = findexecutables(dir)
@@ -222,6 +223,7 @@ _ = (function()
         ):gsub('/', '\\'),
         '/s'
     }):wait().stdout
+    ---@diagnostic disable-next-line: cast-local-type, param-type-mismatch
     SAUCEFONTES = vim.iter(vim.fn.split(SAUCEFONTES)):filter(function(fonte)
         return fonte:match('^C:.*ttf$')
     end):totable()
@@ -281,6 +283,7 @@ _ = (function()
     end
     -- download
     downloadit(SAUCEDIR, SAUCELINK)
+    ---@diagnostic disable-next-line: cast-local-type
     SAUCEFONTES = listarfontes()
     instalar(SAUCEFONTES)
     vim.print('Fonte SauceCodePro instalada. Reiniciar para obter a fonte.')
