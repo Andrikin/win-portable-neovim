@@ -292,7 +292,7 @@ local Andrikin = vim.api.nvim_create_augroup('Andrikin', {clear = true})
 -- Auto Insert Mode
 autocmd({'BufEnter'}, {
     pattern = '*.txt',
-    command = 'call feedkeys("i")'
+    command = 'startinsert'
 })
 
 -- Highlight linha quando entrar em INSERT MODE
