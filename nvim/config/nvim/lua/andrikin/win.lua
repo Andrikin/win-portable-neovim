@@ -96,13 +96,11 @@ local downloadit = function (dir, link, addpath, config)
                     local dirs = findexecutables(dir)
                     local path = vim.env.PATH
                     local exe = vim.fs.basename(dir)
-                    vim.env.PATH = "C:/Windows/System32"
                     for _, d in ipairs(dirs) do
-                        -- adicionar no $PATH e também no arquivo OPTFILE
+                        -- adicionar no $PATH para consulta com 'exepath()'
                         add_path(d)
                     end
                     local programa = vim.fs.dirname(vim.fn.exepath(exe))
-                    vim.env.PATH = "C:/Windows/System32"
                     vim.env.PATH = path
                     if programa ~= "" then
                         vim.fn.writefile({programa}, M.OPTFILE, 'a')
