@@ -433,28 +433,6 @@ _ = (function ()
     end
 end)()
 
--- Compilar arquivos latex
-_ = (function ()
-    local ouvidoria_latex = false
-    if vim.pack._get_names then
-        for plugin in ipairs(vim.pack._get_names()) do
-            if plugin == 'ouvidoria-latex' then
-                ouvidoria_latex = true
-                break
-            end
-        end
-    end
-    if ouvidoria_latex then
-        vim.api.nvim_create_user_command('CompilarOuvidoria',
-            function()
-                ---@diagnostic disable-next-line: missing-parameter
-                require('ouvidoria-latex.latex'):compilar(nil, nil, true)
-            end,
-            {}
-        )
-    end
-end)()
-
 -- criar diretório em OPT, baixar programa e adicionar no $PATH
 local function add_dependencia(dep)
 	local dir = vim.fs.joinpath(M.OPT, dep.nome)
