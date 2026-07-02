@@ -1,3 +1,7 @@
+-- MORE: 
+-- lista de programas unix executáveis para Win32
+-- https://sitsa.dl.sourceforge.net/project/unxutils/unxutils/current/UnxUtils.zip
+
 if not vim.env.NVIMOPT then
     OPT = vim.fs.joinpath(
         vim.env.HOME,
