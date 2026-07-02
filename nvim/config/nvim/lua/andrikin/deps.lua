@@ -2,13 +2,12 @@
 -- lista de programas unix executáveis para Win32
 -- https://sitsa.dl.sourceforge.net/project/unxutils/unxutils/current/UnxUtils.zip
 
+local OPT = vim.env.NVIMOPT
 if not vim.env.NVIMOPT then
     OPT = vim.fs.joinpath(
         vim.env.HOME,
         'nvim', 'opt'
     )
-else
-    OPT = vim.env.NVIMOPT
 end
 
 return {
