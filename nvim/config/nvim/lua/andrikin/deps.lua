@@ -18,7 +18,9 @@ return {
         nome = 'setup-x86_64', -- cygwin
         link = 'https://cygwin.com/setup-x86_64.exe',
         config = function()
-            local DIR = vim.fs.joinpath(OPT, 'cygwin')
+            local DIR = vim.fs.joinpath(OPT,
+                vim.fs.basename('https://cygwin.com/setup-x86_64.exe'):match('^(.-)%..*$')
+            )
             local PACKAGES = vim.fs.joinpath(DIR, 'packages')
             local SETUP = vim.fs.joinpath(DIR, 'setup-x86_64.exe')
             if not vim.uv.fs_stat(SETUP) then
@@ -51,9 +53,7 @@ return {
                 function(opts)
                     opts = opts or {}
                     local args = opts.fargs or opts
-                    ---@diagnostic disable-next-line: deprecated
-                    local islist = vim.islist or vim.tbl_islist
-                    if not islist(args) then
+                    if not vim.islist(args) then
                         vim.print('Valores padrão encontrados no comando. Abortando.')
                         return
                     end
@@ -101,11 +101,6 @@ return {
                     end, {'install', 'remove', 'upgrade'})
                 end}
             )
-            if vim.fn.executable('gs.exe') == 0 then
-                if vim.fn.exists(':Cygwin') then
-                    vim.cmd.Cygwin('install ghostscript')
-                end
-            end
         end,
     },{
         nome = 'lessmsi', -- Utilizar o lessmsi-gui.exe
@@ -165,7 +160,7 @@ return {
                 )
                 if vim.uv.fs_stat(node_neovim) then
                     -- https://github.com/neovim/neovim/issues/15308
-                    vim.g.node_host_prog = (node_neovim / 'cli.js').diretorio
+                    vim.g.node_host_prog = vim.fs.joinpath(node_neovim, 'cli.js')
                 else
                     vim.print('Não foi possível configurar vim.g.node_host_prog')
                 end
