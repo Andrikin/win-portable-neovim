@@ -88,11 +88,11 @@ return {
                     if args[1] == 'update' then
                         table.insert(cmd, '--upgrade-also')
                     end
-                    vim.system(cmd, {detach = true}, function (obj)
-                        if obj.code ~= 0 then
-                            vim.print('Instalador cygwin encontrou um erro.')
+                    vim.system(cmd, {text = true, detach = true}, function (out)
+                        if out.code == 0 then
+                            vim.print('Instalação concluída com sucesso!')
                         else
-                            vim.print(obj.stdout)
+                            vim.print('Instalador cygwin encontrou um erro.')
                         end
                     end)
                 end, {nargs = '+', complete = function (arg, _, _)
