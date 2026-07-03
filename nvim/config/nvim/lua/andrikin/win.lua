@@ -442,6 +442,36 @@ _ = (function ()
     end
 end)()
 
+-- Python config
+_ = (function ()
+    -- TODO: garantir instalação dos packages:
+    -- 'pyright',
+    -- 'basedpyright',
+    -- 'pynvim',
+    -- 'greenlet',
+    -- WIP: use python -m pip list --format=json
+    --
+    -- TODO: set python3_host_prog
+    -- vim.g.python3_host_prog = vim.fs.joinpath(PYTHONDIR, 'python.exe')
+    -- if not vim.g.python3_host_prog or vim.g.python3_host_prog == '' then
+    --     vim.print('Variável python3_host_prog não configurado.')
+    -- end
+    --
+    -- TODO: MSVC Installation?
+    local DIR = vim.fs.joinpath(
+        M.OPT, 'python'
+    )
+    if not vim.uv.fs_stat(DIR) then
+        vim.fn.mkdir(DIR, 'p', '0755')
+    end
+    if vim.fn.exists(':Cygwin') and not executable('python3.12')then
+        vim.cmd.Cygwin('install python312 python312-pip')
+    end
+    vim.env.PYTHONPATH = DIR
+    vim.env.PYTHONUSERBASE = DIR
+    add_path(vim.fs.joinpath(DIR, 'bin'))
+end)()
+
 -- criar diretório em OPT, baixar programa e adicionar no $PATH
 local function add_dependencia(dep)
 	local dir = vim.fs.joinpath(M.OPT, dep.nome)
