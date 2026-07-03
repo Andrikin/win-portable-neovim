@@ -433,6 +433,15 @@ _ = (function ()
     end
 end)()
 
+-- Install Cygwin dependencies
+_ = (function ()
+    if vim.fn.executable('gs.exe') == 0 then
+        if vim.fn.exists(':Cygwin') then
+            vim.cmd.Cygwin('install ghostscript')
+        end
+    end
+end)()
+
 -- criar diretório em OPT, baixar programa e adicionar no $PATH
 local function add_dependencia(dep)
 	local dir = vim.fs.joinpath(M.OPT, dep.nome)
@@ -441,13 +450,16 @@ local function add_dependencia(dep)
 	end
 	downloadit(dir, dep.link, true, dep.config)
 end
-
 -- Os programas dependências init
 _ = (function ()
 	for _, dep in ipairs(require('andrikin.deps')) do
 		local dir = vim.fs.joinpath(M.OPT, dep.nome)
 		if not executable(dep.nome) or not vim.uv.fs_stat(dir) then
 			add_dependencia(dep)
+        else
+            if dep.config then
+                vim.schedule(dep.config)
+            end
 		end
 	end
 	-- comando para adicionar mais 
