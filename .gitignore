@@ -9,6 +9,7 @@
 *.exe
 *.zip
 desktop.ini
+.cache/
 .ssh/
 .bash_history
 .zen/
