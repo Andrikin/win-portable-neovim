@@ -118,10 +118,10 @@ return {
 		nome = 'node',
 		link = 'https://nodejs.org/dist/v20.10.0/node-v20.10.0-win-x64.zip',
         config = function()
-            local DIR = vim.fs.joinpath(OPT, 'node')
+            local NODEDIR = vim.fs.joinpath(OPT, 'node')
             local installed = function(pacote)
                 return not vim.tbl_isempty(vim.fs.find(pacote,
-                    {path = DIR, type = 'directory'})
+                    {path = NODEDIR, type = 'directory'})
                 )
             end
             -- configurações extras
@@ -152,8 +152,7 @@ return {
                 end
             end
             if not vim.g.node_host_prog or vim.g.node_host_prog == '' then
-                ---@diagnostic disable-next-line: missing-parameter
-                local node_neovim = vim.fs.joinpath(DIR,
+                local node_neovim = vim.fs.joinpath(NODEDIR,
                     'node_modules',
                     'neovim',
                     'bin'

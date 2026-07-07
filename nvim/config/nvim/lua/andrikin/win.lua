@@ -1,4 +1,5 @@
 -- TODO: como obter todos os executáveis em $PATH?
+-- TODO: notification progress when installing?
 local M = {}
 
 local function executable(exe)
