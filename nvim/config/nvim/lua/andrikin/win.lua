@@ -444,7 +444,7 @@ end)()
 _ = (function ()
     if vim.fn.exists(':Cygwin') then
         if not executable('python3.12.exe')then
-            vim.cmd.Cygwin('install python312 python312-pip')
+            vim.cmd.Cygwin('install python312 python312-pip python312-devel')
         end
         if not executable('gs.exe') then
             vim.cmd.Cygwin('install ghostscript')
