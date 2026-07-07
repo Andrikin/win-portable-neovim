@@ -412,14 +412,15 @@ _ = (function ()
         return
     end
     if not vim.uv.fs_stat(vim.fs.joinpath(vim.env.HOME, '.git')) then
+        local cmd = vim.cmd['!']
         vim.cmd.cd(vim.env.HOME)
-        vim.cmd['!']('git init')
-        vim.cmd['!']('git remote add win git@github.com:Andrikin/win-portable-neovim')
-        vim.cmd['!']('git fetch')
-        vim.cmd['!']('git add .')
-        vim.cmd['!']('git commit -m "dummy commit"')
-        vim.cmd['!']('git checkout --track win/main')
-        vim.cmd['!']('git branch -d master')
+        cmd('git init')
+        cmd('git remote add win git@github.com:Andrikin/win-portable-neovim')
+        cmd('git fetch')
+        cmd('git add .')
+        cmd('git commit -m "dummy commit"')
+        cmd('git checkout --track win/main')
+        cmd('git branch -d master')
     else
         vim.print("Git: diretório '.git' já existe!")
         vim.system({'git', 'pull'}, {cwd = vim.env.HOME}, function (obj)
@@ -435,41 +436,70 @@ end)()
 
 -- Install Cygwin dependencies
 _ = (function ()
-    if vim.fn.executable('gs.exe') == 0 then
-        if vim.fn.exists(':Cygwin') then
+    if vim.fn.exists(':Cygwin') then
+        if not executable('python3.12.exe')then
+            vim.cmd.Cygwin('install python312 python312-pip')
+        end
+        if not executable('gs.exe') then
             vim.cmd.Cygwin('install ghostscript')
+        end
+        if not executable('gcc.exe') then
+            vim.cmd.Cygwin(
+                'install gcc mingw64-x86_64-gcc mingw64-x86_64-gcc-core mingw64-x86_64-gcc-g++'
+            )
         end
     end
 end)()
 
 -- Python config
 _ = (function ()
-    -- TODO: garantir instalação dos packages:
-    -- 'pyright',
-    -- 'basedpyright',
-    -- 'pynvim',
-    -- 'greenlet',
-    -- WIP: use python -m pip list --format=json
-    --
-    -- TODO: set python3_host_prog
-    -- vim.g.python3_host_prog = vim.fs.joinpath(PYTHONDIR, 'python.exe')
-    -- if not vim.g.python3_host_prog or vim.g.python3_host_prog == '' then
-    --     vim.print('Variável python3_host_prog não configurado.')
-    -- end
-    --
-    -- TODO: MSVC Installation?
+    if not executable('python3.12') then
+        return
+    end
     local DIR = vim.fs.joinpath(
         M.OPT, 'python'
     )
     if not vim.uv.fs_stat(DIR) then
         vim.fn.mkdir(DIR, 'p', '0755')
     end
-    if vim.fn.exists(':Cygwin') and not executable('python3.12')then
-        vim.cmd.Cygwin('install python312 python312-pip')
+    local packages = vim.json.decode(vim.system({
+        'python3.12', '-m', 'pip', 'list', '--format=json'
+    }):wait().stdout)
+    for _, d in ipairs({
+        -- python dependências
+        'pyright',
+        'basedpyright',
+        'pynvim',
+        'greenlet',
+    }) do
+        local encontrado = false
+        for _, p in ipairs(packages) do
+            if p == d then
+                encontrado = true
+                break
+            end
+        end
+        if not encontrado then
+            vim.system({
+                'python3.12',
+                '-m', 'pip',
+                'install',
+                d
+            })
+        end
+    end
+    vim.g.python3_host_prog = vim.fs.normalize(vim.fn.exepath('python3.12'))
+    if not vim.g.python3_host_prog or vim.g.python3_host_prog == '' then
+        vim.print('Variável python3_host_prog não configurado.')
     end
     vim.env.PYTHONPATH = DIR
     vim.env.PYTHONUSERBASE = DIR
     add_path(vim.fs.joinpath(DIR, 'bin'))
+    if executable('gcc.exe') then
+        vim.env.CC = vim.fs.normalize(vim.fn.exepath('gcc.exe'))
+    else
+        vim.env.CC = vim.fs.normalize(vim.fn.exepath('x86_64-pc-cygwin-gcc.exe'))
+    end
 end)()
 
 -- criar diretório em OPT, baixar programa e adicionar no $PATH
