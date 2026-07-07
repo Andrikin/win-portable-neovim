@@ -45,7 +45,12 @@ vim.api.nvim_create_user_command("Optfile",
 
 -- append to the last
 local add_path = function(dir)
-    if not vim.env.PATH:match(dir) then
+    local search = dir:gsub(
+        -- https://www.lua.org/pil/20.2.html -> 'magic characters'
+        '[%(%)%.%+%*%?%[%^%$%%-]',
+        function(m) return '%' .. m end
+    )
+    if not vim.env.PATH:match('(' .. search .. ')') then
         vim.env.PATH = vim.env.PATH .. ';' .. dir
     end
 end
