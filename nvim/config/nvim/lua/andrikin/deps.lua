@@ -153,6 +153,7 @@ return {
             end
             if not vim.g.node_host_prog or vim.g.node_host_prog == '' then
                 local node_neovim = vim.fs.joinpath(NODEDIR,
+                    'node-v20.10.0-win-x64',
                     'node_modules',
                     'neovim',
                     'bin'
