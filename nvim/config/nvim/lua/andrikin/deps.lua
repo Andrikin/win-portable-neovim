@@ -228,6 +228,9 @@ return {
     },{
         nome = 'fzf',
         link = 'https://github.com/junegunn/fzf/releases/download/v0.72.0/fzf-0.72.0-windows_amd64.zip',
+    },{
+        nome = 'uv',
+        link = 'https://releases.astral.sh/github/uv/releases/download/0.11.28/uv-x86_64-pc-windows-msvc.zip',
     }
 }
 

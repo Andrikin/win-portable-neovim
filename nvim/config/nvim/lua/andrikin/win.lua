@@ -1,6 +1,13 @@
 -- TODO: como obter todos os executáveis em $PATH?
--- TODO: notification progress when installing?
+-- TODO: how configure python with 'uv'
 local M = {}
+
+-- verify directory exists, if not, create it
+local function mkdir(dir)
+    if not vim.uv.fs_stat(dir) then
+        vim.fn.mkdir(dir, 'p', '0755')
+    end
+end
 
 local function executable(exe)
 	return vim.fn.executable(exe) == 1
@@ -99,16 +106,14 @@ local downloadit = function (dir, link, addpath, config)
             -- TODO: refazer para simplificar, se possível
             if addpath then
                 vim.schedule(function ()
-                    local dirs = findexecutables(dir)
+                    -- backup PATH
                     local path = vim.env.PATH
+                    vim.env.PATH = vim.fn.join(findexecutables(dir), ';')
                     local exe = vim.fs.basename(dir)
-                    for _, d in ipairs(dirs) do
-                        -- adicionar no $PATH para consulta com 'exepath()'
-                        add_path(d)
-                    end
                     local programa = vim.fs.dirname(vim.fn.exepath(exe))
+                    -- update PATH
                     vim.env.PATH = path
-                    if programa ~= "" then
+                    if programa ~= "" and programa ~= '.' then
                         vim.fn.writefile({programa}, M.OPTFILE, 'a')
                         add_path(programa)
                     end
@@ -123,13 +128,9 @@ end
 
 -- Check folders initialization
 _ = (function()
-    if not vim.uv.fs_stat(M.OPT) then
-        vim.fn.mkdir(M.OPT, 'p', '0755')
-    end
+    mkdir(M.OPT)
     local PROJETOS = vim.fs.joinpath(vim.fs.dirname(vim.env.HOME), 'projetos')
-    if not vim.uv.fs_stat(PROJETOS) then
-        vim.fn.mkdir(PROJETOS, 'p', '0755')
-    end
+    mkdir(PROJETOS)
     add_path(M.OPT)
 end)()
 
@@ -155,10 +156,7 @@ local check_opts = function ()
             table.insert(deps, programa)
         end
     end
-    vim.env.PATH = "C:/Windows/System32"
-    for _, d in ipairs(deps) do
-        add_path(d)
-    end
+    vim.env.PATH = vim.fn.join(deps, ';')
     vim.fn.writefile(deps, M.OPTFILE)
 end
 
@@ -404,9 +402,7 @@ _ = (function ()
     end
     local SSHDIR = vim.fs.joinpath(vim.env.HOME, '.ssh')
     local shuuush = "Z2l0QGdpdGxhYi5jb206QW5kcmlraW4vc2h1dXVzaC5naXQ="
-    if not vim.uv.fs_stat(SSHDIR) then
-        vim.fn.mkdir(SSHDIR, 'p', '0755')
-    end
+    mkdir(SSHDIR)
     vim.cmd.cd(SSHDIR)
     vim.cmd['!']('git clone ' .. vim.base64.decode(shuuush) .. ' ' .. SSHDIR)
 end)()
@@ -443,9 +439,6 @@ end)()
 -- Install Cygwin dependencies
 _ = (function ()
     if vim.fn.exists(':Cygwin') then
-        if not executable('python3.12.exe')then
-            vim.cmd.Cygwin('install python312 python312-pip python312-devel')
-        end
         if not executable('gs.exe') then
             vim.cmd.Cygwin('install ghostscript')
         end
@@ -459,48 +452,44 @@ end)()
 
 -- Python config
 _ = (function ()
-    if not executable('python3.12') then
+    if not executable('uv') then
         return
     end
     local DIR = vim.fs.joinpath(
         M.OPT, 'python'
     )
-    if not vim.uv.fs_stat(DIR) then
-        vim.fn.mkdir(DIR, 'p', '0755')
+    local UV = vim.fs.joinpath(DIR, 'uv')
+    local UVCACHE = vim.fs.joinpath(UV, 'cache')
+    mkdir(DIR)
+    mkdir(UV)
+    mkdir(UVCACHE)
+    if not executable('python3.14') then
+        vim.system({'uv', 'python', 'install', '3.14'}):wait()
     end
-    local packages = vim.json.decode(vim.system({
-        'python3.12', '-m', 'pip', 'list', '--format=json'
-    }):wait().stdout)
-    for _, d in ipairs({
-        -- python dependências
-        'pyright',
-        'basedpyright',
-        'pynvim',
-        'greenlet',
-    }) do
-        local encontrado = false
-        for _, p in ipairs(packages) do
-            if p == d then
-                encontrado = true
-                break
+    vim.env.UV_PYTHON_INSTALL_DIR = UV
+    vim.env.UV_TOOL_DIR = vim.fs.joinpath(vim.env.HOME, 'nvim', 'bin')
+    vim.env.UV_CACHE_DIR = UVCACHE
+    vim.system({ 'uv', 'python', 'install' }):wait()
+    local packages = vim.system({
+        'uv', 'tool', 'list'
+    }):wait().stdout
+    if packages then
+        for _, d in ipairs({
+            -- python dependências
+            'pyright',
+            'basedpyright',
+            'pynvim',
+        }) do
+            if not packages:match('(' .. d .. ')') then
+                vim.system({ 'uv', 'tool', 'install', d })
             end
-        end
-        if not encontrado then
-            vim.system({
-                'python3.12',
-                '-m', 'pip',
-                'install',
-                d
-            })
         end
     end
     vim.g.python3_host_prog = vim.fs.normalize(vim.fn.exepath('python3.12'))
     if not vim.g.python3_host_prog or vim.g.python3_host_prog == '' then
         vim.print('Variável python3_host_prog não configurado.')
     end
-    vim.env.PYTHONPATH = DIR
-    vim.env.PYTHONUSERBASE = DIR
-    add_path(vim.fs.joinpath(DIR, 'bin'))
+    -- nvim-treesitter compilation
     if executable('gcc.exe') then
         vim.env.CC = vim.fs.normalize(vim.fn.exepath('gcc.exe'))
     else
@@ -509,11 +498,11 @@ _ = (function ()
 end)()
 
 -- criar diretório em OPT, baixar programa e adicionar no $PATH
+-- TODO: notification progress when installing?
+-- msg progress, installation info
 local function add_dependencia(dep)
 	local dir = vim.fs.joinpath(M.OPT, dep.nome)
-	if not vim.uv.fs_stat(dir) then
-        vim.fn.mkdir(dir, 'p', '0755')
-	end
+    mkdir(dir)
 	downloadit(dir, dep.link, true, dep.config)
 end
 -- Os programas dependências init
