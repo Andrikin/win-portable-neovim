@@ -1,5 +1,4 @@
 -- TODO: como obter todos os executáveis em $PATH?
--- TODO: how configure python with 'uv'
 local M = {}
 
 -- verify directory exists, if not, create it
@@ -450,6 +449,15 @@ _ = (function ()
     end
 end)()
 
+-- nvim-treesitter compilation
+_ = (function ()
+    if executable('gcc.exe') then
+        vim.env.CC = vim.fs.normalize(vim.fn.exepath('gcc.exe'))
+    else
+        vim.env.CC = vim.fs.normalize(vim.fn.exepath('x86_64-pc-cygwin-gcc.exe'))
+    end
+end)()
+
 -- Python config
 _ = (function ()
     if not executable('uv') then
@@ -463,8 +471,11 @@ _ = (function ()
     mkdir(DIR)
     mkdir(UV)
     mkdir(UVCACHE)
-    if not executable('python3.14') then
-        vim.system({'uv', 'python', 'install', '3.14'}):wait()
+    if not executable('python') and not executable('python3.14') then
+        vim.system(
+            {'uv', 'python', 'install', '--default', '3.14'},
+            {detach = true}
+        ):wait()
     end
     vim.env.UV_PYTHON_INSTALL_DIR = UV
     vim.env.UV_TOOL_DIR = vim.fs.joinpath(vim.env.HOME, 'nvim', 'bin')
@@ -480,20 +491,14 @@ _ = (function ()
             'basedpyright',
             'pynvim',
         }) do
-            if not packages:match('(' .. d .. ')') then
-                vim.system({ 'uv', 'tool', 'install', d })
+            if not packages:match('([%W]' .. d .. '[%W])') then
+                vim.system({ 'uv', 'tool', 'install', d }, {detach = true})
             end
         end
     end
-    vim.g.python3_host_prog = vim.fs.normalize(vim.fn.exepath('python3.12'))
+    vim.g.python3_host_prog = vim.fs.normalize(vim.fn.exepath('python3'))
     if not vim.g.python3_host_prog or vim.g.python3_host_prog == '' then
         vim.print('Variável python3_host_prog não configurado.')
-    end
-    -- nvim-treesitter compilation
-    if executable('gcc.exe') then
-        vim.env.CC = vim.fs.normalize(vim.fn.exepath('gcc.exe'))
-    else
-        vim.env.CC = vim.fs.normalize(vim.fn.exepath('x86_64-pc-cygwin-gcc.exe'))
     end
 end)()
 
