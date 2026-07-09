@@ -132,9 +132,6 @@ end
 vim.g.loaded_perl_provider = 0
 vim.g.loaded_ruby_provider = 0
 
--- Python
-vim.g.python3_host_prog = vim.fn.exepath('python')
-
 -- Andrikin/awesome-pairing
 vim.g.awesome_pairing_chars = [[({['"]]
 
