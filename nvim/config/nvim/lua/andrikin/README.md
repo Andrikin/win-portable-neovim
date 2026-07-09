@@ -86,6 +86,7 @@ para encaminhar e-mails.
 - [qView](https://interversehq.com/qview/) - simples visualizador de imagens.
 - [WindowTabs](https://github.com/leafOfTree/WindowTabs) - agrupador de janelas.
 - [TinyTask](https://portableapps.com/apps/utilities/tinytask_portable) - automação minimalista de ações
+- [UnixWindowsUtilities](https://sitsa.dl.sourceforge.net/project/unxutils/unxutils/current/UnxUtils.zip) - Lista de programas unix executáveis para Win32
 
 ## Macros LibreOffice:
 
