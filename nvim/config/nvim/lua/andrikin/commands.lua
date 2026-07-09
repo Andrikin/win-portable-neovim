@@ -1,20 +1,6 @@
 -- CUSTOM COMMANDS
 
 local command = vim.api.nvim_create_user_command
--- local Copyq = require('andrikin.utils').Copyq
-
-
--- command('Clipboard',
---     function(opts)
---         Copyq.clipboard(opts)
---     end,
--- 	{
---         nargs = "?",
---         complete = function(arg, _, _)
---             return Copyq:tab_complete(arg)
---         end,
---     }
--- )
 
 command('Projetos',
     function()
