@@ -1,4 +1,5 @@
 -- TODO: como obter todos os executáveis em $PATH?
+-- TODO: refac terminal_toggle map
 local M = {}
 
 -- verify directory exists, if not, create it
@@ -129,7 +130,7 @@ local downloadit = function (dir, link, addpath, config, progresso)
                     extractit(arquivo, dir, false, true)
                 end
             end
-            -- TODO: refazer para simplificar, se possível
+            -- WIP: refazer para simplificar, se possível
             if addpath then
                 vim.schedule(function ()
                     -- backup PATH
