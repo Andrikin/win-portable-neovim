@@ -505,13 +505,15 @@ _ = (function ()
         cmd('git checkout --track win/main')
         cmd('git branch -d master')
     else
-        vim.print("Git: diretório '.git' já existe!")
+        vim.print("win-portable-neovim: já instalado.")
         vim.system({'git', 'pull'}, {cwd = vim.env.HOME}, function (obj)
             if obj.stdout:match('^Updating') then
                 vim.defer_fn(function ()
                     vim.cmd.restart()
                 end, 5000)
                 vim.print('win-portable-neovim: Atualizado! Preparando para reiniciar Neovim!')
+            elseif obj.stdout:match("^Already up to date") then
+                vim.print('win-portable-neovim: não há atualizações para realizar.')
             end
         end)
     end
