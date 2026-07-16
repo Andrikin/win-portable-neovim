@@ -204,7 +204,7 @@ command(
 )
 
 -- Copyq integration
-_ = (function()
+do
     if vim.fn.executable('copyq') ~= 1 then
         vim.print('Não foi encontrado "copyq". Por gentileza, realize a instalação.')
         return
@@ -268,7 +268,6 @@ _ = (function()
         }
     )
 end
-)()
 
 -- Mensagens automáticas
 command('Anexos',

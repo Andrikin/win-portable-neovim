@@ -14,24 +14,24 @@ local function mkdir(dir)
 end
 
 local function executable(exe)
-	return vim.fn.executable(exe) == 1
+    return vim.fn.executable(exe) == 1
 end
 
 local function findexecutables(dir, limit)
     limit = limit or math.huge
-	return vim.fs.find(
-		function(n, _)
-			return (n:match('.*%.exe$')
-				or n:match('.*%.bat$')
-				or n:match('.*%.cmd$')
-			)
-		end,
-		{limit = limit, type = 'file', path = dir}
-	)
+    return vim.fs.find(
+        function(n, _)
+            return (n:match('.*%.exe$')
+                or n:match('.*%.bat$')
+                or n:match('.*%.cmd$')
+            )
+        end,
+        {limit = limit, type = 'file', path = dir}
+    )
 end
 
 vim.env.MYVIMDIR = vim.fs.joinpath(
-	vim.env.HOME, 'nvim'
+    vim.env.HOME, 'nvim'
 )
 
 M.OPTFILE = vim.fs.joinpath(
@@ -69,7 +69,7 @@ end
 
 -- extração de arquivos
 local extractit = function (file, dir, async, removefile, progresso)
-	removefile = removefile ~= nil and removefile or false
+    removefile = removefile ~= nil and removefile or false
     local arquivo = vim.fs.joinpath(dir, file)
     async = async or false
     if not vim.uv.fs_stat(dir) then
@@ -78,21 +78,21 @@ local extractit = function (file, dir, async, removefile, progresso)
     local it = vim.system({
         'tar', '-xf', arquivo, '-C', dir
     }, {}, function (out)
-        if out.code > 0 then
-            vim.print(
-                ('Erro ao realizar extração de %s.\nErro: %s'):format(
-                    arquivo, out.stderr
-            ))
-            return
-        end
-        if progresso then
-            progresso.percent = 75
-            alerta(('%s extraído!'):format(vim.fs.basename(dir)), progresso)
-        end
-		if removefile then
-			vim.fs.rm(arquivo)
-		end
-    end)
+            if out.code > 0 then
+                vim.print(
+                    ('Erro ao realizar extração de %s.\nErro: %s'):format(
+                        arquivo, out.stderr
+                    ))
+                return
+            end
+            if progresso then
+                progresso.percent = 75
+                alerta(('%s extraído!'):format(vim.fs.basename(dir)), progresso)
+            end
+            if removefile then
+                vim.fs.rm(arquivo)
+            end
+        end)
     if not async then
         vim.schedule(function() it:wait() end)
     end
@@ -105,7 +105,7 @@ local downloadit = function (dir, link, addpath, config, progresso)
         progresso.percent = 25
         alerta(('baixando %s'):format(nomedir), progresso)
     end
-	addpath = addpath ~= nil and addpath or false
+    addpath = addpath ~= nil and addpath or false
     local arquivo = vim.fs.basename(link)
     vim.net.request(
         link, {
@@ -165,12 +165,12 @@ local downloadit = function (dir, link, addpath, config, progresso)
 end
 
 -- Check folders initialization
-_ = (function()
+do
     mkdir(M.OPT)
     local PROJETOS = vim.fs.joinpath(vim.fs.dirname(vim.env.HOME), 'projetos')
     mkdir(PROJETOS)
     add_path(M.OPT)
-end)()
+end
 
 -- HACK: melhorar para obter todos os executáveis
 local check_opts = function ()
@@ -219,11 +219,11 @@ M.init_path = function(force)
     end
     local opts = vim.fn.readfile(M.OPTFILE)
     local progresso = {
-      kind = 'progress',
-      percent = 0,
-      source = 'andrikin',
-      status = 'running',
-      title = 'optfile',
+        kind = 'progress',
+        percent = 0,
+        source = 'andrikin',
+        status = 'running',
+        title = 'optfile',
     }
     progresso.id = alerta('iniciando...', progresso)
     for p, o in ipairs(opts) do
@@ -252,7 +252,7 @@ vim.api.nvim_create_user_command("UpdateOptfile",
 )
 
 -- Check git, install it
-_ = (function()
+do
     if executable('git.exe') then
         vim.print("Git já instalado!")
         return
@@ -260,18 +260,18 @@ _ = (function()
     local GITLINK = "https://github.com/git-for-windows/git/releases/download/v2.54.0.windows.1/MinGit-2.54.0-64-bit.zip"
     local GITDIR = vim.fs.joinpath(M.OPT, 'git')
     local progresso = {
-      kind = 'progress',
-      percent = 0,
-      source = 'andrikin',
-      status = 'running',
-      title = 'git-install',
+        kind = 'progress',
+        percent = 0,
+        source = 'andrikin',
+        status = 'running',
+        title = 'git-install',
     }
     progresso.id = alerta('instalando: git', progresso)
     downloadit(GITDIR, GITLINK, true, nil, progresso)
-end)()
+end
 
 -- Check font, install it
-_ = (function()
+do
     local SAUCEREGCMD = vim.fs.joinpath(
         'HKCU','Software', 'Microsoft',
         'Windows NT', 'CurrentVersion', 'Fonts'
@@ -349,11 +349,11 @@ _ = (function()
     end
     -- download
     local progresso = {
-      kind = 'progress',
-      percent = 0,
-      source = 'andrikin',
-      status = 'running',
-      title = 'font-saucecodepro',
+        kind = 'progress',
+        percent = 0,
+        source = 'andrikin',
+        status = 'running',
+        title = 'font-saucecodepro',
     }
     progresso.id = alerta('instalando: saucecodepro', progresso)
     downloadit(SAUCEDIR, SAUCELINK, nil, nil, progresso)
@@ -361,16 +361,16 @@ _ = (function()
     SAUCEFONTES = listarfontes()
     instalar(SAUCEFONTES)
     vim.print('Fonte SauceCodePro instalada. Reiniciar para obter a fonte.')
-end)()
+end
 
 -- Check remote server, initialize it
-_ = (function()
+do
     local copyq = '\\\\.\\pipe\\copyq'
     local ok, _ = pcall(vim.fn.serverstart, copyq)
     if not ok then
         vim.print("Server copyq já existe.")
     end
-end)()
+end
 
 -- Copyq integration
 -- https://copyq.readthedocs.io/en/latest/known-issues.html
@@ -378,7 +378,7 @@ end)()
 -- CopyQ (F5 shortcut) and set "Store standard output" to "text/plain" to save
 -- the output as new item in current tab. selecionar qual tab - default
 -- 'clipboard'
-_ = (function()
+do
     if not executable('copyq') then
         vim.print('Não foi encontrado "copyq". Por gentileza, realize a instalação.')
         return
@@ -442,13 +442,12 @@ _ = (function()
         }
     )
 end
-)()
 
 -- IMPORTANT(Windows 10+): Desabilitar python.exe e python3.exe em "Gerenciar
 -- aliases de execução de aplicativo". Windows executa este alias antes de
 -- executar python declarado em $PATH.
 -- ALTERNATIVE FIX: Remover WindowsApps do $PATH
-_ = (function()
+do
     local remove = function (programa)
         if vim.env.PATH:match(programa) then
             local PATH = ''
@@ -464,10 +463,10 @@ _ = (function()
     for _, programa in ipairs({'WindowsApps', 'Oracle', 'LibreOffice'}) do
         remove(programa)
     end
-end)()
+end
 
 -- Ssh bootstrap
-_ = (function ()
+do
     if not executable('git.exe') then
         vim.print('Não foi encontrado git! Verificar instalação de shhhhuuuhhh.')
         return
@@ -477,10 +476,10 @@ _ = (function ()
     mkdir(SSHDIR)
     vim.cmd.cd(SSHDIR)
     vim.cmd['!']('git clone ' .. vim.base64.decode(shuuush) .. ' ' .. SSHDIR)
-end)()
+end
 
 -- win-portable-neovim git init
-_ = (function ()
+do
     if not executable('git.exe') then
         vim.print('Não foi encontrado git! Verificar instalação de win-portable-neovim.')
         return
@@ -508,10 +507,10 @@ _ = (function ()
             end
         end)
     end
-end)()
+end
 
 -- Install Cygwin dependencies
-_ = (function ()
+do
     if vim.fn.exists(':Cygwin') then
         if not executable('gs.exe') then
             vim.cmd.Cygwin('install ghostscript')
@@ -522,19 +521,19 @@ _ = (function ()
             )
         end
     end
-end)()
+end
 
 -- nvim-treesitter compilation
-_ = (function ()
+do
     if executable('gcc.exe') then
         vim.env.CC = vim.fs.normalize(vim.fn.exepath('gcc.exe'))
     else
         vim.env.CC = vim.fs.normalize(vim.fn.exepath('x86_64-pc-cygwin-gcc.exe'))
     end
-end)()
+end
 
 -- Python config
-_ = (function ()
+do
     if not executable('uv') then
         return
     end
@@ -575,38 +574,38 @@ _ = (function ()
     if not vim.g.python3_host_prog or vim.g.python3_host_prog == '' then
         vim.print('Variável python3_host_prog não configurado.')
     end
-end)()
+end
 
 -- criar diretório em OPT, baixar programa e adicionar no $PATH
 local function add_dependencia(dep)
-	local dir = vim.fs.joinpath(M.OPT, dep.nome)
+    local dir = vim.fs.joinpath(M.OPT, dep.nome)
     local progresso = {
-      kind = 'progress',
-      percent = 0,
-      source = 'andrikin',
-      status = 'running',
-      title = 'add_dependencia',
+        kind = 'progress',
+        percent = 0,
+        source = 'andrikin',
+        status = 'running',
+        title = 'add_dependencia',
     }
     progresso.id = alerta(('instalando: %s'):format(dep.nome), progresso)
     mkdir(dir)
-	downloadit(dir, dep.link, true, dep.config, progresso)
+    downloadit(dir, dep.link, true, dep.config, progresso)
 end
 -- Os programas dependências init
-_ = (function ()
-	for _, dep in ipairs(require('andrikin.deps')) do
-		local dir = vim.fs.joinpath(M.OPT, dep.nome)
-		if not executable(dep.nome) or not vim.uv.fs_stat(dir) then
-			add_dependencia(dep)
+do
+    for _, dep in ipairs(require('andrikin.deps')) do
+        local dir = vim.fs.joinpath(M.OPT, dep.nome)
+        if not executable(dep.nome) or not vim.uv.fs_stat(dir) then
+            add_dependencia(dep)
         else
             if dep.config then
                 vim.schedule(dep.config)
             end
-		end
-	end
-	-- comando para adicionar mais 
-	vim.api.nvim_create_user_command("DependenciaAdd",
-		-- nome, link
-		function(args)
+        end
+    end
+    -- comando para adicionar mais 
+    vim.api.nvim_create_user_command("DependenciaAdd",
+        -- nome, link
+        function(args)
             local dep = {
                 nome = args.fargs[1],
                 link = args.fargs[2],
@@ -617,17 +616,17 @@ _ = (function ()
             if dep.link == nil or dep.link == '' then
                 error('Não foi encontrado valor para a variável "link"')
             end
-			add_dependencia(dep)
-		end, { nargs = '+' }
-	)
-end)()
+            add_dependencia(dep)
+        end, { nargs = '+' }
+    )
+end
 
 -- remove duplicates in $PATH
-_ = (function ()
+do
     local paths = vim.split(vim.env.PATH, ';')
     paths = vim.list.unique(paths)
     vim.env.PATH = vim.fn.join(paths, ';')
-end)()
+end
 
 -- iniciar sessão neovim em Desktop
 vim.cmd.cd(vim.fs.joinpath(vim.env.USERPROFILE, '/Desktop'))
