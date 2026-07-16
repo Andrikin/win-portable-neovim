@@ -2,6 +2,10 @@
 -- TODO: refac terminal_toggle map
 local M = {}
 
+local alerta = function (msg, progress)
+    return vim.api.nvim_echo({{msg}}, true, progress)
+end
+
 -- verify directory exists, if not, create it
 local function mkdir(dir)
     if not vim.uv.fs_stat(dir) then
@@ -83,10 +87,7 @@ local extractit = function (file, dir, async, removefile, progresso)
         end
         if progresso then
             progresso.percent = 75
-            vim.api.nvim_echo(
-                {{('%s extraído!'):format(vim.fs.basename(dir))}},
-                true, progresso
-            )
+            alerta(('%s extraído!'):format(vim.fs.basename(dir)), progresso)
         end
 		if removefile then
 			vim.fs.rm(arquivo)
@@ -102,7 +103,7 @@ local downloadit = function (dir, link, addpath, config, progresso)
     local nomedir = vim.fs.basename(dir)
     if progresso then
         progresso.percent = 25
-        vim.api.nvim_echo({{('baixando %s'):format(nomedir)}}, true, progresso)
+        alerta(('baixando %s'):format(nomedir), progresso)
     end
 	addpath = addpath ~= nil and addpath or false
     local arquivo = vim.fs.basename(link)
@@ -118,7 +119,7 @@ local downloadit = function (dir, link, addpath, config, progresso)
             end
             if progresso then
                 progresso.percent = 50
-                vim.api.nvim_echo({{('%s baixado!'):format(nomedir)}}, true, progresso)
+                alerta(('%s baixado!'):format(nomedir), progresso)
             end
             if vim.uv.fs_stat(vim.fs.joinpath(dir, arquivo)) and (
                 arquivo:match('zip$')
@@ -146,10 +147,7 @@ local downloadit = function (dir, link, addpath, config, progresso)
                         if progresso then
                             progresso.percent = 100
                             progresso.status = 'success'
-                            vim.api.nvim_echo(
-                                {{('%s adicionado ao PATH!'):format(nomedir)}},
-                                true, progresso
-                            )
+                            alerta(('%s adicionado ao PATH!'):format(nomedir), progresso)
                         end
                     end
                 end)
@@ -160,10 +158,7 @@ local downloadit = function (dir, link, addpath, config, progresso)
             if progresso and progresso.percent < 100 then
                 progresso.percent = 100
                 progresso.status = 'success'
-                vim.api.nvim_echo(
-                    {{('concluído instalação: %s!'):format(nomedir)}},
-                    true, progresso
-                )
+                alerta(('concluído instalação: %s!'):format(nomedir), progresso)
             end
         end
     )
@@ -230,22 +225,18 @@ M.init_path = function(force)
       status = 'running',
       title = 'optfile',
     }
-    progresso.id = vim.api.nvim_echo({{'iniciando...'}}, true, progresso)
+    progresso.id = alerta('iniciando...', progresso)
     for p, o in ipairs(opts) do
         add_path(o)
         progresso.percent = math.floor(p/#opts*100)
         if o:match('[wW]indows') then
-            vim.api.nvim_echo({{('%s: concluído...'):format(
-                vim.fs.basename(o)
-            )}}, true, progresso)
+            alerta(('%s: concluído...'):format(vim.fs.basename(o)), progresso)
         else
-            vim.api.nvim_echo({{('%s: concluído...'):format(
-                o:match('opt/([^/]*)')
-            )}}, true, progresso)
+            alerta(('%s: concluído...'):format(o:match('opt/([^/]*)')), progresso)
         end
         if p == #opts then
             progresso.status = 'success'
-            vim.api.nvim_echo({{'inicialização concluída!'}}, true, progresso)
+            alerta('inicialização concluída!', progresso)
         end
     end
     if force then
@@ -275,7 +266,7 @@ _ = (function()
       status = 'running',
       title = 'git-install',
     }
-    progresso.id = vim.api.nvim_echo({{'instalando: git'}}, true, progresso)
+    progresso.id = alerta('instalando: git', progresso)
     downloadit(GITDIR, GITLINK, true, nil, progresso)
 end)()
 
@@ -364,7 +355,7 @@ _ = (function()
       status = 'running',
       title = 'font-saucecodepro',
     }
-    progresso.id = vim.api.nvim_echo({{'instalando: saucecodepro'}}, true, progresso)
+    progresso.id = alerta('instalando: saucecodepro', progresso)
     downloadit(SAUCEDIR, SAUCELINK, nil, nil, progresso)
     ---@diagnostic disable-next-line: cast-local-type
     SAUCEFONTES = listarfontes()
@@ -596,7 +587,7 @@ local function add_dependencia(dep)
       status = 'running',
       title = 'add_dependencia',
     }
-    progresso.id = vim.api.nvim_echo({{('instalando: %s'):format(dep.nome)}}, true, progresso)
+    progresso.id = alerta(('instalando: %s'):format(dep.nome), progresso)
     mkdir(dir)
 	downloadit(dir, dep.link, true, dep.config, progresso)
 end
