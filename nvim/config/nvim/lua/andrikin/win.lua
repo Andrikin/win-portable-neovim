@@ -622,6 +622,13 @@ _ = (function ()
 	)
 end)()
 
+-- remove duplicates in $PATH
+_ = (function ()
+    local paths = vim.split(vim.env.PATH, ';')
+    paths = vim.list.unique(paths)
+    vim.env.PATH = vim.fn.join(paths, ';')
+end)()
+
 -- iniciar sessão neovim em Desktop
 vim.cmd.cd(vim.fs.joinpath(vim.env.USERPROFILE, '/Desktop'))
 
