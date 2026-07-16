@@ -2,8 +2,9 @@
 -- https://echasnovski.com/blog/2026-03-13-a-guide-to-vim-pack
 
 vim.pack.add({
-    -- colorscheme
-    'https://github.com/polirritmico/monokai-nightasty.nvim',
+    -- colorschemes
+    'https://github.com/ellisonleao/gruvbox.nvim',
+    -- 'https://github.com/polirritmico/monokai-nightasty.nvim',
     -- 'https://github.com/biisal/blackhole',
     -- my plugins and forks
     'https://github.com/Andrikin/ouvidoria-latex',
@@ -107,7 +108,9 @@ end
 -- Colorscheme
 vim.o.termguicolors = true
 -- vim.cmd.colorscheme('blackhole')
-vim.cmd.colorscheme('monokai-nightasty')
+-- vim.cmd.colorscheme('monokai-nightasty')
+require('gruvbox').setup()
+vim.cmd.colorscheme('gruvbox')
 
 vim.cmd.packadd('nvim.difftool')
 vim.cmd.packadd('nvim.undotree')
