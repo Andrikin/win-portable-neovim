@@ -252,11 +252,7 @@ vim.api.nvim_create_user_command("UpdateOptfile",
 )
 
 -- Check git, install it
-do
-    if executable('git.exe') then
-        vim.print("Git já instalado!")
-        return
-    end
+if not executable('git.exe') then
     local GITLINK = "https://github.com/git-for-windows/git/releases/download/v2.54.0.windows.1/MinGit-2.54.0-64-bit.zip"
     local GITDIR = vim.fs.joinpath(M.OPT, 'git')
     local progresso = {
@@ -268,6 +264,8 @@ do
     }
     progresso.id = alerta('instalando: git', progresso)
     downloadit(GITDIR, GITLINK, true, nil, progresso)
+else
+    vim.print("Git já instalado!")
 end
 
 -- Check font, install it
@@ -337,30 +335,30 @@ do
                 end
             end, {}
         )
-        return
-    end
-    -- realizar download e instalar
-    if not vim.uv.fs_stat(SAUCEDIR) then
-        -- vim.uv.fs_mkdir(SAUCEDIR, tonumber('755', 8))
-        vim.fn.mkdir(SAUCEDIR, 'p', '0755')
     else
-        vim.fs.rm(SAUCEDIR, {recursive = true})
-        vim.fn.mkdir(SAUCEDIR, 'p', '0755')
+        -- realizar download e instalar
+        if not vim.uv.fs_stat(SAUCEDIR) then
+            -- vim.uv.fs_mkdir(SAUCEDIR, tonumber('755', 8))
+            vim.fn.mkdir(SAUCEDIR, 'p', '0755')
+        else
+            vim.fs.rm(SAUCEDIR, {recursive = true})
+            vim.fn.mkdir(SAUCEDIR, 'p', '0755')
+        end
+        -- download
+        local progresso = {
+            kind = 'progress',
+            percent = 0,
+            source = 'andrikin',
+            status = 'running',
+            title = 'font-saucecodepro',
+        }
+        progresso.id = alerta('instalando: saucecodepro', progresso)
+        downloadit(SAUCEDIR, SAUCELINK, nil, nil, progresso)
+        ---@diagnostic disable-next-line: cast-local-type
+        SAUCEFONTES = listarfontes()
+        instalar(SAUCEFONTES)
+        vim.print('Fonte SauceCodePro instalada. Reiniciar para obter a fonte.')
     end
-    -- download
-    local progresso = {
-        kind = 'progress',
-        percent = 0,
-        source = 'andrikin',
-        status = 'running',
-        title = 'font-saucecodepro',
-    }
-    progresso.id = alerta('instalando: saucecodepro', progresso)
-    downloadit(SAUCEDIR, SAUCELINK, nil, nil, progresso)
-    ---@diagnostic disable-next-line: cast-local-type
-    SAUCEFONTES = listarfontes()
-    instalar(SAUCEFONTES)
-    vim.print('Fonte SauceCodePro instalada. Reiniciar para obter a fonte.')
 end
 
 -- Check remote server, initialize it
@@ -378,11 +376,7 @@ end
 -- CopyQ (F5 shortcut) and set "Store standard output" to "text/plain" to save
 -- the output as new item in current tab. selecionar qual tab - default
 -- 'clipboard'
-do
-    if not executable('copyq') then
-        vim.print('Não foi encontrado "copyq". Por gentileza, realize a instalação.')
-        return
-    end
+if executable('copyq') then
     vim.api.nvim_create_user_command('Clipboard',
         function(args)
             local tab = args.fargs[1] or 'clipboard'
@@ -441,6 +435,8 @@ do
             end,
         }
     )
+else
+    vim.print('Não foi encontrado "copyq". Por gentileza, realize a instalação.')
 end
 
 -- IMPORTANT(Windows 10+): Desabilitar python.exe e python3.exe em "Gerenciar
@@ -466,24 +462,18 @@ do
 end
 
 -- Ssh bootstrap
-do
-    if not executable('git.exe') then
-        vim.print('Não foi encontrado git! Verificar instalação de shhhhuuuhhh.')
-        return
-    end
+if executable('git.exe') then
     local SSHDIR = vim.fs.joinpath(vim.env.HOME, '.ssh')
     local shuuush = "Z2l0QGdpdGxhYi5jb206QW5kcmlraW4vc2h1dXVzaC5naXQ="
     mkdir(SSHDIR)
     vim.cmd.cd(SSHDIR)
     vim.cmd['!']('git clone ' .. vim.base64.decode(shuuush) .. ' ' .. SSHDIR)
+else
+    vim.print('Não foi encontrado git! Verificar instalação de shhhhuuuhhh.')
 end
 
 -- win-portable-neovim git init
-do
-    if not executable('git.exe') then
-        vim.print('Não foi encontrado git! Verificar instalação de win-portable-neovim.')
-        return
-    end
+if executable('git.exe') then
     if not vim.uv.fs_stat(vim.fs.joinpath(vim.env.HOME, '.git')) then
         local cmd = vim.cmd['!']
         vim.cmd.cd(vim.env.HOME)
@@ -507,6 +497,8 @@ do
             end
         end)
     end
+else
+    vim.print('Não foi encontrado git! Verificar instalação de win-portable-neovim.')
 end
 
 -- Install Cygwin dependencies
@@ -533,10 +525,7 @@ do
 end
 
 -- Python config
-do
-    if not executable('uv') then
-        return
-    end
+if executable('uv') then
     local DIR = vim.fs.joinpath(
         M.OPT, 'python'
     )

@@ -204,11 +204,7 @@ command(
 )
 
 -- Copyq integration
-do
-    if vim.fn.executable('copyq') ~= 1 then
-        vim.print('Não foi encontrado "copyq". Por gentileza, realize a instalação.')
-        return
-    end
+if vim.fn.executable('copyq') == 1 then
     vim.api.nvim_create_user_command('Clipboard',
         function(args)
             local tab = args.fargs[1] or 'clipboard'
@@ -267,6 +263,8 @@ do
             end,
         }
     )
+else
+    vim.print('Não foi encontrado "copyq". Por gentileza, realize a instalação.')
 end
 
 -- Mensagens automáticas
