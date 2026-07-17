@@ -30,6 +30,37 @@ local function findexecutables(dir, limit)
     )
 end
 
+-- IMPORTANT(Windows 10+): Desabilitar python.exe e python3.exe em "Gerenciar
+-- aliases de execução de aplicativo". Windows executa este alias antes de
+-- executar python declarado em $PATH.
+-- ALTERNATIVE FIX: Remover WindowsApps do $PATH
+do
+    local remove = function (programa)
+        if vim.env.PATH:match(programa) then
+            local PATH = ''
+            for path in vim.env.PATH:gmatch('([^;]+)') do
+                if not path:match(programa) then
+                    PATH = PATH ..  ';' .. path
+                end
+            end
+            PATH = PATH:match('^.(.*)$')
+            vim.env.PATH = PATH
+        end
+    end
+    for _, programa in ipairs({'WindowsApps', 'Oracle', 'LibreOffice'}) do
+        remove(programa)
+    end
+end
+
+-- Check remote server, initialize it
+do
+    local copyq = '\\\\.\\pipe\\copyq'
+    local ok, _ = pcall(vim.fn.serverstart, copyq)
+    if not ok then
+        vim.print("Server copyq já existe.")
+    end
+end
+
 vim.env.MYVIMDIR = vim.fs.joinpath(
     vim.env.HOME, 'nvim'
 )
@@ -37,6 +68,12 @@ vim.env.MYVIMDIR = vim.fs.joinpath(
 M.OPTFILE = vim.fs.joinpath(
     vim.env.MYVIMDIR,
     'opt', 'optfile'
+)
+-- Editar arquivo 'optfile'
+vim.api.nvim_create_user_command("Optfile",
+    function()
+        vim.cmd.edit(M.OPTFILE)
+    end, {}
 )
 
 if not vim.env.NVIMOPT then
@@ -47,13 +84,6 @@ if not vim.env.NVIMOPT then
 else
     M.OPT = vim.env.NVIMOPT
 end
-
--- Editar arquivo 'optfile'
-vim.api.nvim_create_user_command("Optfile",
-    function()
-        vim.cmd.edit(M.OPTFILE)
-    end, {}
-)
 
 -- append to the last
 local add_path = function(dir)
@@ -361,15 +391,6 @@ do
     end
 end
 
--- Check remote server, initialize it
-do
-    local copyq = '\\\\.\\pipe\\copyq'
-    local ok, _ = pcall(vim.fn.serverstart, copyq)
-    if not ok then
-        vim.print("Server copyq já existe.")
-    end
-end
-
 -- Copyq integration
 -- https://copyq.readthedocs.io/en/latest/known-issues.html
 -- On Windows, CopyQ does not print anything on console Use Action dialog in
@@ -437,28 +458,6 @@ if executable('copyq') then
     )
 else
     vim.print('Não foi encontrado "copyq". Por gentileza, realize a instalação.')
-end
-
--- IMPORTANT(Windows 10+): Desabilitar python.exe e python3.exe em "Gerenciar
--- aliases de execução de aplicativo". Windows executa este alias antes de
--- executar python declarado em $PATH.
--- ALTERNATIVE FIX: Remover WindowsApps do $PATH
-do
-    local remove = function (programa)
-        if vim.env.PATH:match(programa) then
-            local PATH = ''
-            for path in vim.env.PATH:gmatch('([^;]+)') do
-                if not path:match(programa) then
-                    PATH = PATH ..  ';' .. path
-                end
-            end
-            PATH = PATH:match('^.(.*)$')
-            vim.env.PATH = PATH
-        end
-    end
-    for _, programa in ipairs({'WindowsApps', 'Oracle', 'LibreOffice'}) do
-        remove(programa)
-    end
 end
 
 -- Ssh bootstrap
