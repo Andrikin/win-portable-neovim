@@ -541,7 +541,8 @@ if executable('uv') then
         ):wait()
     end
     vim.env.UV_PYTHON_INSTALL_DIR = UV
-    vim.env.UV_TOOL_DIR = vim.fs.joinpath(vim.env.HOME, 'nvim', 'bin')
+    vim.env.UV_TOOL_BIN_DIR = UV
+    vim.env.UV_TOOL_DIR = UV
     vim.env.UV_CACHE_DIR = UVCACHE
     vim.system({ 'uv', 'python', 'install' }):wait()
     local packages = vim.system({
@@ -556,6 +557,16 @@ if executable('uv') then
         }) do
             if not packages:match('([%W]' .. d .. '[%W])') then
                 vim.system({ 'uv', 'tool', 'install', d }, {detach = true})
+                -- uv pip install --system --break-system-packages neovim
+                if d == 'pynvim' then
+                    vim.system(
+                        { 'uv', 'pip', 'install',
+                            '--system', '--break-system-packages',
+                            'neovim'
+                        },
+                        {detach = true}
+                    )
+                end
             end
         end
     end
