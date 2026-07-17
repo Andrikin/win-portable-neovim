@@ -134,15 +134,15 @@ local toggle_list = function()
         vim.print('toggle_terminal: erro encontrado')
         return
     end
-    if ttoggler[tnumber] then
-        local binfo = vim.fn.getbufinfo(ttoggler[tnumber])[1]
-		if binfo.hidden == 0 then
-			vim.api.nvim_buf_call(
-				ttoggler[tnumber],
-				vim.cmd.close
-			)
-		else
-			vim.cmd.split("+b" .. ttoggler[tnumber])
+    local binfo = vim.fn.getbufinfo(ttoggler[tnumber] or 0)[1]
+    if ttoggler[tnumber] and binfo then
+        if binfo.hidden == 0 then
+            vim.api.nvim_buf_call(
+                ttoggler[tnumber],
+                vim.cmd.close
+            )
+        else
+            vim.cmd.split("+b" .. ttoggler[tnumber])
         end
     else
 		vim.cmd.split('+terminal')
