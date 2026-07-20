@@ -1,5 +1,5 @@
 -- TODO: como obter todos os executáveis em $PATH?
--- TODO: refac terminal_toggle map
+-- TODO: how build zig: !zig build install --prefix ./zig-out/ -Doptimize=ReleaseFast
 local M = {}
 
 local alerta = function (msg, progress)
@@ -512,10 +512,7 @@ do
             )
         end
     end
-end
-
--- nvim-treesitter compilation
-do
+    -- nvim-treesitter compilation
     if executable('gcc.exe') then
         vim.env.CC = vim.fs.normalize(vim.fn.exepath('gcc.exe'))
     else
