@@ -21,6 +21,8 @@ vim.pack.add({
     -- harpoon dependency
     -- 'https://github.com/nvim-lua/plenary.nvim.git',
     'https://github.com/romainl/vim-cool.git',
+    -- dirvish: neovim 0.12.4 
+    -- use ad478b4ac86484edc525bfc5379f261204dfbf4c commit
     'https://github.com/justinmk/vim-dirvish.git',
     'https://github.com/neovim/nvim-lspconfig.git',
     { src = 'https://github.com/Saghen/blink.cmp', version = 'v1' },

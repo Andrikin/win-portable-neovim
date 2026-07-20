@@ -135,3 +135,6 @@ vim.g.loaded_ruby_provider = 0
 -- Andrikin/awesome-pairing
 vim.g.awesome_pairing_chars = [[({['"]]
 
+-- disable dir plugin
+vim.g.loaded_nvim_dir_plugin = 1
+
