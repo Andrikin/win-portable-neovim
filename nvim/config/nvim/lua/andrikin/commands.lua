@@ -8,8 +8,8 @@ command('Projetos',
             vim.fs.dirname(vim.env.HOME),
             'projetos'
         ))
-    end,
-{})
+    end, {}
+)
 
 command('InicializacaoWindows',
     function()
@@ -17,8 +17,8 @@ command('InicializacaoWindows',
             vim.env.APPDATA,
             '/Microsoft/Windows/Start Menu/Programs/Startup'
         ))
-    end,
-{})
+    end, {}
+)
 
 command('Desktop',
     function()
@@ -26,8 +26,8 @@ command('Desktop',
             vim.env.HOMEDRIVE .. vim.env.HOMEPATH,
             'Desktop'
         ))
-    end,
-{})
+    end, {}
+)
 
 command('Downloads',
     function()
@@ -35,8 +35,8 @@ command('Downloads',
             vim.env.HOMEDRIVE .. vim.env.HOMEPATH,
             'Downloads'
         ))
-    end,
-{})
+    end, {}
+)
 
 command('Documents',
     function()
@@ -44,8 +44,8 @@ command('Documents',
             vim.env.HOMEDRIVE .. vim.env.HOMEPATH,
             'Documents'
         ))
-    end,
-{})
+    end, {}
+)
 
 command('RedeLocal',
     function()
@@ -53,8 +53,8 @@ command('RedeLocal',
         if vim.fn.isdirectory(andre) == 1 then
             vim.cmd.Dirvish(andre)
         end
-    end,
-{})
+    end, {}
+)
 
 command('ComunicacaoInterna',
     function()
@@ -62,27 +62,27 @@ command('ComunicacaoInterna',
         if vim.fn.isdirectory(andre) == 1 then
             vim.cmd.Dirvish(andre)
         end
-    end,
-{})
+    end, {}
+)
 
 command('SysinitEdit',
     function()
         vim.cmd.edit('$VIM/sysinit.vim')
-    end,
-{})
+    end, {}
+)
 
 -- https://help.libreoffice.org/latest/en-US/text/sbasic/python/python_locations.html?&DbPAR=BASIC&System=WIN
 command('LibreOfficeScripts',
     function()
         vim.cmd.Dirvish('$APPDATA/LibreOffice/4/user/Scripts')
-    end,
-{})
+    end, {}
+)
 
 command('Config',
     function()
         vim.cmd.edit('$XDG_CONFIG_HOME')
-    end,
-{})
+    end, {}
+)
 
 command('Snippets',
     function()
@@ -91,8 +91,8 @@ command('Snippets',
             vim.fn.stdpath('config'),
             'snippets'
         ))
-    end,
-{})
+    end, {}
+)
 
 -- imprimir arquivos na impressora padrão
 command('Imprimir',
@@ -146,5 +146,6 @@ command('SortingDirvish',
 			table.insert(dlist, path.path)
         end
         vim.api.nvim_buf_set_lines(buf, 0, -1, false, dlist)
-    end,
-{})
+    end, {}
+)
+
