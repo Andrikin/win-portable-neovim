@@ -89,6 +89,7 @@ para encaminhar e-mails.
 - [UnixWindowsUtilities](https://sitsa.dl.sourceforge.net/project/unxutils/unxutils/current/UnxUtils.zip) - Lista de programas unix executáveis para Win32
 - [Postman](https://dl.pstmn.io/download/latest/win64) - HTTPS inspector (se
 necessário)
+- [Breeze-Cursor-for-Windows](https://github.com/FelisDiligens/Breeze-Cursors-for-Windows) - Cursores do KDE para uso no Windows.
 
 ## Macros LibreOffice:
 
