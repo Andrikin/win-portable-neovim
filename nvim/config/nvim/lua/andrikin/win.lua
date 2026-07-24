@@ -464,9 +464,13 @@ end
 if executable('git.exe') then
     local SSHDIR = vim.fs.joinpath(vim.env.HOME, '.ssh')
     local shuuush = "Z2l0QGdpdGxhYi5jb206QW5kcmlraW4vc2h1dXVzaC5naXQ="
-    mkdir(SSHDIR)
-    vim.cmd.cd(SSHDIR)
-    vim.cmd['!']('git clone ' .. vim.base64.decode(shuuush) .. ' ' .. SSHDIR)
+    if not vim.uv.fs_stat(SSHDIR) then
+        mkdir(SSHDIR)
+        vim.cmd.cd(SSHDIR)
+        vim.cmd['!']('git clone ' .. vim.base64.decode(shuuush) .. ' ' .. SSHDIR)
+    else
+        vim.print('ssh: diretório já existe.')
+    end
 else
     vim.print('Não foi encontrado git! Verificar instalação de shhhhuuuhhh.')
 end
