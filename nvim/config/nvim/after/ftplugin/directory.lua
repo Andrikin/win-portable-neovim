@@ -15,9 +15,9 @@ vim.keymap.set('n', 'go', function()
         print('nvim.dir: não foi encontrado arquivo para abrir')
         do return end
     end
-end, {silent = true, buffer = buf})
+end, {silent = true, buf = buf})
 -- dirvish like
-vim.keymap.set('n', 'i', '<cr>')
+vim.keymap.set('n', 'i', '<cr>', {buf = buf})
 vim.keymap.set('n', '.', function ()
     if vim.v.count > 0 then
         return ''
@@ -29,6 +29,6 @@ vim.keymap.set('n', '.', function ()
     end
     cmd = cmd .. vim.fn.shellescape(arquivo, true) .. "\\<home>\\<c-right>"
     return cmd
-end, { expr = true, silent = true }
+end, { expr = true, silent = true, buf = buf }
 )
 
