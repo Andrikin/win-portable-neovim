@@ -15,6 +15,7 @@ desktop.ini
 .zen/
 .wget-hsts
 .nvimlog
+dirvish.log
 
 nvim/share/applications/
 nvim/share/icons/

@@ -107,6 +107,8 @@ vim.defer_fn(function()
         vim.g.dirvish_mode = ':%sort /.*\\\\\\|.*[^\\\\]/'
     end
 end, 1000)
+-- log file
+vim.g.dirvish_dbg = 1
 
 -- --- Emmet ---
 vim.g.user_emmet_install_global = 0
