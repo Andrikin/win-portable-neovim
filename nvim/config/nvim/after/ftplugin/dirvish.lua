@@ -1,8 +1,8 @@
 local buf = vim.api.nvim_get_current_buf()
 local open = vim.ui.open or function(arquivo)
-    vim.print('jobstart: ' .. arquivo)
-    vim.fn.jobstart(
-        vim.fn.shellescape(arquivo, true),
+    vim.print('vim.system: ' .. arquivo)
+    vim.system(
+        {vim.fn.shellescape(arquivo, true)},
         {detach = true}
     )
 end
