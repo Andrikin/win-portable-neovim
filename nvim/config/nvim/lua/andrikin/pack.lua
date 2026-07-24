@@ -3,9 +3,9 @@
 
 vim.pack.add({
     -- colorschemes
-    'https://github.com/ellisonleao/gruvbox.nvim',
-    -- 'https://github.com/polirritmico/monokai-nightasty.nvim',
     -- 'https://github.com/biisal/blackhole',
+    -- 'https://github.com/polirritmico/monokai-nightasty.nvim',
+    'https://github.com/ellisonleao/gruvbox.nvim',
     -- my plugins and forks
     'https://github.com/Andrikin/ouvidoria-latex',
     'https://github.com/Andrikin/awesome-pairing',
@@ -16,10 +16,6 @@ vim.pack.add({
     'https://github.com/tpope/vim-surround.git',
     'https://github.com/tpope/vim-eunuch.git',
     'https://github.com/tpope/vim-dadbod.git',
-    -- plugins
-    -- { src = 'https://github.com/ThePrimeagen/harpoon.git', version = 'harpoon2' },
-    -- harpoon dependency
-    -- 'https://github.com/nvim-lua/plenary.nvim.git',
     'https://github.com/romainl/vim-cool.git',
     -- dirvish: neovim 0.12.4 
     -- use ad478b4ac86484edc525bfc5379f261204dfbf4c commit
@@ -109,8 +105,6 @@ end
 
 -- Colorscheme
 vim.o.termguicolors = true
--- vim.cmd.colorscheme('blackhole')
--- vim.cmd.colorscheme('monokai-nightasty')
 require('gruvbox').setup()
 vim.cmd.colorscheme('gruvbox')
 
@@ -144,7 +138,8 @@ require('mini.pick').setup({
 require('luasnip').config.set_config({
 	history = true,
 })
-require('luasnip.loaders.from_vscode').lazy_load() -- carregar snippets (templates)
+-- carregar snippets (templates)
+require('luasnip.loaders.from_vscode').lazy_load()
 require('luasnip.loaders.from_lua').lazy_load({
 ---@diagnostic disable-next-line: assign-type-mismatch
     paths = vim.fs.joinpath(

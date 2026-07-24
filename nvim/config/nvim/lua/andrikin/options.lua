@@ -15,7 +15,8 @@ vim.o.nu = true
 vim.o.tabstop = 4
 vim.o.shiftwidth = 4
 vim.o.softtabstop = 4
-vim.o.expandtab = true -- ThePrimeagen way
+-- ThePrimeagen way
+vim.o.expandtab = true
 
 -- Configurações para search
 vim.o.incsearch = true
@@ -102,7 +103,8 @@ vim.defer_fn(function()
     if vim.fn.exists(':SortingDirvish') > 0 then
         vim.g.dirvish_mode = ':SortingDirvish'
     else
-        vim.g.dirvish_mode = ':%sort /.*\\\\\\|.*[^\\\\]/' -- diretórios primeiro, depois arquivos
+        -- diretórios primeiro, depois arquivos
+        vim.g.dirvish_mode = ':%sort /.*\\\\\\|.*[^\\\\]/'
     end
 end, 1000)
 

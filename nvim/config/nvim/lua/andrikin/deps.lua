@@ -1,10 +1,4 @@
-local OPT = vim.env.NVIMOPT
-if not vim.env.NVIMOPT then
-    OPT = vim.fs.joinpath(
-        vim.env.HOME,
-        'nvim', 'opt'
-    )
-end
+local OPT = require('andrikin.win').OPT
 
 return {
 	{

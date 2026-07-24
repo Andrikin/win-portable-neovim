@@ -169,18 +169,10 @@ end
 vim.keymap.set('n', '<leader>t', toggle_list)
 
 -- Nvim-Undotree plugin
-vim.keymap.set(
-	'n',
-	'<leader>u',
-	vim.cmd.Undotree
-)
+vim.keymap.set('n', '<leader>u', vim.cmd.Undotree)
 
 -- Fugitive maps
-vim.keymap.set(
-	'n',
-	'<leader>g',
-	vim.cmd.Git
-)
+vim.keymap.set('n', '<leader>g', vim.cmd.Git)
 
 -- mini.pick
 -- https://github.com/nvim-mini/mini.nvim/issues/2186
