@@ -80,7 +80,8 @@ vim.o.nu = true
 vim.o.tabstop = 4
 vim.o.shiftwidth = 4
 vim.o.softtabstop = 4
-vim.o.expandtab = true -- ThePrimeagen way
+-- ThePrimeagen way
+vim.o.expandtab = true
 
 -- Configurações para search
 vim.o.incsearch = true
@@ -132,10 +133,6 @@ vim.o.winborder = 'single'
 vim.o.inccommand = 'split'
 vim.o.fillchars = 'vert:|,fold:*,foldclose:+,diff:-'
 
--- Matchit
--- TODO: Criar arquivos ftplugin para cada linguagem, definindo b:match_words
-vim.opt.matchpairs:append('<:>')
-
 -- --- Netrw ---
 -- Disable Netrw
 vim.g.loaded_netrw = 1
@@ -145,10 +142,17 @@ vim.g.loaded_netrwPlugin = 1
 vim.g.loaded_perl_provider = 0
 vim.g.loaded_ruby_provider = 0
 vim.g.loaded_node_provider = 0
+vim.g.loaded_python3_provider = 0
 
 -- MAPPINGS --
 vim.keymap.set({'i', 'c'}, '<c-backspace>', '<c-w>')
 vim.keymap.set({'i', 'c'}, '<c-v>', '<c-r>+')
+
+-- Copy and paste from clipboard (* -> selection register/+ -> primary register)
+vim.keymap.set('n', 'gP', '"+P')
+vim.keymap.set('n', 'gp', '"+p')
+vim.keymap.set({'n', 'v'}, 'gy', '"+y')
+vim.keymap.set('n', 'gY', '"+Y')
 
 -- 'gk' e 'gj' ThePrimeagen way
 local van_halen = function(acao)
@@ -284,7 +288,7 @@ Ouvidoria da Prefeitura de Itajaí
 
 -- AUTOCOMMANDS --
 local autocmd = vim.api.nvim_create_autocmd
-local Andrikin = vim.api.nvim_create_augroup('Andrikin', {clear = true})
+local Andrikin = vim.api.nvim_create_augroup('AndrikinFirenvim', {clear = true})
 
 -- Auto Insert Mode
 autocmd({'BufEnter'}, {
