@@ -176,9 +176,10 @@ vim.keymap.set( 'n', 'j',
 )
 
 -- COMMANDS --
+
 local command = vim.api.nvim_create_user_command
-command(
-    'Resposta',
+
+command( 'Resposta',
     function()
         local greetings = vim.fn.getline(1):match('Boa tarde,')
         local endings = vim.fn.getline(vim.fn.line('$')):match('Ouvidoria da Prefeitura de Itajaí')
@@ -203,8 +204,16 @@ command(
         -- remover linhas em branco desnecessárias
         vim.cmd.substitute({'/[\\n\\r]\\{3,}/\\r\\r/ge', range = {1, vim.fn.line('$')}, mods = { silent = true }})
         vim.cmd.substitute({[[/\r/\r/ge]], range = {1, vim.fn.line('$')}, mods = { silent = true }})
-    end,
-    {}
+    end, {}
+)
+
+-- Formatar bloco de texto grande, criando parágrafos para cada
+-- frase, terminando com ponto. Aproveita para formatar 'textwidth'.
+command('FormatarBlocao',
+    function ()
+        vim.cmd("'<,'>s:\\.[ \\n]:.\\r\\r:g")
+        vim.cmd.normal('gwgg')
+    end, {}
 )
 
 -- Copyq integration
