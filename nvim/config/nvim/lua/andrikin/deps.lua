@@ -146,20 +146,22 @@ return {
                             plugin
                         }, {detach = true})
                     else
-                        vim.print(('Pacote node já instalado %s'):format(plugin))
+                        vim.print(('Pacote [%s] node já instalado.'):format(plugin))
                     end
                 end
             end
             if not vim.g.node_host_prog or vim.g.node_host_prog == '' then
-                local node_neovim = vim.fs.joinpath(NODEDIR,
-                    'node-v20.10.0-win-x64',
-                    'node_modules',
-                    'neovim',
-                    'bin'
-                )
-                if vim.uv.fs_stat(node_neovim) then
-                    -- https://github.com/neovim/neovim/issues/15308
-                    vim.g.node_host_prog = vim.fs.joinpath(node_neovim, 'cli.js')
+                local node_neovim = vim.fs.find(function (n, p)
+                    return n:match('bin') and p:match('neovim$')
+                end,
+                {path = NODEDIR, limit = math.huge, type = 'directory'})
+                if node_neovim[1] then
+                    ---@diagnostic disable-next-line: cast-local-type
+                    node_neovim = node_neovim[1]
+                    if vim.uv.fs_stat(node_neovim) then
+                        -- https://github.com/neovim/neovim/issues/15308
+                        vim.g.node_host_prog = vim.fs.joinpath(node_neovim, 'cli.js')
+                    end
                 else
                     vim.print('Não foi possível configurar vim.g.node_host_prog')
                 end
