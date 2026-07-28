@@ -40,6 +40,7 @@ lua << EOF
 	vim.opt.runtimepath:append(vim.fn.stdpath('config'))
     -- vim.pack paths
 	vim.opt.packpath:prepend(site)
+    vim.opt.packlockfile = vim.fn.expand('$XDG_CONFIG_HOME/nvim/nvim-pack-lock.json')
     -- utils.lua
 	if not vim.env.NVIMOPT then
 		vim.env.NVIMOPT = vim.env.HOME .. '/nvim/opt'
