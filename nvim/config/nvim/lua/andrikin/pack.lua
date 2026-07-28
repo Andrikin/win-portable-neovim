@@ -37,6 +37,8 @@ vim.pack.add({
     'https://github.com/folke/lazydev.nvim.git',
     -- ft = java
     'https://github.com/mfussenegger/nvim-jdtls.git',
+    -- ft = markdown
+    'https://github.com/MeanderingProgrammer/render-markdown.nvim',
 }, { confirm = false })
 
 -- vim.pack autocmds:
