@@ -543,7 +543,6 @@ if executable('uv') then
     vim.env.UV_TOOL_BIN_DIR = UV
     vim.env.UV_TOOL_DIR = UV
     vim.env.UV_CACHE_DIR = UVCACHE
-    vim.system({ 'uv', 'python', 'install' }):wait()
     local packages = vim.system({
         'uv', 'tool', 'list'
     }):wait().stdout
