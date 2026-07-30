@@ -533,16 +533,16 @@ if executable('uv') then
     mkdir(DIR)
     mkdir(UV)
     mkdir(UVCACHE)
+    vim.env.UV_PYTHON_INSTALL_DIR = UV
+    vim.env.UV_TOOL_BIN_DIR = UV
+    vim.env.UV_TOOL_DIR = UV
+    vim.env.UV_CACHE_DIR = UVCACHE
     if not executable('python') and not executable('python3.14') then
         vim.system(
             {'uv', 'python', 'install', '--default', '3.14'},
             {detach = true}
         ):wait()
     end
-    vim.env.UV_PYTHON_INSTALL_DIR = UV
-    vim.env.UV_TOOL_BIN_DIR = UV
-    vim.env.UV_TOOL_DIR = UV
-    vim.env.UV_CACHE_DIR = UVCACHE
     local packages = vim.system({
         'uv', 'tool', 'list'
     }):wait().stdout
