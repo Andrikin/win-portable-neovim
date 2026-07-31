@@ -1,5 +1,5 @@
 -- TODO: como obter todos os executáveis em $PATH?
--- TODO: how build zig: !zig build install --prefix ./zig-out/ -Doptimize=ReleaseFast
+-- TODO: how build neovim/zig: !zig build install --prefix ./zig-out/ -Doptimize=ReleaseFast
 local M = {}
 
 local alerta = function (msg, progress)
