@@ -117,7 +117,9 @@ local extractit = function (file, dir, async, removefile, progresso)
             end
             if progresso then
                 progresso.percent = 75
-                alerta(('%s extraído!'):format(vim.fs.basename(dir)), progresso)
+                vim.schedule(function ()
+                    alerta(('%s extraído!'):format(vim.fs.basename(dir)), progresso)
+                end)
             end
             if removefile then
                 vim.fs.rm(arquivo)
@@ -133,9 +135,11 @@ local downloadit = function (dir, link, addpath, config, progresso)
     local nomedir = vim.fs.basename(dir)
     if progresso then
         progresso.percent = 25
-        alerta(('baixando %s'):format(nomedir), progresso)
+        vim.schedule(function ()
+            alerta(('baixando %s'):format(nomedir), progresso)
+        end)
     end
-    addpath = addpath ~= nil and addpath or false
+    addpath = addpath or false
     local arquivo = vim.fs.basename(link)
     vim.net.request(
         link, {
@@ -149,10 +153,13 @@ local downloadit = function (dir, link, addpath, config, progresso)
             end
             if progresso then
                 progresso.percent = 50
-                alerta(('%s baixado!'):format(nomedir), progresso)
+                vim.schedule(function ()
+                    alerta(('%s baixado!'):format(nomedir), progresso)
+                end)
             end
             if vim.uv.fs_stat(vim.fs.joinpath(dir, arquivo)) and (
                 arquivo:match('zip$')
+                or arquivo:match('7z$')
                 or arquivo:match('tar%.[a-z]+$')
             ) then
                 if progresso then
@@ -170,14 +177,15 @@ local downloadit = function (dir, link, addpath, config, progresso)
                     local exe = vim.fs.basename(dir)
                     local programa = vim.fs.dirname(vim.fn.exepath(exe))
                     -- update PATH
-                    vim.env.PATH = path
+                    vim.env.PATH = vim.fn.join({path, programa}, ';')
                     if programa ~= "" and programa ~= '.' then
                         vim.fn.writefile({programa}, M.OPTFILE, 'a')
                         add_path(programa)
                         if progresso then
-                            progresso.percent = 100
-                            progresso.status = 'success'
-                            alerta(('%s adicionado ao PATH!'):format(nomedir), progresso)
+                            progresso.percent = 95
+                            vim.schedule(function ()
+                                alerta(('%s adicionado ao PATH!'):format(nomedir), progresso)
+                            end)
                         end
                     end
                 end)
@@ -188,7 +196,9 @@ local downloadit = function (dir, link, addpath, config, progresso)
             if progresso and progresso.percent < 100 then
                 progresso.percent = 100
                 progresso.status = 'success'
-                alerta(('concluído instalação: %s!'):format(nomedir), progresso)
+                vim.schedule(function ()
+                    alerta(('concluído instalação: %s!'):format(nomedir), progresso)
+                end)
             end
         end
     )
