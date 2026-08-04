@@ -320,6 +320,8 @@ nvim/config/configstore/
 nvim/config/firenvim/
 nvim/config/nvim/spell/
 
+nvim/config/gem/
+
 nvim/bin/
 nvim/opt
 nvim/deps/
