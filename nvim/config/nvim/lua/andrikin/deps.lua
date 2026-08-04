@@ -226,7 +226,7 @@ return {
         nome = 'uv',
         link = 'https://releases.astral.sh/github/uv/releases/download/0.11.28/uv-x86_64-pc-windows-msvc.zip',
     },{
-        nome = 'ruby',
+        nome = 'ruby', -- need to: ridk.cmd install (MSYS2 devkit)
         link = 'https://github.com/oneclick/rubyinstaller2/releases/download/RubyInstaller-4.0.6-1/rubyinstaller-4.0.6-1-x64.7z',
     }
 }
