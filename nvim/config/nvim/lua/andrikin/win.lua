@@ -334,7 +334,7 @@ do
     local instalar = function(fontes)
         for _, fonte in ipairs(fontes) do
             local nome = vim.fs.basename(fonte)
-            vim.fn.system({
+            vim.system({
                 'reg',
                 'add',
                 SAUCEREGCMD,
@@ -363,7 +363,7 @@ do
                 for _, fonte in ipairs(listarfontes()) do
                     local nome = vim.fs.basename(fonte):match('(.*)%..*$')
                     if nome then
-                        vim.fn.system({
+                        vim.system({
                             'reg',
                             'delete',
                             SAUCEREGCMD,
