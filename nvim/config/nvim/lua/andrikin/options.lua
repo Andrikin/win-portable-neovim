@@ -116,6 +116,8 @@ vim.g.user_emmet_install_global = 0
 
 -- spellfile.nvim -- Lua port of spellfile.vim
 vim.o.spelllang = 'pt_br'
+-- obter dicionário pt_br e como instalá-lo no neovim
+-- https://vimbook.com.br/capitulo_10/dicionario_de_termos/#dicionario-portugues-segundo-o-acordo-ortografico
 
 -- --- Netrw ---
 -- Disable Netrw
