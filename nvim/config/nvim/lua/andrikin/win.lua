@@ -553,6 +553,7 @@ if executable('uv') then
             {detach = true}
         ):wait()
     end
+    -- Erro no comando se existir o diretório '.temp'
     local packages = vim.system({
         'uv', 'tool', 'list'
     }):wait().stdout
