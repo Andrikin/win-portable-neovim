@@ -144,3 +144,6 @@ vim.g.awesome_pairing_chars = [[({['"]]
 -- disable dir plugin
 vim.g.loaded_nvim_dir_plugin = 1
 
+-- disable old-zip
+-- vim.g.loaded_zipPlugin = 1
+
