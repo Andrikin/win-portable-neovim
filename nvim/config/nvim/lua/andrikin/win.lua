@@ -1,3 +1,5 @@
+-- NEOVIM --
+
 -- TODO: como obter todos os executáveis em $PATH?
 -- TODO: how build neovim/zig: !zig build install --prefix ./zig-out/ -Doptimize=ReleaseFast
 local M = {}
