@@ -90,7 +90,11 @@ return {
                     end
                     vim.system(cmd, {text = true, detach = true}, function (out)
                         if out.code == 0 then
-                            vim.print('Instalação concluída com sucesso!')
+                            local programas = ""
+                            for i=2,#args do
+                                programas = programas .. args[i]
+                            end
+                            vim.print(('Instalação concluída com sucesso!: %s'):format(programas))
                         else
                             vim.print('Instalador cygwin encontrou um erro.')
                         end
