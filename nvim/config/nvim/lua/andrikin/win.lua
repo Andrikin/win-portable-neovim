@@ -54,15 +54,6 @@ do
     end
 end
 
--- Check remote server, initialize it
-do
-    local copyq = '\\\\.\\pipe\\copyq'
-    local ok, _ = pcall(vim.fn.serverstart, copyq)
-    if not ok then
-        vim.print("Server copyq já existe.")
-    end
-end
-
 vim.env.MYVIMDIR = vim.fs.joinpath(
     vim.env.HOME, 'nvim'
 )
