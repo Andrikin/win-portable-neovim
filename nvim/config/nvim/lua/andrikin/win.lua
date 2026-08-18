@@ -11,7 +11,7 @@ end
 -- verify directory exists, if not, create it
 local function mkdir(dir)
     if not vim.uv.fs_stat(dir) then
-        vim.fn.mkdir(dir, 'p', '0755')
+        vim.fs.mkdir(dir, {parents=true})
     end
 end
 
