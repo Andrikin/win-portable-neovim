@@ -2,7 +2,6 @@
 
 -- TODO: como obter todos os executáveis em $PATH?
 -- TODO: how build neovim/zig: !zig build install --prefix ./zig-out/ -Doptimize=ReleaseFast
-local M = {}
 
 local alerta = function (msg, progress)
     return vim.api.nvim_echo({{msg}}, true, progress)
@@ -58,24 +57,24 @@ vim.env.MYVIMDIR = vim.fs.joinpath(
     vim.env.HOME, 'nvim'
 )
 
-M.OPTFILE = vim.fs.joinpath(
+OPTFILE = vim.fs.joinpath(
     vim.env.MYVIMDIR,
     'opt', 'optfile'
 )
 -- Editar arquivo 'optfile'
 vim.api.nvim_create_user_command("Optfile",
     function()
-        vim.cmd.edit(M.OPTFILE)
+        vim.cmd.edit(OPTFILE)
     end, {}
 )
 
 if not vim.env.NVIMOPT then
-    M.OPT = vim.fs.joinpath(
+    OPT = vim.fs.joinpath(
         vim.env.HOME,
         'nvim', 'opt'
     )
 else
-    M.OPT = vim.env.NVIMOPT
+    OPT = vim.env.NVIMOPT
 end
 
 -- append to the last
@@ -172,7 +171,7 @@ local downloadit = function (dir, link, addpath, config, progresso)
                     -- update PATH
                     vim.env.PATH = vim.fn.join({path, programa}, ';')
                     if programa ~= "" and programa ~= '.' then
-                        vim.fn.writefile({programa}, M.OPTFILE, 'a')
+                        vim.fn.writefile({programa}, OPTFILE, 'a')
                         add_path(programa)
                         if progresso then
                             progresso.percent = 95
@@ -199,10 +198,10 @@ end
 
 -- Check folders initialization
 do
-    mkdir(M.OPT)
+    mkdir(OPT)
     local PROJETOS = vim.fs.joinpath(vim.fs.dirname(vim.env.HOME), 'projetos')
     mkdir(PROJETOS)
-    add_path(M.OPT)
+    add_path(OPT)
 end
 
 -- HACK: melhorar para obter todos os executáveis
@@ -214,7 +213,7 @@ local check_opts = function ()
         "C:/Windows/System32/WindowsPowerShell/v1.0",
         "C:/Windows/System32/OpenSSH",
         -- HACK: forçar reconhecimento de git
-        vim.fs.joinpath(M.OPT, 'git', 'cmd')
+        vim.fs.joinpath(OPT, 'git', 'cmd')
     }
     local opts = require('andrikin.deps')
     for _, o in ipairs(opts) do
@@ -228,7 +227,7 @@ local check_opts = function ()
         end
     end
     vim.env.PATH = vim.fn.join(deps, ';')
-    vim.fn.writefile(deps, M.OPTFILE)
+    vim.fn.writefile(deps, OPTFILE)
 end
 
 local create_optfile = function()
@@ -236,21 +235,21 @@ local create_optfile = function()
     -- local optlist = vim.fn.glob((opts .. '/*/**/*.{exe,bat,cmd}'),
     -- 	false, true, false
     -- )
-    local optlist = findexecutables(M.OPT)
+    local optlist = findexecutables(OPT)
     optlist = vim.tbl_map(function(programa)
         return vim.fs.dirname(vim.trim(programa))
     end, optlist)
     optlist = vim.list.unique(optlist)
-    vim.fn.writefile(optlist, M.OPTFILE)
+    vim.fn.writefile(optlist, OPTFILE)
     vim.print('Arquivo OPTFILE criado com sucesso!')
 end
 
 -- inicializar variavéis do ambiente $PATH
-M.init_path = function(force)
-    if not vim.uv.fs_stat(M.OPTFILE) or force then
+local init_path = function(force)
+    if not vim.uv.fs_stat(OPTFILE) or force then
         create_optfile()
     end
-    local opts = vim.fn.readfile(M.OPTFILE)
+    local opts = vim.fn.readfile(OPTFILE)
     local progresso = {
         kind = 'progress',
         percent = 0,
@@ -276,18 +275,18 @@ M.init_path = function(force)
         check_opts()
     end
 end
-M.init_path()
+init_path()
 
 vim.api.nvim_create_user_command("UpdateOptfile",
     function()
-        M.init_path(true)
+        init_path(true)
     end, {}
 )
 
 -- Check git, install it
 if not executable('git.exe') then
     local GITLINK = "https://github.com/git-for-windows/git/releases/download/v2.54.0.windows.1/MinGit-2.54.0-64-bit.zip"
-    local GITDIR = vim.fs.joinpath(M.OPT, 'git')
+    local GITDIR = vim.fs.joinpath(OPT, 'git')
     local progresso = {
         kind = 'progress',
         percent = 0,
@@ -308,7 +307,7 @@ do
         'Windows NT', 'CurrentVersion', 'Fonts'
     ):gsub('/', '\\')
     local SAUCEDIR = vim.fs.joinpath(
-        M.OPT, 'fontes', 'saucecodepro'
+        OPT, 'fontes', 'saucecodepro'
     )
     local SAUCELINK = 'https://github.com/ryanoasis/nerd-fonts/releases/latest/download/SourceCodePro.zip'
     local SAUCEFONTES = vim.system({
@@ -528,7 +527,7 @@ end
 -- Python config
 if executable('uv') then
     local DIR = vim.fs.joinpath(
-        M.OPT, 'python'
+        OPT, 'python'
     )
     local UV = vim.fs.joinpath(DIR, 'uv')
     local UVCACHE = vim.fs.joinpath(UV, 'cache')
@@ -579,7 +578,7 @@ end
 
 -- criar diretório em OPT, baixar programa e adicionar no $PATH
 local function add_dependencia(dep)
-    local dir = vim.fs.joinpath(M.OPT, dep.nome)
+    local dir = vim.fs.joinpath(OPT, dep.nome)
     local progresso = {
         kind = 'progress',
         percent = 0,
@@ -594,7 +593,7 @@ end
 -- Os programas dependências init
 do
     for _, dep in ipairs(require('andrikin.deps')) do
-        local dir = vim.fs.joinpath(M.OPT, dep.nome)
+        local dir = vim.fs.joinpath(OPT, dep.nome)
         if not executable(dep.nome) or not vim.uv.fs_stat(dir) then
             add_dependencia(dep)
         else
@@ -631,6 +630,4 @@ end
 
 -- iniciar sessão neovim em Desktop
 vim.cmd.cd(vim.fs.joinpath(vim.env.USERPROFILE, '/Desktop'))
-
-return M
 
