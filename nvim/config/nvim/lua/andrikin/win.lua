@@ -380,11 +380,10 @@ do
     else
         -- realizar download e instalar
         if not vim.uv.fs_stat(SAUCEDIR) then
-            -- vim.uv.fs_mkdir(SAUCEDIR, tonumber('755', 8))
-            vim.fn.mkdir(SAUCEDIR, 'p', '0755')
+            mkdir(SAUCEDIR)
         else
             vim.fs.rm(SAUCEDIR, {recursive = true})
-            vim.fn.mkdir(SAUCEDIR, 'p', '0755')
+            mkdir(SAUCEDIR)
         end
         -- download
         local progresso = {
