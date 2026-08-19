@@ -90,10 +90,19 @@ local add_path = function(dir)
 end
 
 -- extração de arquivos
-local extractit = function (file, dir, async, removefile, progresso)
+local extractit = function (file, dir, async, removefile, progresso, addpath)
+    local nome = vim.fs.basename(dir)
+    addpath = addpath or false
+    async = async or false
+    progresso = progresso or {
+        kind = 'progress',
+        percent = 0,
+        source = 'andrikin-extractit',
+        status = 'running',
+        title = nome,
+    }
     removefile = removefile ~= nil and removefile or false
     local arquivo = vim.fs.joinpath(dir, file)
-    async = async or false
     if not vim.uv.fs_stat(dir) then
         error("extractit: não existe diretório.")
     end
@@ -107,12 +116,14 @@ local extractit = function (file, dir, async, removefile, progresso)
                     ))
                 return
             end
-            if progresso then
+            if progresso.source == 'andrikin-extractit' then
+                progresso.percent = 100
+            else
                 progresso.percent = 75
-                vim.schedule(function ()
-                    alerta(('%s extraído!'):format(vim.fs.basename(dir)), progresso)
-                end)
             end
+            vim.schedule(function ()
+                alerta('extraído!', progresso)
+            end)
             if removefile then
                 vim.fs.rm(arquivo)
             end
@@ -120,19 +131,42 @@ local extractit = function (file, dir, async, removefile, progresso)
     if not async then
         vim.schedule(function() it:wait() end)
     end
+    if addpath then
+        vim.schedule(function ()
+            local exedir = vim.fs.find(
+                vim.fs.basename(dir) .. '.exe',
+                {limit = 1, type = 'file', path = dir}
+            )[1]
+            -- update PATH
+            if exedir then
+                vim.env.PATH = vim.fn.join({vim.env.PATH, exedir}, ';')
+                vim.fn.writefile({exedir}, OPTFILE, 'a')
+                add_path(exedir)
+                progresso.percent = 95
+                vim.schedule(function ()
+                    alerta('adicionado ao PATH!', progresso)
+                end)
+            end
+        end)
+    end
 end
 
 -- download e extração de arquivos
 local downloadit = function (dir, link, addpath, config, progresso)
-    local nomedir = vim.fs.basename(dir)
-    if progresso then
-        progresso.percent = 25
-        vim.schedule(function ()
-            alerta(('baixando %s'):format(nomedir), progresso)
-        end)
-    end
-    addpath = addpath or false
+    local nome = vim.fs.basename(dir)
     local arquivo = vim.fs.basename(link)
+    progresso = progresso or {
+        kind = 'progress',
+        percent = 0,
+        source = 'andrikin',
+        status = 'running',
+        title = nome,
+    }
+    progresso.percent = 25
+    vim.schedule(function ()
+        alerta('baixando', progresso)
+    end)
+    addpath = addpath or false
     vim.net.request(
         link, {
             outpath = vim.fs.joinpath( dir, arquivo ),
@@ -143,53 +177,25 @@ local downloadit = function (dir, link, addpath, config, progresso)
                 vim.print(('Erro ao realizar download de %s.\nErro: %s'):format(arquivo, err))
                 return
             end
-            if progresso then
-                progresso.percent = 50
-                vim.schedule(function ()
-                    alerta(('%s baixado!'):format(nomedir), progresso)
-                end)
-            end
+            progresso.percent = 50
+            vim.schedule(function ()
+                alerta('baixado!', progresso)
+            end)
             if vim.uv.fs_stat(vim.fs.joinpath(dir, arquivo)) and (
                 arquivo:match('zip$')
                 or arquivo:match('7z$')
                 or arquivo:match('tar%.[a-z]+$')
             ) then
-                if progresso then
-                    extractit(arquivo, dir, false, true, progresso)
-                else
-                    extractit(arquivo, dir, false, true)
-                end
-            end
-            -- WIP: refazer para simplificar, se possível
-            if addpath then
-                vim.schedule(function ()
-                    -- backup PATH
-                    local path = vim.env.PATH
-                    vim.env.PATH = vim.fn.join(findexecutables(dir), ';')
-                    local exe = vim.fs.basename(dir)
-                    local programa = vim.fs.dirname(vim.fn.exepath(exe))
-                    -- update PATH
-                    vim.env.PATH = vim.fn.join({path, programa}, ';')
-                    if programa ~= "" and programa ~= '.' then
-                        vim.fn.writefile({programa}, OPTFILE, 'a')
-                        add_path(programa)
-                        if progresso then
-                            progresso.percent = 95
-                            vim.schedule(function ()
-                                alerta(('%s adicionado ao PATH!'):format(nomedir), progresso)
-                            end)
-                        end
-                    end
-                end)
+                extractit(arquivo, dir, false, true, progresso, addpath)
             end
             if config then
                 vim.schedule(config)
             end
-            if progresso and progresso.percent < 100 then
+            if progresso.percent < 100 then
                 progresso.percent = 100
                 progresso.status = 'success'
                 vim.schedule(function ()
-                    alerta(('concluído instalação: %s!'):format(nomedir), progresso)
+                    alerta('concluído instalação!', progresso)
                 end)
             end
         end
@@ -462,9 +468,10 @@ else
 end
 
 -- Ssh bootstrap
+-- TODO: ativar conexão ssh-add, caso não esteja conectada
 if executable('git.exe') then
     local SSHDIR = vim.fs.joinpath(vim.env.HOME, '.ssh')
-    local shuuush = "Z2l0QGdpdGxhYi5jb206QW5kcmlraW4vc2h1dXVzaC5naXQ="
+    local shuuush = "aHR0cHM6Ly9naXRsYWIuY29tL0FuZHJpa2luL3NodXV1c2guZ2l0"
     if not vim.uv.fs_stat(SSHDIR) then
         mkdir(SSHDIR)
         vim.system({'git', 'clone', vim.base64.decode(shuuush), SSHDIR})
@@ -505,7 +512,7 @@ else
 end
 
 -- Install Cygwin dependencies
-do
+if executable('setup-x86_64.exe') then
     if vim.fn.exists(':Cygwin') then
         if not executable('gs.exe') then
             vim.cmd.Cygwin('install ghostscript')
@@ -584,9 +591,9 @@ local function add_dependencia(dep)
         percent = 0,
         source = 'andrikin',
         status = 'running',
-        title = 'add_dependencia',
+        title = dep.nome,
     }
-    progresso.id = alerta(('instalando: %s'):format(dep.nome), progresso)
+    progresso.id = alerta('instalando', progresso)
     mkdir(dir)
     downloadit(dir, dep.link, true, dep.config, progresso)
 end
