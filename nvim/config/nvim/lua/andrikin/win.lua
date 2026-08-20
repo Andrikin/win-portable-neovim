@@ -4,7 +4,9 @@
 -- TODO: how build neovim/zig: !zig build install --prefix ./zig-out/ -Doptimize=ReleaseFast
 
 local alerta = function (msg, progress)
-    return vim.api.nvim_echo({{msg}}, true, progress)
+    local id = vim.api.nvim_echo({{msg}}, true, progress)
+    vim.cmd.redraw({bang = true})
+    return id
 end
 
 -- verify directory exists, if not, create it
@@ -139,6 +141,7 @@ local extractit = function (file, dir, async, removefile, progresso, addpath)
             )[1]
             -- update PATH
             if exedir then
+                exedir = vim.fs.dirname(exedir)
                 vim.env.PATH = vim.fn.join({vim.env.PATH, exedir}, ';')
                 vim.fn.writefile({exedir}, OPTFILE, 'a')
                 add_path(exedir)
