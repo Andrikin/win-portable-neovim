@@ -11,7 +11,7 @@ local novo_alerta = function (titulo)
         title = titulo,
     }
     return vim.schedule_wrap(function (status, percentual, msg)
-        progresso.kind = status == 'fim' and 'success' or 'running'
+        progresso.status = status == 'fim' and 'success' or 'running'
         progresso.percent = percentual
         progresso.id = vim.api.nvim_echo({{msg}}, true, progresso)
         vim.cmd.redraw({bang = true})
