@@ -3,10 +3,19 @@
 -- TODO: como obter todos os executáveis em $PATH?
 -- TODO: how build neovim/zig: !zig build install --prefix ./zig-out/ -Doptimize=ReleaseFast
 
-local alerta = function (msg, progress)
-    local id = vim.api.nvim_echo({{msg}}, true, progress)
-    vim.cmd.redraw({bang = true})
-    return id
+local novo_alerta = function (titulo)
+    local progresso = {
+        kind = 'progress',
+        source = 'andrikin',
+        status = 'running',
+        title = titulo,
+    }
+    return vim.schedule_wrap(function (status, percentual, msg)
+        progresso.kind = status == 'fim' and 'success' or 'running'
+        progresso.percent = percentual
+        progresso.id = vim.api.nvim_echo({{msg}}, true, progresso)
+        vim.cmd.redraw({bang = true})
+    end)
 end
 
 -- verify directory exists, if not, create it
@@ -93,16 +102,8 @@ end
 
 -- extração de arquivos
 local extractit = function (file, dir, async, removefile, progresso, addpath)
-    local nome = vim.fs.basename(dir)
     addpath = addpath or false
     async = async or false
-    progresso = progresso or {
-        kind = 'progress',
-        percent = 0,
-        source = 'andrikin-extractit',
-        status = 'running',
-        title = nome,
-    }
     removefile = removefile ~= nil and removefile or false
     local arquivo = vim.fs.joinpath(dir, file)
     if not vim.uv.fs_stat(dir) then
@@ -118,14 +119,7 @@ local extractit = function (file, dir, async, removefile, progresso, addpath)
                     ))
                 return
             end
-            if progresso.source == 'andrikin-extractit' then
-                progresso.percent = 100
-            else
-                progresso.percent = 75
-            end
-            vim.schedule(function ()
-                alerta('extraído!', progresso)
-            end)
+            progresso('extraindo', 75, 'extraído!')
             if removefile then
                 vim.fs.rm(arquivo)
             end
@@ -145,10 +139,7 @@ local extractit = function (file, dir, async, removefile, progresso, addpath)
                 vim.env.PATH = vim.fn.join({vim.env.PATH, exedir}, ';')
                 vim.fn.writefile({exedir}, OPTFILE, 'a')
                 add_path(exedir)
-                progresso.percent = 95
-                vim.schedule(function ()
-                    alerta('adicionado ao PATH!', progresso)
-                end)
+                progresso('registrando', 95, 'adicionado ao PATH!')
             end
         end)
     end
@@ -158,17 +149,8 @@ end
 local downloadit = function (dir, link, addpath, config, progresso)
     local nome = vim.fs.basename(dir)
     local arquivo = vim.fs.basename(link)
-    progresso = progresso or {
-        kind = 'progress',
-        percent = 0,
-        source = 'andrikin',
-        status = 'running',
-        title = nome,
-    }
-    progresso.percent = 25
-    vim.schedule(function ()
-        alerta('baixando', progresso)
-    end)
+    local alerta = progresso or novo_alerta(nome)
+    alerta('reportando', 25, 'baixando...')
     addpath = addpath or false
     vim.net.request(
         link, {
@@ -180,27 +162,18 @@ local downloadit = function (dir, link, addpath, config, progresso)
                 vim.print(('Erro ao realizar download de %s.\nErro: %s'):format(arquivo, err))
                 return
             end
-            progresso.percent = 50
-            vim.schedule(function ()
-                alerta('baixado!', progresso)
-            end)
+            alerta('reportando', 50, 'baixado!')
             if vim.uv.fs_stat(vim.fs.joinpath(dir, arquivo)) and (
                 arquivo:match('zip$')
                 or arquivo:match('7z$')
                 or arquivo:match('tar%.[a-z]+$')
             ) then
-                extractit(arquivo, dir, false, true, progresso, addpath)
+                extractit(arquivo, dir, false, true, alerta, addpath)
             end
             if config then
                 vim.schedule(config)
             end
-            if progresso.percent < 100 then
-                progresso.percent = 100
-                progresso.status = 'success'
-                vim.schedule(function ()
-                    alerta('concluído instalação!', progresso)
-                end)
-            end
+            alerta('fim', 100, 'concluído instalação!')
         end
     )
 end
@@ -255,31 +228,24 @@ end
 
 -- inicializar variavéis do ambiente $PATH
 local init_path = function(force)
+    local alerta = novo_alerta('optfile')
     if not vim.uv.fs_stat(OPTFILE) or force then
         create_optfile()
     end
     local opts = vim.fn.readfile(OPTFILE)
-    local progresso = {
-        kind = 'progress',
-        percent = 0,
-        source = 'andrikin',
-        status = 'running',
-        title = 'optfile',
-    }
-    progresso.id = alerta('iniciando...', progresso)
+    alerta('inicialização', 0, 'iniciando dependências...')
     for p, o in ipairs(opts) do
         add_path(o)
-        progresso.percent = math.floor(p/#opts*100)
+        local percentual = math.floor(p/#opts*100)
+        local msg = ''
         if o:match('[wW]indows') then
-            alerta(('%s: concluído...'):format(vim.fs.basename(o)), progresso)
+            msg = ('%s: concluído...'):format(vim.fs.basename(o))
         else
-            alerta(('%s: concluído...'):format(o:match('opt/([^/]*)')), progresso)
+            msg = ('%s: concluído...'):format(o:match('opt/([^/]*)'))
         end
-        if p == #opts then
-            progresso.status = 'success'
-            alerta('inicialização concluída!', progresso)
-        end
+        alerta('inicialização', percentual, msg)
     end
+    alerta('fim', 100, 'inicialização concluída!')
     if force then
         check_opts()
     end
@@ -296,15 +262,9 @@ vim.api.nvim_create_user_command("UpdateOptfile",
 if not executable('git.exe') then
     local GITLINK = "https://github.com/git-for-windows/git/releases/download/v2.54.0.windows.1/MinGit-2.54.0-64-bit.zip"
     local GITDIR = vim.fs.joinpath(OPT, 'git')
-    local progresso = {
-        kind = 'progress',
-        percent = 0,
-        source = 'andrikin',
-        status = 'running',
-        title = 'git-install',
-    }
-    progresso.id = alerta('instalando: git', progresso)
-    downloadit(GITDIR, GITLINK, true, nil, progresso)
+    local alerta = novo_alerta('git-install')
+    alerta('instalação', 0, 'iniciando instalação git.')
+    downloadit(GITDIR, GITLINK, true, nil, alerta)
 else
     vim.print("Git já instalado!")
 end
@@ -385,15 +345,9 @@ do
             mkdir(SAUCEDIR)
         end
         -- download
-        local progresso = {
-            kind = 'progress',
-            percent = 0,
-            source = 'andrikin',
-            status = 'running',
-            title = 'font-saucecodepro',
-        }
-        progresso.id = alerta('instalando: saucecodepro', progresso)
-        downloadit(SAUCEDIR, SAUCELINK, nil, nil, progresso)
+        local alerta = novo_alerta('saucecodepro-install')
+        alerta('instalação', 0, 'iniciando instalação SauceCodePro.')
+        downloadit(SAUCEDIR, SAUCELINK, nil, nil, alerta)
         ---@diagnostic disable-next-line: cast-local-type
         SAUCEFONTES = listarfontes()
         instalar(SAUCEFONTES)
@@ -589,16 +543,8 @@ end
 -- criar diretório em OPT, baixar programa e adicionar no $PATH
 local function add_dependencia(dep)
     local dir = vim.fs.joinpath(OPT, dep.nome)
-    local progresso = {
-        kind = 'progress',
-        percent = 0,
-        source = 'andrikin',
-        status = 'running',
-        title = dep.nome,
-    }
-    progresso.id = alerta('instalando', progresso)
     mkdir(dir)
-    downloadit(dir, dep.link, true, dep.config, progresso)
+    downloadit(dir, dep.link, true, dep.config)
 end
 -- Os programas dependências init
 do
