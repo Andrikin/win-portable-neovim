@@ -177,13 +177,13 @@ return {
 		link = 'https://github.com/tectonic-typesetting/tectonic/releases/download/tectonic%400.14.1/tectonic-0.14.1-x86_64-pc-windows-msvc.zip',
 	},{
 		nome = 'texlab',
-		link = 'https://github.com/latex-lsp/texlab/releases/download/v5.25.1/texlab-x86_64-windows.zip',
+		link = 'https://github.com/latex-lsp/texlab/releases/download/v5.26.0/texlab-x86_64-windows.zip',
 	},{
 		nome = 'deno',
 		link = 'https://github.com/denoland/deno/releases/download/v2.1.3/deno-x86_64-pc-windows-msvc.zip',
 	},{
 		nome = 'lua-language-server',
-		link = 'https://github.com/LuaLS/lua-language-server/releases/download/3.10.0/lua-language-server-3.18.2-win32-x64.zip',
+		link = 'https://github.com/LuaLS/lua-language-server/releases/download/3.19.1/lua-language-server-3.19.1-win32-x64.zip',
 	},{
 		nome = 'java',
 		link = 'https://download.java.net/java/GA/jdk26/c3cc523845074aa0af4f5e1e1ed4151d/35/GPL/openjdk-26_windows-x64_bin.zip', -- openjdk
