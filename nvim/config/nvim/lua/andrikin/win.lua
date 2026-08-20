@@ -10,11 +10,14 @@ local novo_alerta = function (titulo)
         status = 'running',
         title = titulo,
     }
+    local headless = #vim.api.nvim_list_uis() == 0
     return vim.schedule_wrap(function (status, percentual, msg)
         progresso.status = status == 'fim' and 'success' or 'running'
         progresso.percent = percentual
         progresso.id = vim.api.nvim_echo({{msg}}, true, progresso)
-        vim.cmd.redraw({bang = true})
+        if not headless then
+            vim.cmd.redraw({bang = true})
+        end
     end)
 end
 
