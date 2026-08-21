@@ -86,6 +86,11 @@ end
 vim.o.inccommand = 'split' -- empty string to use with traces.vim
 vim.o.fillchars = 'vert:|,fold:*,foldclose:+,diff:-'
 
+-- Configurações Windows
+vim.o.fileformat = 'dos'
+vim.o.eol = false
+vim.o.fixeol = false
+
 -- Vim-Surround (Tim Pope)
 -- Latex
 vim.g['surround_' .. vim.fn.char2nr('\\')] = ''
