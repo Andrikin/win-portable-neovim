@@ -50,21 +50,16 @@ end
 -- executar python declarado em $PATH.
 -- ALTERNATIVE FIX: Remover WindowsApps do $PATH
 do
-    local remove = function (programa)
-        if vim.env.PATH:match(programa) then
-            local PATH = ''
-            for path in vim.env.PATH:gmatch('([^;]+)') do
-                if not path:match(programa) then
-                    PATH = PATH ..  ';' .. path
-                end
+    local windowsapps = {'WindowsApps', 'Oracle', 'LibreOffice'}
+    local paths = vim.iter(vim.split(vim.env.PATH, ';')):filter(function(apps)
+        for _, wapp in ipairs(windowsapps) do
+            if apps:match(wapp) then
+                return false -- remover
             end
-            PATH = PATH:match('^.(.*)$')
-            vim.env.PATH = PATH
         end
-    end
-    for _, programa in ipairs({'WindowsApps', 'Oracle', 'LibreOffice'}) do
-        remove(programa)
-    end
+        return true
+    end):totable()
+    vim.env.PATH = vim.fn.join(paths, ';')
 end
 
 vim.env.MYVIMDIR = vim.fs.joinpath(
