@@ -1,4 +1,6 @@
--- FIRENVIM CONFIG --
+-- FIRENVIM --
+-- WARNING: Firefox -> desabilitar 'network.lna.websocket.enabled' em 'about:config'
+
 vim.pack.add({
     'https://github.com/Andrikin/awesome-pairing',
 	'https://github.com/Andrikin/awesome-substitute',
