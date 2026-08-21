@@ -1,11 +1,12 @@
 vim.g.mapleader = ' '
-vim.g.maplocalleader = ' '
+vim.g.maplocalleader = vim.g.mapleader
 
 -- terminal toggler
 vim.g.ttoggler = {}
 
 -- Search recursively
 vim.opt.path:append('**')
+vim.opt.path:prepend('.')
 
 -- Indicadores - números nas linhas
 vim.o.rnu = true
@@ -25,19 +26,12 @@ vim.o.smartcase = true
 vim.o.hlsearch = true
 
 -- Configurações gerais
-vim.o.autochdir = false
 vim.o.scrolloff = 999
 vim.o.lazyredraw = true
-vim.o.backspace = 'indent,eol,start'
 vim.o.splitbelow = true
 vim.o.splitright = true
-vim.o.helpheight = 15
 -- Problems that can occur in vim session can be avoid using this configuration
 vim.opt.sessionoptions:remove('options')
-vim.o.encoding = 'utf-8'
-vim.o.autoread = true
-vim.o.tabpagemax = 50
-vim.o.wildmenu = true
 -- usar <tab> para cmdline completion em macros
 if vim.o.wildcharm ~= 9 then
     vim.opt.wildcharm = 9
@@ -49,8 +43,6 @@ if vim.fn.has('win32') then
 else
 	vim.g.shell = vim.env.TERM
 end
-vim.opt.complete:remove('t')
-vim.o.title = true
 vim.o.hidden = true
 vim.o.mouse = ''
 vim.o.mousemodel = 'extend'
@@ -66,9 +58,9 @@ if vim.fn.has('persistent_undo') == 1 then
 	vim.o.undofile = true
 end
 vim.o.swapfile = false
+vim.o.textwidth = 0
 -- set linebreak
 -- set wrapmargin = 5
-vim.g.textwidth = 0
 
 -- Statusline
 vim.o.laststatus = 3
@@ -84,7 +76,6 @@ if vim.g.nvy or vim.g.neovide then
 	vim.o.guifont = 'SauceCodePro Nerd Font Mono:h12'
 end
 vim.o.inccommand = 'split' -- empty string to use with traces.vim
-vim.o.fillchars = 'vert:|,fold:*,foldclose:+,diff:-'
 
 -- Configurações Windows
 vim.o.fileformat = 'dos'
@@ -111,7 +102,6 @@ vim.defer_fn(function()
         vim.g.dirvish_mode = ':%sort /.*\\\\\\|.*[^\\\\]/'
     end
 end, 1000)
--- log file
 vim.g.dirvish_dbg = 1
 
 -- --- Emmet ---
@@ -138,12 +128,11 @@ if vim.g.neovide then
 	vim.g.neovide_cursor_vfx_mode = ""
 end
 
--- Removendo providers: Perl
-vim.g.loaded_perl_provider = 0
--- vim.g.loaded_ruby_provider = 0
-
 -- Andrikin/awesome-pairing
 vim.g.awesome_pairing_chars = [[({['"]]
+
+-- Removendo providers: Perl
+vim.g.loaded_perl_provider = 0
 
 -- disable dir plugin
 vim.g.loaded_nvim_dir_plugin = 1
