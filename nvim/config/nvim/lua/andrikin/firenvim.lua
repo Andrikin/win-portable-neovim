@@ -71,8 +71,8 @@ vim.o.spelllang = 'pt_br'
 
 -- Configurações Windows
 vim.o.fileformat = 'dos'
-vim.o.eol = true
-vim.o.fixeol = true
+vim.o.eol = false
+vim.o.fixeol = false
 
 -- Indicadores - números nas linhas
 vim.o.rnu = true
