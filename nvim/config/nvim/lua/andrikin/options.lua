@@ -36,6 +36,7 @@ vim.opt.sessionoptions:remove('options')
 if vim.o.wildcharm ~= 9 then
     vim.opt.wildcharm = 9
 end
+vim.opt.complete:remove('u')
 -- vim.opt.completeopt = 'menu,menuone,noselect'
 vim.o.completeopt = 'menu,noinsert,noselect,popup,fuzzy'
 if vim.fn.has('win32') then
