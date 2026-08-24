@@ -124,15 +124,14 @@ local search_paths_to_add = vim.schedule_wrap(function (dir)
 end)
 
 -- extração de arquivos
-local extractit = function (file, dir, async, removefile, progresso, addpath)
+local extractit = function (file, dir, addpath, progresso)
     addpath = addpath or false
-    async = async or false
-    removefile = removefile ~= nil and removefile or false
     local arquivo = vim.fs.joinpath(dir, file)
     if not vim.uv.fs_stat(dir) then
         error("extractit: não existe diretório.")
     end
-    local it = vim.system({
+    local extraido = false
+    vim.system({
         'tar', '-xf', arquivo, '-C', dir
     }, {}, function (out)
         if out.code > 0 then
@@ -142,17 +141,17 @@ local extractit = function (file, dir, async, removefile, progresso, addpath)
             ))
             return
         end
+        extraido = true
+    end):wait()
+    if extraido then
         progresso('extraindo', 75, 'extraído!')
-        if removefile then
+        if vim.uv.fs_stat(arquivo) then
             vim.fs.rm(arquivo)
         end
         if addpath then
             search_paths_to_add(dir)
             progresso('registrando', 95, 'adicionado ao PATH!')
         end
-    end)
-    if not async then
-        vim.schedule(function() it:wait() end)
     end
 end
 
@@ -179,7 +178,7 @@ local downloadit = function (dir, link, addpath, config, progresso)
                 or arquivo:match('7z$')
                 or arquivo:match('tar%.[a-z]+$')
             ) then
-                extractit(arquivo, dir, false, true, alerta, addpath)
+                extractit(arquivo, dir, addpath, alerta)
             end
             if config then
                 vim.schedule(config)
