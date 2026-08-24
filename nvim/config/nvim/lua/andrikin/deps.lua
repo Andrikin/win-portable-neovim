@@ -26,27 +26,29 @@ return {
             if not vim.uv.fs_stat(SETUP) then
                 error('Não foi localizado cygwin. Verificar instalação!')
             end
+            local CMD = {
+                SETUP,
+                '--quiet-mode',
+                '--no-admin',
+                '--download',
+                '--local-install',
+                '--local-package-dir',
+                PACKAGES,
+                '--no-verify',
+                '--no-desktop',
+                '--no-shortcuts',
+                '--no-startmenu',
+                '--no-version-check',
+                '--no-warn-deprecated-windows',
+                '--root',
+                DIR,
+                '--only-site',
+                '--site',
+                'https://linorg.usp.br/cygwin/',
+            }
             if not vim.uv.fs_stat(vim.fs.joinpath(DIR, 'bin')) then
-                vim.system({
-                    SETUP,
-                    '--quiet-mode',
-                    '--no-admin',
-                    '--download',
-                    '--local-install',
-                    '--local-package-dir',
-                    PACKAGES,
-                    '--no-verify',
-                    '--no-desktop',
-                    '--no-shortcuts',
-                    '--no-startmenu',
-                    '--no-version-check',
-                    '--no-warn-deprecated-windows',
-                    '--root',
-                    DIR,
-                    '--only-site',
-                    '--site',
-                    'https://linorg.usp.br/cygwin/',
-                }, {detach = true})
+                -- inicializar instalação do cygwin
+                vim.system(CMD, {detach = true})
             end
             -- create Cygwin command
             vim.api.nvim_create_user_command("Cygwin",
@@ -57,24 +59,7 @@ return {
                         vim.print('Valores padrão encontrados no comando. Abortando.')
                         return
                     end
-                    local cmd = {
-                        SETUP,
-                        '--quiet-mode',
-                        '--no-admin',
-                        '--download',
-                        '--local-install',
-                        '--local-package-dir',
-                        PACKAGES,
-                        '--no-desktop',
-                        '--no-shortcuts',
-                        '--no-startmenu',
-                        '--no-warn-deprecated-windows',
-                        '--root',
-                        DIR,
-                        '--only-site',
-                        '--site',
-                        'https://linorg.usp.br/cygwin/',
-                    }
+                    local cmd = vim.deepcopy(CMD)
                     if args[1] == 'install' or args[1] == 'remove' then
                         if args[1] == 'install' then
                             table.insert(cmd, '--packages')
@@ -90,8 +75,8 @@ return {
                     end
                     vim.system(cmd, {text = true, detach = true}, function (out)
                         if out.code == 0 then
-                            local programas = ""
-                            for i=2,#args do
+                            local programas = args[2]
+                            for i=3,#args do
                                 programas = programas .. '; ' .. args[i]
                             end
                             vim.print(('Instalação concluída com sucesso!: %s'):format(programas))
