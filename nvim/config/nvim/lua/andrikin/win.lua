@@ -107,6 +107,8 @@ local search_paths_to_add = vim.schedule_wrap(function (dir)
         return diretorio:match('/[sb]in$')
             -- apenas um diretório de profundidade
             or diretorio:match(dir:gsub('-', '%%-') .. '/[^/]*$')
+            -- ou o próprio diretório do programa
+            or diretorio:match(dir:gsub('-', '%%-'))
     end, exelist)
     exelist = vim.list.unique(exelist)
     -- update PATH
