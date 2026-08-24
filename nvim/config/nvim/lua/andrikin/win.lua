@@ -103,18 +103,22 @@ local search_paths_to_add = vim.schedule_wrap(function (dir)
     exelist = vim.tbl_map(function(programa)
         return vim.fs.dirname(programa)
     end, exelist)
-    exelist = vim.tbl_filter(function (diretorio)
+    local finallist = vim.tbl_filter(function (diretorio)
+        local d = dir:gsub('-', '%%-')
         return diretorio:match('/[sb]in$')
             -- apenas um diretório de profundidade
-            or diretorio:match(dir:gsub('-', '%%-') .. '/[^/]*$')
+            or diretorio:match(d .. '/[^/]*$')
             -- ou o próprio diretório do programa
-            or diretorio:match(dir:gsub('-', '%%-'))
+            or diretorio:match(d .. '$')
     end, exelist)
-    exelist = vim.list.unique(exelist)
+    finallist = vim.list.unique(finallist)
+    if #finallist == 0 then
+        finallist = vim.list.unique(exelist)
+    end
     -- update PATH
-    vim.env.PATH = vim.fn.join({vim.env.PATH, exelist}, ';')
-    vim.fn.writefile({exelist}, OPTFILE, 'a')
-    for _, p in ipairs(exelist) do
+    vim.env.PATH = vim.fn.join({vim.env.PATH, finallist}, ';')
+    vim.fn.writefile({finallist}, OPTFILE, 'a')
+    for _, p in ipairs(finallist) do
         add_path(p)
     end
 end)
