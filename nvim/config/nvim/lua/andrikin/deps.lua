@@ -92,7 +92,7 @@ return {
                         if out.code == 0 then
                             local programas = ""
                             for i=2,#args do
-                                programas = programas .. args[i]
+                                programas = programas .. '; ' .. args[i]
                             end
                             vim.print(('Instalação concluída com sucesso!: %s'):format(programas))
                         else
