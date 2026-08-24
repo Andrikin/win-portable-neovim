@@ -194,7 +194,7 @@ return {
 		nome = 'mvn',
 		link = 'https://downloads01-he-fi.apache.org/maven/maven-4/4.0.0-rc-6/binaries/apache-maven-4.0.0-rc-6-bin.zip',
 	},{
-		nome = 'jq',
+		nome = 'jq-windows-i386',
 		link = 'https://github.com/jqlang/jq/releases/download/jq-1.8.1/jq-windows-i386.exe',
 	},{
         nome = 'tree-sitter',
