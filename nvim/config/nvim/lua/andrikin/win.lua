@@ -98,6 +98,25 @@ local add_path = function(dir)
     end
 end
 
+local search_paths_to_add = vim.schedule_wrap(function (dir)
+    local exelist = findexecutables(dir)
+    exelist = vim.tbl_map(function(programa)
+        return vim.fs.dirname(programa)
+    end, exelist)
+    exelist = vim.tbl_filter(function (diretorio)
+        return diretorio:match('/[sb]in$')
+            -- apenas um diretório de profundidade
+            or diretorio:match(dir:gsub('-', '%%-') .. '/[^/]*$')
+    end, exelist)
+    exelist = vim.list.unique(exelist)
+    -- update PATH
+    vim.env.PATH = vim.fn.join({vim.env.PATH, exelist}, ';')
+    vim.fn.writefile({exelist}, OPTFILE, 'a')
+    for _, p in ipairs(exelist) do
+        add_path(p)
+    end
+end)
+
 -- extração de arquivos
 local extractit = function (file, dir, async, removefile, progresso, addpath)
     addpath = addpath or false
@@ -110,36 +129,24 @@ local extractit = function (file, dir, async, removefile, progresso, addpath)
     local it = vim.system({
         'tar', '-xf', arquivo, '-C', dir
     }, {}, function (out)
-            if out.code > 0 then
-                vim.print(
-                    ('Erro ao realizar extração de %s.\nErro: %s'):format(
-                        arquivo, out.stderr
-                    ))
-                return
-            end
-            progresso('extraindo', 75, 'extraído!')
-            if removefile then
-                vim.fs.rm(arquivo)
-            end
-        end)
+        if out.code > 0 then
+            vim.print((
+                'Erro ao realizar extração de %s.\nErro: %s'):format(
+                    arquivo, out.stderr
+            ))
+            return
+        end
+        progresso('extraindo', 75, 'extraído!')
+        if removefile then
+            vim.fs.rm(arquivo)
+        end
+        if addpath then
+            search_paths_to_add(dir)
+            progresso('registrando', 95, 'adicionado ao PATH!')
+        end
+    end)
     if not async then
         vim.schedule(function() it:wait() end)
-    end
-    if addpath then
-        vim.schedule(function ()
-            local exedir = vim.fs.find(
-                vim.fs.basename(dir) .. '.exe',
-                {limit = 1, type = 'file', path = dir}
-            )[1]
-            -- update PATH
-            if exedir then
-                exedir = vim.fs.dirname(exedir)
-                vim.env.PATH = vim.fn.join({vim.env.PATH, exedir}, ';')
-                vim.fn.writefile({exedir}, OPTFILE, 'a')
-                add_path(exedir)
-                progresso('registrando', 95, 'adicionado ao PATH!')
-            end
-        end)
     end
 end
 
