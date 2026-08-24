@@ -192,7 +192,7 @@ return {
 		link = 'https://download.eclipse.org/jdtls/snapshots/jdt-language-server-latest.tar.gz',
 	},{
 		nome = 'mvn',
-		link = 'https://dlcdn.apache.org/maven/maven-4/4.0.0-rc-5/binaries/apache-maven-4.0.0-rc-5-bin.zip',
+		link = 'https://downloads01-he-fi.apache.org/maven/maven-4/4.0.0-rc-6/binaries/apache-maven-4.0.0-rc-6-bin.zip',
 	},{
 		nome = 'jq',
 		link = 'https://github.com/jqlang/jq/releases/download/jq-1.8.1/jq-windows-i386.exe',
