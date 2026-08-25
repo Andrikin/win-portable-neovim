@@ -5,8 +5,7 @@ vim.g.maplocalleader = vim.g.mapleader
 vim.g.ttoggler = {}
 
 -- Search recursively
-vim.opt.path:append('**')
-vim.opt.path:prepend('.')
+vim.o.path = '.,,,**'
 
 -- Indicadores - números nas linhas
 vim.o.rnu = true
