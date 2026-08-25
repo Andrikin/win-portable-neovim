@@ -278,8 +278,6 @@ if vim.fn.executable('copyq') == 1 then
             end,
         }
     )
-else
-    vim.print('Não foi encontrado "copyq". Por gentileza, realize a instalação.')
 end
 
 -- Mensagens automáticas
