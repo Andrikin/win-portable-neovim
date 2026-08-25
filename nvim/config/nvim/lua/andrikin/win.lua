@@ -431,7 +431,11 @@ if executable('copyq') then
         }
     )
 else
-    vim.print('Não foi encontrado "copyq". Por gentileza, realize a instalação.')
+    vim.print('Não foi encontrado "copyq". Realize a instalação ou adicione no PATH.')
+    local COPYQDIR = vim.fs.joinpath(vim.env.HOMEDRIVE, vim.env.HOMEPATH, 'Documents', 'copyq')
+    if vim.uv.fs_stat(COPYQDIR) then
+        add_path(COPYQDIR)
+    end
 end
 
 -- Ssh bootstrap
