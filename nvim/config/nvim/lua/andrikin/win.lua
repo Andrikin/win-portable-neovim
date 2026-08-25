@@ -117,14 +117,14 @@ local search_paths_to_add = vim.schedule_wrap(function (dir)
     end
     -- update PATH
     vim.env.PATH = vim.fn.join({vim.env.PATH, finallist}, ';')
-    vim.fn.writefile({finallist}, OPTFILE, 'a')
+    vim.fn.writefile(finallist, OPTFILE, 'a')
     for _, p in ipairs(finallist) do
         add_path(p)
     end
 end)
 
 -- extração de arquivos
-local extractit = function (file, dir, addpath, progresso)
+local extractit = vim.schedule_wrap(function (file, dir, addpath, progresso)
     addpath = addpath or false
     local arquivo = vim.fs.joinpath(dir, file)
     if not vim.uv.fs_stat(dir) then
@@ -153,7 +153,7 @@ local extractit = function (file, dir, addpath, progresso)
             progresso('registrando', 95, 'adicionado ao PATH!')
         end
     end
-end
+end)
 
 -- download e extração de arquivos
 local downloadit = function (dir, link, addpath, config, progresso)
@@ -596,4 +596,3 @@ end
 
 -- iniciar sessão neovim em Desktop
 vim.cmd.cd(vim.fs.joinpath(vim.env.USERPROFILE, '/Desktop'))
-
