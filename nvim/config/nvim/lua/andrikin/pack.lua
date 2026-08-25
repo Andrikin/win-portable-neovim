@@ -39,6 +39,11 @@ vim.pack.add({
     'https://github.com/MeanderingProgrammer/render-markdown.nvim',
 }, { confirm = false })
 
+-- firenvim install -- first time!
+if vim.fn.isdirectory(vim.fn.expand('$HOME') .. '/nvim/config/firenvim') == 0 then
+    vim.cmd("silent! call firenvim#install(1)")
+end
+
 -- vim.pack autocmds:
 vim.api.nvim_create_autocmd('PackChanged', { -- install firenvim
     callback = function (ev)
