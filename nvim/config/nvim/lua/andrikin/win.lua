@@ -115,9 +115,8 @@ local search_paths_to_add = vim.schedule_wrap(function (dir)
     if #finallist == 0 then
         finallist = vim.list.unique(exelist)
     end
-    -- update PATH
-    vim.env.PATH = vim.fn.join({vim.env.PATH, finallist}, ';')
     vim.fn.writefile(finallist, OPTFILE, 'a')
+    -- update PATH
     for _, p in ipairs(finallist) do
         add_path(p)
     end
@@ -238,6 +237,7 @@ end
 
 -- inicializar variavéis do ambiente $PATH
 local init_path = function(force)
+    force = force or false
     local alerta = novo_alerta('optfile')
     if not vim.uv.fs_stat(OPTFILE) or force then
         create_optfile()
@@ -247,12 +247,7 @@ local init_path = function(force)
     for p, o in ipairs(opts) do
         add_path(o)
         local percentual = math.floor(p/#opts*100)
-        local msg = ''
-        if o:match('[wW]indows') then
-            msg = ('%s: concluído...'):format(vim.fs.basename(o))
-        else
-            msg = ('%s: concluído...'):format(o:match('opt/([^/]*)'))
-        end
+        local msg = ('%s: concluído...'):format(o:match('opt/([^/]*)'))
         alerta('inicialização', percentual, msg)
     end
     alerta('fim', 100, 'inicialização concluída!')
