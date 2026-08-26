@@ -32,20 +32,6 @@ autocmd('WinEnter', {
     end,
 })
 
--- 'path' configuration
--- WARNING: configurar 'set path' está apenas para windows, como se fosse
--- 'setlocal'...
-autocmd('BufEnter', {
-    group = Andrikin,
-    pattern = '*',
-    callback = function()
-        if not vim.o.path == '.,**' then
-            -- Search locally and recursively
-            vim.o.path = {'.', '**'}
-        end
-    end,
-})
-
 -- Resize windows automatically
 -- Tim Pope goodness
 autocmd('VimResized', {
