@@ -77,6 +77,7 @@ vim.api.nvim_create_user_command("Optfile",
     end, {}
 )
 
+local OPT = ''
 if not vim.env.NVIMOPT then
     OPT = vim.fs.joinpath(
         vim.env.HOME,
@@ -84,6 +85,9 @@ if not vim.env.NVIMOPT then
     )
 else
     OPT = vim.env.NVIMOPT
+end
+if OPT == '' then
+    vim.print('OPT: variável não inicializada!')
 end
 
 -- append to the last
@@ -123,13 +127,13 @@ local search_paths_to_add = vim.schedule_wrap(function (dir)
 end)
 
 -- extração de arquivos
-local extractit = vim.schedule_wrap(function (file, dir, addpath, progresso)
+local extractit = function (file, dir, addpath, progresso)
     addpath = addpath or false
     local arquivo = vim.fs.joinpath(dir, file)
+    local alerta = progresso or novo_alerta(file)
     if not vim.uv.fs_stat(dir) then
         error("extractit: não existe diretório.")
     end
-    local extraido = false
     vim.system({
         'tar', '-xf', arquivo, '-C', dir
     }, {}, function (out)
@@ -140,19 +144,17 @@ local extractit = vim.schedule_wrap(function (file, dir, addpath, progresso)
             ))
             return
         end
-        extraido = true
-    end):wait()
-    if extraido then
-        progresso('extraindo', 75, 'extraído!')
+        alerta('extraindo', 75, 'extraído!')
         if vim.uv.fs_stat(arquivo) then
             vim.fs.rm(arquivo)
         end
         if addpath then
             search_paths_to_add(dir)
-            progresso('registrando', 95, 'adicionado ao PATH!')
+            alerta('registrando', 95, 'adicionado ao PATH!')
         end
-    end
-end)
+        alerta('fim', 100, 'concluído instalação!')
+    end)
+end
 
 -- download e extração de arquivos
 local downloadit = function (dir, link, addpath, config, progresso)
@@ -178,11 +180,13 @@ local downloadit = function (dir, link, addpath, config, progresso)
                 or arquivo:match('tar%.[a-z]+$')
             ) then
                 extractit(arquivo, dir, addpath, alerta)
+            else
+                alerta('fim', 100, 'concluído instalação!')
             end
             if config then
                 vim.schedule(config)
+                alerta('fim', 100, 'concluído instalação!')
             end
-            alerta('fim', 100, 'concluído instalação!')
         end
     )
 end
@@ -222,37 +226,50 @@ local check_opts = function ()
 end
 
 local create_optfile = function()
-    -- ponto crítico, de mais demora na primeira execução
-    -- local optlist = vim.fn.glob((opts .. '/*/**/*.{exe,bat,cmd}'),
-    -- 	false, true, false
-    -- )
-    local optlist = findexecutables(OPT)
-    optlist = vim.tbl_map(function(programa)
-        return vim.fs.dirname(vim.trim(programa))
-    end, optlist)
-    optlist = vim.list.unique(optlist)
-    vim.fn.writefile(optlist, OPTFILE)
-    vim.print('Arquivo OPTFILE criado com sucesso!')
+    local criado = false
+    for programa, tipo, err in vim.fs.dir(OPT, { err = true }) do
+        if err then
+            vim.print('optfile: Erro encontrado ' .. err)
+        end
+        if tipo == "directory" then
+            search_paths_to_add(vim.fs.joinpath(OPT, programa))
+            criado = criado == true or true
+        end
+    end
+    if criado then
+        vim.print('optfile: arquivo OPTFILE criado com sucesso!')
+    else
+        vim.print('optfile: erro ocorrido, criando arquivo OPTFILE vazio.')
+        vim.fn.writefile({}, OPTFILE)
+    end
 end
 
 -- inicializar variavéis do ambiente $PATH
 local init_path = function(force)
     force = force or false
     local alerta = novo_alerta('optfile')
+    local optfile_criado = false
     if not vim.uv.fs_stat(OPTFILE) or force then
         create_optfile()
+        optfile_criado = true
     end
-    local opts = vim.fn.readfile(OPTFILE)
-    alerta('inicialização', 0, 'iniciando dependências...')
-    for p, o in ipairs(opts) do
-        add_path(o)
-        local percentual = math.floor(p/#opts*100)
-        local msg = ('%s: concluído...'):format(o:match('opt/([^/]*)'))
-        alerta('inicialização', percentual, msg)
+    if not optfile_criado then
+        local opts = vim.fn.readfile(OPTFILE)
+        alerta('inicialização', 0, 'iniciando dependências...')
+        for p, o in ipairs(opts) do
+            add_path(o)
+            local percentual = math.floor(p/#opts*100)
+            local msg = ('%s: concluído...'):format(o:match('opt/([^/]*)'))
+            alerta('inicialização', percentual, msg)
+        end
+        alerta('fim', 100, 'inicialização concluída!')
     end
-    alerta('fim', 100, 'inicialização concluída!')
     if force then
         check_opts()
+    end
+    -- https://github.com/neovim/neovim/blob/master/src/nvim/os/env.c#L1152
+    if #vim.env.PATH > 8199 then
+        vim.print('init_path: Limite de caracteres do $PATH alcançado!')
     end
 end
 init_path()
@@ -559,7 +576,7 @@ end
 do
     for _, dep in ipairs(require('andrikin.deps')) do
         local dir = vim.fs.joinpath(OPT, dep.nome)
-        if not executable(dep.nome) or not vim.uv.fs_stat(dir) then
+        if (not executable(dep.nome)) or (not vim.uv.fs_stat(dir)) then
             add_dependencia(dep)
         else
             if dep.config then
