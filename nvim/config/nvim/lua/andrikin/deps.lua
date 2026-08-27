@@ -1,13 +1,3 @@
-local OPT = ''
-
-if not vim.env.NVIMOPT then
-    OPT = vim.fs.joinpath(
-        vim.env.HOME,
-        'nvim', 'opt'
-    )
-else
-    OPT = vim.env.NVIMOPT
-end
 
 return {
 	{
@@ -17,80 +7,6 @@ return {
     },{
         nome = 'setup-x86_64', -- cygwin
         link = 'https://cygwin.com/setup-x86_64.exe',
-        config = function()
-            local DIR = vim.fs.joinpath(OPT,
-                vim.fs.basename('https://cygwin.com/setup-x86_64.exe'):match('^(.-)%..*$')
-            )
-            local PACKAGES = vim.fs.joinpath(DIR, 'packages')
-            local SETUP = vim.fs.joinpath(DIR, 'setup-x86_64.exe')
-            if not vim.uv.fs_stat(SETUP) then
-                error('Não foi localizado cygwin. Verificar instalação!')
-            end
-            local CMD = {
-                SETUP,
-                '--quiet-mode',
-                '--no-admin',
-                '--download',
-                '--local-install',
-                '--local-package-dir',
-                PACKAGES,
-                '--no-verify',
-                '--no-desktop',
-                '--no-shortcuts',
-                '--no-startmenu',
-                '--no-version-check',
-                '--no-warn-deprecated-windows',
-                '--root',
-                DIR,
-                '--only-site',
-                '--site',
-                'https://linorg.usp.br/cygwin/',
-            }
-            if not vim.uv.fs_stat(vim.fs.joinpath(DIR, 'bin')) then
-                -- inicializar instalação do cygwin
-                vim.system(CMD, {detach = true})
-            end
-            -- create Cygwin command
-            vim.api.nvim_create_user_command("Cygwin",
-                function(opts)
-                    opts = opts or {}
-                    local args = opts.fargs or opts
-                    if not vim.islist(args) then
-                        vim.print('Valores padrão encontrados no comando. Abortando.')
-                        return
-                    end
-                    local cmd = vim.deepcopy(CMD)
-                    if args[1] == 'install' or args[1] == 'remove' then
-                        if args[1] == 'install' then
-                            table.insert(cmd, '--packages')
-                        elseif args[1] == 'remove' then
-                            table.insert(cmd, '--remove-packages')
-                        end
-                        for i=2,#args do
-                            table.insert(cmd, args[i])
-                        end
-                    end
-                    if args[1] == 'update' then
-                        table.insert(cmd, '--upgrade-also')
-                    end
-                    vim.system(cmd, {text = true, detach = true}, function (out)
-                        if out.code == 0 then
-                            local programas = args[2]
-                            for i=3,#args do
-                                programas = programas .. '; ' .. args[i]
-                            end
-                            vim.print(('Instalação concluída com sucesso!: %s'):format(programas))
-                        else
-                            vim.print('Instalador cygwin encontrou um erro.')
-                        end
-                    end)
-                end, {nargs = '+', complete = function (arg, _, _)
-                    return vim.tbl_filter(function(c)
-                        return c:match(arg)
-                    end, {'install', 'remove', 'upgrade'})
-                end}
-            )
-        end,
     },{
         nome = 'lessmsi', -- Utilizar o lessmsi-gui.exe
         link = 'https://github.com/activescott/lessmsi/releases/download/v2.7.3/lessmsi-v2.7.3.zip',
@@ -106,57 +22,6 @@ return {
 	},{
 		nome = 'node',
 		link = 'https://nodejs.org/dist/v20.10.0/node-v20.10.0-win-x64.zip',
-        config = function()
-            local NODEDIR = vim.fs.joinpath(OPT, 'node')
-            local installed = function(pacote)
-                return not vim.tbl_isempty(vim.fs.find(pacote,
-                    {path = NODEDIR, type = 'directory'})
-                )
-            end
-            -- configurações extras
-            local win7 = vim.uv.os_uname()['version']:match('Windows 7')
-            if win7 and vim.env.NODE_SKIP_PLATFORM_CHECK ~= 1 then
-                vim.env.NODE_SKIP_PLATFORM_CHECK = 1
-            end
-            if vim.fn.executable('npm') == 1 then
-                -- NODE DEPENDENCIES
-                local plugins = {
-                    'neovim',
-                    'emmet-ls',
-                    'vim-language-server',
-                    'vscode-langservers-extracted',
-                }
-                for _, plugin in ipairs(plugins) do
-                    if not installed(plugin) then
-                        vim.print(('Instalando pacote node: %s'):format(plugin))
-                        vim.system({
-                            'npm',
-                            'install',
-                            '-g',
-                            plugin
-                        }, {detach = true})
-                    else
-                        vim.print(('Pacote [%s] node já instalado.'):format(plugin))
-                    end
-                end
-            end
-            if not vim.g.node_host_prog or vim.g.node_host_prog == '' then
-                local node_neovim = vim.fs.find(function (n, p)
-                    return n:match('bin') and p:match('neovim$')
-                end,
-                {path = NODEDIR, limit = math.huge, type = 'directory'})
-                if node_neovim[1] then
-                    ---@diagnostic disable-next-line: cast-local-type
-                    node_neovim = node_neovim[1]
-                    if vim.uv.fs_stat(node_neovim) then
-                        -- https://github.com/neovim/neovim/issues/15308
-                        vim.g.node_host_prog = vim.fs.joinpath(node_neovim, 'cli.js')
-                    end
-                else
-                    vim.print('Não foi possível configurar vim.g.node_host_prog')
-                end
-            end
-        end,
 	},{
 		nome = 'tectonic',
 		link = 'https://github.com/tectonic-typesetting/tectonic/releases/download/tectonic%400.14.1/tectonic-0.14.1-x86_64-pc-windows-msvc.zip',
