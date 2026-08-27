@@ -10,6 +10,7 @@ vim.go.path = '.,**'
 -- Indicadores - números nas linhas
 vim.o.rnu = true
 vim.o.nu = true
+vim.o.signcolumn = 'number'
 
 -- Tamanho da indentação
 vim.o.tabstop = 4
