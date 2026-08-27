@@ -33,7 +33,7 @@ autocmd('WinEnter', {
 })
 
 -- 'path' setting
-autocmd('BufAdd', {
+autocmd('FileType', {
     group = Andrikin,
     pattern = '*',
     callback = function()
