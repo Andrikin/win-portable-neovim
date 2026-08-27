@@ -1,9 +1,9 @@
 -- NEOVIM --
 
--- TODO: como obter todos os executáveis em $PATH?
 -- TODO: how build neovim/zig: !zig build install --prefix ./zig-out/ -Doptimize=ReleaseFast
+-- TODO: cygwin gcc don't work for compile parsers in treesitter...
 
-local novo_alerta = function (titulo)
+local novo_alerta = function(titulo)
     local progresso = {
         kind = 'progress',
         source = 'andrikin',
@@ -11,12 +11,12 @@ local novo_alerta = function (titulo)
         title = titulo,
     }
     local headless = #vim.api.nvim_list_uis() == 0
-    return vim.schedule_wrap(function (status, percentual, msg)
+    return vim.schedule_wrap(function(status, percentual, msg)
         progresso.status = status == 'fim' and 'success' or 'running'
         progresso.percent = percentual
-        progresso.id = vim.api.nvim_echo({{msg}}, true, progresso)
+        progresso.id = vim.api.nvim_echo({ { msg } }, true, progresso)
         if not headless then
-            vim.cmd.redraw({bang = true})
+            vim.cmd.redraw({ bang = true })
         end
     end)
 end
@@ -24,7 +24,7 @@ end
 -- verify directory exists, if not, create it
 local function mkdir(dir)
     if not vim.uv.fs_stat(dir) then
-        vim.fs.mkdir(dir, {parents=true})
+        vim.fs.mkdir(dir, { parents = true })
     end
 end
 
@@ -41,7 +41,7 @@ local function findexecutables(dir, limit)
                 or n:match('.*%.cmd$')
             )
         end,
-        {limit = limit, type = 'file', path = dir}
+        { limit = limit, type = 'file', path = dir }
     )
 end
 
@@ -50,7 +50,7 @@ end
 -- executar python declarado em $PATH.
 -- ALTERNATIVE FIX: Remover WindowsApps do $PATH
 do
-    local windowsapps = {'WindowsApps', 'Oracle', 'LibreOffice'}
+    local windowsapps = { 'WindowsApps', 'Oracle', 'LibreOffice' }
     local paths = vim.iter(vim.split(vim.env.PATH, ';')):filter(function(apps)
         for _, wapp in ipairs(windowsapps) do
             if apps:match(wapp) then
@@ -93,7 +93,7 @@ end
 -- append to the last
 local add_path = function(dir)
     local search = dir:gsub(
-        -- https://www.lua.org/pil/20.2.html -> 'magic characters'
+    -- https://www.lua.org/pil/20.2.html -> 'magic characters'
         '[%(%)%.%+%*%?%[%^%$%%-]',
         function(m) return '%' .. m end
     )
@@ -102,12 +102,12 @@ local add_path = function(dir)
     end
 end
 
-local search_paths_to_add = vim.schedule_wrap(function (dir)
+local search_paths_to_add = vim.schedule_wrap(function(dir)
     local exelist = findexecutables(dir)
     exelist = vim.tbl_map(function(programa)
         return vim.fs.dirname(programa)
     end, exelist)
-    local finallist = vim.tbl_filter(function (diretorio)
+    local finallist = vim.tbl_filter(function(diretorio)
         local d = dir:gsub('-', '%%-')
         return diretorio:match('/[sb]in$')
             -- apenas um diretório de profundidade
@@ -127,7 +127,7 @@ local search_paths_to_add = vim.schedule_wrap(function (dir)
 end)
 
 -- extração de arquivos
-local extractit = function (file, dir, addpath, progresso)
+local extractit = function(file, dir, addpath, progresso)
     addpath = addpath or false
     local arquivo = vim.fs.joinpath(dir, file)
     local alerta = progresso or novo_alerta(file)
@@ -136,11 +136,11 @@ local extractit = function (file, dir, addpath, progresso)
     end
     vim.system({
         'tar', '-xf', arquivo, '-C', dir
-    }, {}, function (out)
+    }, {}, function(out)
         if out.code > 0 then
             vim.print((
                 'Erro ao realizar extração de %s.\nErro: %s'):format(
-                    arquivo, out.stderr
+                arquivo, out.stderr
             ))
             return
         end
@@ -157,7 +157,7 @@ local extractit = function (file, dir, addpath, progresso)
 end
 
 -- download e extração de arquivos
-local downloadit = function (dir, link, addpath, config, progresso)
+local downloadit = function(dir, link, addpath, config, progresso)
     local nome = vim.fs.basename(dir)
     local arquivo = vim.fs.basename(link)
     local alerta = progresso or novo_alerta(nome)
@@ -165,7 +165,7 @@ local downloadit = function (dir, link, addpath, config, progresso)
     addpath = addpath or false
     vim.net.request(
         link, {
-            outpath = vim.fs.joinpath( dir, arquivo ),
+            outpath = vim.fs.joinpath(dir, arquivo),
         },
         -- extrair arquivo
         function(err, _)
@@ -175,10 +175,10 @@ local downloadit = function (dir, link, addpath, config, progresso)
             end
             alerta('reportando', 50, 'baixado!')
             if vim.uv.fs_stat(vim.fs.joinpath(dir, arquivo)) and (
-                arquivo:match('zip$')
-                or arquivo:match('7z$')
-                or arquivo:match('tar%.[a-z]+$')
-            ) then
+                    arquivo:match('zip$')
+                    or arquivo:match('7z$')
+                    or arquivo:match('tar%.[a-z]+$')
+                ) then
                 extractit(arquivo, dir, addpath, alerta)
             else
                 alerta('fim', 100, 'concluído instalação!')
@@ -200,7 +200,7 @@ do
 end
 
 -- HACK: melhorar para obter todos os executáveis
-local check_opts = function ()
+local check_opts = function()
     -- must have in $PATH
     local deps = {
         "C:/Windows",
@@ -258,7 +258,7 @@ local init_path = function(force)
         alerta('inicialização', 0, 'iniciando dependências...')
         for p, o in ipairs(opts) do
             add_path(o)
-            local percentual = math.floor(p/#opts*100)
+            local percentual = math.floor(p / #opts * 100)
             local msg = ('%s: concluído...'):format(o:match('opt/([^/]*)'))
             alerta('inicialização', percentual, msg)
         end
@@ -294,7 +294,7 @@ end
 -- Check font, install it
 do
     local SAUCEREGCMD = vim.fs.joinpath(
-        'HKCU','Software', 'Microsoft',
+        'HKCU', 'Software', 'Microsoft',
         'Windows NT', 'CurrentVersion', 'Fonts'
     ):gsub('/', '\\')
     local SAUCEDIR = vim.fs.joinpath(
@@ -363,7 +363,7 @@ do
         if not vim.uv.fs_stat(SAUCEDIR) then
             mkdir(SAUCEDIR)
         else
-            vim.fs.rm(SAUCEDIR, {recursive = true})
+            vim.fs.rm(SAUCEDIR, { recursive = true })
             mkdir(SAUCEDIR)
         end
         -- download
@@ -387,14 +387,14 @@ if executable('copyq') then
     vim.api.nvim_create_user_command('Clipboard',
         function(args)
             local tab = args.fargs[1] or 'clipboard'
-            local clipboard = vim.system({"copyq","eval","--",([[
+            local clipboard = vim.system({ "copyq", "eval", "--", ([[
                 let indent = 4;
                 let tamanho = size() <= 50 && size() || 50;
                 tab('%s');
                 let c = [];
                 for(i=0;i<tamanho;i++) c.push(str(read(i)));
                 print(JSON.stringify(c, null, indent));
-            ]]):format(tab)}):wait().stdout
+            ]]):format(tab) }):wait().stdout
             -- transformar JSON
             clipboard = vim.json.decode(clipboard)
             local temp = {}
@@ -416,21 +416,21 @@ if executable('copyq') then
                     return item:sub(1, 75)
                 end,
             }, function(choice)
-                    if choice then
-                        vim.fn.setreg('"', choice)
-                        vim.cmd.normal('P')
-                    end
+                if choice then
+                    vim.fn.setreg('"', choice)
+                    vim.cmd.normal('P')
                 end
+            end
             )
         end,
         {
             nargs = "?",
             complete = function(arg, _, _)
-                local lista = vim.system({"copyq", "eval", "--", [[
+                local lista = vim.system({ "copyq", "eval", "--", [[
                     let indent = 4;
                     let tabs = tab();
                     print(JSON.stringify(tabs, null, indent));
-                ]]}):wait().stdout
+                ]] }):wait().stdout
                 local ok = nil
                 ok, lista = pcall(vim.json.decode, lista)
                 if not ok then
@@ -457,7 +457,7 @@ if executable('git.exe') then
     local shuuush = "aHR0cHM6Ly9naXRsYWIuY29tL0FuZHJpa2luL3NodXV1c2guZ2l0"
     if not vim.uv.fs_stat(SSHDIR) then
         mkdir(SSHDIR)
-        vim.system({'git', 'clone', vim.base64.decode(shuuush), SSHDIR})
+        vim.system({ 'git', 'clone', vim.base64.decode(shuuush), SSHDIR })
     else
         vim.print('ssh: diretório já existe.')
     end
@@ -479,9 +479,9 @@ if executable('git.exe') then
         cmd('git branch -d master')
     else
         vim.print("win-portable-neovim: já instalado.")
-        vim.system({'git', 'pull'}, {cwd = vim.env.HOME}, function (obj)
+        vim.system({ 'git', 'pull' }, { cwd = vim.env.HOME }, function(obj)
             if obj.stdout:match('^Updating') then
-                vim.defer_fn(function ()
+                vim.defer_fn(function()
                     vim.cmd.restart()
                 end, 5000)
                 vim.print('win-portable-neovim: Atualizado! Preparando para reiniciar Neovim!')
@@ -501,14 +501,14 @@ if executable('node.exe') and executable('npm') then
     if win7 and vim.env.NODE_SKIP_PLATFORM_CHECK ~= 1 then
         vim.env.NODE_SKIP_PLATFORM_CHECK = 1
     end
-    -- 
+    --
     local NODEDIR = vim.fs.joinpath(OPT, 'node')
-    local PACKAGES_LIST = vim.system({'npm', 'list', '-g', '--depth=0'}):wait().stdout
+    local PACKAGES_LIST = vim.system({ 'npm', 'list', '-g', '--depth=0' }):wait().stdout
     local installed = function(pacote)
         if PACKAGES_LIST == "" or not PACKAGES_LIST then
             error('node_init: não foi possível listar pacotes do "node".')
         end
-        local dir = vim.fs.find(pacote, {path = NODEDIR, type = 'directory'})
+        local dir = vim.fs.find(pacote, { path = NODEDIR, type = 'directory' })
         local has_dir = not vim.tbl_isempty(dir)
         local check = PACKAGES_LIST:match(pacote:gsub('-', '%%-') .. '@')
         if check then
@@ -518,7 +518,7 @@ if executable('node.exe') and executable('npm') then
         if has_dir then
             local d = dir[1]
             if d and vim.uv.fs_stat(d) then
-                vim.fs.rm(d, {recursive=true})
+                vim.fs.rm(d, { recursive = true })
             end
         end
         return false
@@ -538,16 +538,16 @@ if executable('node.exe') and executable('npm') then
                 'install',
                 '-g',
                 plugin
-            }, {detach = true})
+            }, { detach = true })
         else
             vim.print(('Pacote [%s] node já instalado.'):format(plugin))
         end
     end
     if not vim.g.node_host_prog or vim.g.node_host_prog == '' then
-        local node_neovim = vim.fs.find(function (n, p)
-            return n:match('bin') and p:match('neovim$')
-        end,
-        {path = NODEDIR, limit = math.huge, type = 'directory'})
+        local node_neovim = vim.fs.find(function(n, p)
+                return n:match('bin') and p:match('neovim$')
+            end,
+            { path = NODEDIR, limit = math.huge, type = 'directory' })
         if node_neovim[1] then
             ---@diagnostic disable-next-line: cast-local-type
             node_neovim = node_neovim[1]
@@ -593,7 +593,7 @@ do
     }
     if not vim.uv.fs_stat(vim.fs.joinpath(DIR, 'bin')) then
         -- inicializar instalação do cygwin
-        vim.system(CMD, {detach = true})
+        vim.system(CMD, { detach = true })
     end
     -- create Cygwin command
     vim.api.nvim_create_user_command("Cygwin",
@@ -611,14 +611,14 @@ do
                 elseif args[1] == 'remove' then
                     table.insert(cmd, '--remove-packages')
                 end
-                for i=2,#args do
+                for i = 2, #args do
                     table.insert(cmd, args[i])
                 end
             end
             if args[1] == 'update' then
                 table.insert(cmd, '--upgrade-also')
             end
-            vim.system(cmd, {text = true, detach = true}, function (out)
+            vim.system(cmd, { text = true, detach = true }, function(out)
                 if out.code == 0 then
                     local programas = table.concat(args, '; ', 2, #args)
                     vim.print(('Instalação concluída com sucesso!: %s'):format(programas))
@@ -626,35 +626,40 @@ do
                     vim.print('Instalador cygwin encontrou um erro.')
                 end
             end)
-        end, {nargs = '+', complete = function (arg, _, _)
-            return vim.tbl_filter(function(c)
-                return c:match(arg)
-            end, {'install', 'remove', 'upgrade'})
-        end}
+        end, {
+            nargs = '+',
+            complete = function(arg, _, _)
+                return vim.tbl_filter(function(c)
+                    return c:match(arg)
+                end, { 'install', 'remove', 'upgrade' })
+            end
+        }
     )
 end
 
--- Install Cygwin dependencies
+-- CYGWIN DEPENDENCIES --
 if executable('setup-x86_64.exe') then
     if vim.fn.exists(':Cygwin') then
         if not executable('gs.exe') then
             vim.cmd.Cygwin({ args = { 'install', 'ghostscript' } })
         end
         if not executable('gcc.exe') then
-            vim.cmd.Cygwin({ args = {
-                'install',
-                'gcc-core',
-                'gcc-g++',
-                'mingw64-x86_64-gcc-core',
-                'mingw64-x86_64-gcc-g++'
-            }})
+            vim.cmd.Cygwin({
+                args = {
+                    'install',
+                    'gcc-core',
+                    'gcc-g++',
+                    'mingw64-x86_64-gcc-core',
+                    'mingw64-x86_64-gcc-g++'
+                }
+            })
         end
         -- for Neovim build
         if not executable('cmake.exe') then
-            vim.cmd.Cygwin({ args = {'install', 'cmake'}})
+            vim.cmd.Cygwin({ args = { 'install', 'cmake' } })
         end
         if not executable('gettext.exe') then
-            vim.cmd.Cygwin({ args = {'install', 'gettext'}})
+            vim.cmd.Cygwin({ args = { 'install', 'gettext' } })
         end
         if not executable('ninja.exe') then
             vim.cmd.Cygwin({ args = {'install', 'ninja'}})
@@ -662,7 +667,7 @@ if executable('setup-x86_64.exe') then
     end
 end
 
--- Python config
+-- PYTHON --
 if executable('uv') then
     local DIR = vim.fs.joinpath(
         OPT, 'python'
