@@ -1,6 +1,10 @@
 -- install plugins
 -- https://echasnovski.com/blog/2026-03-13-a-guide-to-vim-pack
 
+local function executable(exe)
+    return vim.fn.executable(exe) == 1
+end
+
 vim.pack.add({
     -- colorschemes
     -- 'https://github.com/biisal/blackhole',
@@ -68,11 +72,30 @@ vim.api.nvim_create_autocmd('PackChanged', { -- build blink.cmp
     end
 })
 
-local gcc = vim.fn.executable('x86_64-w64-mingw32-gcc') == 1
+local gcc = executable('gcc.exe') or executable('x86_64-pc-cygwin-gcc.exe')
 if not gcc then
     vim.print('Treesitter: Não foi possível encontrar compilador executável "gcc".')
-    pcall(vim.cmd.Cygwin, 'install x86_64-w64-mingw32-gcc')
+    if vim.fn.exists(':Cygwin') then
+        vim.print('Treesitter: tentando instalar gcc!')
+        pcall(vim.cmd.Cygwin({ args = {
+            'install',
+            'gcc-core',
+            'gcc-g++',
+            'mingw64-x86_64-gcc-core',
+            'mingw64-x86_64-gcc-g++'
+        }}))
+    end
 else
+    -- $CC setting
+    local exe = vim.fn.exepath('gcc.exe') ~= "" and vim.fn.exepath('gcc.exe')
+    if not exe then
+        exe = vim.fn.exepath('x86_64-pc-cygwin-gcc.exe')
+    end
+    if exe ~= "" then
+        vim.env.CC = vim.fs.normalize(exe)
+    else
+        vim.print("Treesitter: não foi possível configurar a variável de ambiente $CC")
+    end
     vim.pack.add({{
         src = 'https://github.com/nvim-treesitter/nvim-treesitter.git',
         version = 'main'
@@ -163,7 +186,7 @@ require('dressing').setup({
     }
 })
 -- blink.cmp configuration
-local rust = vim.fn.executable('cargo.exe') == 1
+local rust = executable('cargo.exe')
 if not rust then
     vim.print("rust: Não foi encontrado executável do 'rust'. Verificar instalação.")
     return
