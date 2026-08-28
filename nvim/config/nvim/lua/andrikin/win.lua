@@ -664,6 +664,9 @@ if executable('setup-x86_64.exe') then
         if not executable('ninja.exe') then
             vim.cmd.Cygwin({ args = {'install', 'ninja'}})
         end
+        if not executable('magick.exe') then -- convert jpeg/png to pdf 
+            vim.cmd.Cygwin({ args = {'install', 'ImageMagick'}})
+        end
     end
 end
 
@@ -718,7 +721,6 @@ if executable('uv') then
         vim.print('Variável python3_host_prog não configurado.')
     end
 end
-
 -- criar diretório em OPT, baixar programa e adicionar no $PATH
 local function add_dependencia(dep)
     local dir = vim.fs.joinpath(OPT, dep.nome)
