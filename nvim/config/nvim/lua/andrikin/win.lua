@@ -450,7 +450,7 @@ else
     end
 end
 
--- Ssh bootstrap
+-- SSH --
 -- TODO: ativar conexão ssh-add, caso não esteja conectada
 if executable('git.exe') then
     local SSHDIR = vim.fs.joinpath(vim.env.HOME, '.ssh')

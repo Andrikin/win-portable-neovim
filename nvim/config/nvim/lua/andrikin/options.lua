@@ -26,6 +26,7 @@ vim.o.smartcase = true
 vim.o.hlsearch = true
 
 -- Configurações gerais
+vim.o.more = false
 vim.o.scrolloff = 999
 vim.o.lazyredraw = true
 vim.o.splitbelow = true
