@@ -502,19 +502,18 @@ if executable('node.exe') and executable('npm') then
         vim.env.NODE_SKIP_PLATFORM_CHECK = 1
     end
     --
+    local NODEQUERY = vim.json.decode(vim.system({
+            'npm', 'ls', '-g', '--depth=0', '--json'
+        }):wait().stdout)
     local NODEDIR = vim.fs.joinpath(OPT, 'node')
-    local PACKAGES_LIST = vim.system({ 'npm', 'list', '-g', '--depth=0' }):wait().stdout
     local installed = function(pacote)
-        if PACKAGES_LIST == "" or not PACKAGES_LIST then
-            error('node_init: não foi possível listar pacotes do "node".')
-        end
-        local dir = vim.fs.find(pacote, { path = NODEDIR, type = 'directory' })
-        local has_dir = not vim.tbl_isempty(dir)
-        local check = PACKAGES_LIST:match(pacote:gsub('-', '%%-') .. '@')
+        local check = NODEQUERY.dependencies[pacote]
         if check then
             return true
         end
-        -- remove directory to install again
+        -- remove directory to install again, if exists
+        local dir = vim.fs.find(pacote, { path = NODEDIR, type = 'directory' })
+        local has_dir = not vim.tbl_isempty(dir)
         if has_dir then
             local d = dir[1]
             if d and vim.uv.fs_stat(d) then
