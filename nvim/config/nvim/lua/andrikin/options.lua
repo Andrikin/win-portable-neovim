@@ -30,6 +30,7 @@ vim.o.splitbelow = true
 vim.o.splitright = true
 -- Problems that can occur in vim session can be avoid using this configuration
 vim.opt.sessionoptions:remove('options')
+-- https://jkrl.me/2025/09/02/nvim-fuzzy-find.html
 vim.o.wildmode = 'noselect:longest:lastused,full'
 vim.o.findfunc = function (cmdargs, _)
     local query = vim.fs.abspath(
