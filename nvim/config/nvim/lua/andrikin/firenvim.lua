@@ -148,8 +148,7 @@ vim.g.loaded_python3_provider = 0
 
 -- MAPPINGS --
 vim.keymap.set({'i', 'c'}, '<c-backspace>', '<c-w>')
--- USE <C-S-v>
--- vim.keymap.set({'i', 'c'}, '<c-v>', '<c-r>+') -- colar clipboard
+vim.keymap.set({'i', 'c'}, '<c-v>', '<c-r>+') -- uso CopyQ
 
 -- Copy and paste from clipboard (* -> selection register/+ -> primary register)
 vim.keymap.set('n', 'gP', '"+P')

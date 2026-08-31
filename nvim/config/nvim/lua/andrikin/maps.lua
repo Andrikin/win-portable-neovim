@@ -7,8 +7,7 @@ end
 
 -- CTRL-BACKSPACE para apagar palavras
 vim.keymap.set({'i', 'c'}, '<c-backspace>', '<c-w>') -- obter mesmo comportamento (firefox)
--- USE <C-S-v>
--- vim.keymap.set({'i', 'c'}, '<c-v>', '<c-r>+') -- colar clipboard
+vim.keymap.set({'i', 'c'}, '<c-v>', '<c-r>+') -- uso CopyQ
 
 -- EDITING: move one word to left or right
 vim.keymap.set({'i', 'c'}, '<c-z>', '<s-left>')
