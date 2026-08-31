@@ -10,8 +10,8 @@ vim.keymap.set({'i', 'c'}, '<c-backspace>', '<c-w>') -- obter mesmo comportament
 vim.keymap.set({'i', 'c'}, '<c-v>', '<c-r>+') -- uso CopyQ
 
 -- EDITING: move one word to left or right
-vim.keymap.set({'i', 'c'}, '<c-z>', '<s-left>')
-vim.keymap.set({'i', 'c'}, '<c-x>', '<s-right>')
+vim.keymap.set('c', '<c-z>', '<s-left>')
+vim.keymap.set('c', '<c-x>', '<s-right>')
 
 -- Remover <space> dos modos: NORMAL e VISUAL (em conjunto com mapleader)
 vim.keymap.set({ 'n', 'v' }, '<Space>', '<Nop>', { silent = true })
