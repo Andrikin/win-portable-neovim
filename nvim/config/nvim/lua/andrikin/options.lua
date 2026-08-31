@@ -4,9 +4,6 @@ vim.g.maplocalleader = vim.g.mapleader
 -- terminal toggler
 vim.g.ttoggler = {}
 
--- Search locally and recursively
-vim.go.path = '.,**'
-
 -- Indicadores - números nas linhas
 vim.o.rnu = true
 vim.o.nu = true
@@ -33,6 +30,16 @@ vim.o.splitbelow = true
 vim.o.splitright = true
 -- Problems that can occur in vim session can be avoid using this configuration
 vim.opt.sessionoptions:remove('options')
+vim.o.wildmode = 'noselect:longest:lastused,full'
+vim.o.findfunc = function (cmdargs, _)
+    local query = vim.fs.abspath(
+        "**/*",
+        -- três diretórios para trás
+        {cwd = vim.fn.expand('%:h:h:h'):gsub('"', '')}
+    )
+    local files = vim.fn.glob(query, true, true)
+    return vim.fn.matchfuzzy(files, cmdargs)
+end
 -- usar <tab> para cmdline completion em macros
 if vim.o.wildcharm ~= 9 then
     vim.opt.wildcharm = 9

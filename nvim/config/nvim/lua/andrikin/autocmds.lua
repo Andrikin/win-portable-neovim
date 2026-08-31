@@ -32,17 +32,6 @@ autocmd('WinEnter', {
     end,
 })
 
--- 'path' setting
-autocmd('FileType', {
-    group = Andrikin,
-    pattern = '*',
-    callback = function()
-        if vim.o.path ~= vim.go.path then
-            vim.o.path = vim.go.path
-        end
-    end,
-})
-
 -- Resize windows automatically
 -- Tim Pope goodness
 autocmd('VimResized', {
