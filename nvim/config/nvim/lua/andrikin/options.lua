@@ -32,6 +32,7 @@ vim.o.splitright = true
 vim.opt.sessionoptions:remove('options')
 -- https://jkrl.me/2025/09/02/nvim-fuzzy-find.html
 vim.o.wildmode = 'noselect:longest:lastused,full'
+vim.o.wildoptions = {'pum', 'fuzzy'}
 vim.o.findfunc = function (cmdargs, _)
     local cwd = '%:h:h:h'
     if vim.o.filetype == 'dirvish' then
