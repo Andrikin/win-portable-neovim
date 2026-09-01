@@ -31,18 +31,20 @@ vim.o.splitright = true
 -- Problems that can occur in vim session can be avoid using this configuration
 vim.opt.sessionoptions:remove('options')
 -- https://jkrl.me/2025/09/02/nvim-fuzzy-find.html
-vim.o.wildmode = 'noselect:longest:lastused,full'
+-- https://aymenhafeez.github.io/posts/2026-02-27-cmdline-fuzzy-finding/
+vim.o.wildmode = 'lastused,full'
 vim.o.wildoptions = {'pum', 'fuzzy'}
 vim.o.findfunc = function (cmdargs, _)
-    local cwd = '%:h:h:h'
+    local cwd = '%:h'
     if vim.o.filetype == 'dirvish' then
         cwd = '%'
     end
-    local query = vim.fs.abspath(
-        "**/*",
-        {cwd = vim.fn.expand(cwd):gsub('"', '')}
-    )
-    local files = vim.fn.glob(query, true, true)
+    local query = vim.fn.expand(cwd):gsub('"', '')
+    local files = vim.fs.find(function (_, _)
+        return true
+    end, {
+        path = query, limit = math.huge, type = 'file'
+    })
     return vim.fn.matchfuzzy(files, cmdargs)
 end
 -- usar <tab> para cmdline completion em macros
