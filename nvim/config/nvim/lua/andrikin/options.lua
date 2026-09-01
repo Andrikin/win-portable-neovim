@@ -33,10 +33,13 @@ vim.opt.sessionoptions:remove('options')
 -- https://jkrl.me/2025/09/02/nvim-fuzzy-find.html
 vim.o.wildmode = 'noselect:longest:lastused,full'
 vim.o.findfunc = function (cmdargs, _)
+    local cwd = '%:h:h:h'
+    if vim.o.filetype == 'dirvish' then
+        cwd = '%'
+    end
     local query = vim.fs.abspath(
         "**/*",
-        -- três diretórios para trás
-        {cwd = vim.fn.expand('%:h:h:h'):gsub('"', '')}
+        {cwd = vim.fn.expand(cwd):gsub('"', '')}
     )
     local files = vim.fn.glob(query, true, true)
     return vim.fn.matchfuzzy(files, cmdargs)
