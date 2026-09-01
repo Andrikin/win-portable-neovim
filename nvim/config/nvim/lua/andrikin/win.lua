@@ -501,13 +501,16 @@ if executable('node.exe') and executable('npm') then
     if win7 and vim.env.NODE_SKIP_PLATFORM_CHECK ~= 1 then
         vim.env.NODE_SKIP_PLATFORM_CHECK = 1
     end
+    -- too slow
+    -- local NODEQUERY = vim.json.decode(vim.system({
+    --         'npm', 'ls', '-g', '--depth=0', '--json'
+    --     }):wait().stdout)
     --
-    local NODEQUERY = vim.json.decode(vim.system({
-            'npm', 'ls', '-g', '--depth=0', '--json'
-        }):wait().stdout)
     local NODEDIR = vim.fs.joinpath(OPT, 'node')
     local installed = function(pacote)
-        local check = NODEQUERY.dependencies[pacote]
+        local check = vim.fn.glob(vim.fs.joinpath(
+            NODEDIR, '*', 'node_modules', pacote
+        )) ~= ""
         if check then
             return true
         end
