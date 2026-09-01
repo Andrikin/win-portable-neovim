@@ -1,7 +1,6 @@
 ; git check-ignore -v path/to/file
 [safe]
 	directory = *
-
 [user]
 	email = contasecretaalternativa@gmail.com
 	name = Andrikin
@@ -11,3 +10,5 @@
 	editor = nvim
 	autocrlf = true
 	safecrlf = true
+[credential "http://dev.itajai.local"]
+	provider = generic
