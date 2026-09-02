@@ -23,9 +23,13 @@ vim.o.smartcase = true
 vim.o.hlsearch = true
 
 -- Configurações gerais
-if vim.fn.executable('rg.exe') then
-    vim.go.grepprg = "rg --vimgrep -uuu --smart-case "
-end
+-- set linebreak
+-- set wrapmargin = 5
+vim.o.hidden = true
+vim.o.mouse = ''
+vim.o.mousemodel = 'extend'
+vim.o.swapfile = false
+vim.o.textwidth = 0
 vim.o.more = false
 vim.o.scrolloff = 999
 vim.o.lazyredraw = true
@@ -62,9 +66,6 @@ if vim.fn.has('win32') then
 else
 	vim.g.shell = vim.env.TERM
 end
-vim.o.hidden = true
-vim.o.mouse = ''
-vim.o.mousemodel = 'extend'
 if vim.fn.has('persistent_undo') == 1 then
     local path = vim.fs.joinpath(
         vim.fn.stdpath('data'),
@@ -76,10 +77,9 @@ if vim.fn.has('persistent_undo') == 1 then
 	vim.o.undodir = path
 	vim.o.undofile = true
 end
-vim.o.swapfile = false
-vim.o.textwidth = 0
--- set linebreak
--- set wrapmargin = 5
+if vim.fn.executable('rg.exe') then
+    vim.go.grepprg = "rg --vimgrep -uuu --smart-case "
+end
 
 -- Statusline
 vim.o.laststatus = 3
@@ -87,14 +87,25 @@ vim.o.showtabline = 1
 vim.o.showmode = false
 
 -- NeoVim configurations
+vim.o.inccommand = 'split' -- empty string to use with traces.vim
+vim.o.winborder = 'single'
 -- vim.opt.guicursor = 'i-n-v-c:block' -- sem blink
 vim.o.guicursor = "i-n-v-c:block,n-v-c:blinkwait700-blinkoff400-blinkon250"
 vim.o.guifont = 'SauceCodePro NFM:h11'
-vim.o.winborder = 'single'
 if vim.g.nvy or vim.g.neovide then
 	vim.o.guifont = 'SauceCodePro Nerd Font Mono:h12'
 end
-vim.o.inccommand = 'split' -- empty string to use with traces.vim
+
+-- Dirvish
+vim.defer_fn(function()
+    if vim.fn.exists(':SortingDirvish') > 0 then
+        vim.g.dirvish_mode = ':SortingDirvish'
+    else
+        -- diretórios primeiro, depois arquivos
+        vim.g.dirvish_mode = ':%sort /.*\\\\\\|.*[^\\\\]/'
+    end
+end, 1000)
+vim.g.dirvish_dbg = 1
 
 -- Configurações Windows
 vim.o.fileformat = 'dos'
@@ -112,30 +123,10 @@ vim.g['surround_' .. vim.fn.char2nr('t')] = ''
 -- TODO: Criar arquivos ftplugin para cada linguagem, definindo b:match_words
 vim.opt.matchpairs:append('<:>')
 
--- Dirvish
-vim.defer_fn(function()
-    if vim.fn.exists(':SortingDirvish') > 0 then
-        vim.g.dirvish_mode = ':SortingDirvish'
-    else
-        -- diretórios primeiro, depois arquivos
-        vim.g.dirvish_mode = ':%sort /.*\\\\\\|.*[^\\\\]/'
-    end
-end, 1000)
-vim.g.dirvish_dbg = 1
-
--- --- Emmet ---
-vim.g.user_emmet_install_global = 0
--- vim.g.user_emmet_leader_key = '<m-space>'
-
 -- spellfile.nvim -- Lua port of spellfile.vim
 vim.o.spelllang = 'pt_br'
 -- obter dicionário pt_br e como instalá-lo no neovim
 -- https://vimbook.com.br/capitulo_10/dicionario_de_termos/#dicionario-portugues-segundo-o-acordo-ortografico
-
--- --- Netrw ---
--- Disable Netrw
-vim.g.loaded_netrw = 1
-vim.g.loaded_netrwPlugin = 1
 
 -- Neovide
 -- Mais lightweight possível
@@ -146,6 +137,15 @@ if vim.g.neovide then
 	vim.g.neovide_cursor_animate_command_line = false
 	vim.g.neovide_cursor_vfx_mode = ""
 end
+
+-- --- Emmet ---
+vim.g.user_emmet_install_global = 0
+-- vim.g.user_emmet_leader_key = '<m-space>'
+
+-- --- Netrw ---
+-- Disable Netrw
+vim.g.loaded_netrw = 1
+vim.g.loaded_netrwPlugin = 1
 
 -- Andrikin/awesome-pairing
 vim.g.awesome_pairing_chars = [[({['"]]
