@@ -23,6 +23,9 @@ vim.o.smartcase = true
 vim.o.hlsearch = true
 
 -- Configurações gerais
+if vim.fn.executable('rg.exe') then
+    vim.go.grepprg = "rg --vimgrep -uuu --smart-case "
+end
 vim.o.more = false
 vim.o.scrolloff = 999
 vim.o.lazyredraw = true
