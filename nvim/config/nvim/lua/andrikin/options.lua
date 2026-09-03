@@ -68,8 +68,9 @@ vim.o.findfunc = function (cmdargs, cmdcomplete)
             opts.path = cmdargs
         end
     end
-    local files = vim.fs.find(function (_, _)
-        return true
+    local basedir = vim.fs.basename(cmdargs)
+    local files = vim.fs.find(function (nome, _)
+        return nome:match(basedir)
     end, opts)
     local filtrar = function (file)
         return file:match(cmdargs)
