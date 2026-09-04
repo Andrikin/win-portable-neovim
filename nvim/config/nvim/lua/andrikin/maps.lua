@@ -69,15 +69,13 @@ vim.keymap.set( 'n', 'j',
 -- inoremap <c-k> <c-o>:m.-2<cr>
 -- nnoremap <leader>k <cmd>m.-2<cr>
 -- nnoremap <leader>j <cmd>m.+1<cr>
-vim.keymap.set('i', '<a-k>', "<c-o>:m.-2<cr>", {silent = true})
-vim.keymap.set('i', '<a-j>', "<c-o>:m.+1<cr>", {silent = true})
-if vim.g.mapleader == ' ' then
-	vim.keymap.set('n', '<leader>k', ":m.-2<cr>", {silent = true})
-	vim.keymap.set('n', '<leader>j', ":m.+1<cr>", {silent = true})
-else
-	vim.keymap.set('n', '<space>k', ":m.-2<cr>", {silent = true})
-	vim.keymap.set('n', '<space>j', ":m.+1<cr>", {silent = true})
-end
+
+-- <up/down>: melhor quando utilizado com mapeamento das teclas <a-j/k> em
+-- nível de sistema
+vim.keymap.set('i', '<up>', "<c-o>:m.-2<cr>", {silent = true})
+vim.keymap.set('i', '<down>', "<c-o>:m.+1<cr>", {silent = true})
+vim.keymap.set('n', '<up>', ":m.-2<cr>", {silent = true})
+vim.keymap.set('n', '<down>', ":m.+1<cr>", {silent = true})
 vim.keymap.set('v', 'K', ":m'<-2<cr>gv", {silent = true})
 vim.keymap.set('v', 'J', ":m'>+1<cr>gv", {silent = true})
 -- gJ com o mesmo comportamento de J (juntar linhas removendo espaços)
