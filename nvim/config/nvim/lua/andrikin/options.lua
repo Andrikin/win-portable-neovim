@@ -30,7 +30,6 @@ vim.o.hlsearch = true
 -- set wrapmargin = 5
 vim.o.hidden = true
 vim.o.mouse = ''
-vim.o.mousemodel = 'extend'
 vim.o.swapfile = false
 vim.o.textwidth = 0
 vim.o.more = false
