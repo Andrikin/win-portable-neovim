@@ -16,3 +16,5 @@ vim.keymap.set('n', 'go', function()
         do return end
     end
 end, {silent = true, buffer = buf})
+-- use command 'grep <regex>' in dirvish buffer to fill quickfix list
+vim.bo.grepprg = vim.go.grepprg .. ' "$*" %'
