@@ -44,43 +44,36 @@ vim.opt.sessionoptions:remove('options')
 -- https://aymenhafeez.github.io/posts/2026-02-27-cmdline-fuzzy-finding/
 vim.o.wildmode = 'lastused,full'
 vim.o.wildoptions = {'pum', 'fuzzy'}
+-- usar <tab> para cmdline completion em macros
+vim.o.wildcharm = vim.o.wildchar
+vim.o.wildignore = '**/.git/**'
 vim.o.findfunc = function (cmdargs, cmdcomplete)
     cmdargs = vim.fs.normalize(cmdargs)
     local arquivo = vim.uv.fs_stat(cmdargs)
     if arquivo and arquivo.type == 'file' then
         return {cmdargs}
     end
-    local cwd = '%:h'
+    local query = '%:h'
     if vim.o.filetype == 'dirvish' then
-        cwd = '%'
+        query = '%'
     end
-    local query = vim.fn.expand(cwd):gsub('"', '')
-    local opts = {
-        path = query, limit = math.huge, type = 'file'
-    }
+    local cwd = vim.fs.normalize(vim.fn.expand(query))
+    if not cmdargs:match(cwd) then
+        query = vim.fs.joinpath(cwd, '**', cmdargs)
+    end
     if cmdcomplete then
-        opts.type = nil
-        local arg = vim.uv.fs_stat(cmdargs)
-        if arg then
-            if arg.type == 'file' then
-                opts.path = vim.fs.dirname(cmdargs)
-            end
-            opts.path = cmdargs
+        local ftype = vim.uv.fs_stat(cmdargs)
+        if ftype and ftype.type == 'directory' then
+            query = vim.fs.joinpath(cmdargs, '*')
         end
     end
-    local basedir = vim.fs.basename(cmdargs)
-    local files = vim.fs.find(function (nome, _)
-        return nome:match(basedir)
-    end, opts)
-    local filtrar = function (file)
-        return file:match(cmdargs)
+    local files = vim.npcall(function ()
+        return vim.fn.glob(query, false, true)
+    end)
+    if files and #files == 0 then
+        files = vim.fn.glob(query .. '*', false, true)
     end
-    files = vim.tbl_filter(filtrar, files)
     return vim.fn.matchfuzzy(files, cmdargs)
-end
--- usar <tab> para cmdline completion em macros
-if vim.o.wildcharm ~= 9 then
-    vim.opt.wildcharm = 9
 end
 vim.opt.complete:remove('u')
 -- vim.opt.completeopt = 'menu,menuone,noselect'
