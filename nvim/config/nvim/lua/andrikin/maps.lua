@@ -72,14 +72,14 @@ vim.keymap.set( 'n', 'j',
 
 -- <up/down>: melhor quando utilizado com mapeamento das teclas <a-j/k> em
 -- nível de sistema
-vim.keymap.set('i', '<up>', "<c-o>:m.-2<cr>", {silent = true})
-vim.keymap.set('i', '<down>', "<c-o>:m.+1<cr>", {silent = true})
-vim.keymap.set('n', '<up>', ":m.-2<cr>", {silent = true})
-vim.keymap.set('n', '<down>', ":m.+1<cr>", {silent = true})
-vim.keymap.set('v', 'K', ":m'<-2<cr>gv", {silent = true})
-vim.keymap.set('v', 'J', ":m'>+1<cr>gv", {silent = true})
+vim.keymap.set('i', '<up>', "<c-o><cmd>m.-2<cr>", {silent = true})
+vim.keymap.set('i', '<down>', "<c-o><cmd>m.+1<cr>", {silent = true})
+vim.keymap.set('n', '<up>', "<cmd>m.-2<cr>", {silent = true})
+vim.keymap.set('n', '<down>', "<cmd>m.+1<cr>", {silent = true})
+vim.keymap.set('v', 'K', "<cmd>m'<-2<cr>gv", {silent = true})
+vim.keymap.set('v', 'J', "<cmd>m'>+1<cr>gv", {silent = true})
 -- gJ com o mesmo comportamento de J (juntar linhas removendo espaços)
-vim.keymap.set('v', 'gJ', ":<c-u>'<,'>join<cr>", {silent = true})
+vim.keymap.set('v', 'gJ', "<cmd><c-u>'<,'>join<cr>", {silent = true})
 
 -- Copy and paste from clipboard (* -> selection register/+ -> primary register)
 vim.keymap.set('n', 'gP', '"+P')
