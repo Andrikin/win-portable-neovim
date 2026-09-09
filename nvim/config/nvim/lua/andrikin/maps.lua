@@ -4,19 +4,14 @@
 vim.keymap.set('n', '<c-\\>', '<c-]>')
 
 -- CTRL-BACKSPACE para apagar palavras
-vim.keymap.set({'i', 'c'}, '<c-backspace>', '<c-w>') -- obter mesmo comportamento (firefox)
-vim.keymap.set({'i', 'c'}, '<c-v>', '<c-r>+') -- uso CopyQ
+-- obter mesmo comportamento (firefox)
+vim.keymap.set({'i', 'c'}, '<c-backspace>', '<c-w>')
+-- COLAR: uso para CopyQ
+vim.keymap.set({'i', 'c'}, '<c-v>', '<c-r>+')
 
 -- Remover <space> dos modos: NORMAL e VISUAL (em conjunto com mapleader)
 vim.keymap.set({ 'n', 'v' }, '<Space>', '<Nop>', { silent = true })
 
--- CTRL-U in insert mode deletes a lot. Use CTRL-G u to first break undo,
--- so that you can undo CTRL-U after inserting a line break.
--- Revert with ":iunmap <C-U>". -> from defaults.vim
--- vim.keymap.set('i', '<c-u>', '<c-g>u<c-u>') -- default in neovim
--- vim.keymap.set('i', '<c-w>', '<c-g>u<c-w>') -- default in neovim
--- Fix & command. Redo :substitute command
--- vim.keymap.set( 'n', '&', function() vim.cmd('&&') end) -- default in neovim
 vim.keymap.set('n', '<backspace>', 'X')
 vim.keymap.set('n', '<c-h>', 'X')
 vim.keymap.set('n', "'", '`')
@@ -33,10 +28,6 @@ vim.keymap.set('i', ',', ',<c-g>u')
 vim.keymap.set('i', '.', '.<c-g>u')
 
 -- Using gk and gj (screen cursor up/down)
--- nnoremap <expr> k v:count == 0 ? 'gk' : 'k'
--- nnoremap <expr> j v:count == 0 ? 'gj' : 'j'
--- Adding jumps to jumplist - The Primeagen gold apple with gk and gj (screen
--- cursor up/down)
 local van_halen = function(acao)
     local contador = vim.v.count
     local marcador = ''
@@ -57,15 +48,9 @@ vim.keymap.set( 'n', 'j',
 	{ expr = true, silent = true }
 )
 
--- Moving lines up and down - The Primeagen knowledge word
--- inoremap <c-j> <c-o>:m.+1<cr> -- utilizo muito <c-j> para newlines, seria
--- inviável trocar para essa funcionalidade
--- inoremap <c-k> <c-o>:m.-2<cr>
--- nnoremap <leader>k <cmd>m.-2<cr>
--- nnoremap <leader>j <cmd>m.+1<cr>
-
 -- <up/down>: melhor quando utilizado com mapeamento das teclas <a-j/k> em
 -- nível de sistema
+-- WARNING: não utilizar <cmd>!!!
 vim.keymap.set('i', '<up>', "<c-o>:<c-u>m.-2<cr>", {silent = true})
 vim.keymap.set('i', '<down>', "<c-o>:<c-u>m.+1<cr>", {silent = true})
 vim.keymap.set('n', '<up>', ":<c-u>m.-2<cr>", {silent = true})
@@ -85,10 +70,7 @@ vim.keymap.set({'n', 'v'}, 'gy', '"+y')
 vim.keymap.set('n', 'gY', '"+Y')
 
 -- Bracket maps
--- For buffers -- default neovim 0.11
--- vim.keymap.set('n', ']b', vim.cmd.bnext, {desc = 'Next buffer'})
--- vim.keymap.set('n', '[b', vim.cmd.bprevious, {desc = 'Previous buffer'})
--- For arglist -- default neovim 0.11, better my way
+-- For arglist -- default in neovim 0.11, but better my way
 vim.keymap.set('n', ']a', function()
     local ok, erro = pcall(vim.cmd.next)
     if not ok then
@@ -106,7 +88,7 @@ vim.keymap.set('n', '[a', function()
     end
 end, {desc = 'Previous arglist file'})
 
--- --- Mapleader Commands ---
+--- MAPLEADER COMMANDS ---
 
 -- open $MYVIMRC
 vim.keymap.set(
@@ -125,7 +107,7 @@ vim.keymap.set(
 	end
 )
 
--- --- Terminal ---
+--- TERMINAL ---
 local toggle_list = function()
 	local ttoggler = vim.g.ttoggler
     local tnumber = vim.api.nvim_tabpage_get_number(0)
