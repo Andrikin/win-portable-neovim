@@ -108,9 +108,6 @@ vim.o.winborder = 'single'
 -- vim.opt.guicursor = 'i-n-v-c:block' -- sem blink
 vim.o.guicursor = "i-n-v-c:block,n-v-c:blinkwait700-blinkoff400-blinkon250"
 vim.o.guifont = 'SauceCodePro NFM:h11'
-if vim.g.nvy or vim.g.neovide then
-	vim.o.guifont = 'SauceCodePro Nerd Font Mono:h12'
-end
 
 -- Dirvish
 vim.defer_fn(function()
@@ -143,16 +140,6 @@ vim.opt.matchpairs:append('<:>')
 vim.o.spelllang = 'pt_br'
 -- obter dicionário pt_br e como instalá-lo no neovim
 -- https://vimbook.com.br/capitulo_10/dicionario_de_termos/#dicionario-portugues-segundo-o-acordo-ortografico
-
--- Neovide
--- Mais lightweight possível
-if vim.g.neovide then
-	vim.g.neovide_cursor_animation_length = 0
-	vim.g.neovide_cursor_antialiasing = false
-	vim.g.neovide_cursor_animate_in_insert_mode = false
-	vim.g.neovide_cursor_animate_command_line = false
-	vim.g.neovide_cursor_vfx_mode = ""
-end
 
 -- --- Emmet ---
 vim.g.user_emmet_install_global = 0

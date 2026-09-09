@@ -1,9 +1,7 @@
 ---@diagnostic disable: need-check-nil
-if not vim.g.nvy or not vim.g.neovide then
-	-- Fix ^\ (nvim-qt/windows 7)
-	vim.print('Mapeamento do comando <c-]>: Jump to the definition of the keyword under the cursor.')
-	vim.keymap.set('n', '<c-\\>', '<c-]>')
-end
+
+-- Fix ^\ (nvim-qt/windows 7)
+vim.keymap.set('n', '<c-\\>', '<c-]>')
 
 -- CTRL-BACKSPACE para apagar palavras
 vim.keymap.set({'i', 'c'}, '<c-backspace>', '<c-w>') -- obter mesmo comportamento (firefox)
@@ -226,53 +224,4 @@ vim.keymap.set(
 		vim.cmd.Pick('help')
 	end
 )
-
--- autocompletion LSP neovim 0.11
-vim.keymap.set('i', '<c-space>',
-	vim.lsp.completion.get
-)
-vim.keymap.set('i', '<c-j>',
-	'pumvisible() ? "<c-y>" : "<c-j>"',
-	{expr = true}
-)
-
--- Removendo cliques do mouse em todos os modos - Nvy
-if vim.g.nvy then
-    vim.keymap.set({ 'n', 'v', 'i', 'c', 's', 'o', 't', 'l' },
-        '<LeftMouse>',
-        '<Nop>',
-    { silent = true })
-    vim.keymap.set({ 'n', 'v', 'i', 'c', 's', 'o', 't', 'l' },
-        '<LeftDrag>',
-        '<Nop>',
-    { silent = true })
-    vim.keymap.set({ 'n', 'v', 'i', 'c', 's', 'o', 't', 'l' },
-        '<LeftRelease>',
-        '<Nop>',
-    { silent = true })
-    vim.keymap.set({ 'n', 'v', 'i', 'c', 's', 'o', 't', 'l' },
-        '<MiddleRelease>',
-        '<Nop>',
-    { silent = true })
-    vim.keymap.set({ 'n', 'v', 'i', 'c', 's', 'o', 't', 'l' },
-        '<RightRelease>',
-        '<Nop>',
-    { silent = true })
-    vim.keymap.set({ 'n', 'v', 'i', 'c', 's', 'o', 't', 'l' },
-        '<RightDrag>',
-        '<Nop>',
-    { silent = true })
-    vim.keymap.set({ 'n', 'v', 'i', 'c', 's', 'o', 't', 'l' },
-        '<RightMouse>',
-        '<Nop>',
-    { silent = true })
-    vim.keymap.set({ 'n', 'v', 'i', 'c', 's', 'o', 't', 'l' },
-        '<MiddleDrag>',
-        '<Nop>',
-    { silent = true })
-    vim.keymap.set({ 'n', 'v', 'i', 'c', 's', 'o', 't', 'l' },
-        '<MiddleMouse>',
-        '<Nop>',
-    { silent = true })
-end
 
