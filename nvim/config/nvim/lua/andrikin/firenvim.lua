@@ -232,6 +232,17 @@ command('FormatarBlocao',
     end, {}
 )
 
+-- append to the last
+local add_path = function(dir)
+    local search = dir:gsub(
+    -- https://www.lua.org/pil/20.2.html -> 'magic characters'
+        '[%(%)%.%+%*%?%[%^%$%%-]',
+        function(m) return '%' .. m end
+    )
+    if not vim.env.PATH:match('(' .. search .. ')') then
+        vim.env.PATH = vim.env.PATH .. ';' .. dir
+    end
+end
 -- Copyq integration
 if vim.fn.executable('copyq') == 1 then
     vim.api.nvim_create_user_command('Clipboard',
