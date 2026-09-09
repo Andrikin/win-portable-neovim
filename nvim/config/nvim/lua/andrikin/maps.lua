@@ -9,10 +9,6 @@ end
 vim.keymap.set({'i', 'c'}, '<c-backspace>', '<c-w>') -- obter mesmo comportamento (firefox)
 vim.keymap.set({'i', 'c'}, '<c-v>', '<c-r>+') -- uso CopyQ
 
--- EDITING: move one word to left or right
-vim.keymap.set('c', '<c-z>', '<s-left>')
-vim.keymap.set('c', '<c-x>', '<s-right>')
-
 -- Remover <space> dos modos: NORMAL e VISUAL (em conjunto com mapleader)
 vim.keymap.set({ 'n', 'v' }, '<Space>', '<Nop>', { silent = true })
 
@@ -72,14 +68,15 @@ vim.keymap.set( 'n', 'j',
 
 -- <up/down>: melhor quando utilizado com mapeamento das teclas <a-j/k> em
 -- nível de sistema
-vim.keymap.set('i', '<up>', "<c-o><cmd>m.-2<cr>", {silent = true})
-vim.keymap.set('i', '<down>', "<c-o><cmd>m.+1<cr>", {silent = true})
-vim.keymap.set('n', '<up>', "<cmd>m.-2<cr>", {silent = true})
-vim.keymap.set('n', '<down>', "<cmd>m.+1<cr>", {silent = true})
-vim.keymap.set('v', 'K', "<cmd>m'<-2<cr>gv", {silent = true})
-vim.keymap.set('v', 'J', "<cmd>m'>+1<cr>gv", {silent = true})
--- gJ com o mesmo comportamento de J (juntar linhas removendo espaços)
-vim.keymap.set('v', 'gJ', "<cmd><c-u>'<,'>join<cr>", {silent = true})
+vim.keymap.set('i', '<up>', "<c-o>:<c-u>m.-2<cr>", {silent = true})
+vim.keymap.set('i', '<down>', "<c-o>:<c-u>m.+1<cr>", {silent = true})
+vim.keymap.set('n', '<up>', ":<c-u>m.-2<cr>", {silent = true})
+vim.keymap.set('n', '<down>', ":<c-u>m.+1<cr>", {silent = true})
+vim.keymap.set('v', '<up>', ":<c-u>'<,'>m'<-2<cr>gv", {silent = true})
+vim.keymap.set('v', '<down>', ":<c-u>'<,'>m'>+1<cr>gv", {silent = true})
+-- CMD MODE: move one word to left or right
+vim.keymap.set('c', '<c-z>', '<s-left>')
+vim.keymap.set('c', '<c-x>', '<s-right>')
 
 -- Copy and paste from clipboard (* -> selection register/+ -> primary register)
 vim.keymap.set('n', 'gP', '"+P')
