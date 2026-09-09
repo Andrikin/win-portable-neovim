@@ -72,9 +72,11 @@ vim.keymap.set('n', '<up>', ":<c-u>m.-2<cr>", {silent = true})
 vim.keymap.set('n', '<down>', ":<c-u>m.+1<cr>", {silent = true})
 vim.keymap.set('v', '<up>', ":<c-u>'<,'>m'<-2<cr>gv", {silent = true})
 vim.keymap.set('v', '<down>', ":<c-u>'<,'>m'>+1<cr>gv", {silent = true})
--- CMD MODE: move one word to left or right
-vim.keymap.set('c', '<c-z>', '<s-left>')
-vim.keymap.set('c', '<c-x>', '<s-right>')
+-- CURSOR: move one word to left or right
+vim.keymap.set('c', '<left>', '<s-left>')
+vim.keymap.set('c', '<right>', '<s-right>')
+vim.keymap.set('i', '<left>', '<s-left>')
+vim.keymap.set('i', '<right>', '<s-right>')
 
 -- Copy and paste from clipboard (* -> selection register/+ -> primary register)
 vim.keymap.set('n', 'gP', '"+P')
