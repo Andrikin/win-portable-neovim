@@ -142,6 +142,12 @@ vim.cmd.packadd('nvim.tohtml')
 vim.cmd.packadd('justify')
 -- vim.cmd.packadd("firenvim")
 
+-- render-markdown
+require("render-markdown").setup({
+    yaml = { enabled = false },
+    latex = { enabled = false },
+    html = { enabled = false },
+})
 -- spellfile.vim
 require('nvim.spellfile').config()
 -- nvim-colorizer.lua
