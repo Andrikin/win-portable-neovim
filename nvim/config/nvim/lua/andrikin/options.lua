@@ -93,7 +93,7 @@ if vim.fn.has('persistent_undo') == 1 then
 	vim.o.undodir = path
 	vim.o.undofile = true
 end
-if vim.fn.executable('rg.exe') then
+if vim.fn.executable('rg.exe') == 1 then
     vim.go.grepprg = "rg --vimgrep -uuu --smart-case "
 end
 
