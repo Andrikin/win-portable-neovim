@@ -17,4 +17,4 @@ vim.keymap.set('n', 'go', function()
     end
 end, {silent = true, buffer = buf})
 -- use command 'grep <regex>' in dirvish buffer to fill quickfix list
-vim.bo.grepprg = vim.go.grepprg .. ' "$*" %'
+vim.bo.grepprg = vim.go.grepprg .. '"$*" %'
