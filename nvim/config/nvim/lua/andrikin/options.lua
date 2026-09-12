@@ -120,7 +120,9 @@ if vim.fn.has('persistent_undo') == 1 then
 	vim.o.undofile = true
 end
 if vim.fn.executable('rg.exe') == 1 then
-    vim.go.grepprg = "rg --vimgrep -uuu --smart-case "
+    vim.go.grepprg = "rg --vimgrep -uu --smart-case "
+else
+	vim.g.grepprg = "grep -rHn "
 end
 
 -- Statusline
