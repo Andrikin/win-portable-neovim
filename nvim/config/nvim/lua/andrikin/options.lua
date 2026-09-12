@@ -188,3 +188,5 @@ vim.g.loaded_nvim_dir_plugin = 1
 -- disable old-zip
 -- vim.g.loaded_zipPlugin = 1
 
+-- HIGHLIGHT configuration
+vim.cmd.highlight({args = {'def', 'link', 'QuickFixLine', 'TabLineSel'}, bang = true})
