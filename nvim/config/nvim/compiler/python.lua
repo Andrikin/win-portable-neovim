@@ -1,4 +1,4 @@
-if vim.fn.executable('uv.exe') then
+if vim.fn.executable('uv.exe') == 1 then
     local VENV_DIR = vim.fs.joinpath(vim.fn.expand('%:h'), '.venv')
     if vim.uv.fs_stat(VENV_DIR) then
         vim.env.VIRTUAL_ENV = VENV_DIR
