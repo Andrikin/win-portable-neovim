@@ -9,7 +9,7 @@ vim.pack.add({
     -- colorschemes
     -- 'https://github.com/biisal/blackhole',
     -- 'https://github.com/polirritmico/monokai-nightasty.nvim',
-    'https://github.com/ellisonleao/gruvbox.nvim',
+    -- 'https://github.com/ellisonleao/gruvbox.nvim',
     -- my plugins and forks
     'https://github.com/Andrikin/ouvidoria-latex',
     'https://github.com/Andrikin/awesome-pairing',
@@ -133,8 +133,7 @@ end
 
 -- Colorscheme
 vim.o.termguicolors = true
-require('gruvbox').setup()
-vim.cmd.colorscheme('gruvbox')
+vim.cmd.colorscheme('retrobox')
 
 vim.cmd.packadd('nvim.difftool')
 vim.cmd.packadd('nvim.undotree')
