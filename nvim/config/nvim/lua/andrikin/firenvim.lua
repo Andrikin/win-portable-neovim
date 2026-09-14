@@ -62,7 +62,8 @@ vim.g.firenvim_config = {
 }
 
 -- Colorscheme --
-vim.cmd.colorscheme('zellner')
+vim.o.background = 'light'
+vim.cmd.colorscheme('shine')
 
 vim.g.awesome_pairing_chars = [[({['"]]
 
