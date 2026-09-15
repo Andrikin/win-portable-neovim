@@ -8,7 +8,7 @@ if vim.fn.executable('uv.exe') == 1 then
     if vim.fn.executable(PYTHON) == 1 then
         vim.bo.makeprg = PYTHON .. ' %:S'
     else
-        vim.print('compiler(uv): não foi possível encontrar executável "python"')
+        vim.print('compiler(python): "uv" não configurado.')
         fallback = true
     end
 end
@@ -20,7 +20,7 @@ end
 -- https://flukus.github.io/vim-errorformat-demystified.html
 vim.bo.errorformat = {
     '%-GTraceback (most recent call last):',
-    '%E %#File "%f"\\, line %l%.%#',
-    '%+C%.%#Error: %#%m',
+    '%E %#File "%f"\\, line %l\\, in %m',
+    '%+C%.%#Error: %m',
     '%-C%.%#',
 }
