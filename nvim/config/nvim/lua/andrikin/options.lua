@@ -47,26 +47,23 @@ vim.o.wildoptions = {'pum', 'fuzzy'}
 vim.o.wildcharm = vim.o.wildchar
 vim.o.wildignore = '**/.git/**'
 vim.o.findfunc = function (cmdargs, cmdcomplete)
-    cmdargs = vim.fs.normalize(cmdargs)
     local arquivo = vim.uv.fs_stat(cmdargs)
     if arquivo and arquivo.type == 'file' then
         return {cmdargs}
     end
+    local files = {}
     local query = '%:h'
     if vim.o.filetype == 'dirvish' then
         query = '%'
     end
     local cwd = vim.fs.normalize(vim.fn.expand(query))
-    if not cmdargs:match(cwd) then
-        query = vim.fs.joinpath(cwd, '**', cmdargs)
-    end
-    local type_search = 'f'
+    query = cmdargs
     if cmdcomplete then
         local ftype = vim.uv.fs_stat(cmdargs)
         if ftype and ftype.type == 'directory' then
-            query = vim.fs.joinpath(cmdargs, '*')
+            cwd = cmdargs
+            query = ''
         end
-        type_search = 'd'
     end
     local cmd = {
         'fd.exe',
@@ -77,10 +74,8 @@ vim.o.findfunc = function (cmdargs, cmdcomplete)
         '-a', '-p', '-c', 'never',
         '--path-separator', '/',
         '--base-directory', cwd,
-        '-t', type_search,
-        cmdargs
+        query
     }
-    local files = {}
     if vim.fn.executable('fd.exe') == 1 then
         files = vim.split(
             vim.system(cmd):wait().stdout,
@@ -91,12 +86,22 @@ vim.o.findfunc = function (cmdargs, cmdcomplete)
     -- fallback
     if vim.v.shell_error > 0 or vim.tbl_isempty(files) then
         vim.print('findfunc: glob fallback')
+        local args = cmdargs .. '*'
+        if not cmdargs:match(cwd) then
+            query = vim.fs.joinpath(cwd, '**', args)
+        end
+        if cmdcomplete then
+            query = args
+        end
         files = vim.npcall(function ()
             return vim.fn.glob(query, false, true)
         end)
         if files and #files == 0 then
-            files = vim.fn.glob(query .. '*', false, true)
+            files = vim.fn.glob(vim.fs.joinpath(cwd, '*'), false, true)
         end
+    end
+    if #files == 1 then
+        return files
     end
     return vim.fn.matchfuzzy(files, cmdargs)
 end
