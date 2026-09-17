@@ -28,13 +28,12 @@ vim.o.hlsearch = true
 -- Configurações gerais
 -- set linebreak
 -- set wrapmargin = 5
+vim.opt.diffopt:append('algorithm:patience')
 vim.o.hidden = true
 vim.o.mouse = ''
 vim.o.swapfile = false
 vim.o.textwidth = 0
 vim.o.more = false
-vim.o.scrolloff = 999
-vim.o.lazyredraw = true
 vim.o.splitbelow = true
 vim.o.splitright = true
 -- Problems that can occur in vim session can be avoid using this configuration
