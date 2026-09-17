@@ -15,3 +15,6 @@ vim.b[buf]['surround_' .. vim.fn.char2nr('\\')] = "\\\1\\\1{\r}"
 -- Mappings
 vim.keymap.set({'i'}, '<c-v>', '<c-r>+', {buffer = buf})
 
+if vim.fn.executable('tectonic') == 1 then
+    vim.cmd.compiler('tectonic')
+end
