@@ -98,8 +98,6 @@ vim.o.hlsearch = true
 -- Configurações gerais
 vim.o.autocomplete = true
 vim.o.autochdir = false
-vim.o.scrolloff = 999
-vim.o.lazyredraw = true
 vim.o.backspace = 'indent,eol,start'
 vim.o.splitbelow = true
 vim.o.splitright = true
@@ -168,11 +166,19 @@ vim.keymap.set('n', '<up>', ":<c-u>m.-2<cr>", {silent = true})
 vim.keymap.set('n', '<down>', ":<c-u>m.+1<cr>", {silent = true})
 vim.keymap.set('v', '<up>', ":<c-u>'<,'>m'<-2<cr>gv", {silent = true})
 vim.keymap.set('v', '<down>', ":<c-u>'<,'>m'>+1<cr>gv", {silent = true})
+
+-- CURSOR: move one to left or right
+vim.keymap.set('c', '<a-n>', '<left>')
+vim.keymap.set('c', '<a-p>', '<right>')
 -- CURSOR: move one word to left or right
-vim.keymap.set('c', '<left>', '<s-left>')
-vim.keymap.set('c', '<right>', '<s-right>')
-vim.keymap.set('i', '<left>', '<s-left>')
-vim.keymap.set('i', '<right>', '<s-right>')
+vim.keymap.set('c', '<a-b>', '<s-left>')
+vim.keymap.set('c', '<a-f>', '<s-right>')
+-- CURSOR: move one to left or right
+vim.keymap.set('i', '<a-n>', '<left>')
+vim.keymap.set('i', '<a-p>', '<right>')
+-- CURSOR: move one word to left or right
+vim.keymap.set('i', '<a-b>', '<s-left>')
+vim.keymap.set('i', '<a-f>', '<s-right>')
 
 -- 'gk' e 'gj' ThePrimeagen way
 local van_halen = function(acao)
