@@ -105,7 +105,6 @@ vim.o.findfunc = function (cmdargs, cmdcomplete)
     return vim.fn.matchfuzzy(files, cmdargs)
 end
 vim.opt.complete:remove('u')
--- vim.opt.completeopt = 'menu,menuone,noselect'
 vim.o.completeopt = 'menu,noinsert,noselect,popup,fuzzy'
 if vim.fn.has('win32') then
 	vim.g.shell = vim.env.COMSPEC
