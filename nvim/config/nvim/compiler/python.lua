@@ -20,7 +20,7 @@ end
 -- https://flukus.github.io/vim-errorformat-demystified.html
 vim.bo.errorformat = {
     '%-GTraceback (most recent call last):',
-    '%E %#File "%f"\\, line %l\\, in %m',
+    '%E %#File "%f"\\, line %l\\, in %.%#',
     '%+C%.%#Error: %m',
     '%-C%.%#',
 }
