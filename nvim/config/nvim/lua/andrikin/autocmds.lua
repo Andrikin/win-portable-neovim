@@ -112,3 +112,15 @@ autocmd('UIEnter', {
     callback = require('vim._core.ui2').enable
 })
 
+-- LOCAL/QUICKFIX 
+autocmd('QuickFixCmdPost', {
+    group = Andrikin,
+    pattern = '[^l]*',
+    callback = function() vim.cmd.cwindow() end
+})
+autocmd('QuickFixCmdPost', {
+    group = Andrikin,
+    pattern = 'l*',
+    callback = function() vim.cmd.lwindow() end
+})
+
