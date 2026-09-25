@@ -39,8 +39,6 @@ vim.pack.add({
     'https://github.com/folke/lazydev.nvim.git',
     -- ft = java
     'https://github.com/mfussenegger/nvim-jdtls.git',
-    -- ft = markdown
-    'https://github.com/MeanderingProgrammer/render-markdown.nvim',
 }, { confirm = false })
 
 -- firenvim install -- first time!
@@ -141,12 +139,6 @@ vim.cmd.packadd('nvim.tohtml')
 vim.cmd.packadd('justify')
 -- vim.cmd.packadd("firenvim")
 
--- render-markdown
-require("render-markdown").setup({
-    yaml = { enabled = false },
-    latex = { enabled = false },
-    html = { enabled = false },
-})
 -- spellfile.vim
 require('nvim.spellfile').config()
 -- nvim-colorizer.lua
