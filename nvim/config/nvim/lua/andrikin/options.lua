@@ -138,7 +138,7 @@ vim.o.inccommand = 'split' -- empty string to use with traces.vim
 vim.o.winborder = 'single'
 -- vim.opt.guicursor = 'i-n-v-c:block' -- sem blink
 vim.o.guicursor = "i-n-v-c:block,n-v-c:blinkwait700-blinkoff400-blinkon250"
-vim.o.guifont = 'SauceCodePro NFM:h11'
+vim.o.guifont = 'AtkynsonMono NFM:h11'
 
 -- Dirvish
 vim.defer_fn(function()

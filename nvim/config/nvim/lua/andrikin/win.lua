@@ -293,15 +293,15 @@ end
 
 -- Check font, install it
 do
-    local SAUCEREGCMD = vim.fs.joinpath(
+    local FONTEREGCMD = vim.fs.joinpath(
         'HKCU', 'Software', 'Microsoft',
         'Windows NT', 'CurrentVersion', 'Fonts'
     ):gsub('/', '\\')
-    local SAUCEDIR = vim.fs.joinpath(
-        OPT, 'fontes', 'saucecodepro'
+    local FONTEDIR = vim.fs.joinpath(
+        OPT, 'fontes'
     )
-    local SAUCELINK = 'https://github.com/ryanoasis/nerd-fonts/releases/latest/download/SourceCodePro.zip'
-    local SAUCEFONTES = vim.system({
+    local FONTELINK = 'https://github.com/ryanoasis/nerd-fonts/releases/download/v3.5.1/AtkinsonHyperlegibleMono.zip'
+    local FONTES = vim.system({
         'reg',
         'query',
         vim.fs.joinpath(
@@ -311,7 +311,7 @@ do
         '/s'
     }):wait().stdout
     ---@diagnostic disable-next-line: cast-local-type, param-type-mismatch
-    SAUCEFONTES = vim.iter(vim.fn.split(SAUCEFONTES)):filter(function(fonte)
+    FONTES = vim.iter(vim.fn.split(FONTES)):filter(function(fonte)
         return fonte:match('^C:.*ttf$')
     end):totable()
     local instalar = function(fontes)
@@ -320,13 +320,13 @@ do
             vim.system({
                 'reg',
                 'add',
-                SAUCEREGCMD,
+                FONTEREGCMD,
                 '/v',
                 nome:match('(.*)%..*$'),
                 '/t',
                 'REG_SZ',
                 '/d',
-                vim.fs.joinpath(SAUCEDIR, nome),
+                vim.fs.joinpath(FONTEDIR, nome),
                 '/f'
             })
         end
@@ -334,12 +334,12 @@ do
     local listarfontes = function()
         return vim.fs.find(
             function(n, _) return n:match('.*%.ttf') end,
-            { limit = math.huge, type = 'file', path = SAUCEDIR }
+            { limit = math.huge, type = 'file', path = FONTEDIR }
         )
     end
     -- fonte já resgistrada no REG do sistema?
-    if #SAUCEFONTES > 0 then
-        vim.print('Fonte SauceCodePro já instalada!')
+    if #FONTES > 0 then
+        vim.print('Fonte já instalada!')
         vim.api.nvim_create_user_command(
             'FonteRemover',
             function()
@@ -349,7 +349,7 @@ do
                         vim.system({
                             'reg',
                             'delete',
-                            SAUCEREGCMD,
+                            FONTEREGCMD,
                             '/v',
                             nome,
                             '/f'
@@ -360,20 +360,20 @@ do
         )
     else
         -- realizar download e instalar
-        if not vim.uv.fs_stat(SAUCEDIR) then
-            mkdir(SAUCEDIR)
+        if not vim.uv.fs_stat(FONTEDIR) then
+            mkdir(FONTEDIR)
         else
-            vim.fs.rm(SAUCEDIR, { recursive = true })
-            mkdir(SAUCEDIR)
+            vim.fs.rm(FONTEDIR, { recursive = true })
+            mkdir(FONTEDIR)
         end
         -- download
-        local alerta = novo_alerta('saucecodepro-install')
-        alerta('instalação', 0, 'iniciando instalação SauceCodePro.')
-        downloadit(SAUCEDIR, SAUCELINK, nil, nil, alerta)
+        local alerta = novo_alerta('fonte-install')
+        alerta('instalação', 0, 'iniciando instalação de fonte.')
+        downloadit(FONTEDIR, FONTELINK, nil, nil, alerta)
         ---@diagnostic disable-next-line: cast-local-type
-        SAUCEFONTES = listarfontes()
-        instalar(SAUCEFONTES)
-        vim.print('Fonte SauceCodePro instalada. Reiniciar para obter a fonte.')
+        FONTES = listarfontes()
+        instalar(FONTES)
+        vim.print('Fonte instalada. Reiniciar para obter a fonte.')
     end
 end
 
