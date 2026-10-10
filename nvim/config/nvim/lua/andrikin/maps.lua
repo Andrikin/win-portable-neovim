@@ -93,6 +93,14 @@ vim.keymap.set('n', '[a', function()
     end
 end, {desc = 'Previous arglist file'})
 
+-- open local/quickfix window
+vim.keymap.set('n', 'gL', function()
+    vim.cmd.lopen()
+end)
+vim.keymap.set('n', 'gl', function()
+    vim.cmd.copen()
+end)
+
 --- MAPLEADER COMMANDS ---
 
 -- open $MYVIMRC
