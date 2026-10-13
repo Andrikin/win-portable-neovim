@@ -56,13 +56,14 @@ para encaminhar e-mails.
 
 - [cURL](https://curl.se/windows/dl-8.17.0_5/curl-8.17.0_5-win64-mingw.zip)
 - [unzip](https://linorg.usp.br/CTAN/systems/windows/w32tex/unzip.exe)
+- [cpdf](https://github.com/coherentgraphics/cpdf-binaries/archive/refs/heads/master.zip) - coherentpdf.
 - [Gerenciador de arquivos compactados (Ark)](https://cdn.kde.org/ci-builds/utilities/ark/master/windows/ark-master-2365-windows-cl-msvc2022-x86_64.exe)
 - [Programa para extrair arquivos de ".msi"](https://github.com/activescott/lessmsi/releases/download/v2.7.3/lessmsi-v2.7.3.zip)
 - [Programa para alternar rapidamente entre desktops (Windows 10)](https://sourceforge.net/projects/virtuawin/files/VirtuaWin/4.5/VirtuaWin_portable_4.5.zip/download)
 - [Programa para alternar rapidamente entre desktops (Windows 11)](https://github.com/nadimkobeissi/binkybox/releases/download/v0.2.1/binkybox-0.2.1.rar)
 - [AltSnap](https://github.com/RamonUnch/AltSnap/releases/download/1.65/AltSnap1.65bin_x64.zip)
 - [Shutdown Timer Classic](https://github.com/lukaslangrock/ShutdownTimerClassic/releases/download/v1.3.1/ShutdownTimerClassic_v1.3.1.zip)
-- [nomacs](https://nomacs.org/docs/getting-started/installation/) - Visualizador de imagens.
+- [nomacs](https://nomacs.org/docs/getting-started/installation/) - Visualizador de imagens [DEPRECATED]. Usar *SUMATRA*.
 - [Explorador de arquivos (Explorer++)](https://explorerplusplus.com/download) -- **RECOMENDADO**.
 - [Explorador de arquivos (Dolphin)](https://cdn.kde.org/ci-builds/system/dolphin/master/windows/dolphin-master-6789-windows-cl-msvc2022-x86_64.exe)
     - **BUGS do Dolphin**:
