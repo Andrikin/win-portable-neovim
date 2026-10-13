@@ -1,10 +1,11 @@
 local fallback = false
 if vim.fn.executable('uv.exe') == 1 then
     local VENV_DIR = vim.fs.joinpath(vim.fn.expand('%:h'), '.venv')
+    local PYTHON = ''
     if vim.uv.fs_stat(VENV_DIR) then
         vim.env.VIRTUAL_ENV = VENV_DIR
+        PYTHON = vim.fs.joinpath(VENV_DIR, 'Scripts', 'python.exe')
     end
-    local PYTHON = vim.fs.joinpath(VENV_DIR, 'Script', 'python')
     if vim.fn.executable(PYTHON) == 1 then
         vim.bo.makeprg = PYTHON .. ' %:S'
     else
