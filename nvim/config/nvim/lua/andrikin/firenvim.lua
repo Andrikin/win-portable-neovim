@@ -132,7 +132,7 @@ vim.o.showmode = false
 
 -- NeoVim configurations
 vim.o.guicursor = 'i-n-v-c:block'
-vim.o.guifont = 'SauceCodePro NFM:h9'
+vim.o.guifont = 'AtkynsonMono NFM:h11'
 vim.o.winborder = 'single'
 vim.o.inccommand = 'split'
 vim.o.fillchars = 'vert:|,fold:*,foldclose:+,diff:-'
