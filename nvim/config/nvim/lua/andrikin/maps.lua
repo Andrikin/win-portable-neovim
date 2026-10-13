@@ -48,6 +48,7 @@ vim.keymap.set( 'n', 'j',
 	{ expr = true, silent = true }
 )
 
+-- move code around
 -- <up/down>: melhor quando utilizado com mapeamento das teclas <a-j/k> em
 -- nível de sistema
 -- WARNING: não utilizar <cmd>!!!
