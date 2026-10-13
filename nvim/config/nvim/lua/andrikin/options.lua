@@ -29,6 +29,7 @@ vim.o.hlsearch = true
 -- set linebreak
 -- set wrapmargin = 5
 vim.opt.diffopt:append('algorithm:patience')
+vim.o.shellpipe = '>%s 2>&1' -- vim default
 vim.o.hidden = true
 vim.o.mouse = ''
 vim.o.swapfile = false
