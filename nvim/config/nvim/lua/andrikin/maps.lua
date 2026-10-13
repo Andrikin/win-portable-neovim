@@ -51,12 +51,12 @@ vim.keymap.set( 'n', 'j',
 -- <up/down>: melhor quando utilizado com mapeamento das teclas <a-j/k> em
 -- nível de sistema
 -- WARNING: não utilizar <cmd>!!!
-vim.keymap.set('i', '<up>', "<c-o>:<c-u>m.-2<cr>", {silent = true})
-vim.keymap.set('i', '<down>', "<c-o>:<c-u>m.+1<cr>", {silent = true})
-vim.keymap.set('n', '<up>', ":<c-u>m.-2<cr>", {silent = true})
-vim.keymap.set('n', '<down>', ":<c-u>m.+1<cr>", {silent = true})
-vim.keymap.set('v', '<up>', ":<c-u>'<,'>m'<-2<cr>gv", {silent = true})
-vim.keymap.set('v', '<down>', ":<c-u>'<,'>m'>+1<cr>gv", {silent = true})
+vim.keymap.set('i', '<a-k>', "<c-o>:<c-u>m.-2<cr>", {silent = true})
+vim.keymap.set('i', '<a-j>', "<c-o>:<c-u>m.+1<cr>", {silent = true})
+vim.keymap.set('n', '<a-k>', ":<c-u>m.-2<cr>", {silent = true})
+vim.keymap.set('n', '<a-j>', ":<c-u>m.+1<cr>", {silent = true})
+vim.keymap.set('v', '<a-k>', ":<c-u>'<,'>m'<-2<cr>gv", {silent = true})
+vim.keymap.set('v', '<a-j>', ":<c-u>'<,'>m'>+1<cr>gv", {silent = true})
 
 -- CURSOR: Emacs like
 vim.keymap.set('c', '<a-n>', '<left>')
