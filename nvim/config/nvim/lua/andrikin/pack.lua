@@ -73,7 +73,7 @@ vim.api.nvim_create_autocmd('PackChanged', { -- build blink.cmp
 local gcc = executable('gcc.exe') or executable('x86_64-pc-cygwin-gcc.exe')
 if not gcc then
     vim.print('Treesitter: Não foi possível encontrar compilador executável "gcc".')
-    if vim.fn.exists(':Cygwin') then
+    if vim.fn.exists(':Cygwin') == 1 then
         vim.print('Treesitter: tentando instalar gcc!')
         pcall(vim.cmd.Cygwin({ args = {
             'install',
@@ -186,7 +186,6 @@ require('dressing').setup({
 local rust = executable('cargo.exe')
 if not rust then
     vim.print("rust: Não foi encontrado executável do 'rust'. Verificar instalação.")
-    return
 end
 -- compile fuzzy for blink.cmp - v2
 -- require('blink.cmp').build():wait(240000)
