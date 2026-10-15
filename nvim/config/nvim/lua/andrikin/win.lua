@@ -293,6 +293,7 @@ end
 
 -- Check font, install it
 do
+    local font = 'Atkinson'
     local FONTEREGCMD = vim.fs.joinpath(
         'HKCU', 'Software', 'Microsoft',
         'Windows NT', 'CurrentVersion', 'Fonts'
@@ -301,19 +302,10 @@ do
         OPT, 'fontes'
     )
     local FONTELINK = 'https://github.com/ryanoasis/nerd-fonts/releases/download/v3.5.1/AtkinsonHyperlegibleMono.zip'
-    local FONTES = vim.system({
-        'reg',
-        'query',
-        vim.fs.joinpath(
-            'HKCU', 'Software', 'Microsoft',
-            'Windows NT', 'CurrentVersion', 'Fonts'
-        ):gsub('/', '\\'),
-        '/s'
-    }):wait().stdout
-    ---@diagnostic disable-next-line: cast-local-type, param-type-mismatch
-    FONTES = vim.iter(vim.fn.split(FONTES)):filter(function(fonte)
-        return fonte:match('^C:.*ttf$')
-    end):totable()
+    local instalado = true
+    if not vim.uv.fs_stat(FONTEDIR) then
+        instalado = false
+    end
     local instalar = function(fontes)
         for _, fonte in ipairs(fontes) do
             local nome = vim.fs.basename(fonte)
@@ -333,12 +325,12 @@ do
     end
     local listarfontes = function()
         return vim.fs.find(
-            function(n, _) return n:match('.*%.ttf') end,
+            function(n, _) return n:match(font) end,
             { limit = math.huge, type = 'file', path = FONTEDIR }
         )
     end
     -- fonte já resgistrada no REG do sistema?
-    if #FONTES > 0 then
+    if instalado then
         vim.print('Fonte já instalada!')
         vim.api.nvim_create_user_command(
             'FonteRemover',
@@ -570,8 +562,10 @@ do
     )
     local PACKAGES = vim.fs.joinpath(DIR, 'packages')
     local SETUP = vim.fs.joinpath(DIR, 'setup-x86_64.exe')
+    local localizado = true
     if not vim.uv.fs_stat(SETUP) then
-        error('Não foi localizado cygwin. Verificar instalação!')
+        vim.print('Não foi localizado cygwin. Verificar instalação!')
+        localizado = false
     end
     local CMD = {
         SETUP,
@@ -593,50 +587,52 @@ do
         '--site',
         'https://linorg.usp.br/cygwin/',
     }
-    if not vim.uv.fs_stat(vim.fs.joinpath(DIR, 'bin')) then
-        -- inicializar instalação do cygwin
-        vim.system(CMD, { detach = true })
+    if localizado then
+        if not vim.uv.fs_stat(vim.fs.joinpath(DIR, 'bin')) then
+            -- inicializar instalação do cygwin
+            vim.system(CMD, { detach = true })
+        end
+        -- create Cygwin command
+        vim.api.nvim_create_user_command("Cygwin",
+            function(opts)
+                opts = opts or {}
+                local args = opts.fargs or opts
+                if not vim.islist(args) then
+                    vim.print('Valores padrão encontrados no comando. Abortando.')
+                    return
+                end
+                local cmd = vim.deepcopy(CMD)
+                if args[1] == 'install' or args[1] == 'remove' then
+                    if args[1] == 'install' then
+                        table.insert(cmd, '--packages')
+                    elseif args[1] == 'remove' then
+                        table.insert(cmd, '--remove-packages')
+                    end
+                    for i = 2, #args do
+                        table.insert(cmd, args[i])
+                    end
+                end
+                if args[1] == 'update' then
+                    table.insert(cmd, '--upgrade-also')
+                end
+                vim.system(cmd, { text = true, detach = true }, function(out)
+                    if out.code == 0 then
+                        local programas = table.concat(args, '; ', 2, #args)
+                        vim.print(('Instalação concluída com sucesso!: %s'):format(programas))
+                    else
+                        vim.print('Instalador cygwin encontrou um erro.')
+                    end
+                end)
+            end, {
+                nargs = '+',
+                complete = function(arg, _, _)
+                    return vim.tbl_filter(function(c)
+                        return c:match(arg)
+                    end, { 'install', 'remove', 'upgrade' })
+                end
+            }
+        )
     end
-    -- create Cygwin command
-    vim.api.nvim_create_user_command("Cygwin",
-        function(opts)
-            opts = opts or {}
-            local args = opts.fargs or opts
-            if not vim.islist(args) then
-                vim.print('Valores padrão encontrados no comando. Abortando.')
-                return
-            end
-            local cmd = vim.deepcopy(CMD)
-            if args[1] == 'install' or args[1] == 'remove' then
-                if args[1] == 'install' then
-                    table.insert(cmd, '--packages')
-                elseif args[1] == 'remove' then
-                    table.insert(cmd, '--remove-packages')
-                end
-                for i = 2, #args do
-                    table.insert(cmd, args[i])
-                end
-            end
-            if args[1] == 'update' then
-                table.insert(cmd, '--upgrade-also')
-            end
-            vim.system(cmd, { text = true, detach = true }, function(out)
-                if out.code == 0 then
-                    local programas = table.concat(args, '; ', 2, #args)
-                    vim.print(('Instalação concluída com sucesso!: %s'):format(programas))
-                else
-                    vim.print('Instalador cygwin encontrou um erro.')
-                end
-            end)
-        end, {
-            nargs = '+',
-            complete = function(arg, _, _)
-                return vim.tbl_filter(function(c)
-                    return c:match(arg)
-                end, { 'install', 'remove', 'upgrade' })
-            end
-        }
-    )
 end
 
 -- CYGWIN DEPENDENCIES --
@@ -723,6 +719,7 @@ if executable('uv') then
         vim.print('Variável python3_host_prog não configurado.')
     end
 end
+
 -- criar diretório em OPT, baixar programa e adicionar no $PATH
 local function add_dependencia(dep)
     local dir = vim.fs.joinpath(OPT, dep.nome)
