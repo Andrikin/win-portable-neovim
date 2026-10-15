@@ -49,7 +49,7 @@ command('Documents',
 
 command('RedeLocal',
     function()
-        local andre = 'T:/16-Diretoria de Ouvidoria/Andre Aguiar'
+        local andre = 'T:/12-Diretoria de Auditoria/Servidor - André Aguiar'
         if vim.fn.isdirectory(andre) == 1 then
             vim.cmd.Dirvish(andre)
         end
