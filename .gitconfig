@@ -8,7 +8,5 @@
 	defaultBranch = main
 [core]
 	editor = nvim
-	autocrlf = true
-	safecrlf = true
 [credential "http://dev.itajai.local"]
 	provider = generic
