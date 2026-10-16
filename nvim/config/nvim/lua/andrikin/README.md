@@ -91,6 +91,8 @@ para encaminhar e-mails.
 - [Postman](https://dl.pstmn.io/download/latest/win64) - HTTPS inspector (se
 necessário)
 - [Breeze-Cursor-for-Windows](https://github.com/FelisDiligens/Breeze-Cursors-for-Windows) - Cursores do KDE para uso no Windows.
+- [Shortcut](https://optimumx.com/download/Shortcut.zip) - shortcut executável
+para criar arquivos '.lnk'.
 
 ## Macros LibreOffice:
 
