@@ -85,12 +85,12 @@ if not gcc then
     end
 else
     -- $CC setting
-    local exe = vim.fn.exepath('gcc.exe') ~= "" and vim.fn.exepath('gcc.exe')
-    if not exe then
-        exe = vim.fn.exepath('x86_64-pc-cygwin-gcc.exe')
+    local cc = vim.fn.exepath('gcc.exe') ~= "" and vim.fn.exepath('gcc.exe')
+    if not cc then
+        cc = vim.fn.exepath('x86_64-pc-cygwin-gcc.exe')
     end
-    if exe ~= "" then
-        vim.env.CC = vim.fs.normalize(exe)
+    if cc ~= "" then
+        vim.env.CC = vim.fs.normalize(cc)
     else
         vim.print("Treesitter: não foi possível configurar a variável de ambiente $CC")
     end
