@@ -636,6 +636,10 @@ do
 end
 
 -- CYGWIN DEPENDENCIES --
+local CYGFOLDER = vim.fs.joinpath(OPT, 'setup-x86_64')
+if vim.uv.fs_stat(CYGFOLDER) then
+    add_path(CYGFOLDER)
+end
 if executable('setup-x86_64.exe') then
     if vim.fn.exists(':Cygwin') then
         if not executable('gs.exe') then
