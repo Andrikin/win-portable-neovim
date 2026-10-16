@@ -56,6 +56,15 @@ command('RedeLocal',
     end, {}
 )
 
+command('AuditoriaDiretorio',
+    function()
+        local auditoria = 'T:/12-Diretoria de Auditoria'
+        if vim.fn.isdirectory(auditoria) == 1 then
+            vim.cmd.Dirvish(auditoria)
+        end
+    end, {}
+)
+
 command('ComunicacaoInterna',
     function()
         local andre = 'T:/1-Comunicação Interna - C.I/' .. os.date('%Y')
