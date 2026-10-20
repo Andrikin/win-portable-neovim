@@ -78,6 +78,12 @@ return {
     },{
         nome = 'ruby', -- need to: ridk.cmd install (MSYS2 devkit)
         link = 'https://github.com/oneclick/rubyinstaller2/releases/download/RubyInstaller-4.0.6-1/rubyinstaller-4.0.6-1-x64.7z',
+    },{
+        nome = 'Shortcut', -- shorcut's for Windows
+        link = 'https://optimumx.com/download/Shortcut.zip',
+    },{
+        nome = '7zr',
+        link = 'https://github.com/ip7z/7zip/releases/download/26.04/7zr.exe',
     }
 }
 
