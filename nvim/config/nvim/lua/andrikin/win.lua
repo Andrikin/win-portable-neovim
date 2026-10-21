@@ -666,6 +666,9 @@ if executable('setup-x86_64.exe') then
         if not executable('ninja.exe') then
             vim.cmd.Cygwin({ args = {'install', 'ninja'}})
         end
+        if not executable('clang-cl.exe') then
+            vim.cmd.Cygwin({ args = {'install', 'clang', 'clang-analyzer', 'clang-doc'}})
+        end
         if not executable('magick.exe') then -- convert jpeg/png to pdf 
             vim.cmd.Cygwin({ args = {'install', 'ImageMagick'}})
         end

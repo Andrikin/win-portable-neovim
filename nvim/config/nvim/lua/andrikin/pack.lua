@@ -70,7 +70,8 @@ vim.api.nvim_create_autocmd('PackChanged', { -- build blink.cmp
     end
 })
 
-local gcc = executable('gcc.exe') or executable('x86_64-pc-cygwin-gcc.exe')
+local gcc = executable('gcc.exe') or executable('x86_64-pc-cygwin-gcc.exe') or executable('clang-cl.exe')
+local cl = executable('cl.exe')
 if not gcc then
     vim.print('Treesitter: Não foi possível encontrar compilador executável "gcc".')
     if vim.fn.exists(':Cygwin') == 1 then
@@ -80,20 +81,12 @@ if not gcc then
             'gcc-core',
             'gcc-g++',
             'mingw64-x86_64-gcc-core',
-            'mingw64-x86_64-gcc-g++'
+            'mingw64-x86_64-gcc-g++',
+            'clang', 'clang-analyzer', 'clang-doc'
         }}))
     end
-else
-    -- $CC setting
-    local cc = vim.fn.exepath('gcc.exe') ~= "" and vim.fn.exepath('gcc.exe')
-    if not cc then
-        cc = vim.fn.exepath('x86_64-pc-cygwin-gcc.exe')
-    end
-    if cc ~= "" then
-        vim.env.CC = vim.fs.normalize(cc)
-    else
-        vim.print("Treesitter: não foi possível configurar a variável de ambiente $CC")
-    end
+end
+if cl then
     vim.pack.add({{
         src = 'https://github.com/nvim-treesitter/nvim-treesitter.git',
         version = 'main'
@@ -127,6 +120,8 @@ else
     -- vim.o.indentexpr = "v:lua.require'nvim-treesitter'.indentexpr()"
     -- vim.wo.foldexpr = 'v:lua.vim.treesitter.foldexpr()'
     -- vim.wo.foldmethod = 'expr'
+else
+    vim.print('treesitter: instalar `uv tool install portablemsvc`, realizar instalação e executar script para setar variáveis de ambiente')
 end
 
 -- Colorscheme
@@ -256,4 +251,3 @@ vim.lsp.enable({
     'rustanalyzer',
 })
 -- vim.lsp.set_log_level("debug")
-
