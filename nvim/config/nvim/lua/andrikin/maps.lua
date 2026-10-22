@@ -96,10 +96,10 @@ end, {desc = 'Previous arglist file'})
 
 -- open local/quickfix window
 vim.keymap.set('n', 'gL', function()
-    vim.cmd.lopen()
+    vim.npcall(vim.cmd.lopen())
 end)
 vim.keymap.set('n', 'gl', function()
-    vim.cmd.copen()
+    vim.npcall(vim.cmd.copen())
 end)
 
 --- MAPLEADER COMMANDS ---
