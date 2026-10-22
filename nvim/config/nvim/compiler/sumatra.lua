@@ -16,6 +16,6 @@ local pdfs = vim.iter(
 vim.bo.makeprg = sumatra .. ' grep -Hin "$*" ' .. pdfs
 -- %f	%l	%m
 vim.bo.errorformat = {
-    '%I%f\t%l\t%m',
+    '%A%f\t%l\t%m',
     '%-Cwarning:%.%#',
 }
