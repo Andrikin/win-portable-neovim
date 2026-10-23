@@ -16,7 +16,7 @@ else
     sumatra = vim.g.sumatra
 end
 local pdf = function(file, number)
-    local cmd = {vim.g.sumatra, '-page', number, vim.fs.basename(file)}
+    local cmd = {vim.g.sumatra, '-reuse-instance', '-page', number, vim.fs.basename(file)}
     vim.system(cmd, {detach = true, cwd = vim.fs.dirname(file)})
 end
 -- WARNING: open current file with default system open
