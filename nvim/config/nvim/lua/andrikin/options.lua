@@ -135,6 +135,7 @@ vim.o.showtabline = 1
 vim.o.showmode = false
 
 -- NeoVim configurations
+vim.o.follow = true
 vim.o.inccommand = 'split' -- empty string to use with traces.vim
 vim.o.winborder = 'single'
 -- vim.opt.guicursor = 'i-n-v-c:block' -- sem blink
