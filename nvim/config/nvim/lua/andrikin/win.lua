@@ -695,29 +695,23 @@ if executable('uv') then
             {detach = true}
         ):wait()
     end
-    -- Erro no comando se existir o diretório '.temp'
-    local packages = vim.system({
-        'uv', 'tool', 'list'
-    }):wait().stdout
-    if packages then
-        for _, d in ipairs({
-            -- python dependências
-            'pyright',
-            'basedpyright',
-            'pynvim',
-        }) do
-            if not packages:match('([%W]' .. d .. '[%W])') then
-                vim.system({ 'uv', 'tool', 'install', d }, {detach = true})
-                -- uv pip install --system --break-system-packages neovim
-                if d == 'pynvim' then
-                    vim.system(
-                        { 'uv', 'pip', 'install',
-                            '--system', '--break-system-packages',
-                            'neovim'
-                        },
-                        {detach = true}
-                    )
-                end
+    for _, p in ipairs({
+        -- python dependências
+        'pyright',
+        'basedpyright',
+        'pynvim',
+    }) do
+        if not vim.uv.fs_stat(vim.fs.joinpath(UV, p)) then
+            vim.system({ 'uv', 'tool', 'install', p }, {detach = true})
+            -- uv pip install --system --break-system-packages neovim
+            if p == 'pynvim' then
+                vim.system(
+                    { 'uv', 'pip', 'install',
+                        '--system', '--break-system-packages',
+                        'neovim'
+                    },
+                    {detach = true}
+                )
             end
         end
     end
