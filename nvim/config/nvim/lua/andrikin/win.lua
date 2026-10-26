@@ -533,8 +533,6 @@ if executable('node.exe') and executable('npm') then
                 '-g',
                 plugin
             }, { detach = true })
-        else
-            vim.print(('Pacote [%s] node já instalado.'):format(plugin))
         end
     end
     if not vim.g.node_host_prog or vim.g.node_host_prog == '' then
