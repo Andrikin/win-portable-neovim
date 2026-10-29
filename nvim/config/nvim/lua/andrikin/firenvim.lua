@@ -442,6 +442,17 @@ autocmd('BufEnter',
         command = "set spell",
 })
 
+-- Configurações de ortografia e tamanho do frame no Sistema GovGestao
+autocmd('BufEnter',
+    {
+        group = Andrikin,
+        pattern = 'sistema.govgestao.com.br*.txt',
+        callback = function ()
+            vim.cmd.EmmetInstall()
+            vim.cmd.set('ft=html')
+        end
+})
+
 -- FIXME: força a página do Fala.BR a recarregar...
 -- -- Automatically syncing changes to the page
 -- autocmd({'TextChanged', 'TextChangedI'}, {
