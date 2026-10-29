@@ -131,6 +131,7 @@ vim.o.showtabline = 0
 vim.o.showmode = false
 
 -- NeoVim configurations
+vim.o.follow = true
 vim.o.guicursor = 'i-n-v-c:block'
 vim.o.guifont = 'AtkynsonMono NFM:h9'
 vim.o.winborder = 'single'
