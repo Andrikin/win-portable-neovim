@@ -198,3 +198,5 @@ vim.g.loaded_nvim_dir_plugin = 1
 -- HIGHLIGHT configuration
 vim.cmd.highlight('clear QuickFixLine')
 vim.cmd.highlight('link QuickFixLine CursorLine')
+vim.cmd.highlight('link MCursor Cursor')
+
