@@ -15,17 +15,21 @@ if not vim.g.did_sumatra then
 else
     sumatra = vim.g.sumatra
 end
-local pdf = function(file, number)
+local pdf = function(file, number, word)
     local cmd = {vim.g.sumatra, '-reuse-instance', '-page', number, vim.fs.basename(file)}
+    if word then
+        cmd = {vim.g.sumatra, '-search', word, '-reuse-instance', '-page', number, vim.fs.basename(file)}
+    end
     vim.system(cmd, {detach = true, cwd = vim.fs.dirname(file)})
 end
 -- WARNING: open current file with default system open
 vim.keymap.set('n', 'go', function()
     local arquivo = vim.fn.getline('.'):match('^([^|]+)')
     local pagina = vim.fn.getline('.'):match('|([^|]+)|')
+    local termo = vim.fn.getline('.'):match('|([^|]+)$')
     local extencao = vim.fn.fnamemodify(arquivo, ':e')
     if extencao:match('pdf') then
-        pdf(arquivo, pagina)
+        pdf(arquivo, pagina, termo)
     else
         vim.print('dirvish: não é um arquivo pdf.')
         do return end
