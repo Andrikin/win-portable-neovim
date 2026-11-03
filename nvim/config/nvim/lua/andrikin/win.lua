@@ -131,12 +131,7 @@ local extractit = function(file, dir, addpath, progresso)
     addpath = addpath or false
     local arquivo = vim.fs.joinpath(dir, file)
     local alerta = progresso or novo_alerta(file)
-    if not vim.uv.fs_stat(dir) then
-        error("extractit: não existe diretório.")
-    end
-    vim.system({
-        'tar', '-xf', arquivo, '-C', dir
-    }, {}, function(out)
+    local callback = function(out)
         if out.code > 0 then
             vim.print((
                 'Erro ao realizar extração de %s.\nErro: %s'):format(
@@ -153,7 +148,20 @@ local extractit = function(file, dir, addpath, progresso)
             alerta('registrando', 95, 'adicionado ao PATH!')
         end
         alerta('fim', 100, 'concluído instalação!')
-    end)
+    end
+    if not vim.uv.fs_stat(dir) then
+        error("extractit: não existe diretório.")
+    end
+    -- suporte para extração de arquivo 7zip
+    if arquivo:match('7z$') then
+        vim.system({
+            '7zr', 'x', arquivo, '-o' .. dir
+        }, {}, callback)
+        return
+    end
+    vim.system({
+        'tar', '-xf', arquivo, '-C', dir
+    }, {}, callback)
 end
 
 -- download e extração de arquivos
