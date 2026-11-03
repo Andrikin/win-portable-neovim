@@ -153,15 +153,15 @@ local extractit = function(file, dir, addpath, progresso)
         error("extractit: não existe diretório.")
     end
     -- suporte para extração de arquivo 7zip
-    if arquivo:match('7z$') then
+    if not arquivo:match('7z$') then
+        vim.system({
+            'tar', '-xf', arquivo, '-C', dir
+        }, {}, callback)
+    else
         vim.system({
             '7zr', 'x', arquivo, '-o' .. dir
         }, {}, callback)
-        return
     end
-    vim.system({
-        'tar', '-xf', arquivo, '-C', dir
-    }, {}, callback)
 end
 
 -- download e extração de arquivos
