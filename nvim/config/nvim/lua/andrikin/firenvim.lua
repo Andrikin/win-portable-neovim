@@ -133,7 +133,7 @@ vim.o.showmode = false
 -- NeoVim configurations
 vim.o.follow = true
 vim.o.guicursor = 'i-n-v-c:block'
-vim.o.guifont = 'AtkynsonMono NFM:h9'
+vim.o.guifont = 'AtkynsonMono NFM:h11'
 vim.o.winborder = 'single'
 vim.o.inccommand = 'split'
 vim.o.fillchars = 'vert:|,fold:*,foldclose:+,diff:-'
@@ -448,23 +448,10 @@ autocmd('BufEnter',
         group = Andrikin,
         pattern = 'sistema.govgestao.com.br*.txt',
         callback = function ()
-            vim.cmd.EmmetInstall()
+            -- vim.cmd.EmmetInstall()
             vim.cmd.set('ft=html')
+            vim.cmd.set('tw=0')
+            vim.cmd.set('spell')
         end
 })
-
--- FIXME: força a página do Fala.BR a recarregar...
--- -- Automatically syncing changes to the page
--- autocmd({'TextChanged', 'TextChangedI'}, {
---     callback = function(e)
---         if vim.g.timer_started == true then
---             return
---         end
---         vim.g.timer_started = true
---         vim.fn.timer_start(10000, function()
---             vim.g.timer_started = false
---             vim.cmd('silent write')
---         end)
---     end
--- })
 
