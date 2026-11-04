@@ -49,9 +49,11 @@ command('Documents',
 
 command('RedeLocal',
     function()
-        local andre = 'T:/12-Diretoria de Auditoria/Servidor - André Aguiar'
+        local andre = 'T:/12-Diretoria de Auditoria/Servidor - Andre Aguiar'
         if vim.fn.isdirectory(andre) == 1 then
             vim.cmd.Dirvish(andre)
+        else
+            vim.print('Dirvish: diretório não existe!')
         end
     end, {}
 )
@@ -61,6 +63,8 @@ command('AuditoriaDiretorio',
         local auditoria = 'T:/12-Diretoria de Auditoria'
         if vim.fn.isdirectory(auditoria) == 1 then
             vim.cmd.Dirvish(auditoria)
+        else
+            vim.print('Dirvish: diretório não existe!')
         end
     end, {}
 )
@@ -70,6 +74,8 @@ command('ComunicacaoInterna',
         local andre = 'T:/1-Comunicação Interna - C.I/' .. os.date('%Y')
         if vim.fn.isdirectory(andre) == 1 then
             vim.cmd.Dirvish(andre)
+        else
+            vim.print('Dirvish: diretório não existe!')
         end
     end, {}
 )
