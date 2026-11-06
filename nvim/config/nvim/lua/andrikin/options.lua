@@ -47,10 +47,6 @@ vim.o.wildoptions = {'pum', 'fuzzy'}
 vim.o.wildcharm = vim.o.wildchar
 vim.o.wildignore = '**/.git/**'
 vim.o.findfunc = function (cmdargs, cmdcomplete)
-    local arquivo = vim.uv.fs_stat(cmdargs)
-    if arquivo and arquivo.type == 'file' then
-        return {cmdargs}
-    end
     local files = {}
     local query = '%:h'
     if vim.o.filetype == 'dirvish' then
@@ -71,7 +67,7 @@ vim.o.findfunc = function (cmdargs, cmdcomplete)
         '-E', '.git',
         '-E', 'ctags',
         '-E', 'undotree',
-        '-a', '-p', '-c', 'never',
+        '-a', '-p', '-c', 'never', '-g',
         '--path-separator', '/',
         '--base-directory', cwd,
         query
@@ -196,6 +192,8 @@ vim.g.loaded_nvim_dir_plugin = 1
 -- vim.g.loaded_zipPlugin = 1
 
 -- HIGHLIGHT configuration
+vim.cmd.highlight('clear IncSearch')
+vim.cmd.highlight('IncSearch ctermfg=black ctermbg=#ccff33')
 vim.cmd.highlight('clear QuickFixLine')
 vim.cmd.highlight('link QuickFixLine CursorLine')
 vim.cmd.highlight('link MCursor Cursor')
