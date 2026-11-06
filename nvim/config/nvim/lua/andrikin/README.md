@@ -65,6 +65,7 @@ para encaminhar e-mails.
 - [Shutdown Timer Classic](https://github.com/lukaslangrock/ShutdownTimerClassic/releases/download/v1.3.1/ShutdownTimerClassic_v1.3.1.zip)
 - [nomacs](https://nomacs.org/docs/getting-started/installation/) - Visualizador de imagens [DEPRECATED]. Usar *SUMATRA*.
 - [Explorador de arquivos (Explorer++)](https://explorerplusplus.com/download) -- **RECOMENDADO**.
+- [Explorador de arquivos (Sumatra File Manager)](https://sumatrafilemanager.com) -- **Boa alternativa**.
 - [Explorador de arquivos (Dolphin)](https://cdn.kde.org/ci-builds/system/dolphin/master/windows/dolphin-master-6789-windows-cl-msvc2022-x86_64.exe)
     - **BUGS do Dolphin**:
         1. <https://forum.kde.org/viewtopic.php%3Ff=59&t=173363.html>
