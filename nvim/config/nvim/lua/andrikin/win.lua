@@ -771,5 +771,8 @@ do
     vim.env.PATH = vim.fn.join(paths, ';')
 end
 
+-- fix charset in Windows
+vim.env.OUTPUT_CHARSET= 'CP1252'
+
 -- iniciar sessão neovim em Desktop
 vim.cmd.cd(vim.fs.joinpath(vim.env.USERPROFILE, '/Desktop'))
