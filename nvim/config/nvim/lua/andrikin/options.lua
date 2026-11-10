@@ -67,7 +67,7 @@ vim.o.findfunc = function (cmdargs, cmdcomplete)
         '-E', '.git',
         '-E', 'ctags',
         '-E', 'undotree',
-        '-a', '-p', '-c', 'never', '-g',
+        '-a', '-p', '-c', 'never',
         '--path-separator', '/',
         '--base-directory', cwd,
         query
