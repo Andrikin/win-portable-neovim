@@ -164,3 +164,20 @@ command('SortingDirvish',
     end, {}
 )
 
+-- WARNING: utilizar definindo diretórios com '""'
+command('Shortcut',
+    function(opts)
+        local args = vim.npcall(function()
+            return vim.iter(opts.args:gmatch('".-"')):totable()
+        end)
+        if not args then
+            vim.print('Shortcut: não foi possível interpretar os argumentos do comando.')
+            return
+        end
+        local executavel = args[1]
+        local destino = args[2]
+        local shortcut = {'Shortcut.exe', '/F:' .. destino, '/T:' .. executavel}
+        vim.system(shortcut, {detach = true})
+    end, {}
+)
+
