@@ -23,7 +23,8 @@ end
 -- end):join(' ')
 -- vim.bo.makeprg = vim.g.sumatra .. ' grep -Hin "$*" ' .. pdfs
 -- ANOTHER SOLUTION --
-vim.bo.makeprg = "bash -c '" .. vim.g.sumatra .. ' grep -Hin "$*" %:gs?\\?/?*.pdf' .. "'"
+-- WARNING: possui limite de argumentos...
+vim.bo.makeprg = "bash -c '" .. vim.g.sumatra .. ' grep -Hin "$*" %:gs?\\?/?:S*.pdf' .. "'"
 -- %f	%l	%m
 vim.bo.errorformat = {
     '%A%f\t%l\t%m',
