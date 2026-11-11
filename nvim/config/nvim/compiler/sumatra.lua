@@ -4,6 +4,7 @@ if vim.fn.executable('bash') == 0 then
 end
 if vim.fn.executable('SumatraPDF-3.6.1-64.exe') == 0
     or vim.fn.executable('sumatra.exe') == 0 then
+    vim.print('Sumatra-grep: não foram encontrados executáveis do sumatra.\nRealizar instalação.')
     return
 end
 if not vim.g.did_sumatra then
