@@ -589,9 +589,9 @@ do
         '--no-warn-deprecated-windows',
         '--root',
         DIR,
-        '--only-site',
-        '--site',
-        'https://linorg.usp.br/cygwin/',
+        -- '--only-site',
+        -- '--site',
+        -- 'https://linorg.usp.br/cygwin/',
     }
     if localizado then
         if not vim.uv.fs_stat(vim.fs.joinpath(DIR, 'bin')) then
@@ -772,6 +772,7 @@ do
 end
 
 -- fix charset in Windows
+-- https://www.gnu.org/software/gettext/manual/html_node/Working-in-a-Windows-console.html
 vim.env.OUTPUT_CHARSET= 'CP1252'
 
 -- iniciar sessão neovim em Desktop
