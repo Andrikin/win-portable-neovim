@@ -174,6 +174,10 @@ command('Shortcut',
             vim.print('Shortcut: não foi possível interpretar os argumentos do comando.')
             return
         end
+        if #args > 2 then
+            vim.print('Shortcut: número de argumentos excedido. Abortando.')
+            return
+        end
         local executavel = args[1]
         local destino = args[2]
         local shortcut = {'Shortcut.exe', '/F:' .. destino, '/T:' .. executavel}
