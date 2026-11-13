@@ -343,11 +343,11 @@ Ouvidoria da Prefeitura de Itajaí
 local autocmd = vim.api.nvim_create_autocmd
 local Andrikin = vim.api.nvim_create_augroup('AndrikinFirenvim', {clear = true})
 
--- Auto Insert Mode
-autocmd({'BufEnter'}, {
-    pattern = '*.txt',
-    command = 'startinsert'
-})
+-- -- Auto Insert Mode
+-- autocmd({'BufEnter'}, {
+--     pattern = '*.txt',
+--     command = 'startinsert'
+-- })
 
 -- Highlight linha quando entrar em INSERT MODE
 autocmd('InsertEnter',
@@ -452,6 +452,8 @@ autocmd('BufEnter',
             vim.cmd.set('ft=html')
             vim.cmd.set('tw=0')
             vim.cmd.set('spell')
+            vim.cmd.set('lines=80')
+            vim.cmd.set('columns=80')
         end
 })
 
