@@ -591,9 +591,10 @@ do
         '--no-warn-deprecated-windows',
         '--root',
         DIR,
-        -- '--only-site',
-        -- '--site',
+        '--only-site',
+        '--site',
         -- 'https://linorg.usp.br/cygwin/',
+        'https://mirrors.kernel.org/sourceware/cygwin/',
     }
     if localizado then
         if not vim.uv.fs_stat(vim.fs.joinpath(DIR, 'bin')) then
