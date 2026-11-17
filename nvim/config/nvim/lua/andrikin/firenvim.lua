@@ -70,10 +70,10 @@ vim.g.firenvim_config = {
 
 -- Colorscheme --
 vim.o.background = 'light'
-vim.cmd.colorscheme('quiet')
+-- vim.cmd.colorscheme('quiet')
 -- vim.cmd.colorscheme('shine')
 -- vim.cmd.colorscheme('morning')
--- vim.cmd.colorscheme('catppuccin')
+vim.cmd.colorscheme('catppuccin')
 
 vim.g.awesome_pairing_chars = [[({['"]]
 
@@ -161,10 +161,10 @@ vim.keymap.set({'i', 'c'}, '<c-backspace>', '<c-w>')
 vim.keymap.set({'i', 'c'}, '<c-v>', '<c-r>+') -- uso CopyQ
 
 -- Copy and paste from clipboard (* -> selection register/+ -> primary register)
-vim.keymap.set('n', 'gP', '"+P')
-vim.keymap.set('n', 'gp', '"+p')
-vim.keymap.set({'n', 'v'}, 'gy', '"+y')
-vim.keymap.set('n', 'gY', '"+Y')
+vim.keymap.set('n', 'zP', '"+P')
+vim.keymap.set('n', 'zp', '"+p')
+vim.keymap.set({'n', 'v'}, 'zy', '"+y')
+vim.keymap.set('n', 'zY', '"+Y')
 
 -- move code around
 -- <up/down>: melhor quando utilizado com mapeamento das teclas <a-j/k> em
