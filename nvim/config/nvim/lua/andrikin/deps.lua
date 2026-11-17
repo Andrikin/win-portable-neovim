@@ -84,6 +84,12 @@ return {
     },{
         nome = '7zr',
         link = 'https://github.com/ip7z/7zip/releases/download/26.04/7zr.exe',
+    },{
+        nome = 'pandoc',
+        link = 'https://github.com/jgm/pandoc/releases/download/3.14/pandoc-3.14-windows-x86_64.zip',
+    },{
+        nome = 'typst',
+        link = 'https://github.com/typst/typst/releases/download/v0.15.1/typst-x86_64-pc-windows-msvc.zip',
     }
 }
 
