@@ -778,5 +778,15 @@ end
 -- https://www.gnu.org/software/gettext/manual/html_node/Working-in-a-Windows-console.html
 vim.env.OUTPUT_CHARSET= 'CP1252'
 
+-- templates for pandoc
+local pandoc_templates = 'C:/Users/09153634969/Documents/nvim/projetos/pandoc-templates/'
+if executable('pandoc') and vim.uv.fs_stat(pandoc_templates) then
+    vim.env.PANDOC_DATA_DIRS = pandoc_templates
+else
+    vim.print('pandoc: instalar templates do Pandoc em "Projetos"')
+    vim.print('pandoc: https://github.com/jgm/pandoc-templates.git')
+end
+
 -- iniciar sessão neovim em Desktop
 vim.cmd.cd(vim.fs.joinpath(vim.env.USERPROFILE, '/Desktop'))
+
