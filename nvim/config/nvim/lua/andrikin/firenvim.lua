@@ -1,5 +1,6 @@
 -- FIRENVIM --
--- WARNING: Firefox -> desabilitar 'network.lna.websocket.enabled' em 'about:config'
+-- WARNING: para utilizar no Firefox -> desabilitar
+-- 'network.lna.websocket.enabled' em 'about:config'
 
 vim.pack.add({
     'https://github.com/Andrikin/awesome-pairing',
@@ -13,6 +14,11 @@ vim.pack.add({
     'https://github.com/stevearc/dressing.nvim',
     -- Firenvim
     'https://github.com/glacambre/firenvim',
+    -- treesitter (sistema.govgestao.com.br)
+    {
+        src = 'https://github.com/nvim-treesitter/nvim-treesitter.git',
+        version = 'main'
+    },
 }, {confirm = false})
 
 -- vim.pack autocmds:
@@ -58,6 +64,7 @@ vim.g.firenvim_config = {
         -- ENABLE FIRENVIM IN URLS --
         -- ['https?://[^/]*somesite.com/*'] = enable,
         ['https?://[^/]*falabr.cgu.gov.br/*'] = enable,
+        ['https?://[^/]*sistema.govgestao.com.br/*'] = enable,
     }
 }
 
@@ -257,72 +264,74 @@ local add_path = function(dir)
     end
 end
 -- Copyq integration
-if vim.fn.executable('copyq') == 1 then
-    vim.api.nvim_create_user_command('Clipboard',
-        function(args)
-            local tab = args.fargs[1] or 'clipboard'
-            local clipboard = vim.system({"copyq","eval","--",([[
-                let indent = 4;
-                let tamanho = size() <= 50 && size() || 50;
-                tab('%s');
-                let c = [];
-                for(i=0;i<tamanho;i++) c.push(str(read(i)));
-                print(JSON.stringify(c, null, indent));
-            ]]):format(tab)}):wait().stdout
-            -- transformar JSON
-            clipboard = vim.json.decode(clipboard)
-            local temp = {}
-            local index = 1
-            for i, _ in ipairs(clipboard) do -- remover strings vazias
-                if clipboard[i] ~= "" then
-                    temp[index] = clipboard[i]
-                    index = index + 1
-                end
-            end
-            ---@diagnostic disable-next-line: cast-local-type
-            clipboard = temp
-            vim.ui.select(clipboard, {
-                prompt = 'Selecione uma entrado do clipboard:',
-                format_item = function(item)
-                    if #item <= 75 then
-                        return item
-                    end
-                    return item:sub(1, 75)
-                end,
-            }, function(choice)
-                    if choice then
-                        vim.fn.setreg('"', choice)
-                        vim.cmd.normal('P')
-                    end
-                end
-            )
-        end,
-        {
-            nargs = "?",
-            complete = function(arg, _, _)
-                local lista = vim.system({"copyq", "eval", "--", [[
+vim.defer_fn(function ()
+    if vim.fn.executable('copyq') == 1 then
+        vim.api.nvim_create_user_command('Clipboard',
+            function(args)
+                local tab = args.fargs[1] or 'clipboard'
+                local clipboard = vim.system({"copyq","eval","--",([[
                     let indent = 4;
-                    let tabs = tab();
-                    print(JSON.stringify(tabs, null, indent));
-                ]]}):wait().stdout
-                local ok = nil
-                ok, lista = pcall(vim.json.decode, lista)
-                if not ok then
-                    return {}
+                    let tamanho = size() <= 50 && size() || 50;
+                    tab('%s');
+                    let c = [];
+                    for(i=0;i<tamanho;i++) c.push(str(read(i)));
+                    print(JSON.stringify(c, null, indent));
+                ]]):format(tab)}):wait().stdout
+                -- transformar JSON
+                clipboard = vim.json.decode(clipboard)
+                local temp = {}
+                local index = 1
+                for i, _ in ipairs(clipboard) do -- remover strings vazias
+                    if clipboard[i] ~= "" then
+                        temp[index] = clipboard[i]
+                        index = index + 1
+                    end
                 end
-                return vim.tbl_filter(function(copyqtab)
-                    return copyqtab:lower():match(arg:gsub('-', '.'):lower())
-                end, lista)
+                ---@diagnostic disable-next-line: cast-local-type
+                clipboard = temp
+                vim.ui.select(clipboard, {
+                    prompt = 'Selecione uma entrado do clipboard:',
+                    format_item = function(item)
+                        if #item <= 75 then
+                            return item
+                        end
+                        return item:sub(1, 75)
+                    end,
+                }, function(choice)
+                        if choice then
+                            vim.fn.setreg('"', choice)
+                            vim.cmd.normal('P')
+                        end
+                    end
+                )
             end,
-        }
-    )
-else
-    vim.print('Não foi encontrado "copyq". Realize a instalação ou adicione no PATH.')
-    local COPYQDIR = vim.fs.joinpath(vim.env.HOMEDRIVE, vim.env.HOMEPATH, 'Documents', 'copyq')
-    if vim.uv.fs_stat(COPYQDIR) then
-        add_path(COPYQDIR)
+            {
+                nargs = "?",
+                complete = function(arg, _, _)
+                    local lista = vim.system({"copyq", "eval", "--", [[
+                        let indent = 4;
+                        let tabs = tab();
+                        print(JSON.stringify(tabs, null, indent));
+                    ]]}):wait().stdout
+                    local ok = nil
+                    ok, lista = pcall(vim.json.decode, lista)
+                    if not ok then
+                        return {}
+                    end
+                    return vim.tbl_filter(function(copyqtab)
+                        return copyqtab:lower():match(arg:gsub('-', '.'):lower())
+                    end, lista)
+                end,
+            }
+        )
+    else
+        vim.print('Não foi encontrado "copyq". Realize a instalação ou adicione no PATH.')
+        local COPYQDIR = vim.fs.joinpath(vim.env.HOMEDRIVE, vim.env.HOMEPATH, 'Documents', 'copyq')
+        if vim.uv.fs_stat(COPYQDIR) then
+            add_path(COPYQDIR)
+        end
     end
-end
+end, 5000)
 
 -- Mensagens automáticas
 command('Anexos',
@@ -442,18 +451,35 @@ autocmd('BufEnter',
         command = "set spell",
 })
 
+-- add pandoc to PATH
+local pandoc = vim.npcall(function ()
+    return vim.fn.glob(vim.fs.joinpath(vim.env.NVIMOPT, 'pandoc', '*'))
+end)
+if pandoc then
+    vim.env.PATH = vim.env.PATH .. ';' .. pandoc
+end
 -- Configurações de ortografia e tamanho do frame no Sistema GovGestao
 autocmd('BufEnter',
     {
         group = Andrikin,
         pattern = 'sistema.govgestao.com.br*.txt',
         callback = function ()
-            -- vim.cmd.EmmetInstall()
-            vim.cmd.set('ft=html')
-            vim.cmd.set('tw=0')
             vim.cmd.set('spell')
-            vim.cmd.set('lines=80')
-            vim.cmd.set('columns=80')
+            vim.cmd.set('tw=78')
+            vim.cmd.set('ft=markdown')
+            vim.cmd.set('lines=58')
+            vim.cmd.set('columns=90')
+            -- converter texto para markdown
+            vim.cmd('%!pandoc -f html -t markdown')
+        end
+})
+-- Retornar para 'html' antes de salvar texto
+autocmd('BufWritePre',
+    {
+        group = Andrikin,
+        pattern = 'sistema.govgestao.com.br*.txt',
+        callback = function ()
+            vim.cmd('%!pandoc -f markdown -t html')
         end
 })
 
