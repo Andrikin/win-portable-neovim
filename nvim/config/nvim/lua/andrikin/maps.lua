@@ -74,10 +74,10 @@ vim.keymap.set('i', '<a-f>', '<s-right>')
 vim.keymap.set('i', '<c-a-f>', '<s-right>')
 
 -- Copy and paste from clipboard (* -> selection register/+ -> primary register)
-vim.keymap.set('n', 'gP', '"+P')
-vim.keymap.set('n', 'gp', '"+p')
-vim.keymap.set({'n', 'v'}, 'gy', '"+y')
-vim.keymap.set('n', 'gY', '"+Y')
+vim.keymap.set('n', 'zP', '"+P')
+vim.keymap.set('n', 'zp', '"+p')
+vim.keymap.set({'n', 'v'}, 'zy', '"+y')
+vim.keymap.set('n', 'zY', '"+Y')
 
 -- Bracket maps
 -- For arglist -- default in neovim 0.11, but better my way
