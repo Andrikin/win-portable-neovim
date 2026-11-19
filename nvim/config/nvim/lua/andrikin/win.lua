@@ -383,74 +383,73 @@ end
 -- CopyQ (F5 shortcut) and set "Store standard output" to "text/plain" to save
 -- the output as new item in current tab. selecionar qual tab - default
 -- 'clipboard'
-vim.defer_fn(function() 
-    if executable('copyq') then
-        vim.api.nvim_create_user_command('Clipboard',
-            function(args)
-                local tab = args.fargs[1] or 'clipboard'
-                local clipboard = vim.system({ "copyq", "eval", "--", ([[
-                    let indent = 4;
-                    let tamanho = size() <= 50 && size() || 50;
-                    tab('%s');
-                    let c = [];
-                    for(i=0;i<tamanho;i++) c.push(str(read(i)));
-                    print(JSON.stringify(c, null, indent));
-                ]]):format(tab) }):wait().stdout
-                -- transformar JSON
-                clipboard = vim.json.decode(clipboard)
-                local temp = {}
-                local index = 1
-                for i, _ in ipairs(clipboard) do -- remover strings vazias
-                    if clipboard[i] ~= "" then
-                        temp[index] = clipboard[i]
-                        index = index + 1
-                    end
+if executable('copyq.exe') then
+    vim.api.nvim_create_user_command('Clipboard',
+        function(args)
+            local tab = args.fargs[1] or 'clipboard'
+            local clipboard = vim.system({ "copyq", "eval", "--", ([[
+                let indent = 4;
+                let tamanho = size() <= 50 && size() || 50;
+                tab('%s');
+                let c = [];
+                for(i=0;i<tamanho;i++) c.push(str(read(i)));
+                print(JSON.stringify(c, null, indent));
+            ]]):format(tab) }):wait().stdout
+            -- transformar JSON
+            clipboard = vim.json.decode(clipboard)
+            local temp = {}
+            local index = 1
+            for i, _ in ipairs(clipboard) do -- remover strings vazias
+                if clipboard[i] ~= "" then
+                    temp[index] = clipboard[i]
+                    index = index + 1
                 end
-                ---@diagnostic disable-next-line: cast-local-type
-                clipboard = temp
-                vim.ui.select(clipboard, {
-                    prompt = 'Selecione uma entrado do clipboard:',
-                    format_item = function(item)
-                        if #item <= 75 then
-                            return item
-                        end
-                        return item:sub(1, 75)
-                    end,
-                }, function(choice)
-                    if choice then
-                        vim.fn.setreg('"', choice)
-                        vim.cmd.normal('P')
+            end
+            ---@diagnostic disable-next-line: cast-local-type
+            clipboard = temp
+            vim.ui.select(clipboard, {
+                prompt = 'Selecione uma entrado do clipboard:',
+                format_item = function(item)
+                    if #item <= 75 then
+                        return item
                     end
-                end
-                )
-            end,
-            {
-                nargs = "?",
-                complete = function(arg, _, _)
-                    local lista = vim.system({ "copyq", "eval", "--", [[
-                        let indent = 4;
-                        let tabs = tab();
-                        print(JSON.stringify(tabs, null, indent));
-                    ]] }):wait().stdout
-                    local ok = nil
-                    ok, lista = pcall(vim.json.decode, lista)
-                    if not ok then
-                        return {}
-                    end
-                    return vim.tbl_filter(function(copyqtab)
-                        return copyqtab:lower():match(arg:gsub('-', '.'):lower())
-                    end, lista)
+                    return item:sub(1, 75)
                 end,
-            }
-        )
-    else
-        vim.print('Não foi encontrado "copyq". Realize a instalação ou adicione no PATH.')
-        local COPYQDIR = vim.fs.joinpath(vim.env.HOMEDRIVE, vim.env.HOMEPATH, 'Documents', 'copyq')
-        if vim.uv.fs_stat(COPYQDIR) then
-            add_path(COPYQDIR)
-        end
+            }, function(choice)
+                if choice then
+                    vim.fn.setreg('"', choice)
+                    vim.cmd.normal('P')
+                end
+            end
+            )
+        end,
+        {
+            nargs = "?",
+            complete = function(arg, _, _)
+                local lista = vim.system({ "copyq", "eval", "--", [[
+                    let indent = 4;
+                    let tabs = tab();
+                    print(JSON.stringify(tabs, null, indent));
+                ]] }):wait().stdout
+                local ok = nil
+                ok, lista = pcall(vim.json.decode, lista)
+                if not ok then
+                    return {}
+                end
+                return vim.tbl_filter(function(copyqtab)
+                    return copyqtab:lower():match(arg:gsub('-', '.'):lower())
+                end, lista)
+            end,
+        }
+    )
+else
+    vim.print('copyq: Não foi encontrado "copyq". Realize a instalação ou adicione no PATH.')
+    vim.print('copyq: Recomenda-se instalação e inclusão do "copyq" no PATH do sistema.')
+    local COPYQDIR = vim.fs.joinpath(vim.env.HOMEDRIVE, vim.env.HOMEPATH, 'Documents', 'copyq')
+    if vim.uv.fs_stat(COPYQDIR) then
+        add_path(COPYQDIR)
     end
-end, 5000)
+end
 
 -- SSH --
 -- TODO: ativar conexão ssh-add, caso não esteja conectada
@@ -778,13 +777,67 @@ end
 -- https://www.gnu.org/software/gettext/manual/html_node/Working-in-a-Windows-console.html
 vim.env.OUTPUT_CHARSET= 'CP1252'
 
+-- READ: https://rnwest.engineer/auto-generate-docx-with-pandoc/
 -- templates for pandoc
-local pandoc_templates = 'C:/Users/09153634969/Documents/nvim/projetos/pandoc-templates/'
-if executable('pandoc') and vim.uv.fs_stat(pandoc_templates) then
-    vim.env.PANDOC_DATA_DIRS = pandoc_templates
+local git_projetos = vim.fs.joinpath(vim.env.USERPROFILE, 'Documents', 'nvim', 'projetos')
+local pandoc_templates = vim.fs.joinpath(git_projetos, 'pandoc-templates')
+local cgm_pandoc_templates = vim.fs.joinpath(git_projetos, 'cgm-pandoc')
+if executable('pandoc') then
+    if vim.uv.fs_stat(pandoc_templates) then
+        vim.env.PANDOC_DATA_DIRS = not vim.env.PANDOC_DATA_DIRS and
+            pandoc_templates or vim.env.PANDOC_DATA_DIRS .. ';' .. pandoc_templates
+    else
+        vim.print('pandoc-templates: instalar templates do Pandoc em "Projetos"')
+        vim.print('pandoc-templates: https://github.com/jgm/pandoc-templates.git')
+    end
+    if vim.uv.fs_stat(cgm_pandoc_templates) then
+        vim.env.PANDOC_DATA_DIRS = not vim.env.PANDOC_DATA_DIRS and
+            cgm_pandoc_templates or vim.env.PANDOC_DATA_DIRS .. ';' ..
+            cgm_pandoc_templates
+    else
+        vim.print('pandoc-templates: instalar templates da CGM.')
+        vim.print('pandoc-templates: https://github.com/Andrikin/cgm-pandoc.git')
+    end
+    -- WARNING: utilizar definindo diretórios com '""'
+    vim.api.nvim_create_user_command('PandocCgm',
+        function(opts)
+            local args = vim.npcall(function()
+                return vim.iter(opts.args:gmatch('".-"')):totable()
+            end)
+            if not args then
+                vim.print('PandocCgm: não foi possível interpretar os argumentos do comando.')
+                return
+            end
+            local md = args[1]
+            local doc = args[2]
+            if vim.fn.fnamemodify(md, ':e') ~= 'md' then
+                vim.print('PandocCgm: não é um arquivo "md" válido para converção!')
+                return
+            end
+            if not vim.env.PANDOC_DATA_DIRS then
+                vim.print('PandocCgm: variável $PANDOC_DATA_DIRS não está configurada!')
+                return
+            end
+            local cmd = {
+                'pandoc',
+                '-f',
+                'markdown',
+                '-t',
+                'docx',
+                '--reference-doc=cgm-carta.docx',
+                '--template=cgm-template.openxml',
+                '-o',
+                doc,
+                md,
+            }
+            vim.system(cmd, {detach = true}, function ()
+                vim.open(doc)
+            end)
+        end, {}
+    )
+
 else
-    vim.print('pandoc: instalar templates do Pandoc em "Projetos"')
-    vim.print('pandoc: https://github.com/jgm/pandoc-templates.git')
+    vim.print('pandoc: Realizar instalação de pandoc.')
 end
 
 -- iniciar sessão neovim em Desktop
