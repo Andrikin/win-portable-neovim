@@ -398,6 +398,9 @@ autocmd('BufWritePre',
         group = Andrikin,
         pattern = 'sistema.govgestao.com.br*.txt',
         callback = function ()
+            -- backup para clipboard
+            vim.cmd('%y +')
+            -- converter novamente para html
             vim.cmd('%!pandoc -f markdown -t html')
         end
 })
