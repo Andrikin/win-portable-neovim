@@ -132,6 +132,7 @@ vim.cmd.packadd('nvim.difftool')
 vim.cmd.packadd('nvim.undotree')
 vim.cmd.packadd('nvim.tohtml')
 vim.cmd.packadd('justify')
+vim.cmd.packadd('old-zip')
 -- vim.cmd.packadd("firenvim")
 
 -- spellfile.vim
