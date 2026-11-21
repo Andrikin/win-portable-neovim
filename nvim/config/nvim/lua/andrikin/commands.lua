@@ -185,3 +185,55 @@ command('Shortcut',
     end, {}
 )
 
+-- WIP!
+command('Pandoc',
+    function(opts)
+        if not vim.env.PANDOC_DATA_DIRS then
+            vim.print('Pandoc: variável $PANDOC_DATA_DIRS não está configurada!')
+            return
+        end
+        opts.args = opts.args and vim.trim(opts.args)
+        local md = ''
+        local doc = ''
+        if opts.args == '' then
+            md = vim.fn.expand('%')
+            doc = md:gsub('%.md$', '.docx')
+        else
+            md = opts.args:match('^["](.-%.md)[" ]+')
+            doc = opts.args:match('%.md["%s]+(.-%.docx)$')
+        end
+        if not md or not doc then
+            vim.print('pandoc: não foram encontrados parâmetros. Abortando.')
+            return
+        end
+        if not md:match('%.md$') then
+            vim.print('Pandoc: não é um arquivo "md" válido para converção!')
+            return
+        end
+        local cmd = {
+            'pandoc',
+            '-f',
+            'markdown',
+            '-t',
+            'docx',
+            '--resource-path=' .. vim.env.PANDOC_DATA_DIRS,
+            '--reference-doc=carta.docx',
+            '--template=modelo.openxml',
+            '-o',
+            doc,
+            md,
+        }
+        vim.system(cmd, { detach = true }, function (out)
+            if out.code > 0 then
+                vim.print('pandoc: erro encontrado.')
+                vim.print('pandoc_error: '.. out.stderr)
+                return
+            end
+            if vim.uv.fs_stat(doc) then
+                vim.print('pandoc: conversão concluída!')
+                vim.open(doc)
+            end
+        end)
+    end, { nargs = "+", complete = 'file' }
+)
+
