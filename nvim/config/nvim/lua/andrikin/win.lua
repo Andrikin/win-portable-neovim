@@ -799,23 +799,27 @@ if executable('pandoc') then
         vim.print('pandoc-templates: https://github.com/Andrikin/cgm-pandoc.git')
     end
     -- WARNING: utilizar definindo diretórios com '""'
-    vim.api.nvim_create_user_command('PandocCgm',
-        function(opts)
-            local args = vim.npcall(function()
-                return vim.iter(opts.args:gmatch('".-"')):totable()
-            end)
-            if not args then
-                vim.print('PandocCgm: não foi possível interpretar os argumentos do comando.')
-                return
-            end
-            local md = args[1]
-            local doc = args[2]
-            if vim.fn.fnamemodify(md, ':e') ~= 'md' then
-                vim.print('PandocCgm: não é um arquivo "md" válido para converção!')
-                return
-            end
+    vim.api.nvim_create_user_command('Pandoc', function(opts)
             if not vim.env.PANDOC_DATA_DIRS then
-                vim.print('PandocCgm: variável $PANDOC_DATA_DIRS não está configurada!')
+                vim.print('Pandoc: variável $PANDOC_DATA_DIRS não está configurada!')
+                return
+            end
+            opts.args = opts.args and vim.trim(opts.args)
+            local md = ''
+            local doc = ''
+            if opts.args == '' then
+                md = vim.fn.expand('%')
+                doc = md:gsub('%.md$', '.docx')
+            else
+                md = opts.args:match('^["](.-%.md)[" ]+')
+                doc = opts.args:match('%.md["%s]+(.-%.docx)$')
+            end
+            if not md or not doc then
+                vim.print('pandoc: não foram encontrados parâmetros. Abortando.')
+                return
+            end
+            if not md:match('%.md$') then
+                vim.print('Pandoc: não é um arquivo "md" válido para converção!')
                 return
             end
             local cmd = {
@@ -824,18 +828,26 @@ if executable('pandoc') then
                 'markdown',
                 '-t',
                 'docx',
-                '--reference-doc=cgm-carta.docx',
-                '--template=cgm-template.openxml',
+                '--resource-path=' .. vim.env.PANDOC_DATA_DIRS,
+                '--reference-doc=carta.docx',
+                '--template=modelo.openxml',
                 '-o',
                 doc,
                 md,
             }
-            vim.system(cmd, {detach = true}, function ()
-                vim.open(doc)
+            vim.system(cmd, { detach = true }, function (out)
+                if out.code > 0 then
+                    vim.print('pandoc: erro encontrado.')
+                    vim.print('pandoc_error: '.. out.stderr)
+                    return
+                end
+                if vim.uv.fs_stat(doc) then
+                    vim.print('pandoc: conversão concluída!')
+                    vim.open(doc)
+                end
             end)
-        end, {}
+        end, { nargs = "+", complete = 'file' }
     )
-
 else
     vim.print('pandoc: Realizar instalação de pandoc.')
 end
