@@ -829,8 +829,8 @@ if executable('pandoc') then
                 '-t',
                 'docx',
                 '--resource-path=' .. vim.env.PANDOC_DATA_DIRS,
-                '--reference-doc=carta.docx',
-                '--template=modelo.openxml',
+                '--reference-doc=cgm-carta.docx',
+                '--template=cgm-template.openxml',
                 '-o',
                 doc,
                 md,
@@ -843,10 +843,10 @@ if executable('pandoc') then
                 end
                 if vim.uv.fs_stat(doc) then
                     vim.print('pandoc: conversão concluída!')
-                    vim.open(doc)
+                    vim.ui.open(doc)
                 end
             end)
-        end, { nargs = "+", complete = 'file' }
+        end, { nargs = "?", complete = 'file' }
     )
 else
     vim.print('pandoc: Realizar instalação de pandoc.')
