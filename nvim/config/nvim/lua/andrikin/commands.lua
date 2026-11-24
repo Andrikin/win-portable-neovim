@@ -136,7 +136,7 @@ command('SortingDirvish',
 		-- diretórios; .diretórios
 		vim.cmd('silent sort :/$:')
         -- lista de diretórios somente 
-        vim.cmd('silent g/[^/]$/d')
+        vim.cmd('silent g/[^/]$/d _')
         local dlist = vim.api.nvim_buf_get_lines(buf, 0, -1, false)
 		if #dlist == 1 and dlist[1] == '' then
 			dlist = {}
