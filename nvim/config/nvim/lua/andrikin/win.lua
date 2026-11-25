@@ -841,8 +841,19 @@ if executable('pandoc') then
                     vim.print('pandoc_error: '.. out.stderr)
                     return
                 end
-                if vim.uv.fs_stat(doc) then
-                    vim.print('pandoc: conversão concluída!')
+                if not vim.uv.fs_stat(doc) then
+                    vim.print('pandoc: erro ao criar documento. Abortando!')
+                    return
+                end
+                vim.print('pandoc: conversão concluída. Abrindo documento gerado!')
+                -- open with custom software
+                local wordcraft = vim.fs.joinpath(
+                    vim.env.USERPROFILE, 'Documents', 'wordcraft', 'wordcraft.exe'
+                )
+                if vim.uv.fs_stat(wordcraft) then
+                    vim.system({ wordcraft, doc }, {detach = true})
+                else
+                    vim.print('pandoc: programa custom não foi localizado.\nAbrindo documento com programa padrão.')
                     vim.ui.open(doc)
                 end
             end)
