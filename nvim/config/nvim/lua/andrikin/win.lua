@@ -828,7 +828,7 @@ if executable('pandoc') then
                 'markdown',
                 '-t',
                 'docx',
-                '--template=cgm-template.openxml',
+                '--template=cgm-ci.openxml',
                 '-o',
                 doc,
                 md,
