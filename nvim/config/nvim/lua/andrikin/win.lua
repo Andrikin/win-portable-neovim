@@ -828,6 +828,8 @@ if executable('pandoc') then
                 'markdown',
                 '-t',
                 'docx',
+                '--resource-path=' .. vim.env.PANDOC_DATA_DIRS,
+                '--reference-doc=cgm-carta.docx',
                 '--template=cgm-ci.openxml',
                 '-o',
                 doc,
