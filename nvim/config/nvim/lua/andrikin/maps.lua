@@ -182,7 +182,8 @@ vim.keymap.set( -- custom list for buffers
             MiniPick.default_choose(vim.fn.expand(item))
         end
         local buffers = function()
-            local blist = vim.api.nvim_exec2('buffers', {output = true})
+            -- how mini.pick list buffers
+            local blist = vim.api.nvim_exec2('buffers!', {output = true})
             local items = {}
             for _, l in ipairs(vim.split(blist.output, '\n')) do
                 local item = l:match('"(.*)"')
