@@ -189,6 +189,9 @@ vim.keymap.set( -- custom list for buffers
                 local item = l:match('"(.*)"')
                 table.insert(items, item)
             end
+            items = vim.tbl_filter(function (e)
+                return e:match('^[%a~][:/]')
+            end, items)
             return items
         end
         local show = function(buf, items, query)
