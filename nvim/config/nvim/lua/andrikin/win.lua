@@ -815,7 +815,7 @@ if executable('pandoc') then
                 doc = opts.args:match('%.md["%s]+(.-%.docx)$')
             end
             if not md or not doc then
-                vim.print('pandoc: não foram encontrados parâmetros. Abortando.')
+                vim.print('Pandoc: não foram encontrados parâmetros. Abortando.')
                 return
             end
             if not md:match('%.md$') then
@@ -835,15 +835,15 @@ if executable('pandoc') then
             }
             vim.system(cmd, { detach = true }, function (out)
                 if out.code > 0 then
-                    vim.print('pandoc: erro encontrado.')
-                    vim.print('pandoc_error: '.. out.stderr)
+                    vim.print('Pandoc: erro encontrado.')
+                    vim.print('PandocError: '.. out.stderr)
                     return
                 end
                 if not vim.uv.fs_stat(doc) then
-                    vim.print('pandoc: erro ao criar documento. Abortando!')
+                    vim.print('Pandoc: erro ao criar documento. Abortando!')
                     return
                 end
-                vim.print('pandoc: conversão concluída. Abrindo documento gerado!')
+                vim.print('Pandoc: conversão concluída. Abrindo documento gerado!')
                 -- open with custom software
                 local wordcraft = vim.fs.joinpath(
                     vim.env.USERPROFILE, 'Documents', 'wordcraft', 'wordcraft.exe'
@@ -851,14 +851,14 @@ if executable('pandoc') then
                 if vim.uv.fs_stat(wordcraft) then
                     vim.system({ wordcraft, doc }, {detach = true})
                 else
-                    vim.print('pandoc: programa custom não foi localizado.\nAbrindo documento com programa padrão.')
+                    vim.print('Pandoc: programa custom não foi localizado.\nAbrindo documento com programa padrão.')
                     vim.ui.open(doc)
                 end
             end)
         end, { nargs = "?", complete = 'file' }
     )
 else
-    vim.print('pandoc: Realizar instalação de pandoc.')
+    vim.print('Pandoc: Realizar instalação de pandoc.')
 end
 
 -- iniciar sessão neovim em Desktop
