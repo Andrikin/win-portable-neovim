@@ -24,6 +24,8 @@ nvim/share/man/
 nvim/share/nvim-qt/
 nvim/share/nvim/runtime/
 
+nvim/config/recently-used.xbel
+
 nvim/config/nvim/lua/andrikin/.luacheckrc
 nvim/config/nvim/lua/andrikin/.luarc.json
 
